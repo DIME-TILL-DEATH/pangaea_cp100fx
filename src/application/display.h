@@ -1,0 +1,331 @@
+/*
+ * display.h
+ *
+ *  Created on: Aug 30, 2014
+ *      Author: s
+ */
+
+#ifndef __DISPLAY_H__
+#define __DISPLAY_H__
+
+#include "appdefs.h"
+
+#define FILE_NAME_LENGTH 64
+
+class TDisplayTask : public TTask
+{
+  public:
+     TDisplayTask () ;
+
+     typedef enum { wrdCmd=0 , wrdData, wrdCount  } TWriteRegDest ;
+     typedef enum { fnt12x13=0 , fnt33x30, fntSystem, fntCount } TFontName ;
+     typedef enum { fnsBlack=0 , fnsWhite, fnsBlackUnderline, fnsCount } TFontState ;
+
+     typedef struct
+     {
+       TFontName name ;
+       uint8_t curs ;
+     } TFont ;
+
+     typedef struct
+        {
+          uint8_t x ;
+          uint8_t y ;
+        } TPos ;
+
+     typedef enum { dcWriteReg = 0 ,
+                    dcClear ,
+                    dcClear_str,
+                    dcSymbolOut,
+                    dcStringOut,
+                    dcNumberOut,
+                    dcIndicator,
+                    dcMenu_init,
+                    dcProg_ind,
+                    dcEf_icon,
+                    dcSetColumn,
+                    dcSetPagAdr,
+                    dcEqIndic,
+                    dcEqInit,
+                    dcEqLH,
+					dcEqPar,
+                    dcParamIndic,
+                    dcParamIndicNum,
+                    dcParamIndicPan,
+					dcParamIndicMix,
+                    dcDelayTimeInd,
+                    dcStart,
+                    dcContrast,
+                    dcTap_ind,
+                    dcSys_Menu,
+                    dcLed_Write,
+                    dcPot_Write,
+                    dcMain_scr,
+					dcPresetPreview,
+                    dcIcStrel,
+					dcTunIni,
+					dcTunNote,
+					dcTunStrel,
+					dcInd_foot,
+					dcReset,
+					dcStrel,
+                    dcCount } TCommand ;
+
+     typedef struct
+     	 	   {
+    	 	 	 uint8_t num;
+    	 	 	 uint8_t val;
+     	 	   } TInd_footParam;
+     typedef struct
+               {
+                 uint8_t data;
+               } TContrastParam;
+     typedef struct
+     	 	   {
+    	         uint8_t data;
+               } TStartParam;
+     typedef struct
+               {
+                 uint8_t data;
+               } TTap_indParam;
+
+     typedef struct
+               {
+       	         TPos pos ;
+       	         uint32_t data;
+               } TDelayTimeIndParam;
+
+     typedef struct
+               {
+       	         TPos pos ;
+       	         uint8_t data;
+               } TParamIndicPanParam;
+
+     typedef struct
+     	 	   {
+	             TPos pos ;
+	             uint8_t data;
+               } TParamIndicMixParam;
+
+     typedef struct
+               {
+    	         TPos pos ;
+    	         uint8_t data;
+               } TParamIndicParam;
+
+     typedef struct
+               {
+      	         TPos pos ;
+       	         uint16_t data;
+               } TParamIndicNumParam;
+
+     typedef struct
+               {
+                 TWriteRegDest dest ;
+                 uint32_t data ;
+               } TWriteRegParams ;
+
+     typedef struct
+               {
+    	        TPos pos ;
+    	        TFont font ;
+                uint8_t count ;
+               } TClear_strParams ;
+
+     typedef struct
+               {
+                 TPos pos ;
+                 TFont font ;
+                 uint8_t symbol ;
+               } TSymbolOutParams ;
+
+     typedef struct
+               {
+                TPos pos ;
+                TFont font ;
+                uint8_t string[FILE_NAME_LENGTH] ;
+               } TStringOutParams ;
+
+     typedef struct
+               {
+                TPos pos ;
+                TFont font ;
+                uint32_t val ;
+               } TNumberOutParams ;
+     typedef struct
+               {
+                uint8_t pro;
+               } TProg_indParam ;
+
+     typedef struct
+               {
+    	        TPos pos ;
+    	        uint8_t* adr;
+    	        uint8_t cur;
+               } TEf_iconParam;
+     typedef struct
+               {
+    	        uint8_t x;
+               }TSetColumnParam;
+     typedef struct
+               {
+    	        uint8_t x;
+               }TSetPagAdrParam;
+     typedef struct
+               {
+    	        TPos pos;
+    	        uint8_t data;
+    	        uint8_t cur;
+               }TEqIndicParam;
+     typedef struct
+               {
+    	        TPos pos ;
+    	        int16_t num;
+              	uint8_t type;
+              	uint8_t band;
+               }TEqParParam;
+     typedef struct
+               {
+       	        float num;
+       	        uint8_t type;
+               }TEqLHParam;
+     typedef struct
+     	 	   {
+    	 	 	uint8_t num;
+    	 	 	uint8_t str;
+               }TIcStrelParam;
+     typedef struct
+               {
+                uint8_t index;
+               }TPresetPreviewParam ;
+     typedef struct
+               {
+             	TPos pos;
+             	uint8_t dir;
+               }TStrelParam;
+
+     typedef struct
+     {
+       TCommand cmd ;
+       union
+       {
+         TWriteRegParams WriteRegParams ;
+         TClear_strParams Clear_strParams;
+         TSymbolOutParams SymbolOutParams ;
+         TStringOutParams StringOutParams ;
+         TNumberOutParams NumberOutParams ;
+         TProg_indParam Prog_indParam;
+         TEf_iconParam Ef_iconParam;
+         TSetColumnParam SetColumnParam;
+         TSetPagAdrParam SetPagAdrParam;
+         TEqIndicParam EqIndicParam;
+         TEqParParam EqParParam;
+         TEqLHParam EqLHParam;
+         TParamIndicParam ParamIndicParam;
+         TParamIndicNumParam ParamIndicNumParam;
+         TParamIndicPanParam ParamIndicPanParam;
+         TParamIndicPanParam ParamIndicMixParam;
+         TDelayTimeIndParam DelayTimeIndParam;
+         TContrastParam ContrastParam;
+         TStartParam StartParam;
+         TTap_indParam Tap_indParam;
+         TIcStrelParam IcStrelParam;
+         TPresetPreviewParam PresetPreviewParam ;
+         TInd_footParam Ind_footParam;
+         TStrelParam StrelParam;
+       } ;
+     }   TDisplayCmd ;
+
+     // send command from code/tasks
+     inline TQueue::TQueueSendResult Command( TDisplayCmd* cmd )
+       {
+    	   if ( cortex_isr_num())
+    	    {
+    		  // send comand from ISR
+    		  BaseType_t HigherPriorityTaskWoken ;
+    		  TQueue::TQueueSendResult result ;
+    		  result = queue->SendToBackFromISR(cmd, &HigherPriorityTaskWoken);
+    		  if (HigherPriorityTaskWoken)
+    		  TScheduler::Yeld();
+    		  return result ;
+    	    }
+    	  else
+    	    {
+    		  // thread mode
+    		  return queue->SendToBack(cmd,0);
+      	    }
+       }
+
+
+     // command for perform waiting
+     inline UBaseType_t CommandWaiting()
+       {
+        UBaseType_t result ;
+        if ( cortex_isr_num() )
+        {
+           BaseType_t HigherPriorityTaskWoken ;
+           result = queue->MessagesWaitingFromISR();
+           if (HigherPriorityTaskWoken)
+           TScheduler::Yeld();
+           return result ;
+        }
+        else
+           result =  queue->MessagesWaiting();
+
+        return result ;
+       }
+
+          // read a free amount in comman queue
+       inline UBaseType_t FreeSpaceForCommand()
+         {
+           return queue->SpacesAvailable();
+         }
+
+     void WriteReg(TWriteRegDest dest , uint32_t data );
+     void Clear();
+     void Clear_str(uint8_t x, uint8_t y , TFontName name , uint8_t count);
+     void SymbolOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , uint8_t symbol);
+     void StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , uint8_t* string);
+     void NumberOut(uint8_t x, uint8_t y , TFontName name , TFontState state , uint32_t val);
+     void Indicator();
+     void Menu_init(void);
+     void Prog_ind (uint8_t pro);
+     void Ef_icon  (uint8_t x, uint8_t y , uint8_t* adr , uint8_t cur);
+     void SetColumn(uint8_t x);
+     void SetPagAdr(uint8_t x);
+     void EqIndic (uint8_t x , uint8_t y , uint8_t data , uint8_t cur);
+     void EqPar(uint8_t col , uint8_t pag , int16_t num , uint8_t type , uint8_t band);
+     void EqInit(void);
+     void EqLH(float num , uint8_t type);
+     void ParamIndic(uint8_t x, uint8_t y, uint8_t data);
+     void ParamIndicNum(uint8_t x, uint8_t y, uint16_t data);
+     void ParamIndicPan(uint8_t x, uint8_t y, uint8_t data);
+     void ParamIndicMix(uint8_t x, uint8_t y, uint8_t data);
+     void DelayTimeInd(uint8_t x, uint8_t y, uint32_t data);
+     void Start_screen(uint8_t data);
+     void Contrast(uint8_t val);
+     void Tap_ind(uint8_t cur);
+     void Sys_Menu(void);
+     void Led_Write(void);
+     void Pot_Write(void);
+     void Main_scr();
+     void Icon_Strel(uint8_t num , uint8_t strel);
+     void TunIni(void);
+     void TunNote(void);
+     void TunStrel(void);
+     void PresetPreview(uint8_t index);
+     void IndFoot(uint8_t num , uint8_t val);
+     void Display_Reset(void);
+     void Strel(uint8_t x, uint8_t y, uint32_t dir);
+
+  private:
+     void Code() ;
+     TQueue* queue ;
+
+};
+
+extern volatile uint8_t ind_en;
+
+extern TDisplayTask* DisplayTask ;
+
+#endif /* __DISPLAY_H__ */
