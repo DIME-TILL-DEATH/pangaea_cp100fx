@@ -1,5 +1,6 @@
+#include "gui_task.h"
+
 #include "appdefs.h"
-#include "gu.h"
 #include "cs.h"
 #include "fs.h"
 #include "filt.h"
@@ -261,7 +262,7 @@ void icon_refresh(uint8_t num)
 	case 7:DisplayTask->Ef_icon(2,2,(uint8_t*)ph,prog_data[phas]);break;
 	case 8:DisplayTask->Ef_icon(20,2,(uint8_t*)rm,prog_data[fl]);break;
 	case 9:DisplayTask->Ef_icon(38,2,(uint8_t*)ch,prog_data[chor]);break;
-	case 10:DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[deley]);break;
+	case 10:DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[delay]);break;
 	case 11:DisplayTask->Ef_icon(74,2,(uint8_t*)er,prog_data[early]);break;
 	case 12:DisplayTask->Ef_icon(92,2,(uint8_t*)rv,prog_data[reve]);break;
 	case 13:DisplayTask->Ef_icon(110,2,(uint8_t*)tr,prog_data[trem]);break;
@@ -333,7 +334,7 @@ void gui (void)
           else DisplayTask->Ef_icon(38,2,(uint8_t*)ch,2);
           break;
         case 10:
-          if(tim5_fl == 0)DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[deley]);
+          if(tim5_fl == 0)DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[delay]);
           else DisplayTask->Ef_icon(56,2,(uint8_t*)dl,2);
           break;
         case 11:
@@ -511,9 +512,9 @@ void gui (void)
               gui_send(18, 6 | (prog_data[chor] << 8));
               break;
             case 10:
-              if(prog_data[deley] == 0)prog_data[deley] = 1;
-              else prog_data[deley] = 0;
-              gui_send(18, 3 | (prog_data[deley] << 8));
+              if(prog_data[delay] == 0)prog_data[delay] = 1;
+              else prog_data[delay] = 0;
+              gui_send(18, 3 | (prog_data[delay] << 8));
               break;
             case 11:
               if(prog_data[early] == 0)prog_data[early] = 1;
@@ -562,9 +563,9 @@ void gui (void)
                 {
             	  DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + i*8);
             	  switch(i){
-            	  case 0:DisplayTask->ParamIndicMix(53,i,prog_data[mog_vol]);break;
-            	  case 1:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + prog_data[mog_type]*4);break;
-            	  case 2:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + prog_data[mog_mod]*4);break;
+            	  case 0:DisplayTask->ParamIndicMix(53,i,prog_data[mog_mix]);break;
+            	  case 1:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + prog_data[mog_ftype]*4);break;
+            	  case 2:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + prog_data[mog_fmod]*4);break;
             	  case 3:DisplayTask->ParamIndic(53,i,prog_data[mog_rate]);break;
             	  }
                 }
@@ -753,7 +754,7 @@ void gui (void)
               clean_flag();
               break;
             case 10:
-              if(prog_data[deley] == 1){
+              if(prog_data[delay] == 1){
               condish = diley;
               DisplayTask->Clear();
               for(uint8_t i = 0 ; i < 4 ; i++)
@@ -1726,7 +1727,7 @@ void gui (void)
                        	    {
                        	    	if(i)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)phas_list + (par_num + i)*8);
                        	    	switch(i){
-                       	    	case 0:DisplayTask->ParamIndic(53,0,prog_data[phaser_fed]);break;
+                       	    	case 0:DisplayTask->ParamIndic(53,0,prog_data[phaser_feedback]);break;
                        	    	case 1:DisplayTask->ParamIndicNum(62,1,prog_data[phaser_type] + 4);break;
                        	    	case 2:DisplayTask->ParamIndic(53,2,prog_data[hpf_ph]);break;
                        	    	case 3:DisplayTask->StringOut(53,3,TDisplayTask::fntSystem , 0 , (uint8_t*)eq_pre_post + prog_data[phas_pos] * 5);break;
@@ -5952,7 +5953,7 @@ void gui (void)
               DisplayTask->Clear();
               DisplayTask->StringOut(38,2,TDisplayTask::fnt12x13,0,(uint8_t*)"Copy OK!");
               switch(num_men){
-              case 0:for(uint8_t i = 0 ; i < 11 ; i++)preset_temp[30 + mog_vol + i] = prog_data[mog_vol + i];
+              case 0:for(uint8_t i = 0 ; i < 11 ; i++)preset_temp[30 + mog_mix + i] = prog_data[mog_mix + i];
                      preset_temp[30 + moog] = prog_data[moog];
                      preset_temp[30 + mog_gen_t] = prog_data[mog_gen_t];
                      break;
@@ -5996,7 +5997,7 @@ void gui (void)
                      break;
               case 10:for(uint8_t i = 0 ; i < 11 ; i++)preset_temp[30 + d_vol + i] = prog_data[d_vol + i];
                      preset_temp[1054] = delay_time;preset_temp[1055] = delay_time >> 8;
-                     preset_temp[30 + deley] = prog_data[deley];
+                     preset_temp[30 + delay] = prog_data[delay];
                      preset_temp[30 + d_tap_t] = prog_data[d_tap_t];
                      preset_temp[30 + d_tail] = prog_data[d_tail];
                      break;
@@ -6455,7 +6456,7 @@ void gui (void)
         case moog_menu:
         if(enc_knob_fl == 0)
           {
-            if(tim5_fl == 1)DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)moog_list + par_num*8);
+            if(tim5_fl == 1) DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)moog_list + par_num*8);
             else DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)moog_list + par_num*8);
           }
         if(encoder_state1 == 1)
@@ -6475,9 +6476,9 @@ void gui (void)
                   		  {
                   		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + i*8);
                       	    switch(i){
-                      	    case 0:DisplayTask->ParamIndicMix(53,i,prog_data[mog_vol]);break;
-                      	    case 1:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + prog_data[mog_type]*4);break;
-                      	    case 2:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + prog_data[mog_mod]*4);break;
+                      	    case 0:DisplayTask->ParamIndicMix(53,i,prog_data[mog_mix]);break;
+                      	    case 1:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + prog_data[mog_ftype]*4);break;
+                      	    case 2:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + prog_data[mog_fmod]*4);break;
                       	    case 3:DisplayTask->ParamIndic(53,i,prog_data[mog_rate]);break;
                       	   }
                   		  }
@@ -6490,7 +6491,7 @@ void gui (void)
                       	  for(uint8_t i = 0 ; i < 4 ; i++)
                       		{
                       	     DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + (i+4)*8);
-                      	     DisplayTask->ParamIndic(53,i,prog_data[mog_vol + 4 + i]);
+                      	     DisplayTask->ParamIndic(53,i,prog_data[mog_mix + 4 + i]);
                       	    }
                   	   }
                      }
@@ -6501,20 +6502,20 @@ void gui (void)
                 else {
                   	  switch(par_num){
                   	  case 0:
-                  		if(prog_data[mog_vol + par_num])prog_data[mog_vol] = enc_speed_dec(prog_data[mog_vol],0);
-                  		DisplayTask->ParamIndicMix(53,par_num & 3,prog_data[mog_vol]);break;
+                  		if(prog_data[mog_mix + par_num])prog_data[mog_mix] = enc_speed_dec(prog_data[mog_mix],0);
+                  		DisplayTask->ParamIndicMix(53,par_num & 3,prog_data[mog_mix]);break;
                   	  case 1:
-                  		if(prog_data[mog_vol + par_num])DisplayTask->StringOut(53,par_num,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + --prog_data[mog_type]*4);
+                  		if(prog_data[mog_mix + par_num])DisplayTask->StringOut(53,par_num,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + --prog_data[mog_ftype]*4);
                   	    break;
                   	  case 2:
-                  		if(prog_data[mog_vol + par_num])DisplayTask->StringOut(53,par_num,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + --prog_data[mog_mod]*4);
+                  		if(prog_data[mog_mix + par_num])DisplayTask->StringOut(53,par_num,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + --prog_data[mog_fmod]*4);
                   	    break;
                   	  case 11:
                   		if(prog_data[mog_gen_t])DisplayTask->StringOut(53,3,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_gen_type + --prog_data[mog_gen_t] * 7);
                   	    break;
                   	  default:
-                  		if(prog_data[mog_vol + par_num])prog_data[mog_vol + par_num] = enc_speed_dec(prog_data[mog_vol + par_num],0);
-                  		DisplayTask->ParamIndic(53,par_num & 3,prog_data[mog_vol + par_num]);
+                  		if(prog_data[mog_mix + par_num])prog_data[mog_mix + par_num] = enc_speed_dec(prog_data[mog_mix + par_num],0);
+                  		DisplayTask->ParamIndic(53,par_num & 3,prog_data[mog_mix + par_num]);
                   	    break;
                       }
                   	gui_send(31,par_num);
@@ -6534,7 +6535,7 @@ void gui (void)
                   	  for(uint8_t i = 0 ; i < 4 ; i++)
                   		  {
                   		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + (i+par_num)*8);
-                  		    DisplayTask->ParamIndic(53,i,prog_data[mog_vol + par_num + i]);
+                  		    DisplayTask->ParamIndic(53,i,prog_data[mog_mix + par_num + i]);
                   		  }
                      }
                      else {
@@ -6545,7 +6546,7 @@ void gui (void)
                        	  for(uint8_t i = 0 ; i < 4 ; i++)
                        		{
                     		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + (i+par_num)*8);
-                    		    if(i < 3)DisplayTask->ParamIndic(53,i,prog_data[mog_vol + par_num + i]);
+                    		    if(i < 3)DisplayTask->ParamIndic(53,i,prog_data[mog_mix + par_num + i]);
                     		    else DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_gen_type + prog_data[mog_gen_t] * 7);
                        		}
                   	   }
@@ -6556,25 +6557,25 @@ void gui (void)
                   }
                 else {
               	  switch(par_num){
-              	  case 0:if(prog_data[mog_vol] < 127)
+              	  case 0:if(prog_data[mog_mix] < 127)
               	  {
-              		  prog_data[mog_vol] = enc_speed_inc(prog_data[mog_vol],127);
-              		  DisplayTask->ParamIndicMix(53,par_num & 3,prog_data[mog_vol]);
+              		  prog_data[mog_mix] = enc_speed_inc(prog_data[mog_mix],127);
+              		  DisplayTask->ParamIndicMix(53,par_num & 3,prog_data[mog_mix]);
               	  }break;
               	  case 1:
-              		if(prog_data[mog_type] < 2)
-              	      { DisplayTask->StringOut(53,par_num,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + ++prog_data[mog_type]*4); }
+              		if(prog_data[mog_ftype] < 2)
+              	      { DisplayTask->StringOut(53,par_num,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + ++prog_data[mog_ftype]*4); }
               	    break;
-              	  case 2:if(prog_data[mog_mod] < 2)
-              		DisplayTask->StringOut(53,par_num,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + ++prog_data[mog_mod]*4);
+              	  case 2:if(prog_data[mog_fmod] < 2)
+              		DisplayTask->StringOut(53,par_num,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + ++prog_data[mog_fmod]*4);
               	    break;
               	  case 11:if(prog_data[mog_gen_t] < 6)prog_data[mog_gen_t]++;
               	    DisplayTask->StringOut(53,3,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_gen_type + prog_data[mog_gen_t] * 7);
               	    break;
-              	  default:if(prog_data[mog_vol + par_num] < 127)
+              	  default:if(prog_data[mog_mix + par_num] < 127)
               	  {
-              		prog_data[mog_vol + par_num] = enc_speed_inc(prog_data[mog_vol + par_num],127);
-              		DisplayTask->ParamIndic(53,par_num & 3,prog_data[mog_vol + par_num]);
+              		prog_data[mog_mix + par_num] = enc_speed_inc(prog_data[mog_mix + par_num],127);
+              		DisplayTask->ParamIndic(53,par_num & 3,prog_data[mog_mix + par_num]);
               	  }break;
               	  }
               	  gui_send(31,par_num);

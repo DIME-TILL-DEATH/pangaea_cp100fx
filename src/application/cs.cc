@@ -7,7 +7,7 @@
 #include "fs.h"
 #include "eepr.h"
 #include "display.h"
-#include "gu.h"
+//#include "gu.h"
 #include "enc.h"
 #include "BF706_send.h"
 

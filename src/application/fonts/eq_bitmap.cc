@@ -2,7 +2,7 @@
 #include "eq_bitmap.h"
 #include "allFonts.h"
 #include "eepr.h"
-#include "gu.h"
+#include "../gui/gui_task.h"
 #include "filt.h"
 
 const uint8_t eq_bit[] = {0x00,0x80,0xff,0x7f,

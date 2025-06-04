@@ -2,7 +2,7 @@
 #include "cc.h"
 #include "display.h"
 #include "enc.h"
-#include "gu.h"
+#include "gui/gui_task.h"
 #include "cs.h"
 #include "eepr.h"
 #include "BF706_send.h"

@@ -1,7 +1,8 @@
+
 #ifndef __CS_H__
 
 #include "appdefs.h"
-#include "gu.h"
+#include "gui/gui_task.h"
 
 class TCSTask : public TTask
 {

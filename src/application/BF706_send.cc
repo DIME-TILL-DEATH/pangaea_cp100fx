@@ -1,7 +1,7 @@
 #include "appdefs.h"
 #include "BF706_send.h"
 #include "eepr.h"
-#include "gu.h"
+#include "gui/gui_task.h"
 
 extern uint32_t send_buf;
 extern uint8_t prog_data[];
@@ -164,7 +164,7 @@ void comp_par(uint8_t val)
 }
 void moog_par(uint8_t val)
 {
-	if(val < 11)dsp_send(30 , val | (prog_data[mog_vol + val] << 8));
+	if(val < 11)dsp_send(30 , val | (prog_data[mog_mix + val] << 8));
 	else {
 		if(val == 11)dsp_send(30 , 12 | (prog_data[mog_gen_t] << 8));
 		else {

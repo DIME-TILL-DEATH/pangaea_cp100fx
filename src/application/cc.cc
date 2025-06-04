@@ -84,8 +84,8 @@ void con_ch(uint8_t adr , uint8_t data)
   case 5:if(i < 64.0f)prog_data[eq] = 0;else prog_data[eq] = 1;contr_send(18, 2 | (prog_data[eq] << 8));
           if((!condish)&&(edit_fl)){DisplayTask->Ef_icon(110,0,(uint8_t*)equ,prog_data[eq]);}break;
 //-------------------------------------------------Delay----------------------------------------------
-  case 6:if(i < 64.0f)prog_data[deley] = 0;else prog_data[deley] = 1;contr_send(18, 3 | (prog_data[deley] << 8));
-          if((!condish)&&(edit_fl)){DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[deley]);}break;
+  case 6:if(i < 64.0f)prog_data[delay] = 0;else prog_data[delay] = 1;contr_send(18, 3 | (prog_data[delay] << 8));
+          if((!condish)&&(edit_fl)){DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[delay]);}break;
   case 7:prog_data[d_vol] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[d_vol]);*/contr_send(3,0);break;
   case 8:prog_data[d_fed] = i;/*DisplayTask->ParamIndic(53,2,prog_data[d_fed]);*/contr_send(3,2);break;
   case 9:if(tap_temp_global() && !sys_para[tap_typ])

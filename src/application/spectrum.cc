@@ -7,7 +7,7 @@
 #include "rt_counter.h"
 #include "int2str.h"
 #include "filt.h"
-#include "gu.h"
+#include "gui/gui_task.h"
 
 static const  char* note_name_table[] =
      		{

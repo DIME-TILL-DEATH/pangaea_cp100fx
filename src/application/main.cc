@@ -63,11 +63,6 @@ extern "C" void __libc_fini_array (void)
   _fini ();
 }
 
-
-
-
-
-
 volatile uint32_t sysclock ;
 extern "C" unsigned long GetCpuClock(void)
 {
@@ -75,7 +70,6 @@ extern "C" unsigned long GetCpuClock(void)
     RCC_GetClocksFreq ( &rrc) ;
     return rrc.SYSCLK_Frequency ;
 }
-
 
 extern "C" void _init(void)
 {
@@ -144,19 +138,21 @@ void start_usb()
 
 void start_usb()
 {
-   if( usb_connect_type == usb_connect_type_t::cdc )
+	if( usb_connect_type == usb_connect_type_t::cdc )
 	{
-	   UsbTask =  new TUsbTask(TUsbTask::mCDC) ;
+		UsbTask =  new TUsbTask(TUsbTask::mCDC) ;
 
-	   ConsoleTask = new TConsoleTask(256) ;
-	   ConsoleTask->SetIo(&cdc_io);
-	   ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0) ;
-	   //ConsoleTask->Clear();
-    }
-   else
-	   UsbTask =  new TUsbTask(TUsbTask::mMSC) ;
+		ConsoleTask = new TConsoleTask(256);
+//		ConsoleTask->Echo(false);
+		ConsoleTask->SetIo(&cdc_io);
+		ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
+//		ConsoleTask->Echo(false);
+		//ConsoleTask->Clear();
+	}
+	else
+		UsbTask =  new TUsbTask(TUsbTask::mMSC) ;
 
-   UsbTask->Create( "USB" ,    10*configMINIMAL_STACK_SIZE , 0 );
+	UsbTask->Create("USB", 10*configMINIMAL_STACK_SIZE, 0);
 }
 
 
@@ -169,7 +165,6 @@ int main(void)
 
    init();
    sysclock = GetCpuClock();
-
 
 
    FSTask =  new TFSTask() ;

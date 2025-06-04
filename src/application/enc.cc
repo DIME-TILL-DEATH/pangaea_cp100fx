@@ -5,11 +5,11 @@
 #include "cs.h"
 #include "cc.h"
 #include "fs.h"
-#include "gu.h"
 #include "display.h"
 #include "sd_test.h"
 #include "midi_send.h"
 #include "fonts/allFonts.h"
+#include "gui/gui_task.h"
 
 
 

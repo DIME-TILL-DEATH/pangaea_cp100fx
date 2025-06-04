@@ -60,14 +60,14 @@
 #define USBD_LANGID_STRING         0x419 /*0x409 en*/
 #define USBD_MANUFACTURER_STRING   (uint8_t*)"AMT Electronics"
 
-#define USBD_PRODUCT_HS_STRING        (uint8_t*)"PANGAEA CP16-PA USB HS Mode"
+#define USBD_PRODUCT_HS_STRING        (uint8_t*)"PANGAEA CP100FX USB"
 #define USBD_SERIALNUMBER_HS_STRING   (uint8_t*)"xcv"//0x1FFF7A10
-#define USBD_PRODUCT_FS_STRING        (uint8_t*)"PANGAEA CP16-PA USB FS Mode"
+#define USBD_PRODUCT_FS_STRING        (uint8_t*)"PANGAEA CP100FX USB"
 #define USBD_SERIALNUMBER_FS_STRING   (uint8_t*)"xcv"//0x1FFF7A10
-#define USBD_CONFIGURATION_HS_STRING  (uint8_t*)"PANGAEA CP16-PA HS Config"
-#define USBD_INTERFACE_HS_STRING      (uint8_t*)"PANGAEA CP16-PA USB HS Interface"
-#define USBD_CONFIGURATION_FS_STRING  (uint8_t*)"PANGAEA CP16-PA FS Config"
-#define USBD_INTERFACE_FS_STRING      (uint8_t*)"PANGAEA CP16-PA USB FS Interface"
+#define USBD_CONFIGURATION_HS_STRING  (uint8_t*)"PANGAEA CP100FX HS Config"
+#define USBD_INTERFACE_HS_STRING      (uint8_t*)"PANGAEA CP100FX USB HS Interface"
+#define USBD_CONFIGURATION_FS_STRING  (uint8_t*)"PANGAEA CP100FX FS Config"
+#define USBD_INTERFACE_FS_STRING      (uint8_t*)"PANGAEA CP100FX USB FS Interface"
 /**
   * @}
   */ 

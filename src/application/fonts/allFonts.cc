@@ -1,8 +1,9 @@
 #include "appdefs.h"
 #include "allFonts.h"
+
+#include "../gui/gui_task.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gu.h"
 #include "cs.h"
 #include "amt.h"
 
@@ -276,7 +277,7 @@ void menu_init(void)
 	Arsys_ef(2,2,(uint8_t*)ph,prog_data[phas]);
 	Arsys_ef(20,2,(uint8_t*)rm,prog_data[fl]);
 	Arsys_ef(38,2,(uint8_t*)ch,prog_data[chor]);
-	Arsys_ef(56,2,(uint8_t*)dl,prog_data[deley]);
+	Arsys_ef(56,2,(uint8_t*)dl,prog_data[delay]);
 	Arsys_ef(74,2,(uint8_t*)er,prog_data[early]);
 	Arsys_ef(92,2,(uint8_t*)rv,prog_data[reve]);
 	Arsys_ef(110,2,(uint8_t*)tr,prog_data[trem]);
