@@ -1,14 +1,9 @@
-/*
- * ER_OLEDM023-1B.h
- *
- *  Created on: Nov 23, 2015
- *      Author: s
- */
-
 #ifndef ER_OLEDM023_1B_H_
 #define ER_OLEDM023_1B_H_
 
 #include "appdefs.h"
+
+#include "gui/gui_task.h"
 
 #define CS GPIO_Pin_1
 #define RS GPIO_Pin_0
@@ -25,6 +20,6 @@ void led_disp_write(void);
 void write_pot(void);
 extern uint8_t pot_val;
 extern uint8_t sys_para[];
-extern const uint16_t att_db_num [];
+//extern const uint16_t att_db_num [56];
 
 #endif /* ER_OLEDM023_1B_H_ */

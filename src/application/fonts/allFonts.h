@@ -59,7 +59,7 @@ extern uint8_t vol_fl;
 extern uint8_t vol_vol;
 extern uint8_t inp_ind_fl;
 extern uint8_t out_ind_fl;
-extern uint8_t edit_fl;
+//extern uint8_t edit_modules_fl;
 extern uint8_t imya_temp;
 extern uint8_t prog_cur;
 

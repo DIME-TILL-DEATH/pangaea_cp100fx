@@ -19,9 +19,9 @@ public:
  	 }
  	 else sem-> Give () ;
    }
-  void SetCondish ( uint8_t val )
+  void Setcurrent_menu(gui_menu_type val)
   {
-    condish = val ;
+    current_menu = val;
   }
 
   void SetKUp ( uint8_t val )
@@ -48,7 +48,7 @@ public:
 
   inline void Restart(void)
   {
-      condish = 0;
+      current_menu = MENU_MAIN;
       clean_flag();
       //DisplayTask->Menu_init(1,0,prog_data,prog1);
   }
@@ -66,7 +66,6 @@ public:
 };
 
 
-void prog_ch(void);
 float compr_out (float efxout);
 void Gate_Change_Preset (void);
 void Compressor_init (void);

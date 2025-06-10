@@ -2,6 +2,12 @@
 
 #include "appdefs.h"
 
+enum
+{
+	ENC_COUNTERCLOCKWISE_STEP = 1,
+	ENC_CLOCKWISE_STEP
+};
+
 volatile extern uint8_t enc_run;
 class TENCTask : public TTask
 {
@@ -30,10 +36,10 @@ class TENCTask : public TTask
 };
 
 extern volatile uint8_t encoder_state;
-extern volatile uint8_t encoder_state1;
-extern volatile uint8_t encoder_knob;
+extern volatile uint8_t encoder_state_updated;
+extern volatile uint8_t encoder_knob_pressed;
 extern volatile uint8_t encoder_flag;
-extern volatile uint8_t tuner_flag;
+extern volatile uint8_t k_tuner;
 extern volatile uint8_t contr_kn[];
 extern volatile uint8_t contr_kn1[];
 

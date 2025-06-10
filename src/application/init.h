@@ -79,33 +79,34 @@ static inline uint32_t __attribute__ ((always_inline)) high_sort(uint32_t* p, si
     }
 
 inline uint8_t drebezg (uint32_t line)
-    {
-	  uint8_t sss;
-      TIM_Cmd(TIM9,DISABLE);
-      if((EXTI->FTSR & line) != 0)
-        {
-          if(TIM_GetFlagStatus(TIM9,TIM_FLAG_Update) == 1)
-            {
-        	  sss = 1;
-              EXTI->FTSR &= ~line;
-              EXTI->RTSR |= line;
-            }
-          else sss = 0;
-        }
-      else {
-         if(TIM_GetFlagStatus(TIM9,TIM_FLAG_Update) == 1)
-          {
-             EXTI->RTSR &= ~line;
-             EXTI->FTSR |= line;
-             sss = 2;
-          }
-         else sss = 0;
-        }
-      TIM_SetCounter(TIM9,0);
-      TIM_ClearFlag(TIM9,TIM_FLAG_Update);
-      TIM_Cmd(TIM9,ENABLE);
-      return sss;
-    }
+{
+	uint8_t sss;
+	TIM_Cmd(TIM9,DISABLE);
+	if((EXTI->FTSR & line) != 0)
+	{
+		if(TIM_GetFlagStatus(TIM9,TIM_FLAG_Update) == 1)
+		{
+			sss = 1;
+			EXTI->FTSR &= ~line;
+			EXTI->RTSR |= line;
+		}
+		else sss = 0;
+	}
+	else
+	{
+		if(TIM_GetFlagStatus(TIM9,TIM_FLAG_Update) == 1)
+		{
+			EXTI->RTSR &= ~line;
+			EXTI->FTSR |= line;
+			sss = 2;
+		}
+		else sss = 0;
+	}
+	TIM_SetCounter(TIM9,0);
+	TIM_ClearFlag(TIM9,TIM_FLAG_Update);
+	TIM_Cmd(TIM9,ENABLE);
+	return sss;
+}
 
 
 void start_usb(uint8_t type);

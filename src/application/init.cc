@@ -535,8 +535,8 @@ void eepr_init(void)
 	  }
 }
 volatile uint8_t encoder_state;
-volatile uint8_t encoder_state1;
-volatile uint8_t encoder_knob;
+volatile uint8_t encoder_state_updated;
+volatile uint8_t encoder_knob_pressed;
 
 extern "C" void EXTI15_10_IRQHandler()
 {
@@ -548,17 +548,18 @@ extern "C" void EXTI15_10_IRQHandler()
 	   {
 		   if(a)encoder_state = 1;
 		   else encoder_state = 2;
-		   encoder_state1 = 1;
+		   encoder_state_updated = 1;
 		   TIM_ITConfig(TIM4,TIM_IT_Update,DISABLE);
 		   CSTask->Give();
 	   }
 	}
+
 	if(EXTI_GetITStatus(EXTI_Line15))
 	{
 	   EXTI_ClearITPendingBit(EXTI_Line15);
 	   if(drebezg(EXTI_Line15) == 1)
 	   {
-		   encoder_knob = 1;
+		   encoder_knob_pressed = 1;
 	 	   tim5_fl = 1;
 	 	   CSTask->Give();
 	   }

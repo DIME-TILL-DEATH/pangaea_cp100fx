@@ -53,7 +53,7 @@ uint8_t vol_fl;
 uint8_t vol_vol;
 uint8_t inp_ind_fl = 0;
 uint8_t out_ind_fl = 0;
-uint8_t edit_fl = 0;
+//uint8_t edit_modules_fl = 0;
 uint8_t imya_temp;
 
 uint8_t t_po;
@@ -118,7 +118,8 @@ void vol_ind(void)
   if(ind_out_l[1] < 8388000)outl = /*vsqrt*/(ind_out_l[1])*(63.0f/(8384000.0f));
   else outl = 63;
   ind_in_p[1] = ind_out_l[1] = 0;
-  if(edit_fl)
+
+  if(currentMenu->menuType() == MENU_MODULES) //if(edit_modules_fl)
   {
 	  Set_Column_Address(64);
 	  Set_Page_Address(3);

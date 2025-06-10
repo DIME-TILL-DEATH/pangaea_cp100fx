@@ -99,15 +99,16 @@ void TMidiSendTask::Code()
 						    mid_fl = 1;
 						    if((midi_b[1] == (sys_para[tun_ext] & 0x7f)) && (sys_para[tun_ext] & 0x80))
 						    {
-						    	if(((!condish) || (condish = tuner_menu))&&(!edit_fl))
+//						    	if(((!current_menu) || (current_menu = MENU_TUNER))&&(!edit_fl))
+						    	if(((!current_menu) || (current_menu == MENU_TUNER))) //&&(!edit_modules_fl))
 						    	{
-							    	tuner_flag = 1;
+							    	k_tuner = 1;
 							    	CSTask->Give();
 						    	}
 						    }
 						    else {
 						    	CCTask->Give();
-								if((condish == controllers && (par_num < 3)) || (condish == tuner_ext_menu))
+								if((current_menu == MENU_CONTROLLERS && (par_num < 3)) || (current_menu == MENU_TUNER_EXT))
 								{
 								  uint8_t midi_in_cc[] = "midi in CC#->";
 								  DisplayTask->StringOut(20,3,TDisplayTask::fntSystem , 0 , (uint8_t*)midi_in_cc);
@@ -122,10 +123,10 @@ void TMidiSendTask::Code()
 					  if(((data[0] & 0xf) == sys_para[midi_c]) && ((data[0] & 0xf0) == 0xc0))
 					  {
 						pc_in = tmp;
-						if((!edit_fl) && (condish == menu_main))
+						if(currentMenu->menuType() == MENU_MAIN)
 						{
 						  prog1 = sys_para[tmp + 128] % 100;
-						  encoder_knob = 1;
+						  encoder_knob_pressed = 1;
 						  midi_f1 = 1;
 						  CSTask->Give();
 						}

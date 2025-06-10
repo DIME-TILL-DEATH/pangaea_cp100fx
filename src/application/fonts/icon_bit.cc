@@ -49,7 +49,7 @@ void icon_print(uint8_t num , uint8_t strel)
 	uint16_t a = num * 34;
 	for(int i = 0 ; i < 2 ; i++)
 	{
-		if(((condish == power_amplif) || (condish == pre_menu)) && (par_num < 3))Set_Page_Address(i);
+		if(((current_menu == MENU_PA) || (current_menu == MENU_PREAMP)) && (par_num < 3)) Set_Page_Address(i);
 		else Set_Page_Address(i+1);
 		Set_Column_Address(col);
 	  	GPIO_ResetBits(GPIOB,CS);
@@ -78,7 +78,7 @@ void icon_print(uint8_t num , uint8_t strel)
 		break;
 	}
 	case 2:{
-		if(!(((condish == power_amplif) || (condish == pre_menu)) && (par_num < 3)))
+		if(!(((current_menu == MENU_PA) || (current_menu == MENU_PREAMP)) && (par_num < 3)))
 		{
 			Set_Page_Address(0);
 			Set_Column_Address(col1);
@@ -87,7 +87,7 @@ void icon_print(uint8_t num , uint8_t strel)
 			for(uint32_t i = 0 ; i < 12 ; i++)oled023_1_send_data(0);
 			GPIO_SetBits(GPIOB,CS);
 		}
-		if(((condish == power_amplif) || (condish == pre_menu)) && (par_num < 3))Set_Page_Address(2);
+		if(((current_menu == MENU_PA) || (current_menu == MENU_PREAMP)) && (par_num < 3)) Set_Page_Address(2);
 		else Set_Page_Address(3);
 		Set_Column_Address(col1);
 	  	GPIO_ResetBits(GPIOB,CS);

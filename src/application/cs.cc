@@ -7,9 +7,10 @@
 #include "fs.h"
 #include "eepr.h"
 #include "display.h"
-//#include "gu.h"
 #include "enc.h"
 #include "BF706_send.h"
+
+#include "gui/mainmenu.h"
 
 float m_vol = 1.0;
 float p_vol = 1.0;
@@ -21,7 +22,8 @@ void led_disp_write(void);
 extern uint8_t led_buf[];
 volatile uint16_t mas_eq_fr;
 
-
+AbstractMenu* currentMenu;
+MainMenu mainMenu;
 
 
 TCSTask::TCSTask () : TTask()
@@ -106,15 +108,19 @@ void TCSTask::Code()
 	send_codec(0xa301);
    	ENCTask->SetEnc(1);
 
-  while(1)
-     {
-	  sem->Take(portMAX_DELAY);
-	  if (DisplayAccess())
-	  {
-		  gui();
-	  }
+   	currentMenu = &mainMenu;
 
-     }
+   	sem->Take(portMAX_DELAY);
+	if (DisplayAccess()) mainMenu.show();
+
+   	while(1)
+   	{
+		sem->Take(portMAX_DELAY);
+		if (DisplayAccess())
+		{
+			gui();
+		}
+   	}
 }
 //------------------------------------------------------------------------------------
 extern ad_data_t adc_data[];
@@ -170,12 +176,14 @@ extern "C" void DMA1_Stream2_IRQHandler()
   ind_out_l[0] = abs(ccl);
   if(ind_out_l[0] > ind_out_l[1])ind_out_l[1] = ind_out_l[0];
 
-  if((ind_poin++ == 4000) && ((condish == volume) || (condish == cabinet_sim)  ||
-     (condish == power_amplif) || (condish == pre_menu) || (condish == att_menu)) && (!tuner_use))
-    {
-      DisplayTask->Indicator();
-      ind_poin = 0;
-    }
+	if((ind_poin++ == 4000)
+			&& ((current_menu == MENU_VOLUME) || (current_menu == MENU_CABSIM)
+			|| (current_menu == MENU_PA) || (current_menu == MENU_PREAMP)
+			|| (current_menu == MENU_ATTENUATOR)) && (!tuner_use))
+	{
+	  DisplayTask->Indicator();
+	  ind_poin = 0;
+	}
 
   dac_data[dma_ht_fl].left.sample  = ror16(cr);
   dac_data[dma_ht_fl].right.sample = ror16(cr);

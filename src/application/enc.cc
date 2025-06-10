@@ -16,7 +16,7 @@
 void start_usb();
 
 volatile uint8_t encoder_flag;
-volatile uint8_t tuner_flag;
+volatile uint8_t k_tuner;
 volatile uint8_t contr_kn[3];
 volatile uint8_t contr_kn1[3];
 volatile uint8_t contr_pr[3];
@@ -56,7 +56,7 @@ void foot_run(uint8_t num)
   }
   else {
 	switch(sys_para[fs1 + num]){
-	case 0:if((condish == menu_main) && (!edit_fl))
+	case 0:if(currentMenu->menuType() == MENU_MAIN)
 	 {
 		switch(num){
 		case 0:
@@ -64,11 +64,11 @@ void foot_run(uint8_t num)
 	    	 {
                if(prog1 == 0)prog1 = 98;
                else prog1 -= 1;
-	    		encoder_knob = 1;
+	    		encoder_knob_pressed = 1;
 	    		prog_old = prog = prog1;
 	    	 }
 	    	 else {
-	    		 encoder_state1 = 1;
+	    		 encoder_state_updated = 1;
 	    		 encoder_state = 1;
 	    	 }
 	    	 CSTask->Give();
@@ -76,7 +76,7 @@ void foot_run(uint8_t num)
 		case 1:
 			 if(!sys_para[swap_switch])
 			 {
-		 		 encoder_knob = 1;
+		 		 encoder_knob_pressed = 1;
 		 		 CSTask->Give();
 			 }
 			 else {
@@ -84,11 +84,11 @@ void foot_run(uint8_t num)
 	        	 {
 	                if(prog1 == 98)prog1 = 0;
 	                else prog1 += 1;
-	        		 encoder_knob = 1;
+	        		 encoder_knob_pressed = 1;
 	        		 prog_old = prog = prog1;
 	        	 }
 	        	 else {
-	        		 encoder_state1 = 1;
+	        		 encoder_state_updated = 1;
 	        		 encoder_state = 2;
 	        	 }
 	        	 CSTask->Give();
@@ -101,17 +101,17 @@ void foot_run(uint8_t num)
 	        	 {
 	                if(prog1 == 98)prog1 = 0;
 	                else prog1 += 1;
-	        		 encoder_knob = 1;
+	        		 encoder_knob_pressed = 1;
 	        		 prog_old = prog = prog1;
 	        	 }
 	        	 else {
-	        		 encoder_state1 = 1;
+	        		 encoder_state_updated = 1;
 	        		 encoder_state = 2;
 	        	 }
 	        	 CSTask->Give();
 			 }
 			 else {
-		 		 encoder_knob = 1;
+		 		 encoder_knob_pressed = 1;
 		 		 CSTask->Give();
 			 }
 			break;
@@ -123,7 +123,7 @@ void foot_run(uint8_t num)
 		ext_data = 127;
 	 }
 	else ext_data = contr_kn[num] = prog_data[fo1 + num] = 0;
-	if((condish == menu_main) && (!edit_fl))DisplayTask->IndFoot(num,contr_kn[num]);
+	if(currentMenu->menuType() == MENU_MAIN)DisplayTask->IndFoot(num,contr_kn[num]);
 	if(sys_para[k1_cc + num])
 	 {
 		MidiSendTask->key_midi_start(num , contr_kn[num] + 1);
@@ -132,8 +132,8 @@ void foot_run(uint8_t num)
 	ext_sourc = num + 2;
 	ext_fl = 1;
 	CCTask->Give();break;
-	case 2:tuner_flag = 1;CSTask->Give();break;
-	default: if((condish == menu_main) && (!edit_fl))
+	case 2:k_tuner = 1;CSTask->Give();break;
+	default: if(currentMenu->menuType() == MENU_MAIN)
 	 {
 		if(num_key_prog == num)contr_pr[num]++;
 		if(contr_pr[num] > (sys_para[fs1 + num] - 3))contr_pr[num] = 0;
@@ -144,24 +144,24 @@ void foot_run(uint8_t num)
 	    	if(!sys_para[fsm2])
 	    	{
 			    prog_old = prog = prog1;
-			    encoder_knob = 1;
+			    encoder_knob_pressed = 1;
 	    	}
 	    	else {
 	    		if(sys_para[fs21])
 	    		{
 				    prog_old = prog = prog1;
-				    encoder_knob = 1;
+				    encoder_knob_pressed = 1;
 	    		}
 	    		else {
 	    	    	prog_old = prog = --prog1;
-	       		    encoder_state1 = 1;
+	       		    encoder_state_updated = 1;
 	       		    encoder_state = 2;
 	    		}
 	    	}
 	    }
 	    else {
 	    	prog_old = prog = --prog1;
-   		    encoder_state1 = 1;
+   		    encoder_state_updated = 1;
    		    encoder_state = 2;
 	    }
 	    CSTask->Give();
@@ -178,7 +178,7 @@ void foot_run1(uint8_t num)
   }
   else {
 	switch(sys_para[fs11 + num]){
-	case 0:if((condish == menu_main) && (!edit_fl))
+	case 0:if(currentMenu->menuType() == MENU_MAIN)
 	 {
 		switch(num){
 		case 0:
@@ -186,11 +186,11 @@ void foot_run1(uint8_t num)
 	    	 {
                if(prog1 == 0)prog1 = 98;
                else prog1 -= 1;
-	    		encoder_knob = 1;
+	    		encoder_knob_pressed = 1;
 	    		prog_old = prog = prog1;
 	    	 }
 	    	 else {
-	    		 encoder_state1 = 1;
+	    		 encoder_state_updated = 1;
 	    		 encoder_state = 1;
 	    	 }
 	    	 CSTask->Give();
@@ -198,7 +198,7 @@ void foot_run1(uint8_t num)
 		case 1:
 			 if(!sys_para[swap_switch])
 			 {
-		 		 encoder_knob = 1;
+		 		 encoder_knob_pressed = 1;
 		 		 CSTask->Give();
 			 }
 			 else {
@@ -206,11 +206,11 @@ void foot_run1(uint8_t num)
 	        	 {
 	                if(prog1 == 98)prog1 = 0;
 	                else prog1 += 1;
-	        		 encoder_knob = 1;
+	        		 encoder_knob_pressed = 1;
 	        		 prog_old = prog = prog1;
 	        	 }
 	        	 else {
-	        		 encoder_state1 = 1;
+	        		 encoder_state_updated = 1;
 	        		 encoder_state = 2;
 	        	 }
 	        	 CSTask->Give();
@@ -223,17 +223,17 @@ void foot_run1(uint8_t num)
 	        	 {
 	                if(prog1 == 98)prog1 = 0;
 	                else prog1 += 1;
-	        		 encoder_knob = 1;
+	        		 encoder_knob_pressed = 1;
 	        		 prog_old = prog = prog1;
 	        	 }
 	        	 else {
-	        		 encoder_state1 = 1;
+	        		 encoder_state_updated = 1;
 	        		 encoder_state = 2;
 	        	 }
 	        	 CSTask->Give();
 			 }
 			 else {
-		 		 encoder_knob = 1;
+		 		 encoder_knob_pressed = 1;
 		 		 CSTask->Give();
 			 }
 			break;
@@ -245,7 +245,7 @@ void foot_run1(uint8_t num)
 		ext_data = 127;
 	 }
 	else ext_data = contr_kn1[num] = prog_data[fo11 + num] = 0;
-	if((condish == menu_main) && (!edit_fl))DisplayTask->IndFoot(num,contr_kn1[num]);
+	if(currentMenu->menuType() == MENU_MAIN)DisplayTask->IndFoot(num,contr_kn1[num]);
 	if(sys_para[k11_cc + num])
 	 {
 		MidiSendTask->key_midi_start1(num , contr_kn1[num] + 1);
@@ -254,8 +254,8 @@ void foot_run1(uint8_t num)
 	ext_sourc = sys_para[k11_cc + num] + 4;
 	ext_fl = 1;
 	CCTask->Give();break;
-	case 2:tuner_flag = 1;CSTask->Give();break;
-	default: if((condish == menu_main) && (!edit_fl))
+	case 2:k_tuner = 1;CSTask->Give();break;
+	default: if(currentMenu->menuType() == MENU_MAIN)
 	 {
 		if(contr_pr[num] > (sys_para[fs11 + num] - 3))contr_pr[num] = 0;
 	    prog1 = sys_para[pr111 + num * 4 + contr_pr[num]++];
@@ -264,24 +264,24 @@ void foot_run1(uint8_t num)
 	    	if(!sys_para[fsm2])
 	    	{
 			    prog_old = prog = prog1;
-			    encoder_knob = 1;
+			    encoder_knob_pressed = 1;
 	    	}
 	    	else {
 	    		if(sys_para[fs2])
 	    		{
 				    prog_old = prog = prog1;
-				    encoder_knob = 1;
+				    encoder_knob_pressed = 1;
 	    		}
 	    		else {
 	    	    	prog_old = prog = --prog1;
-	       		    encoder_state1 = 1;
+	       		    encoder_state_updated = 1;
 	       		    encoder_state = 2;
 	    		}
 	    	}
 	    }
 	    else {
 	    	prog_old = prog = --prog1;
-   		    encoder_state1 = 1;
+   		    encoder_state_updated = 1;
    		    encoder_state = 2;
 	    }
 	    CSTask->Give();
@@ -321,7 +321,7 @@ void TENCTask::Code()
 		 case 31204:k_down = 1;CSTask->Give();kn2_in_fl = 1;break;
 		 case 23020:k_att = 1;CSTask->Give();kn2_in_fl = 1;break;
 		 case 31148:k_sys = 1;CSTask->Give();kn2_in_fl = 1;break;
-		 case 31180:tuner_flag = 1;CSTask->Give();kn2_in_fl = 1;break;
+		 case 31180:k_tuner = 1;CSTask->Give();kn2_in_fl = 1;break;
 		 case 27116:k_master = 1;CSTask->Give();kn2_in_fl = 1;break;
 		 case 29164:k_master_eq = 1;CSTask->Give();kn2_in_fl = 1;break;
 		 case 30956:fsw1_in_fl = 1;if(!sys_para[fsm1])foot_run(0);
@@ -390,30 +390,33 @@ void TENCTask::Code()
 		 if(key_reg == 31212)kn2_in_fl = fsw1_in_fl = fsw2_in_fl = fsw3_in_fl = tim3_end_fl = 0;
 	 }
 //---------------------------------------------Run string-------------------------------------
-	 if((condish == cabinet_sim)/* || ((condish == menu_main)*/ && name_run_fl)
+	 if((current_menu == MENU_CABSIM) && name_run_fl)
 	 {
-	  if(name_temp_po_time++ >= name_temp_po_time1)
-	  {
-		 uint8_t a;
-		 if(!cab_num)a = name_buf[0];
-		 else a = name_buf1[0];
-		 name_temp_po_time1 = 150000;
-		 name_temp_po++;
-		 for(uint8_t i = 0 ; i < 21 ; i++)
-		 {
-			 if(!cab_num)name_temp_buf[i] = name_buf[name_temp_po + i];
-			 else name_temp_buf[i] = name_buf1[name_temp_po + i];
-			 if((name_temp_po + i + 1) == a)
-			 {
-				 name_temp_po = 0;
-				 name_temp_buf[i+1] = 0;
-				 name_temp_po_time1 = 1500000;
-				 break;
-			 }
-		 }
-		 if(condish == cabinet_sim)DisplayTask->StringOut(0,0,TDisplayTask::fntSystem , 0 , (uint8_t*)name_temp_buf);
-		 name_temp_po_time = 0;
-	  }
+		if(name_temp_po_time++ >= name_temp_po_time1)
+		{
+			uint8_t a;
+
+			if(!cab_num)a = name_buf[0];
+			else a = name_buf1[0];
+
+			name_temp_po_time1 = 150000;
+			name_temp_po++;
+			for(uint8_t i = 0 ; i < 21 ; i++)
+			{
+				if(!cab_num)name_temp_buf[i] = name_buf[name_temp_po + i];
+				else name_temp_buf[i] = name_buf1[name_temp_po + i];
+
+				if((name_temp_po + i + 1) == a)
+				{
+					name_temp_po = 0;
+					name_temp_buf[i+1] = 0;
+					name_temp_po_time1 = 1500000;
+					break;
+				}
+			}
+			if(current_menu == MENU_CABSIM) DisplayTask->StringOut(0,0,TDisplayTask::fntSystem , 0 , (uint8_t*)name_temp_buf);
+			name_temp_po_time = 0;
+		}
 	 }
 	 else {
 		 name_temp_po_time = 0xfffffff0;
