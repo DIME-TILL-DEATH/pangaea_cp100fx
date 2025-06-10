@@ -1,32 +1,38 @@
 #include "delay_handlers.h"
-
 #include "console_helpers.h"
+#include "../modules.h"
+#include "../BF706_send.h"
 
 #include "eepr.h"
 
 static void delay_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&prog_data[delay], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_DELAY, prog_data[ENABLE_DELAY]);
 }
 
 static void delay_mix_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_vol], rl, args, count);
+	default_param_handler(&prog_data[DELAY_MIX], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_MIX_POS, prog_data[DELAY_MIX]);
 }
 
 static void delay_volume2_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[dp_vol], rl, args, count);
+	default_param_handler(&prog_data[DELAY_VOLUME2], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_VOLUME2_POS, prog_data[DELAY_VOLUME2]);
 }
 
 static void delay_pan1_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_pan], rl, args, count);
+	default_param_handler(&prog_data[DELAY_PAN1], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_PAN1_POS, prog_data[DELAY_PAN1]);
 }
 
 static void delay_pan2_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[dp_pan], rl, args, count);
+	default_param_handler(&prog_data[DELAY_PAN2], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_PAN2_POS, prog_data[DELAY_PAN2]);
 }
 
 static void delay_time_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -50,41 +56,51 @@ static void delay_time_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 
 		msg_console("%s %s\n", args[0], hex);
 	}
+
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, prog_data[DELAY_TIME_LO]);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, prog_data[DELAY_TIME_HI]);
 }
 
 static void delay_feedback_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_fed], rl, args, count);
+	default_param_handler(&prog_data[DELAY_FEEDBACK], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_FEEDBACK_POS, prog_data[DELAY_FEEDBACK]);
 }
 
 static void delay_lpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_lp], rl, args, count);
+	default_param_handler(&prog_data[DELAY_LPF], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_LPF_POS, prog_data[DELAY_LPF]);
 }
 
 static void delay_hpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_hp], rl, args, count);
+	default_param_handler(&prog_data[DELAY_HPF], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_HPF_POS, prog_data[DELAY_HPF]);
 }
 
 static void delay_offset_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[dp_d], rl, args, count);
+	default_param_handler(&prog_data[DELAY_OFFSET], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_OFFSET_POS, prog_data[DELAY_OFFSET]);
 }
 
 static void delay_modulation_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_mod], rl, args, count);
+	default_param_handler(&prog_data[DELAY_MODULATION], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_MODULATION_POS, prog_data[DELAY_MODULATION]);
 }
 
 static void delay_rate_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_ra], rl, args, count);
+	default_param_handler(&prog_data[DELAY_MODULATION_RATE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_MODULATION_RATE_POS, prog_data[DELAY_MODULATION_RATE]);
 }
 
 static void delay_direction_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_dir], rl, args, count);
+	default_param_handler(&prog_data[DELAY_DIRECTION], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_DIRECTION_POS, prog_data[DELAY_DIRECTION]);
 }
 
 static void delay_tap_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -94,7 +110,8 @@ static void delay_tap_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 
 static void delay_tail_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[d_tail], rl, args, count);
+	default_param_handler(&prog_data[DELAY_TAIL], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_TAIL_POS, prog_data[DELAY_TAIL]);
 }
 
 void set_delay_handlers(TReadLine *rl)

@@ -1,14 +1,9 @@
-/*
- * BF706_send.h
- *
- *  Created on: Dec 16, 2015
- *      Author: s
- */
-
 #ifndef BF706_SEND_H_
 #define BF706_SEND_H_
 
 #include "appdefs.h"
+#include "modules.h"
+
 extern uint32_t send_buf;
 extern uint8_t spi_stat;
 extern uint8_t __CCM_BSS__ preset_temp[];
@@ -30,9 +25,12 @@ inline void dsp_send(uint8_t type , uint16_t data)
 	GPIO_SetBits(GPIOA,GPIO_Pin_1);
 }
 
+void DSP_gui_set_parameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value);
+void DSP_contr_set_parameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value);
+
 void master_volum(uint8_t val);
 void master_volu(uint8_t val);
-void rev_par(uint8_t num);
+void DSP_reverb_param(uint8_t num);
 void Early_par(uint8_t num);
 void del_par(uint8_t num);
 void cab_volume(uint8_t num);

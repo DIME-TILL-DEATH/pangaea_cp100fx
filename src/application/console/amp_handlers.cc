@@ -1,32 +1,37 @@
 #include "amp_handlers.h"
-
 #include "console_helpers.h"
+#include "../modules.h"
+#include "../BF706_send.h"
 
 static void amp_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&prog_data[amp], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_AMP, prog_data[ENABLE_AMP]);
 }
 
 static void amp_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[am_v], rl, args, count);
+	default_param_handler(&prog_data[AMP_MASTER], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_AMP, AMP_MASTER_POS, prog_data[AMP_MASTER]);
 }
 
 static void amp_presence_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[pre_v], rl, args, count);
+	default_param_handler(&prog_data[EQ_PRESENCE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_EQ, EQ_PRESENCE_POS, prog_data[EQ_PRESENCE]);
 }
 
 static void amp_slave_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[am_out], rl, args, count);
+	default_param_handler(&prog_data[AMP_LEVEL], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_AMP, AMP_LEVEL_POS, prog_data[AMP_LEVEL]);
 }
 
 static void amp_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[am_mode], rl, args, count);
+	default_param_handler(&prog_data[AMP_TYPE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_AMP_TYPE, 0, prog_data[AMP_TYPE]);
 }
-
 
 void set_amp_handlers(TReadLine *rl)
 {

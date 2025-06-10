@@ -1,10 +1,12 @@
 #include "eq_handlers.h"
-
 #include "console_helpers.h"
+#include "../modules.h"
+#include "../BF706_send.h"
 
 static void eq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&prog_data[eq], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EQ, prog_data[ENABLE_EQ]);
 }
 
 // LEGACY mode

@@ -10,48 +10,85 @@ extern uint16_t delay_time;
 extern uint8_t cab_type;
 uint8_t spi_stat = 0;
 
-void send_codec(uint16_t data);
+volatile uint8_t gui_fl;
+volatile uint8_t contr_fl;
+volatile uint8_t ext_send_fl;
+
+void DSP_gui_set_parameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value)
+{
+	while((contr_fl) || (ext_send_fl));
+
+	gui_fl = 1;
+	dsp_send(module_address, parameter_address | value << 8);
+	gui_fl = 0;
+}
+
+void DSP_contr_set_parameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value)
+{
+	while((gui_fl) || (ext_send_fl));
+
+	contr_fl = 1;
+	dsp_send(module_address, parameter_address | value << 8);
+	contr_fl = 0;
+}
 
 void master_volum(uint8_t val)
 {
-	dsp_send(1 , val);
+	dsp_send(DSP_ADDRESS_PRESET_VOLUME , val);
 }
-void master_volu(uint8_t val)
-{
-	dsp_send(19 , val);
-}
+
 void pres_volum_cont(uint8_t val)
 {
-	dsp_send(1 , val);
+	dsp_send(DSP_ADDRESS_PRESET_VOLUME , val);
 }
-void master_volum_contr(uint8_t val)
+
+void cab_volume(uint8_t num)
 {
-	dsp_send(21 , val);
+	dsp_send(DSP_ADDRESS_CAB,  num | (prog_data[vol + num] << 8));
 }
-void rev_par(uint8_t num)
+
+void chor_par(uint8_t num)
 {
-	switch(num){
-	case 0:dsp_send(7 , num | (prog_data[r_vol] << 8));break;
-	case 1:dsp_send(7 , num | (prog_data[rev_t] << 8));break;
-	case 8:dsp_send(7 , num | (prog_data[rev_di] << 8));break;
-	case 9:dsp_send(7 , num | (prog_data[r_pre] << 8));break;
-	case 10:dsp_send(7 , num | (prog_data[r_tail] << 8));break;
-	default:dsp_send(7 , num | (prog_data[r_vol + num - 1] << 8));break;
+	if(num == 5) dsp_send(DSP_ADDRESS_CHORUS, num | (prog_data[hpf_ch] << 8));
+	else dsp_send(DSP_ADDRESS_CHORUS, num | (prog_data[chor_volum + num] << 8));
+}
+
+void Phaser_par(uint8_t num)
+{
+	if(num == 6) dsp_send(DSP_ADDRESS_PHASER, num | (prog_data[hpf_ph] << 8));
+	else
+	{
+		if(num == 7) dsp_send(DSP_ADDRESS_PHASER, num | (prog_data[phas_pos] << 8));
+		else dsp_send(DSP_ADDRESS_PHASER, num | (prog_data[phaser_vol + num] << 8));
 	}
 }
+
+void DSP_reverb_param(uint8_t num)
+{
+	switch(num){
+	case 0:dsp_send(DSP_ADDRESS_REVERB, num | (prog_data[r_vol] << 8));break;
+	case 1:dsp_send(DSP_ADDRESS_REVERB, num | (prog_data[rev_t] << 8));break;
+	case 8:dsp_send(DSP_ADDRESS_REVERB, num | (prog_data[rev_di] << 8));break;
+	case 9:dsp_send(DSP_ADDRESS_REVERB, num | (prog_data[r_pre] << 8));break;
+	case 10:dsp_send(DSP_ADDRESS_REVERB, num | (prog_data[r_tail] << 8));break;
+	default:dsp_send(DSP_ADDRESS_REVERB, num | (prog_data[r_vol + num - 1] << 8));break;
+	}
+}
+
 void del_par(uint8_t num)
 {
 	switch(num){
-	case 0:dsp_send(8 , 0 | (prog_data[d_vol] << 8));break;
-	case 1:dsp_send(8 , 11 | ((delay_time >> 8) << 8));dsp_send(8 , 12 | ((delay_time) << 8));break;
-	case 13:dsp_send(8 , 13 | (prog_data[d_tail] << 8));break;
-	default:num --;dsp_send(8 , num | (prog_data[d_vol + num] << 8));break;
+	case 0:dsp_send(DSP_ADDRESS_DELAY, 0 | (prog_data[d_vol] << 8));break;
+	case 1:dsp_send(DSP_ADDRESS_DELAY, 11 | ((delay_time >> 8) << 8)); dsp_send(DSP_ADDRESS_DELAY , 12 | ((delay_time) << 8));break;
+	case 13:dsp_send(DSP_ADDRESS_DELAY, 13 | (prog_data[d_tail] << 8));break;
+	default:num --;dsp_send(DSP_ADDRESS_DELAY, num | (prog_data[d_vol + num] << 8));break;
 	}
 }
+
 void eq_par(uint8_t num)
 {
-	if(num != 12)dsp_send(9 , num | (prog_data[eq1 + num] << 8));
-	else dsp_send(9 , num | (prog_data[eq_pr_po] << 8));
+	if(num != 12)dsp_send(DSP_ADDRESS_EQ , num | (prog_data[eq1 + num] << 8));
+	else dsp_send(DSP_ADDRESS_EQ, num | (prog_data[eq_pr_po] << 8));
 }
 void eq_mas_par(uint8_t num)
 {
@@ -59,141 +96,156 @@ void eq_mas_par(uint8_t num)
 	if(num != 2)
 	{
 		a += 24;
-		dsp_send(9 , (num + 8) | a << 8);
+		dsp_send(DSP_ADDRESS_EQ, (num + 8) | a << 8);
 	}
-	else {
-		dsp_send(9 , 10 | (sys_para[510] << 8));
-		dsp_send(9 , 10 | (sys_para[511] << 8));
-	}
-}
-void eq_band_par(uint8_t num)
-{
-	dsp_send(22 , num | (prog_data[f1 + num] << 8));
-}
-void Phaser_par(uint8_t num)
-{
-	if(num == 6)dsp_send(6 , num | (prog_data[hpf_ph] << 8));
-	else {
-		if(num == 7)dsp_send(6 , num | (prog_data[phas_pos] << 8));
-		else dsp_send(6 , num | (prog_data[phaser_vol + num] << 8));
+	else
+	{
+		dsp_send(DSP_ADDRESS_EQ, 10 | (sys_para[510] << 8));
+		dsp_send(DSP_ADDRESS_EQ, 10 | (sys_para[511] << 8));
 	}
 }
-void Early_par(uint8_t num)
-{
-	dsp_send(17 , num | (prog_data[early_vol + num] << 8));
-}
-void cab_volume(uint8_t num)
-{
-	dsp_send(3 ,  num | (prog_data[vol + num] << 8));
-}
-void flanger_par(uint8_t num)
-{
-	if(num == 6)dsp_send(13 , num | (prog_data[hpf_fl] << 8));
-	else {
-		if(num == 7)dsp_send(13 , num | (prog_data[flan_pos] << 8));
-		else dsp_send(13 , num | (prog_data[fl_v + num] << 8));
-	}
-}
-void chor_par(uint8_t num)
-{
-	if(num == 5)dsp_send(5 , num | (prog_data[hpf_ch] << 8));
-	else dsp_send(5 , num | (prog_data[chor_volum + num] << 8));
-}
-void pr_par(uint8_t num)
-{
-	dsp_send(26 , num | (prog_data[pre_gain + num] << 8));
-}
+
 void tr_param(uint8_t num)
 {
 	if(num < 5)
 	{
-		switch(num){
-		case 0:case 1:dsp_send(10 , num | (prog_data[tr_vol + num] << 8));break;
-		case 2:dsp_send(10 , 6 | (prog_data[tr_lfo_t] << 8));break;
-		default: num--;dsp_send(10 , num | (prog_data[tr_vol + num] << 8));break;
+		switch(num)
+		{
+			case 0:case 1: dsp_send(DSP_ADDRESS_TREMOLO , num | (prog_data[tr_vol + num] << 8));break;
+			case 2: dsp_send(DSP_ADDRESS_TREMOLO , 6 | (prog_data[tr_lfo_t] << 8));break;
+			default: num--; dsp_send(DSP_ADDRESS_TREMOLO , num | (prog_data[tr_vol + num] << 8));break;
 		}
 	}
-	else {
-		dsp_send(10 , 4 | ((trem_time >> 8) << 8));
-		dsp_send(10 , 5 | (trem_time << 8));
+	else
+	{
+		dsp_send(DSP_ADDRESS_TREMOLO , 4 | ((trem_time >> 8) << 8));
+		dsp_send(DSP_ADDRESS_TREMOLO , 5 | (trem_time << 8));
 	}
 }
+
 void amp_volume(uint8_t num)
 {
-	dsp_send(11 , num | (prog_data[am_v + num] << 8));
+	dsp_send(DSP_ADDRESS_AMP, num | (prog_data[am_v + num] << 8));
 }
+
 void program_ch(void)
 {
-	dsp_send(12 , 0);
+	dsp_send(DSP_ADDRESS_PROGRAMM_CHANGE , 0);
 }
+
+void flanger_par(uint8_t num)
+{
+	if(num == 6) dsp_send(DSP_ADDRESS_FLANGER , num | (prog_data[hpf_fl] << 8));
+	else
+	{
+		if(num == 7) dsp_send(DSP_ADDRESS_FLANGER , num | (prog_data[flan_pos] << 8));
+		else dsp_send(DSP_ADDRESS_FLANGER , num | (prog_data[fl_v + num] << 8));
+	}
+}
+
 void tun_proc(uint8_t num)
 {
-	dsp_send(14 , num );
+	dsp_send(DSP_ADDRESS_TUN_PROC, num);
 }
-void cab_dry_mute(void)
-{
-	dsp_send(16 , sys_para[0] );
-}
+
 void ind_source(uint8_t num)
 {
-	dsp_send(15 , num);
+	dsp_send(DSP_ADDRESS_IND_SRC, num);
 }
+
+void cab_dry_mute(void)
+{
+	dsp_send(DSP_ADDRESS_CAB_DRY_MUTE , sys_para[0] );
+}
+
+void Early_par(uint8_t num)
+{
+	dsp_send(DSP_ADDRESS_EARLY_REFLECTIONS, num | (prog_data[early_vol + num] << 8));
+}
+
+void master_volu(uint8_t val)
+{
+	dsp_send(19 , val);
+}
+
+void master_volum_contr(uint8_t val)
+{
+	dsp_send(21 , val);
+}
+
+void eq_band_par(uint8_t num)
+{
+	dsp_send(DSP_ADDRESS_EQ_BAND, num | (prog_data[f1 + num] << 8));
+}
+
 void amp_imp_load(void)
 {
-	dsp_send(23 , prog_data[am_mode]);
+	dsp_send(DSP_ADDRESS_AMP_TYPE , prog_data[am_mode]);
 }
+
 void dsp_run(uint8_t val)
 {
-	dsp_send(24 , val);
+	dsp_send(DSP_ADDRESS_DSP_RUN , val);
 }
+
 void spdi_t(uint8_t val)
 {
-	dsp_send(25 , val);
+	dsp_send(DSP_ADDRESS_SPDIF , val);
 }
+
+void pr_par(uint8_t num)
+{
+	dsp_send(DSP_ADDRESS_PREAMP, num | (prog_data[pre_gain + num] << 8));
+}
+
 void cab_r_by(uint8_t val)
 {
-	dsp_send(27 , val);
+	dsp_send(DSP_ADDRESS_CAB_R, val);
 }
+
 void gate_param(uint8_t val)
 {
-	dsp_send(28, val | (prog_data[gate_thr + val] << 8));
+	dsp_send(DSP_ADDRESS_GATE, val | (prog_data[gate_thr + val] << 8));
 }
+
 void comp_par(uint8_t val)
 {
-	dsp_send(29, val | (prog_data[comp_thr + val] << 8));
+	dsp_send(DSP_ADDRESS_COMPRESSOR, val | (prog_data[comp_thr + val] << 8));
 }
+
 void moog_par(uint8_t val)
 {
-	if(val < 11)dsp_send(30 , val | (prog_data[mog_mix + val] << 8));
+	if(val < 11)dsp_send(DSP_ADDRESS_RESONANCE_FILTER , val | (prog_data[mog_mix + val] << 8));
 	else {
-		if(val == 11)dsp_send(30 , 12 | (prog_data[mog_gen_t] << 8));
+		if(val == 11)dsp_send(DSP_ADDRESS_RESONANCE_FILTER , 12 | (prog_data[mog_gen_t] << 8));
 		else {
-			if(val == 12)dsp_send(30 , 11 | (prog_data[mog_ext] << 8));
+			if(val == 12)dsp_send(DSP_ADDRESS_RESONANCE_FILTER , 11 | (prog_data[mog_ext] << 8));
 			else {
-				dsp_send(30 , 13 | ((moog_time >> 8) << 8));
-				dsp_send(30 , 14 | (moog_time << 8));
+				dsp_send(DSP_ADDRESS_RESONANCE_FILTER , 13 | ((moog_time >> 8) << 8));
+				dsp_send(DSP_ADDRESS_RESONANCE_FILTER , 14 | (moog_time << 8));
 			}
 		}
 	}
 }
+
 void dsp_mute (uint8_t val)
 {
-	dsp_send(31 , val);
+	dsp_send(DSP_ADDRESS_MUTE , val);
 }
 
 void global_temp (uint8_t val)
 {
-	dsp_send(32 , sys_para[tap_typ] | (sys_para[tap_hi] << 8));
+	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[tap_typ] | (sys_para[tap_hi] << 8));
 }
 
-extern uint8_t cab_data[] ;
-extern uint8_t cab_data1[] ;
+extern uint8_t cab_data[];
+extern uint8_t cab_data1[];
 
 void send_cab_data(uint8_t val,uint8_t num,uint8_t menu_fl)
 {
 	uint32_t a;
 	extern bool cab_data_ready;
-	if(cab_data_ready != true && condish != copy_men)
+	if(cab_data_ready != true && current_menu != MENU_COPY)
 	{
 		kgp_sdk_libc::memset(preset_temp,0,24576);
 	      preset_temp[0] = 0xff;
@@ -278,10 +330,11 @@ void send_cab_data(uint8_t val,uint8_t num,uint8_t menu_fl)
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOA,GPIO_Pin_1);
 }
+
 void send_cab_data1(uint8_t val,uint8_t num)
 {
 	extern bool cab_data_ready;
-	if(cab_data_ready != true && condish != copy_men)
+	if(cab_data_ready != true && current_menu != MENU_COPY)
 	{
 		kgp_sdk_libc::memset(preset_temp,0,12288);
 	      preset_temp[0] = 0xff;
@@ -320,9 +373,7 @@ void send_cab_data1(uint8_t val,uint8_t num)
 	GPIO_SetBits(GPIOA,GPIO_Pin_1);
 }
 
-volatile uint8_t gui_fl;
-volatile uint8_t contr_fl;
-volatile uint8_t ext_send_fl;
+
 void gui_send(uint8_t num , uint16_t val)
 {
 	while((contr_fl) || (ext_send_fl));
@@ -330,7 +381,7 @@ void gui_send(uint8_t num , uint16_t val)
 	switch(num){
 	case 0:master_volum(val);break;
 	case 1:master_volu(val);break;
-	case 2:rev_par(val);break;
+	case 2:DSP_reverb_param(val);break;
 	case 3:del_par(val);break;
 	case 4:eq_par(val);break;
 	case 5:Phaser_par(val);break;
@@ -364,6 +415,7 @@ void gui_send(uint8_t num , uint16_t val)
 	}
 	gui_fl = 0;
 }
+
 void contr_send(uint8_t num , uint16_t val)
 {
 	while((gui_fl) || (ext_send_fl));
@@ -371,7 +423,7 @@ void contr_send(uint8_t num , uint16_t val)
 	switch(num){
 	case 0:master_volum(val);break;
 	case 1:master_volu(val);break;
-	case 2:rev_par(val);break;
+	case 2:DSP_reverb_param(val);break;
 	case 3:del_par(val);break;
 	case 4:eq_par(val);break;
 	case 5:Phaser_par(val);break;
@@ -385,7 +437,7 @@ void contr_send(uint8_t num , uint16_t val)
 	case 13:tun_proc(val);break;
 	case 14:cab_dry_mute();break;
 	case 15:ind_source(val);break;
-	case 18:dsp_send(4,val);break;
+	case 18:dsp_send(DSP_ADDRESS_MODULES_ENABLE, val);break;
 	case 19:pres_volum_cont(val);break;
 	case 20:master_volum_contr(val);break;
 	case 27:pr_par(val);break;
@@ -395,6 +447,7 @@ void contr_send(uint8_t num , uint16_t val)
 	}
 	contr_fl = 0;
 }
+
 volatile uint8_t master_volume_controller = 127;
 void ext_send(uint8_t data)
 {
