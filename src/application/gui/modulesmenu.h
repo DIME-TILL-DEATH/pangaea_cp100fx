@@ -33,6 +33,10 @@ private:
 	ParamListMenu* createGateMenu();
 	ParamListMenu* createCompressorMenu();
 
+	ParamListMenu* createPhaserMenu();
+
+	ParamListMenu* createTremoloMenu();
+
 	void icon_refresh(uint8_t num);
 
 	constexpr static uint8_t cab_list      [][8] ={"Pan","Browser","Volume"};
@@ -54,7 +58,6 @@ private:
 	constexpr static uint8_t moog_typ_list [][4] ={"LPF","HPF","BPF"};
 	constexpr static uint8_t moog_mod_list [][4] ={"LFO","Dyn","Ext"};
 	constexpr static uint8_t moog_gen_type [][7] ={"Tri   ","Rand  ","Rand/2","Rand/3","Rand/4","Rand/6","Rand/8"};
-	constexpr static uint8_t phas_list     [][8] ={"Mix","Rate","Center","Width","F_Back","Stage","HPF","Pos"};
 	constexpr static uint8_t chor_list     [][8] ={"Mix","Rate","Width","Delay","Type","HPF"};
 	constexpr static uint8_t chor_list1    [][8] ={"Mix","Detune"," --"," --","Type","HPF"};
 	constexpr static uint8_t chor_list2    [][8] ={"Mix"," --"," --","Delay","Type","HPF"};
@@ -69,9 +72,9 @@ private:
 	constexpr static uint8_t rev_type_list [][8] ={"Default","Hall   ","Room   ","Plate  ","Spring ","Gate   ","Reverse"};
 	constexpr static uint8_t ear_list      [][5] ={"Mix","Size"};
 	constexpr static uint8_t s_t_c_list    [][7] ={"  No  ","Return","   Yes"};
-	constexpr static uint8_t tr_list       [][8] ={"Intens","Rate","LFOtype","LFO mod","Type","TAP"};
-	constexpr static uint8_t tr_t_list     [][7] ={"Sin   ","Square","Mono  ","Stereo"};
-	constexpr static uint8_t tr_lfo_t_list [][9] ={"Sin     ","Square  ","Sawtooth"};
+//	constexpr static uint8_t tr_list       [][8] ={"Intens","Rate","LFOtype","LFO mod","Type","TAP"};
+//	constexpr static uint8_t tr_t_list     [][7] ={"Sin   ","Square","Mono  ","Stereo"};
+//	constexpr static uint8_t tr_lfo_t_list [][9] ={"Sin     ","Square  ","Sawtooth"};
 	//	constexpr static uint8_t contr_list    [][7] ={"Contr","Source","Destin","MinVal","MaxVal","PC Out","SET"};
 };
 

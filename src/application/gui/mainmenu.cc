@@ -18,7 +18,7 @@
 
 #include "abstractmenu.h"
 
-#include "menu_compressor.h"
+
 #include "menu_preamp.h"
 #include "menu_pa.h"
 

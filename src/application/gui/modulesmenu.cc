@@ -18,8 +18,6 @@
 
 #include "abstractmenu.h"
 
-//#include "menu_gate.h"
-#include "menu_compressor.h"
 #include "menu_preamp.h"
 #include "menu_pa.h"
 
@@ -27,6 +25,7 @@ extern volatile uint8_t comp_fl;
 extern volatile uint8_t preset_edited;
 extern gui_menu_type current_menu;
 extern uint8_t copy_temp;
+
 
 extern uint8_t cab_type;
 extern uint8_t name_run_fl;
@@ -54,7 +53,6 @@ const uint8_t ModulesMenu::moog_list     [][8];
 const uint8_t ModulesMenu::moog_typ_list [][4];
 const uint8_t ModulesMenu::moog_mod_list [][4];
 const uint8_t ModulesMenu::moog_gen_type [][7];
-const uint8_t ModulesMenu::phas_list     [][8];
 const uint8_t ModulesMenu::chor_list     [][8];
 const uint8_t ModulesMenu::chor_list1    [][8];
 const uint8_t ModulesMenu::chor_list2    [][8];
@@ -68,9 +66,6 @@ const uint8_t ModulesMenu::rev_list      [][7];
 const uint8_t ModulesMenu::rev_type_list [][8];
 const uint8_t ModulesMenu::ear_list      [][5];
 const uint8_t ModulesMenu::s_t_c_list    [][7];
-const uint8_t ModulesMenu::tr_list       [][8];
-const uint8_t ModulesMenu::tr_t_list     [][7];
-const uint8_t ModulesMenu::tr_lfo_t_list [][9];
 
 ModulesMenu::ModulesMenu(AbstractMenu* parent)
 {
@@ -441,19 +436,11 @@ void ModulesMenu::keyDown()
 		  }
 		  break;
 		case 7:
-		  if(prog_data[phas] == 1){
-		  current_menu = MENU_PHASER;
-		  gui_send(15,7);
-		  DisplayTask->Clear();
-//		  DisplayTask->Icon_Strel(9,2);
-		  for(uint8_t i = 0 ; i < 4 ; i++)
-			{
-			  DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)phas_list + i*8);
-			  if(i)DisplayTask->ParamIndic(53,i,prog_data[phaser_vol + i]);
-			  else DisplayTask->ParamIndicMix(53,0,prog_data[phaser_vol]);
-			}
-		  par_num = 0;
-		 }
+		  if(prog_data[ENABLE_PHASER] == 1)
+		  {
+			  currentMenu = createPhaserMenu();
+			  currentMenu->show();
+		  }
 		  break;
 		case 8:
 			if(prog_data[fl] == 1){
@@ -566,23 +553,8 @@ void ModulesMenu::keyDown()
 		 }
 		  break;
 		case 13:
-		  if(prog_data[trem] == 1){
-		  current_menu = MENU_TREMOLO;
-		  gui_send(15,6);
-		  DisplayTask->Clear();
-//		  DisplayTask->Icon_Strel(1,2);
-		  for(uint8_t i = 0 ; i < 4 ; i++)
-			{
-			  DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)tr_list + i*8);
-			  if(i == 2)DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)tr_lfo_t_list + prog_data[tr_lfo_t] * 9);
-			  else {
-				  if(i < 3)DisplayTask->ParamIndic(53,i,prog_data[tr_vol + i]);
-				  else DisplayTask->ParamIndic(53,i,prog_data[tr_vol + i - 1]);
-			  }
-			}
-		  par_num = 0;
-		  }
-
+			currentMenu = createTremoloMenu();
+			currentMenu->show();
 		  break;
 		}
 		tim5_start(0);
@@ -759,4 +731,63 @@ ParamListMenu* ModulesMenu::createGateMenu()
 	if(gateMenu) gateMenu->setParams(gateParams, gateParamNum, 1);
 
 	return gateMenu;
+}
+
+ParamListMenu* ModulesMenu::createPhaserMenu()
+{
+	const uint8_t paramNum = 8;
+	BaseParam* params[paramNum];
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &prog_data[PHASER_MIX]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &prog_data[PHASER_RATE]);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Center", &prog_data[PHASER_CENTER]);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &prog_data[PHASER_WIDTH]);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &prog_data[PHASER_FEEDBACK]);
+
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Stage", &prog_data[PHASER_TYPE]);
+	params[5]->setScaling(2, 4);
+	params[5]->setBounds(0, 4);
+	params[5]->setDisplayPosition(62);
+
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Hpf", &prog_data[PHASER_HPF]);
+
+	const char* paramNames[2][4] = {"Post", "Pre "};
+	params[7] = new StringParam("Pos.", &prog_data[PHASER_PREPOST], (char**)&paramNames, 2);
+
+	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_PHASER, i);
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_PHASER);
+	if(menu) menu->setParams(params, paramNum, 2);
+
+	return menu;
+}
+
+ParamListMenu* ModulesMenu::createTremoloMenu()
+{
+	const uint8_t paramNum = 6;
+	BaseParam* params[paramNum];
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Intens", &prog_data[TREMOLO_INTENSITY]);
+	params[0]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_INTENSITY_POS);
+
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &prog_data[TREMOLO_RATE]);
+	params[1]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_RATE_POS);
+
+	const char* paramNames0[3][8] = {"Sin     ", "Square  ", "Sawtooth"};
+	params[2] = new StringParam("LFOType", &prog_data[TREMOLO_LFO_TYPE], (char**)&paramNames0, 3);
+	params[2]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_TYPE_POS);
+
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "LFO mod", &prog_data[TREMOLO_LFO_MOD]);
+	params[3]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_MOD_POS);
+
+	const char* paramNames1[2][6] = {"Mono  ", "Stereo"};
+	params[4] = new StringParam("Type", &prog_data[TREMOLO_MS], (char**)&paramNames1, 2);
+	params[4]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_MS_POS);
+
+	const char* paramNames2[3][5] = {"1    ", "1/1.5", "1/2  ", "1/3  ", "1/4  "};
+	params[5] = new StringParam("TAP", &prog_data[TREMOLO_TAP], (char**)&paramNames2, 5);
+	params[5]->setDspAddress(DSP_ADDRESS_TREMOLO, NOT_SEND_POS);
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_TREMOLO);
+	if(menu) menu->setParams(params, paramNum, 2);
+
+	return menu;
 }

@@ -287,5 +287,10 @@ enum
 	TREMOLO_MS_POS, TREMOLO_LFO_TYPE_POS = 6
 };
 
+enum
+{
+	NOT_SEND_POS = 255
+};
+
 
 #endif /* MODULES_H_ */

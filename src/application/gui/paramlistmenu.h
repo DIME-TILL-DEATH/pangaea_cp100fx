@@ -3,6 +3,7 @@
 
 #include "abstractmenu.h"
 #include "baseparam.h"
+#include "stringparam.h"
 
 class ParamListMenu : public AbstractMenu
 {
@@ -19,11 +20,15 @@ public:
 	void encoderClockwise() override;
 	void encoderCounterClockwise() override;
 
+	void keyDown() override;
+
 private:
 	uint8_t currentParamNum = 0;
 
 	BaseParam* paramsList[64];
 	uint8_t paramsCount{0};
+
+	bool m_canTap{false};
 
 	int8_t currentPageNumber{-1};
 
@@ -34,6 +39,8 @@ private:
 	static constexpr uint8_t paramsOnPage = 4;
 
 	void printPage();
+
+	void printParam(BaseParam* param, uint8_t yPos);
 };
 
 
