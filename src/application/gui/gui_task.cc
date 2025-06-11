@@ -6,6 +6,7 @@
 #include "filt.h"
 #include "eepr.h"
 #include "fonts/allFonts.h"
+#include "fonts/icon_bit.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -18,8 +19,6 @@
 
 #include "abstractmenu.h"
 
-//#include "menu_gate.h"
-#include "menu_compressor.h"
 #include "menu_preamp.h"
 #include "menu_pa.h"
 
@@ -320,6 +319,12 @@ void gui(void)
 {
 	currentMenu->task();
 
+	if(encoder_knob_pressed)
+	{
+		currentMenu->encoderPressed();
+//		clean_flag();
+	}
+
 	if(encoder_state_updated)
 	{
 		if(encoder_state == ENC_COUNTERCLOCKWISE_STEP)
@@ -333,12 +338,6 @@ void gui(void)
 			currentMenu->encoderClockwise();
 //			clean_flag();
 		}
-	}
-
-	if(encoder_knob_pressed)
-	{
-		currentMenu->encoderPressed();
-//		clean_flag();
 	}
 
 	if(k_up)
@@ -612,7 +611,7 @@ void gui(void)
         				if(eq_num == 5)
         				{
         					DisplayTask->EqInit();
-        					DisplayTask->Icon_Strel(4,2);
+        					DisplayTask->Icon_Strel(ICON_EQ, STRELKA_DOWN);
         					eq_num--;
         					DisplayTask->EqIndic(27 + eq_num*14,0,prog_data[eq1 + eq_num],1);
         					tim5_start(0);
@@ -689,7 +688,7 @@ void gui(void)
         					DisplayTask->StringOut(50,1,TDisplayTask::fntSystem,0,(uint8_t*)")");
         					DisplayTask->ParamIndicNum(33,1,prog_data[lpf_v]);
         					DisplayTask->ParamIndic(56,2,prog_data[pre_v]);
-        					DisplayTask->Icon_Strel(4,1);
+        					DisplayTask->Icon_Strel(ICON_EQ, STRELKA_UP);
         					DisplayTask->StringOut(6,3,TDisplayTask::fntSystem,0,(uint8_t*)lpf_hpf + 3*9);
         					DisplayTask->StringOut(65,3,TDisplayTask::fntSystem,0,(uint8_t*)eq_pre_post + prog_data[eq_pr_po] * 5);
         					tim5_start(0);
@@ -913,7 +912,7 @@ void gui(void)
             	encoder_knob_selected = 0;
                 current_menu = MENU_EQ;
                 DisplayTask->EqInit();
-                DisplayTask->Icon_Strel(4,2);
+                DisplayTask->Icon_Strel(ICON_EQ, STRELKA_DOWN);
                 tim5_start(0);
                 clean_flag();
               }
@@ -937,7 +936,7 @@ void gui(void)
                           if(par_num == 3)
                            {
                             DisplayTask->Clear();
-                       	    DisplayTask->Icon_Strel(9,2);
+//                       	    DisplayTask->Icon_Strel(9,2);
                        	    for(uint8_t i = 0 ; i < 4 ; i++)
                        		{
                        		    if(i)DisplayTask->ParamIndic(53,i,prog_data[phaser_vol + i]);
@@ -990,7 +989,7 @@ void gui(void)
                           if(par_num == 4)
                           {
                             DisplayTask->Clear();
-                       	    DisplayTask->Icon_Strel(9,1);
+//                       	    DisplayTask->Icon_Strel(9,1);
                        	    for(uint8_t i = 0 ; i < 4 ; i++)
                        	    {
                        	    	if(i)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)phas_list + (par_num + i)*8);
@@ -1101,7 +1100,7 @@ void gui(void)
                             if(par_num == 3)
                              {
                               DisplayTask->Clear();
-                         	  DisplayTask->Icon_Strel(5,2);
+//                         	  DisplayTask->Icon_Strel(5,2);
                          	  for(uint8_t i = 0 ; i < 4 ; i++)
                          	  {
                             	  if(prog_data[chor_typ] < 4)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)chor_list + i*8);
@@ -1181,7 +1180,7 @@ void gui(void)
                         	if(par_num == 4)
                             {
                               DisplayTask->Clear();
-                         	  DisplayTask->Icon_Strel(5,1);
+//                         	  DisplayTask->Icon_Strel(5,1);
                          	  DisplayTask->StringOut(6,1,TDisplayTask::fntSystem,0,(uint8_t*)chor_list + (par_num + 1) * 8);
                          	  DisplayTask->ParamIndic(53,1,prog_data[hpf_ch]);
                          	  DisplayTask->StringOut(36,0,TDisplayTask::fntSystem,0,(uint8_t*)ch_list_t + prog_data[chor_typ]*12);
@@ -1302,7 +1301,7 @@ void gui(void)
                        if(par_num == 3)
                         {
                     	  DisplayTask->Clear();
-                    	  DisplayTask->Icon_Strel(0,2);
+//                    	  DisplayTask->Icon_Strel(0,2);
                     	  for(uint8_t i = 0 ; i < 4 ; i++)
                     		  {
                     		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)del_list + i*8);
@@ -1318,7 +1317,7 @@ void gui(void)
                     	   if(par_num == 7)
                     	   {
                          	  DisplayTask->Clear();
-                         	  DisplayTask->Icon_Strel(0,3);
+//                         	  DisplayTask->Icon_Strel(0,3);
                         	  for(uint8_t i = 0 ; i < 4 ; i++)
                         		{
                         	     DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)del_list + (i+4)*8);
@@ -1399,7 +1398,7 @@ void gui(void)
                        if(par_num == 4)
                        {
                     	  DisplayTask->Clear();
-                    	  DisplayTask->Icon_Strel(0,3);
+//                    	  DisplayTask->Icon_Strel(0,3);
                     	  for(uint8_t i = 0 ; i < 4 ; i++)
                     		  {
                     		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)del_list + (i+par_num)*8);
@@ -1411,7 +1410,7 @@ void gui(void)
                     	   if(par_num == 8)
                     	   {
                          	  DisplayTask->Clear();
-                         	  DisplayTask->Icon_Strel(0,1);
+//                         	  DisplayTask->Icon_Strel(0,1);
                          	  for(uint8_t i= 1 ; i < 4 ; i++)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem,0,(uint8_t*)del_list + (par_num + i) * 8);
                          	  for(uint8_t i= 0 ; i < 3 ; i++)DisplayTask->ParamIndic(53,i,prog_data[d_vol + par_num + i - 1]);
                          	  DisplayTask->StringOut(53,3,TDisplayTask::fntSystem , 0 , (uint8_t*)del_dir + prog_data[d_dir]*8);
@@ -1733,7 +1732,7 @@ void gui(void)
             	}
             	else DisplayTask->ParamIndicMix(53,0,prog_data[d_vol]);
               }
-            DisplayTask->Icon_Strel(0,2);
+//            DisplayTask->Icon_Strel(0,2);
             encoder_knob_selected = 0;
             tim5_start(0);
             clean_flag();
@@ -1741,147 +1740,147 @@ void gui(void)
         break;
 //----------------------------------------------------------------------Flanger---------------------
         case MENU_FLANGER:
-            if(encoder_knob_selected == 0)
-              {
-                if(tim5_fl == 1)DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)fl_list + par_num*8);
-                else DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)fl_list + par_num*8);
-              }
-            if(encoder_state_updated == 1)
-              {
-                if(encoder_state == 1)
-                  {
-                    if(encoder_knob_selected == 0)
-                      {
-                        if(par_num > 0)
-                          {
-                        	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)fl_list + par_num-- * 8);
-                            if(par_num == 3)
-                             {
-                              DisplayTask->Clear();
-                         	  DisplayTask->Icon_Strel(10,2);
-                         	  for(uint8_t i = 0 ; i < 4 ; i++)
-                         		  {
-                         		    if(!i)DisplayTask->ParamIndicMix(53,0,prog_data[fl_v]);
-                         		    else {
-                         		    	if(i == 1)DisplayTask->StringOut(53,i,TDisplayTask::fntSystem,0,(uint8_t*)fl_t + prog_data[fl_lfo]*9);
-                         		    	else DisplayTask->ParamIndic(53,i,prog_data[fl_v + i]);
-                         		    }
-                         		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)fl_list + i*8);
-                         		  }
-                             }
-                        	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)fl_list + par_num * 8);
-                        	tim5_start(0);
-                          }
-                      }
-                    else {
-                    	switch(par_num){
-                    	case 0:case 1:case 2:case 3:case 4:case 5:
-                    		if(prog_data[fl_v + par_num] > 0)
-                    		{
-                    			if(par_num == 1)DisplayTask->StringOut(53,1,TDisplayTask::fntSystem,0,(uint8_t*)fl_t + --prog_data[fl_lfo]*12);
-                    			else {
-                    				prog_data[fl_v + par_num] = enc_speed_dec(prog_data[fl_v + par_num],0);
-                            		if(par_num)DisplayTask->ParamIndic(53,par_num & 3,prog_data[fl_v + par_num]);
-                            		else DisplayTask->ParamIndicMix(53,0,prog_data[fl_v]);
-                    			}
-                    			gui_send(8,par_num);
-                    		}break;
-                    	case 6:if(prog_data[hpf_fl] > 0)
-                    			{
-                    				prog_data[hpf_fl] = enc_speed_dec(prog_data[hpf_fl],0);
-                    				DisplayTask->ParamIndic(53,par_num & 3,prog_data[hpf_fl]);
-                    				gui_send(8,par_num);
-                    			}break;
-                    	case 7:if(prog_data[flan_pos])
-                    			{
-                    		        DisplayTask->StringOut(53,3,TDisplayTask::fntSystem , 0 , (uint8_t*)eq_pre_post + --prog_data[flan_pos] * 5);
-                    		        gui_send(8,par_num);
-                    			}break;
-                    	}
-                    }
-                  }
-                if(encoder_state == 2)
-                  {
-                    if(encoder_knob_selected == 0)
-                      {
-                        if(par_num < 7)
-                          {
-                        	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)fl_list + par_num++ * 8);
-                            if(par_num == 4)
-                            {
-                                DisplayTask->Clear();
-                           	    DisplayTask->Icon_Strel(10,1);
-                            	for(uint8_t i = 0 ; i < 4 ; i++)
-                            	{
-                            		if(i)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)fl_list + (par_num + i)*8);
-                            		if(i < 2)DisplayTask->ParamIndic(53,i,prog_data[fl_d + i]);
-                            		else {
-                            			if(i == 2)DisplayTask->ParamIndic(53,2,prog_data[hpf_fl]);
-                            			else DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)eq_pre_post + prog_data[flan_pos] * 5);
-                            		}
-                            	}
-                            }
-                        	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)fl_list + par_num * 8);
-                        	tim5_start(0);
-                          }
-                      }
-                    else {
-                    	switch(par_num){
-                    	case 0:case 1:case 2:case 3:case 4:case 5:
-                    		if(prog_data[fl_v + par_num] < 127)
-                    		{
-                    			if(par_num == 1)
-                    			{
-                    				if(prog_data[fl_v + par_num] < 1)
-                    				{
-                              		  prog_data[fl_v + par_num]++;
-                              		  DisplayTask->StringOut(53,1,TDisplayTask::fntSystem,0,(uint8_t*)fl_t + prog_data[fl_lfo]*9);
-                              		  gui_send(8,par_num);
-                    				}
-                    			}
-                    			else {
-                    				prog_data[fl_v + par_num] = enc_speed_inc(prog_data[fl_v + par_num],127);
-                          		    if(par_num)DisplayTask->ParamIndic(53,par_num & 3,prog_data[fl_v + par_num]);
-                          		    else DisplayTask->ParamIndicMix(53,0,prog_data[fl_v]);
-                          		    gui_send(8,par_num);
-                    			}
-                    		}break;
-                    	case 6:if(prog_data[hpf_fl] < 127)
-                    			{
-                    				prog_data[hpf_fl] = enc_speed_inc(prog_data[hpf_fl],127);
-                    				DisplayTask->ParamIndic(53,par_num & 3,prog_data[hpf_fl]);
-                    				gui_send(8,par_num);
-                    			}
-                    		break;
-                    	case 7:if(!prog_data[flan_pos])
-                    			{
-                    		        DisplayTask->StringOut(53,3,TDisplayTask::fntSystem , 0 , (uint8_t*)eq_pre_post + ++prog_data[flan_pos] * 5);
-                    		        gui_send(8,par_num);
-                    			}break;
-                    	}
-                     }
-                  }
-                clean_flag();
-              }
-            if(encoder_knob_pressed == 1)
-              {
-                    if(encoder_knob_selected == 0)
-                      {
-                        encoder_knob_selected = 1;
-                        DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)fl_list + par_num * 8);
-                      }
-                    else {
-                    	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)fl_list + par_num * 8);
-                        encoder_knob_selected = 0;
-                    }
-                    tim5_start(1);
-                    clean_flag();
-              }
-          if(k_up == 1)
-            {
-        	  gui_send(15,0);
-        	  GUI_return_to_main_menu();
-            }
+//            if(encoder_knob_selected == 0)
+//              {
+//                if(tim5_fl == 1)DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)fl_list + par_num*8);
+//                else DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)fl_list + par_num*8);
+//              }
+//            if(encoder_state_updated == 1)
+//              {
+//                if(encoder_state == 1)
+//                  {
+//                    if(encoder_knob_selected == 0)
+//                      {
+//                        if(par_num > 0)
+//                          {
+//                        	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)fl_list + par_num-- * 8);
+//                            if(par_num == 3)
+//                             {
+//                              DisplayTask->Clear();
+////                         	  DisplayTask->Icon_Strel(10,2);
+//                         	  for(uint8_t i = 0 ; i < 4 ; i++)
+//                         		  {
+//                         		    if(!i)DisplayTask->ParamIndicMix(53,0,prog_data[fl_v]);
+//                         		    else {
+//                         		    	if(i == 1)DisplayTask->StringOut(53,i,TDisplayTask::fntSystem,0,(uint8_t*)fl_t + prog_data[fl_lfo]*9);
+//                         		    	else DisplayTask->ParamIndic(53,i,prog_data[fl_v + i]);
+//                         		    }
+//                         		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)fl_list + i*8);
+//                         		  }
+//                             }
+//                        	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)fl_list + par_num * 8);
+//                        	tim5_start(0);
+//                          }
+//                      }
+//                    else {
+//                    	switch(par_num){
+//                    	case 0:case 1:case 2:case 3:case 4:case 5:
+//                    		if(prog_data[fl_v + par_num] > 0)
+//                    		{
+//                    			if(par_num == 1)DisplayTask->StringOut(53,1,TDisplayTask::fntSystem,0,(uint8_t*)fl_t + --prog_data[fl_lfo]*12);
+//                    			else {
+//                    				prog_data[fl_v + par_num] = enc_speed_dec(prog_data[fl_v + par_num],0);
+//                            		if(par_num)DisplayTask->ParamIndic(53,par_num & 3,prog_data[fl_v + par_num]);
+//                            		else DisplayTask->ParamIndicMix(53,0,prog_data[fl_v]);
+//                    			}
+//                    			gui_send(8,par_num);
+//                    		}break;
+//                    	case 6:if(prog_data[hpf_fl] > 0)
+//                    			{
+//                    				prog_data[hpf_fl] = enc_speed_dec(prog_data[hpf_fl],0);
+//                    				DisplayTask->ParamIndic(53,par_num & 3,prog_data[hpf_fl]);
+//                    				gui_send(8,par_num);
+//                    			}break;
+//                    	case 7:if(prog_data[flan_pos])
+//                    			{
+//                    		        DisplayTask->StringOut(53,3,TDisplayTask::fntSystem , 0 , (uint8_t*)eq_pre_post + --prog_data[flan_pos] * 5);
+//                    		        gui_send(8,par_num);
+//                    			}break;
+//                    	}
+//                    }
+//                  }
+//                if(encoder_state == 2)
+//                  {
+//                    if(encoder_knob_selected == 0)
+//                      {
+//                        if(par_num < 7)
+//                          {
+//                        	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)fl_list + par_num++ * 8);
+//                            if(par_num == 4)
+//                            {
+//                                DisplayTask->Clear();
+////                           	    DisplayTask->Icon_Strel(10,1);
+//                            	for(uint8_t i = 0 ; i < 4 ; i++)
+//                            	{
+//                            		if(i)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)fl_list + (par_num + i)*8);
+//                            		if(i < 2)DisplayTask->ParamIndic(53,i,prog_data[fl_d + i]);
+//                            		else {
+//                            			if(i == 2)DisplayTask->ParamIndic(53,2,prog_data[hpf_fl]);
+//                            			else DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)eq_pre_post + prog_data[flan_pos] * 5);
+//                            		}
+//                            	}
+//                            }
+//                        	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)fl_list + par_num * 8);
+//                        	tim5_start(0);
+//                          }
+//                      }
+//                    else {
+//                    	switch(par_num){
+//                    	case 0:case 1:case 2:case 3:case 4:case 5:
+//                    		if(prog_data[fl_v + par_num] < 127)
+//                    		{
+//                    			if(par_num == 1)
+//                    			{
+//                    				if(prog_data[fl_v + par_num] < 1)
+//                    				{
+//                              		  prog_data[fl_v + par_num]++;
+//                              		  DisplayTask->StringOut(53,1,TDisplayTask::fntSystem,0,(uint8_t*)fl_t + prog_data[fl_lfo]*9);
+//                              		  gui_send(8,par_num);
+//                    				}
+//                    			}
+//                    			else {
+//                    				prog_data[fl_v + par_num] = enc_speed_inc(prog_data[fl_v + par_num],127);
+//                          		    if(par_num)DisplayTask->ParamIndic(53,par_num & 3,prog_data[fl_v + par_num]);
+//                          		    else DisplayTask->ParamIndicMix(53,0,prog_data[fl_v]);
+//                          		    gui_send(8,par_num);
+//                    			}
+//                    		}break;
+//                    	case 6:if(prog_data[hpf_fl] < 127)
+//                    			{
+//                    				prog_data[hpf_fl] = enc_speed_inc(prog_data[hpf_fl],127);
+//                    				DisplayTask->ParamIndic(53,par_num & 3,prog_data[hpf_fl]);
+//                    				gui_send(8,par_num);
+//                    			}
+//                    		break;
+//                    	case 7:if(!prog_data[flan_pos])
+//                    			{
+//                    		        DisplayTask->StringOut(53,3,TDisplayTask::fntSystem , 0 , (uint8_t*)eq_pre_post + ++prog_data[flan_pos] * 5);
+//                    		        gui_send(8,par_num);
+//                    			}break;
+//                    	}
+//                     }
+//                  }
+//                clean_flag();
+//              }
+//            if(encoder_knob_pressed == 1)
+//              {
+//                    if(encoder_knob_selected == 0)
+//                      {
+//                        encoder_knob_selected = 1;
+//                        DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,2,(uint8_t*)fl_list + par_num * 8);
+//                      }
+//                    else {
+//                    	DisplayTask->StringOut(6,par_num & 3,TDisplayTask::fntSystem,0,(uint8_t*)fl_list + par_num * 8);
+//                        encoder_knob_selected = 0;
+//                    }
+//                    tim5_start(1);
+//                    clean_flag();
+//              }
+//          if(k_up == 1)
+//            {
+//        	  gui_send(15,0);
+//        	  GUI_return_to_main_menu();
+//            }
           break;
 //--------------------------------------------------------------Early Reflection---------------------------------
         case MENU_EARLY_REFLECTIONS:
@@ -1991,7 +1990,7 @@ void gui(void)
                           if(par_num == 3)
                            {
                             DisplayTask->Clear();
-                       	    DisplayTask->Icon_Strel(2,2);
+//                       	    DisplayTask->Icon_Strel(2,2);
                        	    for(uint8_t i = 0 ; i < 3 ; i++)
                        		 {
                        	    	DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)rev_list + i*7);
@@ -2016,7 +2015,7 @@ void gui(void)
                         	  if(par_num == 7)
                         	  {
                                  DisplayTask->Clear();
-                             	 DisplayTask->Icon_Strel(2,3);
+//                             	 DisplayTask->Icon_Strel(2,3);
                              	 for(uint8_t i = 0 ; i < 3 ; i++)
                              	 {
                              	  	DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)rev_list + (i + 4)*7);
@@ -2089,7 +2088,7 @@ void gui(void)
                           if(par_num == 4)
                           {
                             DisplayTask->Clear();
-                       	    DisplayTask->Icon_Strel(2,3);
+//                       	    DisplayTask->Icon_Strel(2,3);
                        	    for(uint8_t i = 1 ; i < 4 ; i++)
                        	    {
                        	    	DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)rev_list + (par_num + i)*7);
@@ -2107,7 +2106,7 @@ void gui(void)
                         	 if(par_num == 8)
                         	 {
                                  DisplayTask->Clear();
-                            	 DisplayTask->Icon_Strel(2,1);
+//                            	 DisplayTask->Icon_Strel(2,1);
                             	 if(prog_data[rev_t] && (prog_data[rev_t] != 4))DisplayTask->ParamIndic(53,0,127 - prog_data[rev_di]);
                             	 else DisplayTask->StringOut(53,0,TDisplayTask::fntSystem,0,(uint8_t*)" ---     ");
                             	 DisplayTask->StringOut(6,1,TDisplayTask::fntSystem,0,(uint8_t*)rev_list + (par_num + 1) * 7);
@@ -2223,7 +2222,7 @@ void gui(void)
                           if(par_num == 3)
                           {
                               DisplayTask->Clear();
-                         	  DisplayTask->Icon_Strel(1,2);
+//                         	  DisplayTask->Icon_Strel(1,2);
                          	  for(uint8_t i = 0 ; i < 3; i++)
                          	  {
                                   DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)tr_list + i*8);
@@ -2262,7 +2261,7 @@ void gui(void)
                           if(par_num == 4)
                           {
                               DisplayTask->Clear();
-                         	  DisplayTask->Icon_Strel(1,1);
+//                         	  DisplayTask->Icon_Strel(1,1);
                          	  DisplayTask->StringOut(53,0,TDisplayTask::fntSystem,0,(uint8_t*)tr_t_list + prog_data[tr_m_s]*7 + 14);
                          	  DisplayTask->StringOut(53,1,TDisplayTask::fntSystem,0,(uint8_t*)tap_tim + prog_data[t_tap_t]*6);
                          	  DisplayTask->StringOut(6,1,TDisplayTask::fntSystem,0,(uint8_t*)tr_list + (par_num + 1) * 8);
@@ -3295,7 +3294,7 @@ void gui(void)
                          if(par_num == 3)
                          {
                         	 DisplayTask->Clear();
-                        	 DisplayTask->Icon_Strel(7,1);
+                        	 DisplayTask->Icon_Strel(ICON_CC, STRELKA_UP);
                         	 DisplayTask->StringOut(0,1,TDisplayTask::fntSystem,0,(uint8_t*)contr_list + (par_num+1) * 7);
                         	 DisplayTask->StringOut(0,2,TDisplayTask::fntSystem,0,(uint8_t*)contr_list + (par_num+2) * 7);
                         	 DisplayTask->StringOut(0,3,TDisplayTask::fntSystem,0,(uint8_t*)contr_list + (par_num+3) * 7);
@@ -3442,7 +3441,7 @@ void gui(void)
                           if(par_num == 3)
                           {
                         	  DisplayTask->Clear();
-                        	  DisplayTask->Icon_Strel(11,2);
+                        	  DisplayTask->Icon_Strel(ICON_SY, STRELKA_DOWN);
                         	  for(uint8_t i = 0 ; i < 4 ; i++)
                         	  {
                         		  DisplayTask->StringOut(3,i,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + i*12);
@@ -3461,7 +3460,7 @@ void gui(void)
                         	  if(par_num == 7)
                         	  {
                     			  DisplayTask->Clear();
-                    			  DisplayTask->Icon_Strel(11,3);
+                    			  DisplayTask->Icon_Strel(ICON_SY, STRELKA_UPDOWN);
                     			  DisplayTask->StringOut(3,0,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + 4*12);
                     			  DisplayTask->StringOut(3,1,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + 5*12);
                     			  DisplayTask->StringOut(44,1,TDisplayTask::fntSystem,0,(uint8_t*)spdif_type + sys_para[spdif_t]*12);
@@ -3541,7 +3540,7 @@ void gui(void)
                 		  if(par_num == 4)
                 		  {
                 			  DisplayTask->Clear();
-                			  DisplayTask->Icon_Strel(11,3);
+                			  DisplayTask->Icon_Strel(ICON_SY, STRELKA_UPDOWN);
                 			  DisplayTask->StringOut(3,1,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + (par_num + 1)*12);
                 			  DisplayTask->StringOut(44,1,TDisplayTask::fntSystem,0,(uint8_t*)spdif_type + sys_para[spdif_t]*12);
                 			  DisplayTask->StringOut(3,2,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + (par_num + 2)*12);
@@ -3552,7 +3551,7 @@ void gui(void)
                 			  if(par_num == 8)
                 			  {
                 				  DisplayTask->Clear();
-                				  DisplayTask->Icon_Strel(11,1);
+                				  DisplayTask->Icon_Strel(ICON_SY, STRELKA_UPDOWN);
                 				  DisplayTask->StringOut(3,0,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + (par_num + 1)*12);
                 				  DisplayTask->StringOut(3,1,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + (par_num + 1)*12);
                 				  DisplayTask->StringOut(39,1,TDisplayTask::fntSystem,0,(uint8_t*)time_type + sys_para[tim_type]*4);
@@ -3845,7 +3844,7 @@ void gui(void)
           current_menu = MENU_SYSTEM;
           encoder_knob_selected = 0;
       	  DisplayTask->Clear();
-      	  DisplayTask->Icon_Strel(11,2);
+      	  DisplayTask->Icon_Strel(ICON_SY, STRELKA_DOWN);
       	  for(uint8_t i = 0 ; i < 4 ; i++)
       	  {
       		  DisplayTask->StringOut(3,i,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + i*12);
@@ -4392,7 +4391,7 @@ void gui(void)
    			    	if(i == 3)DisplayTask->StringOut(44,i,TDisplayTask::fntSystem,0,(uint8_t*)tempo_type + sys_para[tap_typ]*7);
    			    }
    	            current_menu = MENU_SYSTEM;
-   	            DisplayTask->Icon_Strel(11,1);
+   	            DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
    	            encoder_knob_selected = 0;
    	            tim5_start(0);
    	            clean_flag();
@@ -5218,10 +5217,6 @@ void gui(void)
                 clean_flag();
               }
         	break;
-//---------------------------------------------------------Gate---------------------------------------------------------
-//        case MENU_GATE: GUI_gate_menu_task(); break;
-//-------------------------------------------------------------Compressor--------------------------------------------
-        case MENU_COMPRESSOR: GUI_compressor_menu_task(); break;
 //------------------------------------------------------MIDI Map----------------------------------------------
         case MENU_MIDI_PC:
             if(!encoder_knob_selected)
@@ -5300,7 +5295,7 @@ void gui(void)
    		    	if(i == 3)DisplayTask->StringOut(44,i,TDisplayTask::fntSystem,0,(uint8_t*)tempo_type + sys_para[tap_typ]*7);
    		    }
    	        current_menu = MENU_SYSTEM;
-   	        DisplayTask->Icon_Strel(11,1);
+   	        DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
    	        encoder_knob_selected = 0;
    	        tim5_start(0);
    	        clean_flag();
@@ -5325,7 +5320,7 @@ void gui(void)
                      if(par_num == 3)
                       {
                   	  DisplayTask->Clear();
-                  	  DisplayTask->Icon_Strel(15,2);
+//                  	  DisplayTask->Icon_Strel(15,2);
                   	  for(uint8_t i = 0 ; i < 4 ; i++)
                   		  {
                   		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + i*8);
@@ -5341,7 +5336,7 @@ void gui(void)
                   	   if(par_num == 7)
                   	   {
                        	  DisplayTask->Clear();
-                       	  DisplayTask->Icon_Strel(15,3);
+//                       	  DisplayTask->Icon_Strel(15,3);
                       	  for(uint8_t i = 0 ; i < 4 ; i++)
                       		{
                       	     DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + (i+4)*8);
@@ -5385,7 +5380,7 @@ void gui(void)
                      if(par_num == 4)
                      {
                   	  DisplayTask->Clear();
-                  	  DisplayTask->Icon_Strel(15,3);
+//                  	  DisplayTask->Icon_Strel(15,3);
                   	  for(uint8_t i = 0 ; i < 4 ; i++)
                   		  {
                   		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + (i+par_num)*8);
@@ -5396,7 +5391,7 @@ void gui(void)
                   	   if(par_num == 8)
                   	   {
                        	  DisplayTask->Clear();
-                       	  DisplayTask->Icon_Strel(15,1);
+//                       	  DisplayTask->Icon_Strel(15,1);
                        	  for(uint8_t i = 0 ; i < 4 ; i++)
                        		{
                     		    DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + (i+par_num)*8);
@@ -5497,7 +5492,7 @@ void gui(void)
            current_menu = MENU_SYSTEM;
            DisplayTask->Clear();
            encoder_knob_selected = 0;
- 		   DisplayTask->Icon_Strel(11,1);
+ 		   DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
  		   DisplayTask->StringOut(3,0,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + (par_num + 1)*12);
  		   if(sys_para[tun_ext] & 0x80)DisplayTask->StringOut(78,0,TDisplayTask::fntSystem,0,(uint8_t*)expr_on_off);
  		   else DisplayTask->StringOut(78,0,TDisplayTask::fntSystem,0,(uint8_t*)expr_on_off + 5);

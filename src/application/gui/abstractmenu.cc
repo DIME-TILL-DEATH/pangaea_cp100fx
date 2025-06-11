@@ -1,5 +1,7 @@
 #include "abstractmenu.h"
 
+#include "gui_task.h"
+
 const uint8_t AbstractMenu::ascii_low1[];
 const uint8_t AbstractMenu::ascii_low2[];
 const uint8_t AbstractMenu::ascii_hig1[];
@@ -17,4 +19,8 @@ void AbstractMenu::keyUp()
 		currentMenu = topLevelMenu;
 		topLevelMenu->show();
 	}
+
+	clean_flag();
+
+	delete(this);
 }

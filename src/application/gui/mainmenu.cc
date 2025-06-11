@@ -18,7 +18,6 @@
 
 #include "abstractmenu.h"
 
-#include "menu_gate.h"
 #include "menu_compressor.h"
 #include "menu_preamp.h"
 #include "menu_pa.h"
@@ -223,7 +222,6 @@ void MainMenu::keyDown()
 
 		preset_edited = 1;
 		prog_cur = 1;
-		DisplayTask->Menu_init();
 		tim5_start(0);
 		clean_flag();
 	}
@@ -321,7 +319,7 @@ void MainMenu::key4()
 	DisplayTask->Clear();
 	current_menu = MENU_SYSTEM;
 	DisplayTask->Clear();
-	DisplayTask->Icon_Strel(11,2);
+	DisplayTask->Icon_Strel(ICON_SY, STRELKA_DOWN);
 	for(uint8_t i = 0 ; i < 4 ; i++)
 	{
 		if(!i) DisplayTask->StringOut(3,i,TDisplayTask::fntSystem,2,(uint8_t*)sys_menu_list + i*12);

@@ -33,7 +33,7 @@ uint8_t* amp_param_ptrs[] = {
 void GUI_amp_select()
 {
 	DisplayTask->Clear();
-	DisplayTask->Icon_Strel(8,2);
+//	DisplayTask->Icon_Strel(8,2);
 	for(uint8_t i = 0 ; i < 3 ; i++)
 	{
 		DisplayTask->StringOut(3,i,TDisplayTask::fntSystem , 0 , (uint8_t*)&amp_param_strings[i]);
@@ -94,7 +94,7 @@ void GUI_amp_menu_task()
 					if(par_num == 2)
 					{
 						DisplayTask->Clear();
-						DisplayTask->Icon_Strel(8,2);
+//						DisplayTask->Icon_Strel(8,2);
 						for(uint8_t i = 0 ; i < 3 ; i++)
 						{
 							DisplayTask->StringOut(3,i,TDisplayTask::fntSystem , 0 , (uint8_t*)amp_param_strings + i*9);
@@ -148,7 +148,7 @@ void GUI_amp_menu_task()
 					{
 						out_ind_fl = 0;
 						DisplayTask->Clear();
-						DisplayTask->Icon_Strel(8,1);
+//						DisplayTask->Icon_Strel(8,1);
 						DisplayTask->StringOut(36,0,TDisplayTask::fntSystem,0,(uint8_t*)amp_types_strings + prog_data[am_mode]*11);
 					}
 					DisplayTask->StringOut(3,par_num%3,TDisplayTask::fntSystem,2,(uint8_t*)amp_param_strings + par_num*9);

@@ -30,7 +30,8 @@ private:
 	uint8_t num_men = 0;
 	uint8_t num_men_temp = 0;
 
-	ParamListMenu gateMenu{this, MENU_GATE};
+	ParamListMenu* createGateMenu();
+	ParamListMenu* createCompressorMenu();
 
 	void icon_refresh(uint8_t num);
 

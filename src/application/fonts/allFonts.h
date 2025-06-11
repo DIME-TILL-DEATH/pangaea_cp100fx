@@ -78,7 +78,6 @@ void disp_contr(uint8_t val);
 void mode_ind(uint8_t val);
 void tap_ind (uint8_t cur);
 void sys_menu_init(void);
-void icon_print(uint8_t num , uint8_t strel);
 void pot32x32_(uint8_t col , uint8_t pag , uint16_t sym);
 void tun_ini(void);
 void tun_ind(void);

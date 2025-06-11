@@ -24,7 +24,7 @@ uint8_t* preamp_param_ptrs[] = {
 void preamp_show_first_page()
 {
 	DisplayTask->Clear();
-	DisplayTask->Icon_Strel(12, 2);
+//	DisplayTask->Icon_Strel(12, 2);
 
 	for(uint8_t i = 0; i < 2; i++)
 	{
@@ -42,7 +42,7 @@ void preamp_show_first_page()
 void preamp_show_second_page()
 {
 	DisplayTask->Clear();
-	DisplayTask->Icon_Strel(12,1);
+//	DisplayTask->Icon_Strel(12,1);
 
 	for(uint8_t i = 0; i < 3; i++)
 	{

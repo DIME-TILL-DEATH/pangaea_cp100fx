@@ -76,20 +76,12 @@ ModulesMenu::ModulesMenu(AbstractMenu* parent)
 {
 	topLevelMenu = parent;
 	m_menuType = MENU_MODULES;
-
-	const uint8_t gateParamNum = 3;
-	BaseParam* gateParams[gateParamNum];
-	gateParams[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &prog_data[GATE_THRESHOLD]);
-	gateParams[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &prog_data[GATE_ATTACK]);
-	gateParams[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Decay", &prog_data[GATE_DECAY]);
-	for(int i=0; i<gateParamNum; i++) gateParams[i]->setDspAddress(DSP_ADDRESS_GATE, i);
-
-	gateMenu.setParams(gateParams, gateParamNum);
 }
 
 void ModulesMenu::show()
 {
-
+	DisplayTask->Menu_init();
+	tim5_start(0);
 }
 
 void ModulesMenu::task()
@@ -174,7 +166,7 @@ void ModulesMenu::encoderPressed()
 			break;
 		case 2:
 			prog_data[ENABLE_COMPRESSOR] = !(bool)prog_data[ENABLE_COMPRESSOR];
-		  gui_send(18, ENABLE_COMPRESSOR | (prog_data[ENABLE_COMPRESSOR] << 8));
+		    gui_send(18, ENABLE_COMPRESSOR | (prog_data[ENABLE_COMPRESSOR] << 8));
 		  break;
 		case 3:
 		  if(prog_data[pream] == 0)prog_data[pream] = 1;
@@ -367,7 +359,7 @@ void ModulesMenu::keyDown()
 		  {
 			  current_menu = MENU_RESONANCE_FILTER;
 			  DisplayTask->Clear();
-			  DisplayTask->Icon_Strel(15,2);
+//			  DisplayTask->Icon_Strel(15,2);
 			  for(uint8_t i = 0 ; i < 4 ; i++)
 				{
 				  DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + i*8);
@@ -382,19 +374,17 @@ void ModulesMenu::keyDown()
 		  }
 		  break;
 		case 1:
-		  if(prog_data[gate] == 1)
+		  if(prog_data[ENABLE_GATE] == 1)
 		  {
-//			  current_menu = MENU_GATE;
-//			  GUI_gate_select();
-			  currentMenu = &gateMenu;
-			  gateMenu.show();
+			  currentMenu = createGateMenu();
+			  currentMenu->show();
 		  }
 		  break;
 		case 2:
-		  if(prog_data[compr] == 1)
+		  if(prog_data[ENABLE_COMPRESSOR] == 1)
 		  {
-			  current_menu = MENU_COMPRESSOR;
-			  GUI_compressor_select();
+			  currentMenu = createCompressorMenu();
+			  currentMenu->show();
 		  }
 		  break;
 		case 3:
@@ -447,7 +437,7 @@ void ModulesMenu::keyDown()
 		   current_menu = MENU_EQ;
 		   eq_num = 0;
 		   DisplayTask->EqInit();
-		   DisplayTask->Icon_Strel(4,2);
+//		   DisplayTask->Icon_Strel(4,2);
 		  }
 		  break;
 		case 7:
@@ -455,7 +445,7 @@ void ModulesMenu::keyDown()
 		  current_menu = MENU_PHASER;
 		  gui_send(15,7);
 		  DisplayTask->Clear();
-		  DisplayTask->Icon_Strel(9,2);
+//		  DisplayTask->Icon_Strel(9,2);
 		  for(uint8_t i = 0 ; i < 4 ; i++)
 			{
 			  DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)phas_list + i*8);
@@ -470,7 +460,7 @@ void ModulesMenu::keyDown()
 			current_menu = MENU_FLANGER;
 			gui_send(15,4);
 			DisplayTask->Clear();
-			DisplayTask->Icon_Strel(10,2);
+//			DisplayTask->Icon_Strel(10,2);
 			for(uint8_t i = 0 ; i < 4 ; i++)
 			  {
 				DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)fl_list + i*8);
@@ -488,7 +478,7 @@ void ModulesMenu::keyDown()
 		  current_menu = MENU_CHORUS;
 		  gui_send(15,5);
 		  DisplayTask->Clear();
-		  DisplayTask->Icon_Strel(5,2);
+//		  DisplayTask->Icon_Strel(5,2);
 		  for(uint8_t i = 0 ; i < 4 ; i++)
 			{
 			  if(prog_data[chor_typ] < 4)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)chor_list + i*8);
@@ -529,7 +519,7 @@ void ModulesMenu::keyDown()
 			  }
 			  else DisplayTask->ParamIndicMix(53,0,prog_data[d_vol]);
 			}
-		  DisplayTask->Icon_Strel(0,2);
+//		  DisplayTask->Icon_Strel(0,2);
 		  par_num = 0;
 		  }
 		  break;
@@ -537,7 +527,7 @@ void ModulesMenu::keyDown()
 		  if(prog_data[early] == 1){
 		  current_menu = MENU_EARLY_REFLECTIONS;
 		  DisplayTask->Clear();
-		  DisplayTask->Icon_Strel(3,0);
+//		  DisplayTask->Icon_Strel(3,0);
 		  for(uint8_t i = 0 ; i < 2 ; i++)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)ear_list + i*5);
 		  DisplayTask->ParamIndicMix(53,0,prog_data[early_vol]);
 		  DisplayTask->ParamIndic(53,1,prog_data[early_vol + 1]);
@@ -548,7 +538,7 @@ void ModulesMenu::keyDown()
 		  if(prog_data[reve] == 1){
 		  current_menu = MENU_REVERB;
 		  DisplayTask->Clear();
-		  DisplayTask->Icon_Strel(2,2);
+//		  DisplayTask->Icon_Strel(2,2);
 		  for(uint8_t i = 0 ; i < 4 ; i++)
 			{
 			  DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)rev_list + i*7);
@@ -580,7 +570,7 @@ void ModulesMenu::keyDown()
 		  current_menu = MENU_TREMOLO;
 		  gui_send(15,6);
 		  DisplayTask->Clear();
-		  DisplayTask->Icon_Strel(1,2);
+//		  DisplayTask->Icon_Strel(1,2);
 		  for(uint8_t i = 0 ; i < 4 ; i++)
 			{
 			  DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)tr_list + i*8);
@@ -737,4 +727,36 @@ void ModulesMenu::icon_refresh(uint8_t num)
 	case 12:DisplayTask->Ef_icon(92,2,(uint8_t*)rv,prog_data[reve]);break;
 	case 13:DisplayTask->Ef_icon(110,2,(uint8_t*)tr,prog_data[trem]);break;
 	}
+}
+
+ParamListMenu* ModulesMenu::createCompressorMenu()
+{
+	const uint8_t compressorParamNum = 5;
+	BaseParam* compressorParams[compressorParamNum];
+	compressorParams[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &prog_data[COMPRESSOR_THRESHOLD]);
+	compressorParams[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Ratio", &prog_data[COMPRESSOR_RATIO]);
+	compressorParams[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &prog_data[COMPRESSOR_VOLUME]);
+	compressorParams[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &prog_data[COMPRESSOR_ATTACK]);
+	compressorParams[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Release", &prog_data[COMPRESSOR_RELEASE]);
+	for(int i=0; i<compressorParamNum; i++) compressorParams[i]->setDspAddress(DSP_ADDRESS_COMPRESSOR, i);
+
+	ParamListMenu* compressorMenu = new ParamListMenu(this, MENU_COMPRESSOR);
+	if(compressorMenu) compressorMenu->setParams(compressorParams, compressorParamNum, 2);
+
+	return compressorMenu;
+}
+
+ParamListMenu* ModulesMenu::createGateMenu()
+{
+	const uint8_t gateParamNum = 3;
+	BaseParam* gateParams[gateParamNum];
+	gateParams[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &prog_data[GATE_THRESHOLD]);
+	gateParams[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &prog_data[GATE_ATTACK]);
+	gateParams[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Decay", &prog_data[GATE_DECAY]);
+	for(int i=0; i<gateParamNum; i++) gateParams[i]->setDspAddress(DSP_ADDRESS_GATE, i);
+
+	ParamListMenu* gateMenu = new ParamListMenu(this, MENU_GATE);
+	if(gateMenu) gateMenu->setParams(gateParams, gateParamNum, 1);
+
+	return gateMenu;
 }

@@ -23,7 +23,7 @@ extern uint8_t led_buf[];
 volatile uint16_t mas_eq_fr;
 
 AbstractMenu* currentMenu;
-MainMenu mainMenu;
+MainMenu* mainMenu;
 
 
 TCSTask::TCSTask () : TTask()
@@ -108,10 +108,13 @@ void TCSTask::Code()
 	send_codec(0xa301);
    	ENCTask->SetEnc(1);
 
-   	currentMenu = &mainMenu;
-
    	sem->Take(portMAX_DELAY);
-	if (DisplayAccess()) mainMenu.show();
+	if (DisplayAccess())
+	{
+		mainMenu = new MainMenu();
+		currentMenu = mainMenu;
+		mainMenu->show();
+	}
 
    	while(1)
    	{

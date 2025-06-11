@@ -1,5 +1,8 @@
+#include "icon_bit.h"
+
 #include "allFonts.h"
 #include "../gui/gui_task.h"
+#include "../gui/abstractmenu.h"
 
 const uint8_t icon_bit[]={
 	0xFE, 0x02, 0x02, 0xF2, 0xF2, 0xF2, 0xE6, 0x0E, 0x1E, 0xFE, 0x02, 0x02, 0xFE, 0xFE, 0xFE, 0xFE, 0xFE,
@@ -42,7 +45,13 @@ const uint8_t strelk[]={
 	0x06, 0x0a, 0x12, 0x22, 0x42,0x82,//DOWN
 	0x42, 0x22, 0x12, 0x0a, 0x06,0x00
 };
-void icon_print(uint8_t num , uint8_t strel)
+
+icon_t iconFormMenuType(gui_menu_type menuType)
+{
+	return (icon_t)(menuType - MENU_DELAY);
+}
+
+void icon_print(icon_t num, strelka_t strel)
 {
 	uint8_t col = 111;
 	uint8_t col1 = 114;
@@ -55,9 +64,9 @@ void icon_print(uint8_t num , uint8_t strel)
 	  	GPIO_ResetBits(GPIOB,CS);
 	  	GPIO_SetBits(GPIOB,RS);
 		for(int j = 0 ; j < 17 ; j++)
-			{
-				oled023_1_send_data(icon_bit[a++]);
-			}
+		{
+			oled023_1_send_data(icon_bit[a++]);
+		}
 		GPIO_SetBits(GPIOB,CS);
 	}
 	switch (strel){
@@ -113,6 +122,7 @@ void icon_print(uint8_t num , uint8_t strel)
 	}
 	}
 }
+
 void strel_print(uint8_t col , uint8_t pag , uint8_t dir)
 {
 	Set_Page_Address(pag);

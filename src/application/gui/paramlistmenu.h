@@ -8,8 +8,9 @@ class ParamListMenu : public AbstractMenu
 {
 public:
 	ParamListMenu(AbstractMenu* parent, gui_menu_type menuType);
+	~ParamListMenu();
 
-	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount);
+	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount, uint8_t pages);
 
 	void show() override;
 	void task() override;
@@ -24,9 +25,15 @@ private:
 	BaseParam* paramsList[64];
 	uint8_t paramsCount{0};
 
+	int8_t currentPageNumber{-1};
+
+	uint8_t pagesCount;
+
 	bool encoderKnobSelected;
 
 	static constexpr uint8_t paramsOnPage = 4;
+
+	void printPage();
 };
 
 

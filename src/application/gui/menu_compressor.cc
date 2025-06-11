@@ -23,7 +23,7 @@ uint8_t* compressor_param_ptrs[] = {
 void compressor_show_first_page()
 {
 	DisplayTask->Clear();
-	DisplayTask->Icon_Strel(13, 2);
+//	DisplayTask->Icon_Strel(13, 2);
 	for(uint8_t i = 0; i < 4; i++)
 	{
 		DisplayTask->StringOut(6, i, TDisplayTask::fntSystem , 0, (uint8_t*)&compressor_param_strings[i]);
@@ -34,7 +34,7 @@ void compressor_show_first_page()
 void compressor_show_second_page()
 {
 	DisplayTask->Clear();
-	DisplayTask->Icon_Strel(13,1);
+//	DisplayTask->Icon_Strel(13,1);
 	DisplayTask->ParamIndic(53, par_num%3, *compressor_param_ptrs[par_num]);
 }
 

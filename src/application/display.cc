@@ -1,12 +1,6 @@
-/*
- * display.cc
- *
- *  Created on: Aug 30, 2014
- *      Author: s
- */
-
 #include "display.h"
 #include "fonts/allFonts.h"
+#include "fonts/icon_bit.h"
 #include "eepr.h"
 
 volatile uint8_t ind_en;
@@ -169,7 +163,7 @@ void TDisplayTask::Code()
         	 write_pot();
         	 break;
          case dcIcStrel:
-        	 icon_print(cmd.IcStrelParam.num,cmd.IcStrelParam.str);
+        	 icon_print(cmd.IcStrelParam.num, cmd.IcStrelParam.str);
         	 break;
          case dcTunIni:
         	 tun_ini();
@@ -433,7 +427,7 @@ void TDisplayTask::Contrast(uint8_t val)
   cmd.ContrastParam.data = val;
   Command( &cmd ) ;
 }
-void TDisplayTask::Icon_Strel(uint8_t num , uint8_t strel)
+void TDisplayTask::Icon_Strel(icon_t num , strelka_t strel)
 {
   TDisplayCmd cmd ;
   cmd.cmd=dcIcStrel;

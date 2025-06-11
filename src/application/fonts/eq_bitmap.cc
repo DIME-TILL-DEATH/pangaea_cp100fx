@@ -4,6 +4,7 @@
 #include "eepr.h"
 #include "../gui/gui_task.h"
 #include "filt.h"
+#include "icon_bit.h"
 
 const uint8_t eq_bit[] = {0x00,0x80,0xff,0x7f,
                           0x00,0x80,0xff,0x3f,
@@ -140,7 +141,7 @@ void eq_init(void)
    Arsys_sym_down(96,2,100,0);
    Arsys_sym_up(102,1,66,0);
    Arsys_sym_down(102,2,66,0);
-   icon_print(4,2);
+   icon_print(ICON_EQ, STRELKA_DOWN);
 }
 const uint16_t fr_l[5] = {120,360,800,2000,6000};
 void eq_par(uint8_t col , uint8_t pag , int16_t num , uint8_t type , uint8_t band)

@@ -283,6 +283,7 @@ void menu_init(void)
 	Arsys_ef(92,2,(uint8_t*)rv,prog_data[reve]);
 	Arsys_ef(110,2,(uint8_t*)tr,prog_data[trem]);
 }
+
 void prog_ind(uint32_t val)
 {
   val++;

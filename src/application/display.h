@@ -10,6 +10,8 @@
 
 #include "appdefs.h"
 
+#include "fonts/icon_bit.h"
+
 #define FILE_NAME_LENGTH 64
 
 class TDisplayTask : public TTask
@@ -191,8 +193,8 @@ class TDisplayTask : public TTask
                }TEqLHParam;
      typedef struct
      	 	   {
-    	 	 	uint8_t num;
-    	 	 	uint8_t str;
+    	 	 	 icon_t num;
+    	 	 	 strelka_t str;
                }TIcStrelParam;
      typedef struct
                {
@@ -309,7 +311,7 @@ class TDisplayTask : public TTask
      void Led_Write(void);
      void Pot_Write(void);
      void Main_scr();
-     void Icon_Strel(uint8_t num , uint8_t strel);
+     void Icon_Strel(icon_t num , strelka_t strel);
      void TunIni(void);
      void TunNote(void);
      void TunStrel(void);
