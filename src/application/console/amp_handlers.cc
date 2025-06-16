@@ -30,7 +30,7 @@ static void amp_slave_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 static void amp_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&prog_data[AMP_TYPE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_AMP_TYPE, 0, prog_data[AMP_TYPE]);
+	DSP_contr_set_parameter(DSP_ADDRESS_AMP_TYPE, prog_data[AMP_TYPE], 0);
 }
 
 void set_amp_handlers(TReadLine *rl)
