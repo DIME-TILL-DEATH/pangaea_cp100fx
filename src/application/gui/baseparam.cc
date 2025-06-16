@@ -29,3 +29,9 @@ void BaseParam::setBounds(uint8_t minBound, uint8_t maxBound)
 	m_minValue = minBound;
 	m_maxValue = maxBound;
 }
+
+const char* BaseParam::name()
+{
+	if(m_disabled) return " -- ";
+	else return m_name;
+}

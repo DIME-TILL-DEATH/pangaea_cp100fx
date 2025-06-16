@@ -53,7 +53,7 @@ void TCSTask::Code()
 
     prog = prog1 = sys_para[31];
 
-    DisplayTask->Start_screen(1);
+    DisplayTask->StartScreen(1);
 
 	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);
 	TIM_Cmd(TIM4,ENABLE);
@@ -70,7 +70,7 @@ void TCSTask::Code()
    	CSTask->DisplayAccess(true);
 
   	gui_send(14,0); // global cab on off
-  	gui_send(15,0); // indicator source
+  	gui_send(15, DSP_INDICATOR_OUT);
   	gui_send(26,sys_para[spdif_t]);
   	gui_send(33,sys_para[tap_typ] | (sys_para[tap_hi] << 8)); //global temp
 	tempo_fl = 1;
@@ -179,12 +179,13 @@ extern "C" void DMA1_Stream2_IRQHandler()
   ind_out_l[0] = abs(ccl);
   if(ind_out_l[0] > ind_out_l[1])ind_out_l[1] = ind_out_l[0];
 
-	if((ind_poin++ == 4000)
-			&& ((current_menu == MENU_VOLUME) || (current_menu == MENU_CABSIM)
-			|| (current_menu == MENU_PA) || (current_menu == MENU_PREAMP)
-			|| (current_menu == MENU_ATTENUATOR)) && (!tuner_use))
+	if((ind_poin++ == 4000) && (!tuner_use)
+//			&& ((current_menu == MENU_VOLUME) || (current_menu == MENU_CABSIM)
+//			|| (current_menu == MENU_PA) || (current_menu == MENU_PREAMP)
+//			|| (current_menu == MENU_ATTENUATOR))
+			)
 	{
-	  DisplayTask->Indicator();
+	  DisplayTask->VolIndicator();
 	  ind_poin = 0;
 	}
 

@@ -110,53 +110,55 @@ void disp_start(uint8_t num)
 	extern volatile uint8_t ind_en;
 	ind_en = 1;
 }
+
 void vol_ind(void)
 {
-  uint8_t vvol = (vol_vol >> 1) + 1;
-  uint8_t outl;
-  ind_poin = 0;
-  if(ind_out_l[1] < 8388000)outl = /*vsqrt*/(ind_out_l[1])*(63.0f/(8384000.0f));
-  else outl = 63;
-  ind_in_p[1] = ind_out_l[1] = 0;
+	uint8_t vvol = (vol_vol >> 1) + 1;
+	uint8_t outl;
+	ind_poin = 0;
+	if(ind_out_l[1] < 8388000) outl = /*vsqrt*/(ind_out_l[1])*(63.0f/(8384000.0f));
+	else outl = 63;
+	ind_in_p[1] = ind_out_l[1] = 0;
 
-  if(currentMenu->menuType() == MENU_MODULES) //if(edit_modules_fl)
-  {
-	  Set_Column_Address(64);
-	  Set_Page_Address(3);
-  	  GPIO_ResetBits(GPIOB,CS);
-	  for(uint8_t i = 0 ; i < 64 ; i++)
-	  {
-	      if((vol_fl == 1) && (i >= vvol - 2) && (i <= vvol))
-	        {
-	          if(i == vvol - 1)oled023_1_send_data(0x42);
-	          else  oled023_1_send_data(0x3c);
-	        }
-	      else {
-	      if(outl > i)oled023_1_send_data(0x3c);
-	      else
-	        {
-	    	  if((i == 63) || (i == 0))oled023_1_send_data(0x3c);
-	          else oled023_1_send_data(0x0);
-	        }
-	      }
-	  }
-	  GPIO_SetBits(GPIOB,CS);
-  }
-  else {
-  	  Set_Column_Address(24);
-  	  Set_Page_Address(3);
-  	  GPIO_ResetBits(GPIOB,CS);
-  	  for(uint8_t i = 0 ; i < 64 ; i++)
-  	  {
-    	if(outl > i)oled023_1_send_data(0x78);
-      	else
-        	{
-          	  if((i == 63) || (i == 0))oled023_1_send_data(0x78);
-          	  else oled023_1_send_data(0x0);
-        	}
-      	  }
-  	  }
-  	  GPIO_SetBits(GPIOB,CS);
+//  if(currentMenu->menuType() == MENU_MODULES) //if(edit_modules_fl)
+//  {
+	Set_Column_Address(64);
+	Set_Page_Address(3);
+	GPIO_ResetBits(GPIOB,CS);
+	for(uint8_t i = 0 ; i < 64 ; i++)
+	{
+		if((vol_fl == 1) && (i >= vvol - 2) && (i <= vvol))
+		{
+			if(i == vvol - 1) oled023_1_send_data(0x42);
+			else  oled023_1_send_data(0x3c);
+		}
+		else
+		{
+			if(outl > i) oled023_1_send_data(0x3c);
+			else
+			{
+				if((i == 63) || (i == 0)) oled023_1_send_data(0x3c);
+				else oled023_1_send_data(0x0);
+			}
+		}
+	}
+	GPIO_SetBits(GPIOB,CS);
+//  }
+//  else {
+//  	  Set_Column_Address(24);
+//  	  Set_Page_Address(3);
+//  	  GPIO_ResetBits(GPIOB,CS);
+//  	  for(uint8_t i = 0 ; i < 64 ; i++)
+//  	  {
+//    	if(outl > i)oled023_1_send_data(0x78);
+//      	else
+//        	{
+//          	  if((i == 63) || (i == 0))oled023_1_send_data(0x78);
+//          	  else oled023_1_send_data(0x0);
+//        	}
+//      	  }
+//  	  }
+//	GPIO_SetBits(GPIOB,CS);
 }
 void tap_ind (uint8_t cur)
 {

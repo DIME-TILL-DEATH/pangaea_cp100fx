@@ -22,7 +22,7 @@ ParamListMenu::ParamListMenu(AbstractMenu* parent, gui_menu_type menuType)
 
 ParamListMenu::~ParamListMenu()
 {
-	for(int i=0; i<64; i++)
+	for(int i=0; i<maxParamCount; i++)
 	{
 		if(paramsList[i]) delete(paramsList[i]);
 	}
@@ -30,7 +30,7 @@ ParamListMenu::~ParamListMenu()
 
 void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingParamCount, uint8_t pages)
 {
-	for(int i=0; i<64; i++)
+	for(int i=0; i<maxParamCount; i++)
 	{
 		paramsList[i] = nullptr; // clean up
 	}
@@ -47,7 +47,22 @@ void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingPara
 
 void ParamListMenu::show()
 {
+	current_menu = m_menuType;
+
 	currentPageNumber = -1;
+
+	for(int i = 0; i<paramsCount; i++)
+	{
+		if(paramsList[i]->type() == BaseParam::GUI_PARAMETER_LIST)
+		{
+			StringParam* strParam = static_cast<StringParam*>(paramsList[i]);
+			uint8_t* valDisableMask = strParam->getDisableMask();
+			for(int a=0; a<paramsCount; a++)
+			{
+				paramsList[a]->setDisabled(valDisableMask[a]);
+			}
+		}
+	}
 
 	printPage();
 
@@ -66,17 +81,27 @@ void ParamListMenu::task()
 
 void ParamListMenu::encoderPressed()
 {
-	if(!encoderKnobSelected)
+	if(paramsList[currentParamNum]->disabled()) return;
+
+	if(paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_DELAY_TIME ||
+			paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
 	{
-		encoderKnobSelected = true;
-		DisplayTask->StringOut(6, currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
-								2, (uint8_t*)(paramsList[currentParamNum]->name()));
+
 	}
 	else
 	{
-		encoderKnobSelected = false;
-		DisplayTask->StringOut(6, currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
-								0, (uint8_t*)(paramsList[currentParamNum]->name()));
+		if(!encoderKnobSelected)
+		{
+			encoderKnobSelected = true;
+			DisplayTask->StringOut(6, currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+									2, (uint8_t*)(paramsList[currentParamNum]->name()));
+		}
+		else
+		{
+			encoderKnobSelected = false;
+			DisplayTask->StringOut(6, currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+									0, (uint8_t*)(paramsList[currentParamNum]->name()));
+		}
 	}
 	tim5_start(1);
 	clean_flag();
@@ -88,7 +113,9 @@ void ParamListMenu::encoderClockwise()
 	{
 		if(currentParamNum < paramsCount - 1)
 		{
-			currentParamNum++; // Порядок важен!
+			do{
+				currentParamNum++; // Порядок важен!
+			}while(paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY && currentParamNum < paramsCount);
 			printPage();
 			tim5_start(0);
 		}
@@ -97,11 +124,7 @@ void ParamListMenu::encoderClockwise()
 	{
 		if(paramsList[currentParamNum]->value() - paramsList[currentParamNum]->offset() < paramsList[currentParamNum]->maxValue())
 		{
-			if(paramsList[currentParamNum]->stepSize() == 1)
-				*(paramsList[currentParamNum]->valuePtr()) = enc_speed_inc(paramsList[currentParamNum]->value(), 0);
-			else
-				*(paramsList[currentParamNum]->valuePtr()) += paramsList[currentParamNum]->stepSize();
-
+			increaseParam(paramsList[currentParamNum]);
 			printParam(paramsList[currentParamNum], currentParamNum % paramsOnPage);
 
 			if(paramsList[currentParamNum]->bytePosition() != NOT_SEND_POS)
@@ -119,7 +142,9 @@ void ParamListMenu::encoderCounterClockwise()
 	{
 		if(currentParamNum > 0)
 		{
-			currentParamNum--; // Порядок важен!
+			do{
+				currentParamNum--; // Порядок важен!
+			}while(paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY && currentParamNum > 0);
 			printPage();
 			tim5_start(0);
 		}
@@ -128,11 +153,7 @@ void ParamListMenu::encoderCounterClockwise()
 	{
 		if(paramsList[currentParamNum]->value() - paramsList[currentParamNum]->offset() > paramsList[currentParamNum]->minValue())
 		{
-			if(paramsList[currentParamNum]->stepSize() == 1)
-				*(paramsList[currentParamNum]->valuePtr()) = enc_speed_dec(paramsList[currentParamNum]->value(), 0);
-			else
-				*(paramsList[currentParamNum]->valuePtr()) -= paramsList[currentParamNum]->stepSize();
-
+			decreaseParam(paramsList[currentParamNum]);
 			printParam(paramsList[currentParamNum], currentParamNum % paramsOnPage);
 
 			if(paramsList[currentParamNum]->bytePosition() != NOT_SEND_POS)
@@ -172,6 +193,39 @@ void ParamListMenu::keyDown()
 		}
 		clean_flag();
 	}
+
+	// moog tap
+//	if(prog_data[mog_gen_t])
+//	{
+//		moog_time = tap_global / 48.0f;
+//		gui_send(31,13);
+//	}
+//   clean_flag();
+
+	// delay tap
+//	  if(tap_temp_global() && !sys_para[tap_typ])
+//	  {
+//		  delay_time = tap_global / 3.0f / tap_tim_v[prog_data[d_tap_t]];
+//		  if(delay_time < 2731)
+//		  {
+//			  uint8_t temp = 0;
+//			  if(!sys_para[tim_type])
+//			  {
+//				  if(par_num < 4)DisplayTask->DelayTimeInd(53,1,delay_time);
+//    			  gui_send(3,1);
+//			  }
+//			  else {
+//				  if(delay_time < 2728 && delay_time > 249)
+//				  {
+//					  while(delay_time < bpm_time[temp++]);
+//					  delay_time = bpm_time[temp];
+//					  prog_data[bpm_del] = 60000 / delay_time;
+//					  DisplayTask->ParamIndicNum(53,1,prog_data[bpm_del]);
+//					  DisplayTask->StringOut(90,1,TDisplayTask::fntSystem , 0 , (uint8_t*)"BPM");
+//	      			  gui_send(3,1);
+//				  }
+//			  }
+//		  }
 }
 
 void ParamListMenu::printPage()
@@ -199,6 +253,7 @@ void ParamListMenu::printPage()
 	for(uint8_t i = 0; i < stringCount; i++)
 	{
 		uint8_t displayParamNum = i + currentPageNumber * paramsOnPage;
+		if(paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 		printParam(paramsList[displayParamNum], i);
 		DisplayTask->StringOut(6, i, TDisplayTask::fntSystem , 0, (uint8_t*)(paramsList[displayParamNum]->name()));
 	}
@@ -206,27 +261,79 @@ void ParamListMenu::printPage()
 
 void ParamListMenu::printParam(BaseParam* param, uint8_t yPos)
 {
+	if(param->disabled()) return;
+
 	switch(param->type())
 	{
-	case BaseParam::GUI_PARAMETER_DUMMY: break;
-	case BaseParam::GUI_PARAMETER_LEVEL:
-		DisplayTask->ParamIndic(param->xDisplayPosition(), yPos, param->value());
-		break;
-	case BaseParam::GUI_PARAMETER_MIX:
-		DisplayTask->ParamIndicMix(param->xDisplayPosition(), yPos, param->value());
-		break;
-	case BaseParam::GUI_PARAMETER_PAN:
-		break;
-	case BaseParam::GUI_PARAMETER_SUBMENU:
-		break;
-	case BaseParam::GUI_PARAMETER_LIST:
-	{
-		StringParam* stringParam = static_cast<StringParam*>(param);
-		DisplayTask->StringOut(param->xDisplayPosition(), yPos, TDisplayTask::fntSystem , 0, stringParam->getString(param->value()));
-		break;
+		case BaseParam::GUI_PARAMETER_DUMMY: break;
+		case BaseParam::GUI_PARAMETER_LEVEL:
+			DisplayTask->ParamIndic(param->xDisplayPosition(), yPos, param->value());
+			break;
+		case BaseParam::GUI_PARAMETER_MIX:
+			DisplayTask->ParamIndicMix(param->xDisplayPosition(), yPos, param->value());
+			break;
+		case BaseParam::GUI_PARAMETER_PAN:
+			DisplayTask->ParamIndicPan(param->xDisplayPosition(), yPos, param->value());
+			break;
+		case BaseParam::GUI_PARAMETER_SUBMENU:
+			break;
+		case BaseParam::GUI_PARAMETER_LIST:
+		{
+			StringParam* stringParam = static_cast<StringParam*>(param);
+			DisplayTask->StringOut(param->xDisplayPosition(), yPos, TDisplayTask::fntSystem , 0, stringParam->getString(param->value()));
+			break;
+		}
+		case BaseParam::GUI_PARAMETER_NUM:
+			DisplayTask->ParamIndicNum(param->xDisplayPosition(), yPos, param->value());
+			break;
+		case BaseParam::GUI_PARAMETER_DELAY_TIME:
+		{
+			DisplayTask->DelayTimeInd(param->xDisplayPosition(), yPos, delay_time);
+			break;
+		}
 	}
-	case BaseParam::GUI_PARAMETER_NUM:
-		DisplayTask->ParamIndicNum(param->xDisplayPosition(), yPos, param->value());
-		break;
+}
+
+void ParamListMenu::increaseParam(BaseParam* param)
+{
+	if(paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)
+	{
+		*(paramsList[currentParamNum]->valuePtr()) += 1;
+
+		StringParam* strParam = static_cast<StringParam*>(paramsList[currentParamNum]);
+		uint8_t* valDisableMask = strParam->getDisableMask();
+		for(int i=0; i<paramsCount; i++)
+		{
+			paramsList[i]->setDisabled(valDisableMask[i]);
+		}
+	}
+	else
+	{
+		if(paramsList[currentParamNum]->stepSize() == 1)
+			*(paramsList[currentParamNum]->valuePtr()) = enc_speed_inc(paramsList[currentParamNum]->value(), 0);
+		else
+			*(paramsList[currentParamNum]->valuePtr()) += paramsList[currentParamNum]->stepSize();
+	}
+}
+
+void ParamListMenu::decreaseParam(BaseParam* param)
+{
+	if(paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)
+	{
+		*(paramsList[currentParamNum]->valuePtr()) -= 1;
+
+		StringParam* strParam = static_cast<StringParam*>(paramsList[currentParamNum]);
+		uint8_t* valDisableMask = strParam->getDisableMask();
+		for(int i=0; i<paramsCount; i++)
+		{
+			paramsList[i]->setDisabled(valDisableMask[i]);
+		}
+	}
+	else
+	{
+		if(paramsList[currentParamNum]->stepSize() == 1)
+			*(paramsList[currentParamNum]->valuePtr()) = enc_speed_dec(paramsList[currentParamNum]->value(), 0);
+		else
+			*(paramsList[currentParamNum]->valuePtr()) -= paramsList[currentParamNum]->stepSize();
 	}
 }

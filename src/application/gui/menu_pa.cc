@@ -32,6 +32,8 @@ uint8_t* amp_param_ptrs[] = {
 
 void GUI_amp_select()
 {
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_AMP);
+
 	DisplayTask->Clear();
 //	DisplayTask->Icon_Strel(8,2);
 	for(uint8_t i = 0 ; i < 3 ; i++)
@@ -42,10 +44,10 @@ void GUI_amp_select()
 	}
 	DisplayTask->StringOut(2,3,TDisplayTask::fntSystem , 0 , (uint8_t*)&in_out_strings[1]);
 
-	inp_ind_fl = 0;
-	out_ind_fl = 1;
-	vol_fl = 0;
-	ind_poin = 500;
+//	inp_ind_fl = 0;
+//	out_ind_fl = 1;
+//	vol_fl = 0;
+//	ind_poin = 500;
 	par_num = 0;
 }
 
@@ -165,7 +167,9 @@ void GUI_amp_menu_task()
 	if(k_up == 1)
 	{
 		vol_fl = 0;
-		gui_send(15,0);
+		DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+		gui_send(15, DSP_INDICATOR_OUT);
 		GUI_return_to_main_menu();
+		current_menu = MENU_MODULES;
 	}
 }

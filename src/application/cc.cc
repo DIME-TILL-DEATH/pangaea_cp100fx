@@ -71,21 +71,21 @@ void con_ch(uint8_t adr , uint8_t data)
   volatile uint8_t p = control[adr*4 + 1];
   switch (p){
   case 0:if(i < 64.0f)prog_data[pream] = 0;else prog_data[pream] = 1;contr_send(18, 10 | (prog_data[pream] << 8));
-         if(currentMenu->menuType() == MENU_MODULES) {DisplayTask->Ef_icon(56,0,(uint8_t*)pr,prog_data[pream]);} break; // if(!current_menu)&&(edit_modules_fl)
+         if(currentMenu->menuType() == MENU_MODULES) {DisplayTask->EfIcon(56,0,(uint8_t*)pr,prog_data[pream]);} break; // if(!current_menu)&&(edit_modules_fl)
 //-------------------------------------------------PA-------------------------------------------------
   case 1:if(i < 64.0f)prog_data[amp] = 0;else prog_data[amp] = 1;contr_send(18,0 | (prog_data[amp] << 8));
-         if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(74,0,(uint8_t*)am,prog_data[amp]);} break; //if(!current_menu)&&(edit_modules_fl)
+         if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(74,0,(uint8_t*)am,prog_data[amp]);} break; //if(!current_menu)&&(edit_modules_fl)
   case 2:prog_data[am_v] = i;/*DisplayTask->ParamIndic(58,0,prog_data[am_v]);*/contr_send(11,0);break;
   case 3:prog_data[am_out] = i;/*DisplayTask->ParamIndic(58,2,prog_data[am_out]);*/contr_send(11,2);break;
 //-------------------------------------------------CAB SIM--------------------------------------------
   case 4:if(i < 64.0f)prog_data[cab] = 0;else prog_data[cab] = 1;contr_send(18, 1 | (prog_data[cab] << 8));
-          if(currentMenu->menuType() == MENU_MODULES) {DisplayTask->Ef_icon(92,0,(uint8_t*)cs,prog_data[cab]);} break; //if(!current_menu)&&(edit_modules_fl)
+          if(currentMenu->menuType() == MENU_MODULES) {DisplayTask->EfIcon(92,0,(uint8_t*)cs,prog_data[cab]);} break; //if(!current_menu)&&(edit_modules_fl)
 //-------------------------------------------------EQ-------------------------------------------------
   case 5:if(i < 64.0f)prog_data[eq] = 0;else prog_data[eq] = 1;contr_send(18, 2 | (prog_data[eq] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(110,0,(uint8_t*)equ,prog_data[eq]);}break; //if(!current_menu)&&(edit_modules_fl)
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(110,0,(uint8_t*)equ,prog_data[eq]);}break; //if(!current_menu)&&(edit_modules_fl)
 //-------------------------------------------------Delay----------------------------------------------
   case 6:if(i < 64.0f)prog_data[delay] = 0;else prog_data[delay] = 1;contr_send(18, 3 | (prog_data[delay] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[delay]);}break; //if(!current_menu)&&(edit_modules_fl)
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(56,2,(uint8_t*)dl,prog_data[delay]);}break; //if(!current_menu)&&(edit_modules_fl)
   case 7:prog_data[d_vol] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[d_vol]);*/contr_send(3,0);break;
   case 8:prog_data[d_fed] = i;/*DisplayTask->ParamIndic(53,2,prog_data[d_fed]);*/contr_send(3,2);break;
   case 9:if(tap_temp_global() && !sys_para[tap_typ])
@@ -137,27 +137,27 @@ void con_ch(uint8_t adr , uint8_t data)
     break;
 //-------------------------------------------------Phazer---------------------------------------------
   case 10:if(i < 64.0f)prog_data[phas] = 0;else prog_data[phas] = 1;contr_send(18, 4 | (prog_data[phas] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(2,2,(uint8_t*)ph,prog_data[phas]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(2,2,(uint8_t*)ph,prog_data[phas]);}break;
   case 11:prog_data[phaser_vol] = i;contr_send(5,0);break;
   case 12:prog_data[phaser_rate] = i;contr_send(5,1);break;
 //-------------------------------------------------Flanger--------------------------------------------
   case 13:if(i < 64.0f)prog_data[fl] = 0;else prog_data[fl] = 1;contr_send(18, 5 | (prog_data[fl] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(20,2,(uint8_t*)rm,prog_data[fl]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(20,2,(uint8_t*)rm,prog_data[fl]);}break;
   case 14:prog_data[fl_v] = i;contr_send(8,0);break;
   case 15:prog_data[fl_r] = i;contr_send(8,2);break;
 //-------------------------------------------------Chorus---------------------------------------------
   case 16:if(i < 64.0f)prog_data[chor] = 0;else prog_data[chor] = 1;contr_send(18, 6 | (prog_data[chor] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(38,2,(uint8_t*)ch,prog_data[chor]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(38,2,(uint8_t*)ch,prog_data[chor]);}break;
   case 17:prog_data[chor_volum] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[chor_volum]);*/contr_send(9,0);break;
   case 18:prog_data[chor_rat] = i;/*DisplayTask->ParamIndic(53,1,prog_data[chor_volum + 1]);*/contr_send(9,1);break;
 //-------------------------------------------------Reverb---------------------------------------------
   case 19:if(i < 64.0f)prog_data[reve] = 0;else prog_data[reve] = 1;contr_send(18, 8 | (prog_data[reve] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(92,2,(uint8_t*)rv,prog_data[reve]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(92,2,(uint8_t*)rv,prog_data[reve]);}break;
   case 20:prog_data[r_vol] = i;contr_send(2,0);break;
   case 21:prog_data[r_time] = i;contr_send(2,2);break;
 //-------------------------------------------------Tremolo--------------------------------------------
   case 22:if(i < 64.0f)prog_data[trem] = 0;else prog_data[trem] = 1;contr_send(18, 9 | (prog_data[trem] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(110,2,(uint8_t*)tr,prog_data[trem]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(110,2,(uint8_t*)tr,prog_data[trem]);}break;
   case 23:prog_data[tr_vol] = i;contr_send(10,0);break;
   case 24:prog_data[tr_rate] = i;contr_send(10,1);break;
   case 26:if(!tap_del_fl)
@@ -178,17 +178,17 @@ void con_ch(uint8_t adr , uint8_t data)
   case 25:if(!prog_data[vol_contr])contr_send(19,i);break;
 //-------------------------------------------------Compressor--------------------------------------------
   case 27:if(i < 64.0f)prog_data[compr] = 0;else prog_data[compr] = 1;contr_send(18, 12 | (prog_data[compr] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(38,0,(uint8_t*)cm,prog_data[compr]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(38,0,(uint8_t*)cm,prog_data[compr]);}break;
   case 28:prog_data[comp_thr] = i;contr_send(30,0);break;
   case 29:prog_data[comp_v] = i;contr_send(30,2);break;
 //-------------------------------------------------Moog filter-------------------------------------------
   case 30:if(i < 64.0f)prog_data[moog] = 0;else prog_data[moog] = 1;contr_send(18, 13 | (prog_data[moog] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(2,0,(uint8_t*)rf,prog_data[moog]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(2,0,(uint8_t*)rf,prog_data[moog]);}break;
   case 31:prog_data[mog_rate] = i;contr_send(31,3);break;
   case 32:prog_data[mog_ext] = i;contr_send(31,12);break;
 //--------------------------------------------------Early------------------------------------------------------------
   case 33:if(i < 64.0f)prog_data[early] = 0;else prog_data[early] = 1;contr_send(18, 7 | (prog_data[early] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(74,2,(uint8_t*)er,prog_data[early]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(74,2,(uint8_t*)er,prog_data[early]);}break;
   case 34:prog_data[early_vol] = i * 0.5f;contr_send(6,0);break;
 //---------------------------------------------------Moog Tape-------------------------------------------------------
   case 35:if(!tap_del_fl && !tap_trem_fl)
@@ -204,7 +204,7 @@ void con_ch(uint8_t adr , uint8_t data)
   case 37:prog_data[vol] = i;contr_send(7,0);break;
   case 38:prog_data[cab2_vol] = i;contr_send(7,3);break;
   case 39:if(i < 64.0f)prog_data[gate] = 0;else prog_data[gate] = 1;contr_send(18, 11 | (prog_data[gate] << 8));
-          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->Ef_icon(20,0,(uint8_t*)gt,prog_data[gate]);}break;
+          if(currentMenu->menuType() == MENU_MODULES){DisplayTask->EfIcon(20,0,(uint8_t*)gt,prog_data[gate]);}break;
   case 40:prog_data[gate_thr] = i;contr_send(29,0);break;
   case 41:prog_data[hpf_v] = i;contr_send(4,5);break;
   case 42:prog_data[lpf_v] = i;contr_send(4,6);break;

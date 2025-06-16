@@ -18,7 +18,6 @@
 
 #include "abstractmenu.h"
 
-#include "menu_preamp.h"
 #include "menu_pa.h"
 
 extern volatile uint8_t comp_fl;
@@ -49,22 +48,11 @@ const uint8_t ModulesMenu::imp_dir_n [];
 const uint8_t ModulesMenu::imp_dir_no [ ];
 const uint8_t ModulesMenu::sd_lo [];
 
-const uint8_t ModulesMenu::moog_list     [][8];
-const uint8_t ModulesMenu::moog_typ_list [][4];
-const uint8_t ModulesMenu::moog_mod_list [][4];
-const uint8_t ModulesMenu::moog_gen_type [][7];
-const uint8_t ModulesMenu::chor_list     [][8];
-const uint8_t ModulesMenu::chor_list1    [][8];
-const uint8_t ModulesMenu::chor_list2    [][8];
-const uint8_t ModulesMenu::fl_list       [][8];
-const uint8_t ModulesMenu::fl_t          [][9];
-const uint8_t ModulesMenu::ch_list_t     [][12];
 const uint8_t ModulesMenu::del_list      [][8];
 const uint8_t ModulesMenu::del_tim_l     [][5];
 const uint8_t ModulesMenu::tap_tim       [][6];
 const uint8_t ModulesMenu::rev_list      [][7];
 const uint8_t ModulesMenu::rev_type_list [][8];
-const uint8_t ModulesMenu::ear_list      [][5];
 const uint8_t ModulesMenu::s_t_c_list    [][7];
 
 ModulesMenu::ModulesMenu(AbstractMenu* parent)
@@ -75,78 +63,81 @@ ModulesMenu::ModulesMenu(AbstractMenu* parent)
 
 void ModulesMenu::show()
 {
+	current_menu = m_menuType;
+
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	DisplayTask->Menu_init();
 	tim5_start(0);
 }
 
 void ModulesMenu::task()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	switch (num_men)
 	{
 	case 0:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(2,0,(uint8_t*)rf,prog_data[ENABLE_RESONANCE_FILTER]);
-	  else DisplayTask->Ef_icon(2,0,(uint8_t*)rf,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(2,0,(uint8_t*)rf,prog_data[ENABLE_RESONANCE_FILTER]);
+	  else DisplayTask->EfIcon(2,0,(uint8_t*)rf,2);
 	  break;
 	case 1:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(20,0,(uint8_t*)gt,prog_data[ENABLE_GATE]);
-	  else DisplayTask->Ef_icon(20,0,(uint8_t*)gt,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(20,0,(uint8_t*)gt,prog_data[ENABLE_GATE]);
+	  else DisplayTask->EfIcon(20,0,(uint8_t*)gt,2);
 	  break;
 	case 2:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(38,0,(uint8_t*)cm,prog_data[ENABLE_COMPRESSOR]);
-	  else DisplayTask->Ef_icon(38,0,(uint8_t*)cm,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(38,0,(uint8_t*)cm,prog_data[ENABLE_COMPRESSOR]);
+	  else DisplayTask->EfIcon(38,0,(uint8_t*)cm,2);
 	  break;
 	case 3:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(56,0,(uint8_t*)pr,prog_data[ENABLE_PREAMP]);
-	  else DisplayTask->Ef_icon(56,0,(uint8_t*)pr,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(56,0,(uint8_t*)pr,prog_data[ENABLE_PREAMP]);
+	  else DisplayTask->EfIcon(56,0,(uint8_t*)pr,2);
 	  break;
 	case 4:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(74,0,(uint8_t*)am,prog_data[ENABLE_AMP]);
-	  else DisplayTask->Ef_icon(74,0,(uint8_t*)am,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(74,0,(uint8_t*)am,prog_data[ENABLE_AMP]);
+	  else DisplayTask->EfIcon(74,0,(uint8_t*)am,2);
 	  break;
 	case 5:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(92,0,(uint8_t*)cs,prog_data[ENABLE_CAB]);
-	  else DisplayTask->Ef_icon(92,0,(uint8_t*)cs,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(92,0,(uint8_t*)cs,prog_data[ENABLE_CAB]);
+	  else DisplayTask->EfIcon(92,0,(uint8_t*)cs,2);
 	  break;
 	case 6:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(110,0,(uint8_t*)equ,prog_data[ENABLE_EQ]);
-	  else DisplayTask->Ef_icon(110,0,(uint8_t*)equ,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(110,0,(uint8_t*)equ,prog_data[ENABLE_EQ]);
+	  else DisplayTask->EfIcon(110,0,(uint8_t*)equ,2);
 	  break;
 	case 7:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(2,2,(uint8_t*)ph,prog_data[ENABLE_PHASER]);
-	  else DisplayTask->Ef_icon(2,2,(uint8_t*)ph,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(2,2,(uint8_t*)ph,prog_data[ENABLE_PHASER]);
+	  else DisplayTask->EfIcon(2,2,(uint8_t*)ph,2);
 	  break;
 	case 8:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(20,2,(uint8_t*)rm,prog_data[ENABLE_FLANGER]);
-	  else DisplayTask->Ef_icon(20,2,(uint8_t*)rm,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(20,2,(uint8_t*)rm,prog_data[ENABLE_FLANGER]);
+	  else DisplayTask->EfIcon(20,2,(uint8_t*)rm,2);
 	  break;
 	case 9:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(38,2,(uint8_t*)ch,prog_data[ENABLE_CHORUS]);
-	  else DisplayTask->Ef_icon(38,2,(uint8_t*)ch,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(38,2,(uint8_t*)ch,prog_data[ENABLE_CHORUS]);
+	  else DisplayTask->EfIcon(38,2,(uint8_t*)ch,2);
 	  break;
 	case 10:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[ENABLE_DELAY]);
-	  else DisplayTask->Ef_icon(56,2,(uint8_t*)dl,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(56,2,(uint8_t*)dl,prog_data[ENABLE_DELAY]);
+	  else DisplayTask->EfIcon(56,2,(uint8_t*)dl,2);
 	  break;
 	case 11:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(74,2,(uint8_t*)er,prog_data[ENABLE_EARLY_REFLECTIONS]);
-	  else DisplayTask->Ef_icon(74,2,(uint8_t*)er,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(74,2,(uint8_t*)er,prog_data[ENABLE_EARLY_REFLECTIONS]);
+	  else DisplayTask->EfIcon(74,2,(uint8_t*)er,2);
 	  break;
 	case 12:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(92,2,(uint8_t*)rv,prog_data[ENABLE_REVERB]);
-	  else DisplayTask->Ef_icon(92,2,(uint8_t*)rv,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(92,2,(uint8_t*)rv,prog_data[ENABLE_REVERB]);
+	  else DisplayTask->EfIcon(92,2,(uint8_t*)rv,2);
 	  break;
 	case 13:
-	  if(tim5_fl == 0)DisplayTask->Ef_icon(110,2,(uint8_t*)tr,prog_data[ENABLE_TREMOLO]);
-	  else DisplayTask->Ef_icon(110,2,(uint8_t*)tr,2);
+	  if(tim5_fl == 0)DisplayTask->EfIcon(110,2,(uint8_t*)tr,prog_data[ENABLE_TREMOLO]);
+	  else DisplayTask->EfIcon(110,2,(uint8_t*)tr,2);
 	  break;
 	}
 }
 
 void ModulesMenu::encoderPressed()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 
 	switch (num_men)
@@ -157,7 +148,7 @@ void ModulesMenu::encoderPressed()
 			break;
 		case 1:
 			prog_data[ENABLE_GATE] = !(bool)prog_data[ENABLE_GATE];
-			gui_send(DSP_ADDRESS_MODULES_ENABLE, ENABLE_GATE | (prog_data[ENABLE_GATE] << 8));
+			gui_send(18, ENABLE_GATE | (prog_data[ENABLE_GATE] << 8));
 			break;
 		case 2:
 			prog_data[ENABLE_COMPRESSOR] = !(bool)prog_data[ENABLE_COMPRESSOR];
@@ -192,11 +183,7 @@ void ModulesMenu::encoderPressed()
 					  {
 						  vol_vol = prog_data[vol];
 						  gui_send(7,0);
-						  gui_send(15,1);
-						  ind_poin = 500;
-						  vol_fl = 1;
-						  inp_ind_fl = 0;
-						  out_ind_fl = 1;
+						  DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
 						  FSTask->SendCommand( TFsBrowser::bcCurrent );
 						  FSTask->SendCommand( TFsBrowser::bcLoadImp );
 					  }
@@ -270,14 +257,11 @@ void ModulesMenu::encoderPressed()
 	}
 	clean_flag();
 	tim5_start(1);
-
-	clean_flag();
-	tim5_start(1);
 }
 
 void ModulesMenu::encoderClockwise()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	if(!comp_fl)
 	{
@@ -293,7 +277,7 @@ void ModulesMenu::encoderClockwise()
 
 void ModulesMenu::encoderCounterClockwise()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	if(!comp_fl)
 	{
@@ -309,7 +293,7 @@ void ModulesMenu::encoderCounterClockwise()
 
 void ModulesMenu::keyUp()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	//-------------------------------------------Key UP----------------------------------------------------------------
 	if(!comp_fl)
@@ -332,7 +316,7 @@ void ModulesMenu::keyUp()
 //			edit_modules_fl = 0;
 			prog_cur = 0;
 			num_men = 0;
-			gui_send(15,0);
+			gui_send(15, DSP_INDICATOR_OUT);
 			DisplayTask->Menu_init();
 			tim5_start(0);
 		}
@@ -343,59 +327,46 @@ void ModulesMenu::keyUp()
 
 void ModulesMenu::keyDown()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	//-------------------------------KEYS-----------------------------------------------
 	if((comp_fl == 0) && (prog1 == prog))
 	{
 		switch (num_men){
 		case 0:
-		  if(prog_data[moog] == 1)
-		  {
-			  current_menu = MENU_RESONANCE_FILTER;
-			  DisplayTask->Clear();
-//			  DisplayTask->Icon_Strel(15,2);
-			  for(uint8_t i = 0 ; i < 4 ; i++)
-				{
-				  DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_list + i*8);
-				  switch(i){
-				  case 0:DisplayTask->ParamIndicMix(53,i,prog_data[mog_mix]);break;
-				  case 1:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_typ_list + prog_data[mog_ftype]*4);break;
-				  case 2:DisplayTask->StringOut(53,i,TDisplayTask::fntSystem , 0 , (uint8_t*)moog_mod_list + prog_data[mog_fmod]*4);break;
-				  case 3:DisplayTask->ParamIndic(53,i,prog_data[mog_rate]);break;
-				  }
-				}
-			  par_num = 0;
-		  }
+			if(prog_data[ENABLE_RESONANCE_FILTER] == 1)
+			{
+				currentMenu = createRfMenu();
+				currentMenu->show();
+			}
 		  break;
 		case 1:
-		  if(prog_data[ENABLE_GATE] == 1)
-		  {
-			  currentMenu = createGateMenu();
-			  currentMenu->show();
-		  }
-		  break;
+			if(prog_data[ENABLE_GATE] == 1)
+			{
+				currentMenu = createGateMenu();
+				currentMenu->show();
+			}
+		break;
 		case 2:
-		  if(prog_data[ENABLE_COMPRESSOR] == 1)
-		  {
-			  currentMenu = createCompressorMenu();
-			  currentMenu->show();
-		  }
+			if(prog_data[ENABLE_COMPRESSOR] == 1)
+			{
+				currentMenu = createCompressorMenu();
+				currentMenu->show();
+			}
 		  break;
 		case 3:
-		  if(prog_data[pream] == 1)
-		  {
-			  GUI_preamp_select();
-			  current_menu = MENU_PREAMP;
-			  gui_send(15, 8);
-		  }
+			if(prog_data[ENABLE_PREAMP] == 1)
+			{
+				DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_PREAMP);
+				currentMenu = createPreampMenu();
+				currentMenu->show();
+			}
 		 break;
 		case 4:
 		  if(prog_data[amp] == 1)
 		  {
 			  GUI_amp_select();
 			  current_menu = MENU_PA;
-			  gui_send(15,2);
 		  }
 		  break;
 		case 5:
@@ -411,11 +382,7 @@ void ModulesMenu::keyDown()
 			   vol_vol = prog_data[vol];
 			   gui_send(7,0);
 			   current_menu = MENU_CABSIM;
-			   gui_send(15,1);
-			   ind_poin = 500;
-			   vol_fl = 1;
-			   inp_ind_fl = 0;
-			   out_ind_fl = 1;
+			   DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
 			   par_num = 1;
 			 }
 			 else {
@@ -443,48 +410,18 @@ void ModulesMenu::keyDown()
 		  }
 		  break;
 		case 8:
-			if(prog_data[fl] == 1){
-			current_menu = MENU_FLANGER;
-			gui_send(15,4);
-			DisplayTask->Clear();
-//			DisplayTask->Icon_Strel(10,2);
-			for(uint8_t i = 0 ; i < 4 ; i++)
-			  {
-				DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)fl_list + i*8);
-				if(!i)DisplayTask->ParamIndicMix(53,0,prog_data[fl_v]);
-				else {
-					if(i == 1)DisplayTask->StringOut(53,i,TDisplayTask::fntSystem,0,(uint8_t*)fl_t + prog_data[fl_lfo]*9);
-					else DisplayTask->ParamIndic(53,i,prog_data[fl_v + i]);
-				}
-			  }
-			par_num = 0;
-		   }
+			if(prog_data[ENABLE_FLANGER] == 1)
+			{
+				currentMenu = createFlangerMenu();
+				currentMenu->show();
+			}
 		  break;
 		case 9:
-		  if(prog_data[chor] == 1){
-		  current_menu = MENU_CHORUS;
-		  gui_send(15,5);
-		  DisplayTask->Clear();
-//		  DisplayTask->Icon_Strel(5,2);
-		  for(uint8_t i = 0 ; i < 4 ; i++)
+			if(prog_data[ENABLE_CHORUS] == 1)
 			{
-			  if(prog_data[chor_typ] < 4)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)chor_list + i*8);
-			  else {
-				  if(prog_data[chor_typ] == 4)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)chor_list1 + i*8);
-				  else DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)chor_list2 + i*8);
-			  }
-			  if(i)
-			  {
-				  if(prog_data[chor_typ] < 4)DisplayTask->ParamIndic(53,i,prog_data[chor_volum + i]);
-				  else {
-					  if((i == 1) && (prog_data[chor_typ] == 4))DisplayTask->ParamIndic(53,i,prog_data[chor_volum + i]);
-					  else if((i == 3) && (prog_data[chor_typ] == 5))DisplayTask->ParamIndic(53,i,prog_data[chor_volum + i]);
-				  }
-			  }
-			  else DisplayTask->ParamIndicMix(53,0,prog_data[chor_volum]);
+				currentMenu = createChorusMenu();
+				currentMenu->show();
 			}
-		  par_num = 0;
-		  }
 		  break;
 		case 10:
 		  if(prog_data[delay] == 1){
@@ -511,15 +448,11 @@ void ModulesMenu::keyDown()
 		  }
 		  break;
 		case 11:
-		  if(prog_data[early] == 1){
-		  current_menu = MENU_EARLY_REFLECTIONS;
-		  DisplayTask->Clear();
-//		  DisplayTask->Icon_Strel(3,0);
-		  for(uint8_t i = 0 ; i < 2 ; i++)DisplayTask->StringOut(6,i,TDisplayTask::fntSystem , 0 , (uint8_t*)ear_list + i*5);
-		  DisplayTask->ParamIndicMix(53,0,prog_data[early_vol]);
-		  DisplayTask->ParamIndic(53,1,prog_data[early_vol + 1]);
-		  par_num = 0;
-		 }
+			if(prog_data[ENABLE_EARLY_REFLECTIONS] == 1)
+			{
+				currentMenu = createEarlyMenu();
+				currentMenu->show();
+			}
 		  break;
 		case 12:
 		  if(prog_data[reve] == 1){
@@ -564,7 +497,7 @@ void ModulesMenu::keyDown()
 
 void ModulesMenu::key1()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	clean_flag();
 	DisplayTask->Clear();
@@ -581,7 +514,7 @@ void ModulesMenu::key1()
 
 void ModulesMenu::key2()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	clean_flag();
 	DisplayTask->Clear();
@@ -596,7 +529,7 @@ void ModulesMenu::key2()
 	DisplayTask->StringOut(2,3,TDisplayTask::fntSystem , 0 , (uint8_t*)in_out_strings + 7);
 	DisplayTask->ParamIndicNum(42,3,prog_data[pres_lev]);
 	vol_vol = prog_data[pres_lev];
-	gui_send(15,0);
+	gui_send(15, DSP_INDICATOR_OUT);
 	inp_ind_fl = 0;
 	out_ind_fl = 1;
 	ind_poin = 500;
@@ -608,7 +541,7 @@ void ModulesMenu::key2()
 
 void ModulesMenu::key3()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	clean_flag();
 
@@ -642,7 +575,7 @@ void ModulesMenu::key3()
 
 void ModulesMenu::key4()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	clean_flag();
 
@@ -664,7 +597,7 @@ void ModulesMenu::key4()
 
 void ModulesMenu::key5()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(current_menu != MENU_MODULES) return;
 
 	clean_flag();
 
@@ -684,47 +617,65 @@ void ModulesMenu::icon_refresh(uint8_t num)
 {
 	switch (num)
 	{
-	case 0:DisplayTask->Ef_icon(2,0,(uint8_t*)rf,prog_data[moog]);break;
-	case 1:DisplayTask->Ef_icon(20,0,(uint8_t*)gt,prog_data[gate]);break;
-	case 2:DisplayTask->Ef_icon(38,0,(uint8_t*)cm,prog_data[compr]);break;
-	case 3:DisplayTask->Ef_icon(56,0,(uint8_t*)pr,prog_data[pream]);break;
-	case 4:DisplayTask->Ef_icon(74,0,(uint8_t*)am,prog_data[amp]);break;
-	case 5:DisplayTask->Ef_icon(92,0,(uint8_t*)cs,prog_data[cab]);break;
-	case 6:DisplayTask->Ef_icon(110,0,(uint8_t*)equ,prog_data[eq]);break;
-	case 7:DisplayTask->Ef_icon(2,2,(uint8_t*)ph,prog_data[phas]);break;
-	case 8:DisplayTask->Ef_icon(20,2,(uint8_t*)rm,prog_data[fl]);break;
-	case 9:DisplayTask->Ef_icon(38,2,(uint8_t*)ch,prog_data[chor]);break;
-	case 10:DisplayTask->Ef_icon(56,2,(uint8_t*)dl,prog_data[delay]);break;
-	case 11:DisplayTask->Ef_icon(74,2,(uint8_t*)er,prog_data[early]);break;
-	case 12:DisplayTask->Ef_icon(92,2,(uint8_t*)rv,prog_data[reve]);break;
-	case 13:DisplayTask->Ef_icon(110,2,(uint8_t*)tr,prog_data[trem]);break;
+	case 0:DisplayTask->EfIcon(2,0,(uint8_t*)rf,prog_data[moog]);break;
+	case 1:DisplayTask->EfIcon(20,0,(uint8_t*)gt,prog_data[gate]);break;
+	case 2:DisplayTask->EfIcon(38,0,(uint8_t*)cm,prog_data[compr]);break;
+	case 3:DisplayTask->EfIcon(56,0,(uint8_t*)pr,prog_data[pream]);break;
+	case 4:DisplayTask->EfIcon(74,0,(uint8_t*)am,prog_data[amp]);break;
+	case 5:DisplayTask->EfIcon(92,0,(uint8_t*)cs,prog_data[cab]);break;
+	case 6:DisplayTask->EfIcon(110,0,(uint8_t*)equ,prog_data[eq]);break;
+	case 7:DisplayTask->EfIcon(2,2,(uint8_t*)ph,prog_data[phas]);break;
+	case 8:DisplayTask->EfIcon(20,2,(uint8_t*)rm,prog_data[fl]);break;
+	case 9:DisplayTask->EfIcon(38,2,(uint8_t*)ch,prog_data[chor]);break;
+	case 10:DisplayTask->EfIcon(56,2,(uint8_t*)dl,prog_data[delay]);break;
+	case 11:DisplayTask->EfIcon(74,2,(uint8_t*)er,prog_data[early]);break;
+	case 12:DisplayTask->EfIcon(92,2,(uint8_t*)rv,prog_data[reve]);break;
+	case 13:DisplayTask->EfIcon(110,2,(uint8_t*)tr,prog_data[trem]);break;
 	}
 }
 
-ParamListMenu* ModulesMenu::createCompressorMenu()
+ParamListMenu* ModulesMenu::createRfMenu()
 {
-	const uint8_t compressorParamNum = 5;
-	BaseParam* compressorParams[compressorParamNum];
-	compressorParams[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &prog_data[COMPRESSOR_THRESHOLD]);
-	compressorParams[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Ratio", &prog_data[COMPRESSOR_RATIO]);
-	compressorParams[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &prog_data[COMPRESSOR_VOLUME]);
-	compressorParams[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &prog_data[COMPRESSOR_ATTACK]);
-	compressorParams[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Release", &prog_data[COMPRESSOR_RELEASE]);
-	for(int i=0; i<compressorParamNum; i++) compressorParams[i]->setDspAddress(DSP_ADDRESS_COMPRESSOR, i);
+	const uint8_t paramNum = 12;
+	BaseParam* params[paramNum];
 
-	ParamListMenu* compressorMenu = new ParamListMenu(this, MENU_COMPRESSOR);
-	if(compressorMenu) compressorMenu->setParams(compressorParams, compressorParamNum, 2);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &prog_data[RFILTER_MIX]);
 
-	return compressorMenu;
+	const char* paramNames0[3][4] = {"LPF","HPF","BPF"};
+	params[1] = new StringParam("F Type", &prog_data[RFILTER_FTYPE], (char**)&paramNames0, 3);
+
+	const char* paramNames1[3][4] = {"LFO","Dyn","Ext"};
+	params[2] = new StringParam("F Mod", &prog_data[RFILTER_FMOD], (char**)&paramNames1, 3);
+
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "LFO r", &prog_data[RFILTER_RATE]);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Lo freq", &prog_data[RFILTER_LPF]);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Hi freq", &prog_data[RFILTER_HPF]);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Res", &prog_data[RFILTER_RESONANCE]);
+	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Dyn th", &prog_data[RFILTER_DYN_THRESHOLD]);
+	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Dyn att", &prog_data[RFILTER_DYN_ATTACK]);
+	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Dyn rel", &prog_data[RFLITER_DYN_RELEASE]);
+	params[10] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &prog_data[RFILTER_VOLUME]);
+
+	const char* paramNames2[7][7] = {"Tri   ","Rand  ","Rand/2","Rand/3","Rand/4","Rand/6","Rand/8"};
+	params[11] = new StringParam("F Mod", &prog_data[RFILTER_LFO_TYPE], (char**)&paramNames2, 7);
+
+	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_RESONANCE_FILTER, i);
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_RESONANCE_FILTER);
+	if(menu) menu->setParams(params, paramNum, 3);
+
+	return menu;
 }
 
 ParamListMenu* ModulesMenu::createGateMenu()
 {
 	const uint8_t gateParamNum = 3;
 	BaseParam* gateParams[gateParamNum];
+
 	gateParams[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &prog_data[GATE_THRESHOLD]);
 	gateParams[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &prog_data[GATE_ATTACK]);
 	gateParams[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Decay", &prog_data[GATE_DECAY]);
+
 	for(int i=0; i<gateParamNum; i++) gateParams[i]->setDspAddress(DSP_ADDRESS_GATE, i);
 
 	ParamListMenu* gateMenu = new ParamListMenu(this, MENU_GATE);
@@ -733,21 +684,66 @@ ParamListMenu* ModulesMenu::createGateMenu()
 	return gateMenu;
 }
 
+ParamListMenu* ModulesMenu::createCompressorMenu()
+{
+	const uint8_t paramNum = 5;
+	BaseParam* params[paramNum];
+
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &prog_data[COMPRESSOR_THRESHOLD]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Ratio", &prog_data[COMPRESSOR_RATIO]);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &prog_data[COMPRESSOR_VOLUME]);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &prog_data[COMPRESSOR_ATTACK]);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Release", &prog_data[COMPRESSOR_RELEASE]);
+
+	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_COMPRESSOR, i);
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_COMPRESSOR);
+	if(menu) menu->setParams(params, paramNum, 2);
+
+	return menu;
+}
+
+ParamListMenu* ModulesMenu::createPreampMenu()
+{
+	const uint8_t paramNum = 7;
+	BaseParam* params[paramNum];
+
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Gain", &prog_data[PREAMP_GAIN]);
+	params[0]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_GAIN_POS);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &prog_data[PREAMP_VOLUME]);
+	params[1]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_VOLUME_POS);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", &prog_data[PREAMP_0]);
+	params[2]->setDspAddress(DSP_ADDRESS_PREAMP, NOT_SEND_POS);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", &prog_data[PREAMP_0]);
+	params[3]->setDspAddress(DSP_ADDRESS_PREAMP, NOT_SEND_POS);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Low", &prog_data[PREAMP_LOW]);
+	params[4]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_LOW_POS);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Mid", &prog_data[PREAMP_MID]);
+	params[5]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_MID_POS);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "High", &prog_data[PREAMP_HIGH]);
+	params[6]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_HIGH_POS);
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_PREAMP);
+	if(menu) menu->setParams(params, paramNum, 2);
+
+	return menu;
+}
+
+// При режиме детюн параметр Rate должен называться Detune
 ParamListMenu* ModulesMenu::createPhaserMenu()
 {
 	const uint8_t paramNum = 8;
 	BaseParam* params[paramNum];
+
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &prog_data[PHASER_MIX]);
 	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &prog_data[PHASER_RATE]);
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Center", &prog_data[PHASER_CENTER]);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &prog_data[PHASER_WIDTH]);
 	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &prog_data[PHASER_FEEDBACK]);
-
 	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Stage", &prog_data[PHASER_TYPE]);
 	params[5]->setScaling(2, 4);
 	params[5]->setBounds(0, 4);
 	params[5]->setDisplayPosition(62);
-
 	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Hpf", &prog_data[PHASER_HPF]);
 
 	const char* paramNames[2][4] = {"Post", "Pre "};
@@ -761,10 +757,80 @@ ParamListMenu* ModulesMenu::createPhaserMenu()
 	return menu;
 }
 
+ParamListMenu* ModulesMenu::createFlangerMenu()
+{
+	const uint8_t paramNum = 8;
+	BaseParam* params[paramNum];
+
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &prog_data[FLANGER_MIX]);
+	const char* paramNames0[2][8] = {"Triangle", "Sinus   "};
+	params[1] = new StringParam("LFO", &prog_data[FLANGER_LFO], (char**)&paramNames0, 2);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &prog_data[FLANGER_RATE]);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &prog_data[FLANGER_WIDTH]);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &prog_data[FLANGER_DELAY]);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &prog_data[FLANGER_FEEDBACK]);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &prog_data[FLANGER_HPF]);
+	const char* paramNames1[2][4] = {"Post", "Pre "};
+	params[7] = new StringParam("Pos.", &prog_data[FLANGER_LFO], (char**)&paramNames1, 2);
+
+	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_FLANGER, i);
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_FLANGER);
+	if(menu) menu->setParams(params, paramNum, 2);
+
+	return menu;
+}
+
+ParamListMenu* ModulesMenu::createChorusMenu()
+{
+	const uint8_t paramNum = 6;
+	BaseParam* params[paramNum];
+
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &prog_data[CHORUS_MIX]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &prog_data[CHORUS_RATE]);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &prog_data[CHORUS_WIDTH]);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &prog_data[CHORUS_DELAY]);
+
+	const char* paramNames0[6][12] = {"  Chorus   ","  Chorus S "," Chorus x3 ","Chorus x3 S","  Detune   ","MidSide Dub"};
+	params[4] = new StringParam("Type", &prog_data[CHORUS_TYPE], (char**)&paramNames0, 6);
+	params[4]->setDisplayPosition(36);
+	StringParam* typeSelect = static_cast<StringParam*>(params[4]);
+	typeSelect->setDisableMask(4, {0, 0, 1, 1, 0, 0});
+	typeSelect->setDisableMask(5, {0, 1, 1, 0, 0, 0});
+
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &prog_data[CHORUS_HPF]);
+
+
+	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_CHORUS, i);
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_CHORUS);
+	if(menu) menu->setParams(params, paramNum, 2);
+
+	return menu;
+}
+
+
+ParamListMenu* ModulesMenu::createEarlyMenu()
+{
+	const uint8_t paramCout = 2;
+	BaseParam* params[paramCout];
+
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &prog_data[EARLY_MIX]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Size", &prog_data[EARLY_SIZE]);
+
+	for(int i=0; i<paramCout; i++) params[i]->setDspAddress(DSP_ADDRESS_EARLY_REFLECTIONS, i);
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_EARLY_REFLECTIONS);
+	if(menu) menu->setParams(params, paramCout, 1);
+
+	return menu;
+}
+
 ParamListMenu* ModulesMenu::createTremoloMenu()
 {
 	const uint8_t paramNum = 6;
 	BaseParam* params[paramNum];
+
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Intens", &prog_data[TREMOLO_INTENSITY]);
 	params[0]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_INTENSITY_POS);
 

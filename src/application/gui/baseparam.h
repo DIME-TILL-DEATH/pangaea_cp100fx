@@ -15,6 +15,7 @@ public:
 		GUI_PARAMETER_MIX,
 		GUI_PARAMETER_PAN,
 		GUI_PARAMETER_LIST,
+		GUI_PARAMETER_DELAY_TIME,
 		GUI_PARAMETER_SUBMENU
 	};
 
@@ -27,9 +28,12 @@ public:
 
 	gui_param_type type() const {return m_type;};
 
-	const char* name() const {return m_name;};
-	uint8_t value() const {return *m_valuePtr + m_offset;};
+	const char* name();
+	virtual uint8_t value() const {return *m_valuePtr + m_offset;};
 	uint8_t* valuePtr() const {return m_valuePtr;};
+
+	bool disabled() {return m_disabled;};
+	void setDisabled(bool disabled) {m_disabled = disabled;};
 
 	dsp_module_address_t moduleAddress() const {return m_moduleAddress;};
 	uint8_t bytePosition() const {return m_bytePosition;};
@@ -42,18 +46,19 @@ public:
 	uint8_t offset() const {return m_offset;};
 	uint8_t stepSize() {return m_stepSize;};
 
-	virtual uint8_t xDisplayPosition() const {return m_xDisplayPosition;};
+	uint8_t xDisplayPosition() const {return m_xDisplayPosition;};
 
-	virtual uint8_t byteSize() const {return m_byteSize;};
+	uint8_t byteSize() const {return m_byteSize;};
 
 private:
 	const char* m_name;
+
+	bool m_disabled{false};
+
 	uint8_t* m_valuePtr;
 
 	dsp_module_address_t m_moduleAddress;
 	uint8_t m_bytePosition{0};
-
-
 
 	uint8_t m_xDisplayPosition{58};
 

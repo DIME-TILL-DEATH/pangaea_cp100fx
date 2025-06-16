@@ -22,10 +22,12 @@ public:
 
 	void keyDown() override;
 
+	static constexpr uint8_t maxParamCount = 16;
+
 private:
 	uint8_t currentParamNum = 0;
 
-	BaseParam* paramsList[64];
+	BaseParam* paramsList[maxParamCount];
 	uint8_t paramsCount{0};
 
 	bool m_canTap{false};
@@ -40,6 +42,8 @@ private:
 
 	void printPage();
 
+	void increaseParam(BaseParam* param);
+	void decreaseParam(BaseParam* param);
 	void printParam(BaseParam* param, uint8_t yPos);
 };
 

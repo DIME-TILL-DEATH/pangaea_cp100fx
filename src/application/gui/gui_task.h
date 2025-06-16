@@ -11,6 +11,17 @@
 #define IN_OUT_STR_SIZE 7
 const uint8_t in_out_strings[][IN_OUT_STR_SIZE] = {"Input ", "Output"};
 
+
+
+
+
+
+
+
+
+
+
+
 enum {/*+++switch*/amp = 0,cab,eq,delay,phas,fl,chor,early,reve,trem,pream,gate,compr,moog,
 	 /*+++cab_mono*/cab_m = 41,
 	 /*+++cab*/vol,cab1_pan,cab1_del,cab2_vol,cab2_pan,cab2_del,

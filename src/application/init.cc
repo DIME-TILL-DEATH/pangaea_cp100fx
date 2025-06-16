@@ -484,7 +484,7 @@ else {
 	for(uint32_t d = 0 ; d < 0x3ffffff ; d++)NOP();
 
 	GPIO_SetBits(GPIOA,GPIO_Pin_10);
-//-----------------------------------------------Start_screen------------------------------------
+//-----------------------------------------------StartScreen------------------------------------
     oled023_1_disp_init();
     extern volatile uint8_t ind_en;
    	ind_en = 0;

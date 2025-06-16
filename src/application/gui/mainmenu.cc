@@ -58,7 +58,9 @@ MainMenu::MainMenu()
 
 void MainMenu::show()
 {
+	current_menu = m_menuType;
 
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 }
 
 void MainMenu::task()
@@ -158,7 +160,6 @@ void MainMenu::keyUp()
 {
 	if(current_menu != MENU_MAIN) return;
 
-	//-------------------------------------------Key UP----------------------------------------------------------------
 	if(!comp_fl)
 	{
 		if(prog1 != prog)
@@ -238,12 +239,8 @@ void MainMenu::key1()
 	DisplayTask->StringOut(3,0,TDisplayTask::fntSystem,0,(uint8_t*)atten);
 	DisplayTask->StringOut(76,0,TDisplayTask::fntSystem,0,(uint8_t*)att_db + sys_para[127]*4);
 	DisplayTask->StringOut(95,0,TDisplayTask::fntSystem,0,(uint8_t*)decib);
-	DisplayTask->StringOut(2,2,TDisplayTask::fntSystem, 0 , (uint8_t*)in_out_strings);
-//	edit_modules_fl = 1;
-	ind_poin = 500;
-	inp_ind_fl = 1;
-	out_ind_fl = 0;
-	gui_send(15,9);
+
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
 
 	tim5_start(0);
 }
@@ -352,6 +349,6 @@ void MainMenu::key5()
 	tuner_use = 1;
 	current_menu = MENU_TUNER;
 	tim5_start(0);
-	gui_send(15,9);
+	gui_send(15, DSP_INDICATOR_IN);
 
 }
