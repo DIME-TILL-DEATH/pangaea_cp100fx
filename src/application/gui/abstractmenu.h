@@ -59,7 +59,14 @@ enum gui_menu_type
 class AbstractMenu
 {
 public:
-	virtual void show() {};
+	enum TShowMode
+	{
+		FirstShow,
+		ReturnShow
+	};
+
+	virtual void show(TShowMode swhoMode = FirstShow) {};
+	virtual void returnFromChildMenu();
 	virtual void task() {};
 
 	virtual void encoderPressed() {};
@@ -79,6 +86,8 @@ public:
 
 protected:
 	AbstractMenu* topLevelMenu = nullptr;
+	AbstractMenu* shownChildMenu = nullptr;
+
 	gui_menu_type m_menuType{MENU_ABSTRACT};
 
 	constexpr static uint8_t ascii_low1[] = " abcdefghijklmnopqrst";

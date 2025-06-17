@@ -4,6 +4,7 @@
 #include "abstractmenu.h"
 #include "baseparam.h"
 #include "stringparam.h"
+#include "submenuparam.h"
 
 class ParamListMenu : public AbstractMenu
 {
@@ -13,7 +14,7 @@ public:
 
 	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount, uint8_t pages);
 
-	void show() override;
+	void show(TShowMode showMode = FirstShow) override;
 	void task() override;
 
 	void encoderPressed() override;
@@ -39,11 +40,10 @@ private:
 	bool encoderKnobSelected;
 
 	static constexpr uint8_t paramsOnPage = 4;
+	static constexpr uint8_t leftPad = 3;
 
 	void printPage();
 
-	void increaseParam(BaseParam* param);
-	void decreaseParam(BaseParam* param);
 	void printParam(BaseParam* param, uint8_t yPos);
 };
 

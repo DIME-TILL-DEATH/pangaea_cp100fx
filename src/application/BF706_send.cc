@@ -148,11 +148,6 @@ void tun_proc(uint8_t num)
 	dsp_send(DSP_ADDRESS_TUN_PROC, num);
 }
 
-void ind_source(uint8_t num)
-{
-	dsp_send(DSP_ADDRESS_IND_SRC, num);
-}
-
 void cab_dry_mute(void)
 {
 	dsp_send(DSP_ADDRESS_CAB_DRY_MUTE , sys_para[0] );
@@ -394,7 +389,7 @@ void gui_send(uint8_t num , uint16_t val)
 	case 12:program_ch();break;
 	case 13:tun_proc(val);break;
 	case 14:cab_dry_mute();break;
-	case 15:ind_source(val);break;
+	case 15:/*ind_source(val);*/break;
 	case 16:send_cab_data(val,0,0);break;
 	case 17:send_cab_data1(val,0);break;
 	case 18:dsp_send(4,val);break;
@@ -436,7 +431,7 @@ void contr_send(uint8_t num , uint16_t val)
 	case 12:program_ch();break;
 	case 13:tun_proc(val);break;
 	case 14:cab_dry_mute();break;
-	case 15:ind_source(val);break;
+	case 15:/*ind_source(val);*/break;
 	case 18:dsp_send(DSP_ADDRESS_MODULES_ENABLE, val);break;
 	case 19:pres_volum_cont(val);break;
 	case 20:master_volum_contr(val);break;

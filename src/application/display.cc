@@ -94,7 +94,8 @@ void TDisplayTask::Code()
             break ;
 
 			case dcIndicator:
-				vol_ind();
+				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) vol_ind(64, 64);
+				else vol_ind(58, 50);
             break;
 
 			case dcMenu_init:
@@ -305,7 +306,10 @@ void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indic
 {
 	m_volIndicatorType = volIndicatorType;
 
-	dsp_send(DSP_ADDRESS_IND_SRC, indicatorSource);
+	if(volIndicatorType == VOL_INDICATOR_VOLUME) vol_fl = 1;
+	else vol_fl = 0;
+
+	DSP_gui_set_parameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
 
 	ind_poin = 500;
 }
@@ -315,8 +319,8 @@ void TDisplayTask::VolIndicator()
 	switch(m_volIndicatorType)
 	{
 		case VOL_INDICATOR_OFF: return;
-		case VOL_INDICATOR_IN: DisplayTask->StringOut(2, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Input"); break;
-		case VOL_INDICATOR_OUT: DisplayTask->StringOut(2, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Output"); break;
+		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Input"); break;
+		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Output"); break;
 	}
 
 	TDisplayCmd cmd;

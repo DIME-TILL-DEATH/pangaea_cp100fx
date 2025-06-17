@@ -57,8 +57,6 @@ extern uint32_t ind_out_l[];
 extern uint16_t ind_poin;
 extern uint8_t vol_fl;
 extern uint8_t vol_vol;
-extern uint8_t inp_ind_fl;
-extern uint8_t out_ind_fl;
 //extern uint8_t edit_modules_fl;
 extern uint8_t imya_temp;
 extern uint8_t prog_cur;
@@ -68,7 +66,7 @@ extern volatile uint8_t t_no;
 
 void oled023_1_disp_reset(void);
 void disp_start(uint8_t num);
-void vol_ind();
+void vol_ind(uint8_t xPos, uint8_t indLength);
 void menu_init(void);
 void main_screen(void);
 void prog_ind(uint32_t val);

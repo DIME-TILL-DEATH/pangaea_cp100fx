@@ -18,11 +18,6 @@
 
 #include "abstractmenu.h"
 
-
-#include "menu_preamp.h"
-#include "menu_pa.h"
-
-
 extern volatile uint8_t comp_fl;
 extern uint8_t tim5_fl2;
 extern volatile uint8_t preset_edited;
@@ -56,9 +51,10 @@ MainMenu::MainMenu()
 	m_menuType = MENU_MAIN;
 }
 
-void MainMenu::show()
+void MainMenu::show(TShowMode swhoMode)
 {
 	current_menu = m_menuType;
+	currentMenu = this;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 }
@@ -218,7 +214,7 @@ void MainMenu::keyDown()
 	{
 		eq_num = prog;
 
-		currentMenu = &modulesMenu;
+		shownChildMenu = &modulesMenu;
 		modulesMenu.show();
 
 		preset_edited = 1;
@@ -349,6 +345,6 @@ void MainMenu::key5()
 	tuner_use = 1;
 	current_menu = MENU_TUNER;
 	tim5_start(0);
-	gui_send(15, DSP_INDICATOR_IN);
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
 
 }

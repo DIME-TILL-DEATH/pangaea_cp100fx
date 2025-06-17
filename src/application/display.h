@@ -277,7 +277,8 @@ public:
 	{
 		VOL_INDICATOR_OFF = 0,
 		VOL_INDICATOR_IN,
-		VOL_INDICATOR_OUT
+		VOL_INDICATOR_OUT,
+		VOL_INDICATOR_VOLUME
 	};
 
 	// send command from code/tasks

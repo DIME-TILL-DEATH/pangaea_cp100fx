@@ -70,7 +70,7 @@ void TCSTask::Code()
    	CSTask->DisplayAccess(true);
 
   	gui_send(14,0); // global cab on off
-  	gui_send(15, DSP_INDICATOR_OUT);
+  	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
   	gui_send(26,sys_para[spdif_t]);
   	gui_send(33,sys_para[tap_typ] | (sys_para[tap_hi] << 8)); //global temp
 	tempo_fl = 1;

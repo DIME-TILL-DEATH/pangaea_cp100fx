@@ -35,6 +35,82 @@ volatile uint8_t key_reg_out[2] = {0,0};
 volatile uint16_t key_reg;
 volatile uint8_t num_key_prog;
 
+int16_t enc_speed_inc(int16_t data,int16_t max)
+{
+	TIM_Cmd(TIM6,DISABLE);
+	if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update))data = data + 1;
+	else {
+		if(TIM_GetCounter(TIM6) > 0x3fff)data += 1;
+		else {
+			if(TIM_GetCounter(TIM6) > 0x1fff)
+			{
+				if(data < (max - 1))data += 2;
+				else data += 1;
+			}
+			else {
+				if(TIM_GetCounter(TIM6) > 0xfff)
+				{
+					if(data < (max - 3))data += 4;
+					else data += 1;
+				}
+				else {
+					if(TIM_GetCounter(TIM6) > 0x7ff)
+					{
+						if(data < (max - 7))data += 8;
+						else data += 1;
+					}
+					else {
+						if(data < (max - 49))data += 50;
+						else data += 1;
+					}
+				}
+			}
+		}
+	}
+	TIM_SetCounter(TIM6,0);
+	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
+	TIM_Cmd(TIM6,ENABLE);
+	return data;
+}
+
+uint16_t enc_speed_dec(int16_t data,int16_t min)
+{
+	TIM_Cmd(TIM6,DISABLE);
+	if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update))data -= 1;
+	else {
+		if(TIM_GetCounter(TIM6) > 0x3fff)data -= 1;
+		else {
+			if(TIM_GetCounter(TIM6) > 0x1fff)
+			{
+				if(data > (min+1))data -= 2;
+				else data -= 1;
+			}
+			else {
+				if(TIM_GetCounter(TIM6) > 0xfff)
+				{
+					if(data > (min+3))data -= 4;
+					else data -= 1;
+				}
+				else {
+					if(TIM_GetCounter(TIM6) > 0x7ff)
+					{
+						if(data > (min+7))data -= 8;
+						else data -= 1;
+					}
+					else {
+						if(data > (min+49))data -= 50;
+						else data -= 1;
+					}
+				}
+			}
+		}
+	}
+	TIM_SetCounter(TIM6,0);
+	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
+	TIM_Cmd(TIM6,ENABLE);
+	return data;
+}
+
 TENCTask* ENCTask ;
 //------------------------------------------------------------------------------
 TENCTask::TENCTask () : TTask()

@@ -9,6 +9,8 @@
 #include "BF706_send.h"
 #include "midi_send.h"
 
+#include "gui/gui_task.h"
+
 TCCTask* CCTask ;
 
 void con_ch(uint8_t adr , uint8_t data);

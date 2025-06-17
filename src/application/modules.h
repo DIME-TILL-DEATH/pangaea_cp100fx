@@ -61,6 +61,12 @@ enum
 	BPM_GLOBAL = 511
 };
 
+enum
+{
+	PARAM_EQUAL_POS = 128,
+	NOT_SEND_POS = 255
+};
+
 enum resonance_filter_parameters_t
 {
 	RFILTER_MIX = 130,
@@ -137,7 +143,7 @@ enum amp_parameters_t
 
 enum
 {
-	AMP_MASTER_POS = 0, AMP_TYPE_POS, AMP_LEVEL_POS
+	AMP_MASTER_POS = 0, AMP_TYPE_POS = PARAM_EQUAL_POS, AMP_LEVEL_POS = 2
 };
 
 enum eq_parameters_t
@@ -301,10 +307,7 @@ enum
 	TREMOLO_MS_POS, TREMOLO_LFO_TYPE_POS = 6
 };
 
-enum
-{
-	NOT_SEND_POS = 255
-};
+
 
 
 #endif /* MODULES_H_ */

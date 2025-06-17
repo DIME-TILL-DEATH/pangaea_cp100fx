@@ -9,7 +9,7 @@ class MainMenu : public AbstractMenu
 public:
 	MainMenu();
 
-	void show() override;
+	void show(TShowMode swhoMode = FirstShow) override;
 	void task() override;
 
 	void encoderPressed() override;

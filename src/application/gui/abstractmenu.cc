@@ -17,10 +17,17 @@ void AbstractMenu::keyUp()
 	if(topLevelMenu)
 	{
 		currentMenu = topLevelMenu;
-		topLevelMenu->show();
+		topLevelMenu->returnFromChildMenu();
 	}
 
 	clean_flag();
+}
 
-	delete(this);
+void AbstractMenu::returnFromChildMenu()
+{
+	currentMenu = this;
+
+	delete shownChildMenu;
+	shownChildMenu = nullptr;
+	show();
 }

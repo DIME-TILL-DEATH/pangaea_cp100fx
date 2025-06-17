@@ -4,13 +4,14 @@
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
+#include "submenuparam.h"
 
 class ModulesMenu : public AbstractMenu
 {
 public:
 	ModulesMenu(AbstractMenu* parent);
 
-	void show() override;
+	void show(TShowMode swhoMode = FirstShow) override;
 	void task() override;
 
 	void encoderPressed() override;
@@ -34,11 +35,13 @@ private:
 	ParamListMenu* createGateMenu();
 	ParamListMenu* createCompressorMenu();
 	ParamListMenu* createPreampMenu();
-
+	ParamListMenu* createAmpMenu();
 	ParamListMenu* createPhaserMenu();
 	ParamListMenu* createFlangerMenu();
 	ParamListMenu* createChorusMenu();
-	ParamListMenu* createEarlyMenu();
+	static AbstractMenu* createEarlyMenu(AbstractMenu* parentMenu);
+	static ParamListMenu* createDelayMenu(AbstractMenu* parentMenu);
+	ParamListMenu* createReverbMenu();
 	ParamListMenu* createTremoloMenu();
 
 	void icon_refresh(uint8_t num);
@@ -58,12 +61,6 @@ private:
 	constexpr static uint8_t imp_dir_no [ ]= "IMPULSE";
 	constexpr static uint8_t sd_lo [] = "MicroSD is loading..";
 
-	constexpr static uint8_t del_list      [][8] ={"Mix","Time","F_Back","LPF","HPF","D_Pan","D2 Vol","D2 Pan","D->D2","D_Mod","M_Rate","Direct"};
-	constexpr static uint8_t del_tim_l     [][5] ={"Time","TAP","Tail"};
-	constexpr static uint8_t tap_tim       [][6] ={"1/1  ","1/1.5","1/2  ","1/3  ","1/4  ","2/1  "};
-	constexpr static float   tap_tim_v     [6]   ={1.0f,1.5f,2.0f,3.0f,4.0f,0.5f};
-	constexpr static uint8_t rev_list      [][7] ={"Mix","Type","Time","Size","Damp","LPF","HPF","Detune","Diffus","PreD","Tail"};
-	constexpr static uint8_t rev_type_list [][8] ={"Default","Hall   ","Room   ","Plate  ","Spring ","Gate   ","Reverse"};
 	constexpr static uint8_t s_t_c_list    [][7] ={"  No  ","Return","   Yes"};
 
 	//	constexpr static uint8_t contr_list    [][7] ={"Contr","Source","Destin","MinVal","MaxVal","PC Out","SET"};
