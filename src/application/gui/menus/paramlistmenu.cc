@@ -128,18 +128,9 @@ void ParamListMenu::encoderClockwise()
 	{
 		if(paramsList[currentParamNum]->value() - paramsList[currentParamNum]->offset() < paramsList[currentParamNum]->maxValue())
 		{
-//			increaseParam(paramsList[currentParamNum]);
-
 			paramsList[currentParamNum]->increaseParam();
 			printParam(paramsList[currentParamNum], currentParamNum % paramsOnPage);
-
-			if(paramsList[currentParamNum]->bytePosition() != NOT_SEND_POS)
-			{
-				if(paramsList[currentParamNum]->bytePosition() == PARAM_EQUAL_POS)
-					DSP_gui_set_parameter(paramsList[currentParamNum]->moduleAddress(), paramsList[currentParamNum]->value(), 0);
-				else
-					DSP_gui_set_parameter(paramsList[currentParamNum]->moduleAddress(),	paramsList[currentParamNum]->bytePosition(), paramsList[currentParamNum]->value());
-			}
+			paramsList[currentParamNum]->setToDsp();
 		}
 	}
 
@@ -163,17 +154,9 @@ void ParamListMenu::encoderCounterClockwise()
 	{
 		if(paramsList[currentParamNum]->value() - paramsList[currentParamNum]->offset() > paramsList[currentParamNum]->minValue())
 		{
-//			decreaseParam(paramsList[currentParamNum]);
 			paramsList[currentParamNum]->decreaseParam();
 			printParam(paramsList[currentParamNum], currentParamNum % paramsOnPage);
-
-			if(paramsList[currentParamNum]->bytePosition() != NOT_SEND_POS)
-			{
-				if(paramsList[currentParamNum]->bytePosition() == PARAM_EQUAL_POS)
-					DSP_gui_set_parameter(paramsList[currentParamNum]->moduleAddress(), paramsList[currentParamNum]->value(), 0);
-				else
-					DSP_gui_set_parameter(paramsList[currentParamNum]->moduleAddress(),	paramsList[currentParamNum]->bytePosition(), paramsList[currentParamNum]->value());
-			}
+			paramsList[currentParamNum]->setToDsp();
 		}
 	}
 

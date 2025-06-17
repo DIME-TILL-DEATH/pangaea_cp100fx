@@ -2,7 +2,7 @@
 #define BASEPARAM_H_
 
 #include "appdefs.h"
-#include "../modules.h"
+#include "../../../modules.h"
 
 class BaseParam
 {
@@ -38,7 +38,7 @@ public:
 	bool disabled() {return m_disabled;};
 	void setDisabled(bool disabled) {m_disabled = disabled;};
 
-	void setBounds(uint8_t minBound, uint8_t maxBound);
+	void setBounds(uint32_t minBound, uint32_t maxBound);
 	uint8_t minValue() const {return m_minValue;};
 	uint8_t maxValue() const {return m_maxValue;};
 
@@ -49,8 +49,10 @@ public:
 	void setDisplayPosition(uint8_t xCoord);
 	uint8_t xDisplayPosition() const {return m_xDisplayPosition;};
 
-	uint8_t setByteSize(uint8_t size);
+	void setByteSize(uint8_t size);
 	uint8_t byteSize() const {return m_byteSize;};
+
+	void setToDsp();
 
 private:
 	const char* m_name;
@@ -71,8 +73,11 @@ protected:
 
 	uint8_t* m_valuePtr;
 
-	uint8_t m_minValue{0};
-	uint8_t m_maxValue{127};
+	uint32_t m_minValue{0};
+	uint32_t m_maxValue{127};
+
+	void encoderSpeedIncrease();
+	void encoderSpeedDecrease();
 };
 
 

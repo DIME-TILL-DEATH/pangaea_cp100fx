@@ -10,7 +10,7 @@
 #include "enc.h"
 #include "BF706_send.h"
 
-#include "gui/mainmenu.h"
+#include "gui/menus/mainmenu.h"
 
 float m_vol = 1.0;
 float p_vol = 1.0;

@@ -4,7 +4,7 @@
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
-#include "submenuparam.h"
+#include "params/submenuparam.h"
 
 class ModulesMenu : public AbstractMenu
 {

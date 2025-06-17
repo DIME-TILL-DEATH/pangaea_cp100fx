@@ -1,6 +1,6 @@
 #include "abstractmenu.h"
 
-#include "gui_task.h"
+#include "../gui_task.h"
 
 const uint8_t AbstractMenu::ascii_low1[];
 const uint8_t AbstractMenu::ascii_low2[];

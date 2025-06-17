@@ -142,11 +142,11 @@ void eepr_read_prog(uint8_t nu)
 		uint8_t del_t_b [2];
 		f_read(&file, del_t_b , 2 , &f_size);
 		extern uint8_t tempo_fl;
-		if(!tempo_fl || !sys_para[tap_typ])
-	    {
+//		if(!tempo_fl || !sys_para[tap_typ])
+//	    {
 		   delay_time = del_t_b[0];
 		   delay_time |= del_t_b[1] << 8;
-	    }
+//	    }
 		f_read(&file, cab_data , 12288 , &f_size);
 		f_read(&file, name_buf , 64 , &f_size);
 		if(cab_type == 2)

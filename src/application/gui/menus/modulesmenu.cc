@@ -21,7 +21,7 @@
 extern volatile uint8_t comp_fl;
 extern volatile uint8_t preset_edited;
 extern gui_menu_type current_menu;
-extern uint8_t copy_temp;
+
 
 
 extern uint8_t cab_type;
@@ -48,8 +48,6 @@ const uint8_t ModulesMenu::sd_lo [];
 
 const uint8_t ModulesMenu::s_t_c_list    [][7];
 
-constexpr static uint8_t del_list      [][8] ={"Mix","Time","F_Back","LPF","HPF","D_Pan","D2 Vol","D2 Pan","D->D2",
-		"D_Mod","M_Rate","Direct"};
 
 ModulesMenu::ModulesMenu(AbstractMenu* parent)
 {
@@ -555,17 +553,17 @@ void ModulesMenu::key5()
 {
 	if(current_menu != MENU_MODULES) return;
 
-	clean_flag();
-
-	current_menu = MENU_COPY;
-	read_prog_temp(copy_temp);
-	imya_temp = 1;
-	for(uint8_t i = 0 ; i < 15 ; i++)imya_t[i] = preset_temp[i];
-	for(uint8_t i = 0 ; i < 15 ; i++)imya1_t[i] = preset_temp[15 + i];
-
-	DisplayTask->Main_scr();
-	DisplayTask->Prog_ind(copy_temp);
-	DisplayTask->StringOut(10,3,TDisplayTask::fntSystem,0,(uint8_t*)"Copy to ->");
+//	clean_flag();
+//
+//	current_menu = MENU_COPY;
+//	read_prog_temp(copy_temp);
+//	imya_temp = 1;
+//	for(uint8_t i = 0 ; i < 15 ; i++)imya_t[i] = preset_temp[i];
+//	for(uint8_t i = 0 ; i < 15 ; i++)imya1_t[i] = preset_temp[15 + i];
+//
+//	DisplayTask->Main_scr();
+//	DisplayTask->Prog_ind(copy_temp);
+//	DisplayTask->StringOut(10,3,TDisplayTask::fntSystem,0,(uint8_t*)"Copy to ->");
 }
 
 
@@ -830,16 +828,20 @@ ParamListMenu* ModulesMenu::createDelayMenu(AbstractMenu* parentMenu)
 
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &prog_data[DELAY_MIX]);
 	params[0]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_MIX_POS);
+
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_DELAY_TIME, "Time", &ModulesMenu::createEarlyMenu, &delay_time);
-//	params[1]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS);
-//	params[1]->setByteSize(2);
+	params[1]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS);
+	params[1]->setByteSize(2);
+	params[1]->setBounds(10, 2730);
+	params[1]->setScaling(10, 0);
+
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &prog_data[DELAY_FEEDBACK]);
 	params[2]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_FEEDBACK_POS);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "LPF", &prog_data[DELAY_LPF]);
 	params[3]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_LPF_POS);
 	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &prog_data[DELAY_HPF]);
 	params[4]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_HPF_POS);
-	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "LPF", &prog_data[DELAY_PAN1]);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "D1 Pan", &prog_data[DELAY_PAN1]);
 	params[5]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_PAN1_POS);
 	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "D2 Vol", &prog_data[DELAY_VOLUME2]);
 	params[6]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_VOLUME2_POS);

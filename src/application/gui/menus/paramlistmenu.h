@@ -2,9 +2,10 @@
 #define GUI_PARAMLISTMENU_H_
 
 #include "abstractmenu.h"
-#include "baseparam.h"
-#include "stringparam.h"
-#include "submenuparam.h"
+
+#include "params/baseparam.h"
+#include "params/stringparam.h"
+#include "params/submenuparam.h"
 
 class ParamListMenu : public AbstractMenu
 {

@@ -3,9 +3,9 @@
 
 #include "appdefs.h"
 #include "../modules.h"
-#include "abstractmenu.h"
+#include "menus/abstractmenu.h"
 
-#include "baseparam.h"
+#include "menus/params/baseparam.h"
 
 
 #define IN_OUT_STR_SIZE 7
@@ -75,12 +75,6 @@ typedef union {
 void tim5_start(uint8_t val);
 void t_restart(void);
 void clean_flag (void);
-
-void GUI_param_select_task(uint8_t** param_strings);
-void GUI_enc_param_decrase(uint8_t** param_pts, dsp_module_address_t module_address);
-//void GUI_enc_param_decrase(gui_param_t* menu_params);
-void GUI_enc_param_incrase(uint8_t** param_pts, dsp_module_address_t module_address);
-void GUI_return_to_main_menu();
 
 extern volatile uint8_t encoder_knob_selected;
 
