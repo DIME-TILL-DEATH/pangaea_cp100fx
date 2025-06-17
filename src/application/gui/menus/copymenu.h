@@ -3,10 +3,10 @@
 
 #include "abstractmenu.h"
 
-class CopyPresetMenu : public AbstractMenu
+class CopyMenu : public AbstractMenu
 {
 public:
-	CopyPresetMenu(AbstractMenu* parent);
+	CopyMenu(AbstractMenu* parent);
 
 	void show(TShowMode showMode = FirstShow) override;
 	void task() override;
@@ -18,14 +18,11 @@ public:
 	void keyUp() override;
 	void keyDown() override;
 
-	void key1() override;
-	void key2() override;
-	void key3() override;
-	void key4() override;
-	void key5() override;
-
 private:
+	uint8_t copyPresetNum = 0;
 
+	void updatePresetData();
+	void copyPreset();
 };
 
 

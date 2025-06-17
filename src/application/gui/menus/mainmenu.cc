@@ -120,6 +120,7 @@ void MainMenu::encoderClockwise()
 		if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[fsm2]))DisplayTask->IndFoot(1,contr_kn[1]);
 		DisplayTask->Prog_ind(prog1);
 		if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3]))DisplayTask->IndFoot(2,contr_kn[2]);
+
 		tim5_start(0);
 		TIM_SetCounter(TIM6,0x8000);
 		TIM_ClearFlag(TIM6,TIM_FLAG_Update);

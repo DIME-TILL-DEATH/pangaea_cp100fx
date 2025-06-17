@@ -69,7 +69,7 @@ void ModulesMenu::task()
 {
 	if(current_menu != MENU_MODULES) return;
 
-	switch (num_men)
+	switch (m_numMenu)
 	{
 	case 0:
 	  if(tim5_fl == 0)DisplayTask->EfIcon(2,0,(uint8_t*)rf,prog_data[ENABLE_RESONANCE_FILTER]);
@@ -135,7 +135,7 @@ void ModulesMenu::encoderPressed()
 	if(current_menu != MENU_MODULES) return;
 
 
-	switch (num_men)
+	switch (m_numMenu)
 	{
 		case 0:
 			prog_data[ENABLE_RESONANCE_FILTER] = !(bool)prog_data[ENABLE_RESONANCE_FILTER];
@@ -260,10 +260,10 @@ void ModulesMenu::encoderClockwise()
 
 	if(!comp_fl)
 	{
-		icon_refresh(num_men);
+		icon_refresh(m_numMenu);
 
-		if(num_men < 13) num_men++;
-		else num_men = 0;
+		if(m_numMenu < 13) m_numMenu++;
+		else m_numMenu = 0;
 
 		tim5_start(0);
 	}
@@ -276,10 +276,10 @@ void ModulesMenu::encoderCounterClockwise()
 
 	if(!comp_fl)
 	{
-		icon_refresh(num_men);
+		icon_refresh(m_numMenu);
 
-		if(num_men > 0) num_men--;
-		else num_men = 13;
+		if(m_numMenu > 0) m_numMenu--;
+		else m_numMenu = 13;
 
 		tim5_start(0);
 	}
@@ -310,7 +310,7 @@ void ModulesMenu::keyUp()
 			vol_fl = 0;
 //			edit_modules_fl = 0;
 			prog_cur = 0;
-			num_men = 0;
+			m_numMenu = 0;
 			DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 			DisplayTask->Menu_init();
 			tim5_start(0);
@@ -327,7 +327,7 @@ void ModulesMenu::keyDown()
 	//-------------------------------KEYS-----------------------------------------------
 	if((comp_fl == 0) && (prog1 == prog))
 	{
-		switch (num_men){
+		switch (m_numMenu){
 		case 0:
 			if(prog_data[ENABLE_RESONANCE_FILTER])
 			{
@@ -489,7 +489,6 @@ void ModulesMenu::key2()
 	vol_vol = prog_data[pres_lev];
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	tim5_start(0);
-	num_men_temp = num_men;
 
 }
 
@@ -524,7 +523,6 @@ void ModulesMenu::key3()
 	}
 	DisplayTask->Strel(58,3,0);
 	par_num = 0;
-	num_men_temp = num_men;
 }
 
 void ModulesMenu::key4()
@@ -546,24 +544,14 @@ void ModulesMenu::key4()
 	DisplayTask->SymbolOut(86,1,TDisplayTask::fntSystem,0,46);
 	DisplayTask->StringOut(0,2,TDisplayTask::fntSystem,0,(uint8_t*)ascii_low1);
 	DisplayTask->StringOut(0,3,TDisplayTask::fntSystem,0,(uint8_t*)ascii_low2);
-	num_men_temp = num_men;
 }
 
 void ModulesMenu::key5()
 {
 	if(current_menu != MENU_MODULES) return;
 
-//	clean_flag();
-//
-//	current_menu = MENU_COPY;
-//	read_prog_temp(copy_temp);
-//	imya_temp = 1;
-//	for(uint8_t i = 0 ; i < 15 ; i++)imya_t[i] = preset_temp[i];
-//	for(uint8_t i = 0 ; i < 15 ; i++)imya1_t[i] = preset_temp[15 + i];
-//
-//	DisplayTask->Main_scr();
-//	DisplayTask->Prog_ind(copy_temp);
-//	DisplayTask->StringOut(10,3,TDisplayTask::fntSystem,0,(uint8_t*)"Copy to ->");
+	shownChildMenu = &copyMenu;
+	shownChildMenu->show();
 }
 
 

@@ -4,6 +4,7 @@
 #include "abstractmenu.h"
 #include "modulesmenu.h"
 
+
 class MainMenu : public AbstractMenu
 {
 public:

@@ -23,11 +23,15 @@ void AbstractMenu::keyUp()
 	clean_flag();
 }
 
-void AbstractMenu::returnFromChildMenu()
+void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 {
 	currentMenu = this;
 
-	delete shownChildMenu;
-	shownChildMenu = nullptr;
-	show();
+	if(returnMode == TReturnMode::DeleteChild)
+	{
+		delete shownChildMenu;
+		shownChildMenu = nullptr;
+	}
+
+	show(TShowMode::ReturnShow);
 }

@@ -4,6 +4,8 @@
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
+#include "copymenu.h"
+
 #include "params/submenuparam.h"
 
 class ModulesMenu : public AbstractMenu
@@ -27,9 +29,12 @@ public:
 	void key4() override;
 	void key5() override;
 
+	uint8_t numMenu() {return m_numMenu;};
+
 private:
-	uint8_t num_men = 0;
-	uint8_t num_men_temp = 0;
+	uint8_t m_numMenu = 0;
+
+	CopyMenu copyMenu{this};
 
 	ParamListMenu* createRfMenu();
 	ParamListMenu* createGateMenu();

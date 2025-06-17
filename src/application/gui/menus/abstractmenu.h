@@ -65,8 +65,14 @@ public:
 		ReturnShow
 	};
 
+	enum TReturnMode
+	{
+		KeepChild,
+		DeleteChild
+	};
+
 	virtual void show(TShowMode swhoMode = FirstShow) {};
-	virtual void returnFromChildMenu();
+	virtual void returnFromChildMenu(TReturnMode returnMode = DeleteChild);
 	virtual void task() {};
 
 	virtual void encoderPressed() {};
