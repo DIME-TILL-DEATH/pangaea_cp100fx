@@ -9,34 +9,34 @@ enum
 };
 
 volatile extern uint8_t enc_run;
-class TENCTask : public TTask
+class TENCTask: public TTask
 {
-  public:
-    TENCTask () ;
-    inline void Give()
-     {
-   	 if ( cortex_isr_num())
-   	 {
-   		 BaseType_t HigherPriorityTaskWoken ;
-   		 sem-> GiveFromISR ( &HigherPriorityTaskWoken) ;
-            if ( HigherPriorityTaskWoken )
-         	   TScheduler::Yeld();
-   	 }
-   	 else sem-> Give () ;
-     }
-    inline void SetEnc ( uint8_t val )
-    {
-      enc_run = val ;
-    }
-  private:
-     void Code() ;
-     TSemaphore* sem ;
-
+public:
+	TENCTask();
+	inline void Give()
+	{
+		if(cortex_isr_num())
+		{
+			BaseType_t HigherPriorityTaskWoken;
+			sem->GiveFromISR(&HigherPriorityTaskWoken);
+			if(HigherPriorityTaskWoken)
+				TScheduler::Yeld();
+		}
+		else
+			sem->Give();
+	}
+	inline void SetEnc(uint8_t val)
+	{
+		enc_run = val;
+	}
+private:
+	void Code();
+	TSemaphore *sem;
 
 };
 
-int16_t enc_speed_inc(int16_t data,int16_t max);
-uint16_t enc_speed_dec(int16_t data,int16_t min);
+int16_t enc_speed_inc(int16_t data, int16_t max);
+uint16_t enc_speed_dec(int16_t data, int16_t min);
 
 extern volatile uint8_t encoder_state;
 extern volatile uint8_t encoder_state_updated;
@@ -46,6 +46,6 @@ extern volatile uint8_t k_tuner;
 extern volatile uint8_t contr_kn[];
 extern volatile uint8_t contr_kn1[];
 
-extern TENCTask* ENCTask ;
+extern TENCTask *ENCTask;
 
 #endif /*__ENC_H__*/
