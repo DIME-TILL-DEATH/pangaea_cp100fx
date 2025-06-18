@@ -16,6 +16,7 @@ public:
 		GUI_PARAMETER_PAN,
 		GUI_PARAMETER_LIST,
 		GUI_PARAMETER_DELAY_TIME,
+		GUI_PARAMETER_SUBMENU_DELAY_TIME,
 		GUI_PARAMETER_SUBMENU
 	};
 
@@ -27,9 +28,11 @@ public:
 	const char* name();
 	uint8_t* valuePtr() const {return m_valuePtr;};
 
-	virtual uint8_t value() const;
+	virtual uint32_t value() const;
 	virtual void increaseParam();
 	virtual void decreaseParam();
+
+	virtual void printParam(uint8_t yPos);
 
 	void setDspAddress(dsp_module_address_t moduleAddress, uint8_t bytePosition);
 	dsp_module_address_t moduleAddress() const {return m_moduleAddress;};
@@ -39,8 +42,8 @@ public:
 	void setDisabled(bool disabled) {m_disabled = disabled;};
 
 	void setBounds(uint32_t minBound, uint32_t maxBound);
-	uint8_t minValue() const {return m_minValue;};
-	uint8_t maxValue() const {return m_maxValue;};
+	uint32_t minValue() const {return m_minValue;};
+	uint32_t maxValue() const {return m_maxValue;};
 
 	void setScaling(uint8_t stepSize, uint8_t offset);
 	uint8_t offset() const {return m_offset;};
@@ -54,7 +57,7 @@ public:
 
 	void setToDsp();
 
-private:
+protected:
 	const char* m_name;
 
 	bool m_disabled{false};
@@ -65,10 +68,9 @@ private:
 	uint8_t m_xDisplayPosition{58};
 
 	uint8_t m_byteSize{1};
-	uint8_t m_offset{0};
+	uint32_t m_offset{0};
 	uint8_t m_stepSize{1};
 
-protected:
 	gui_param_type m_type{GUI_PARAMETER_DUMMY};
 
 	uint8_t* m_valuePtr;

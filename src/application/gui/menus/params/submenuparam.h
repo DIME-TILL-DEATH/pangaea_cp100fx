@@ -12,10 +12,11 @@ public:
 			AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), void* param = nullptr);
 	//	~SubmenuParam();
 
+	void printParam(uint8_t yDisplayPosition) override;
+	uint32_t value() const override {return 0;};
+
 	void showSubmenu();
 	void showSubmenu(AbstractMenu* parent);
-
-	uint8_t value() const override {return 0;};
 
 private:
 	AbstractMenu* m_menu;

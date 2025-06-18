@@ -1,5 +1,7 @@
 #include "stringparam.h"
 
+#include "display.h"
+
 
 StringParam::StringParam(const char* name, uint8_t* paramValuePtr, char** newStrings, uint8_t strCount)
 			:BaseParam(BaseParam::GUI_PARAMETER_LIST, name, paramValuePtr)
@@ -85,4 +87,11 @@ void StringParam::decreaseParam()
 	{
 		m_affectedParamsList[i]->setDisabled(m_disableMask[*m_valuePtr][i]);
 	}
+}
+
+void StringParam::printParam(uint8_t yDisplayPosition)
+{
+	if(m_disabled) return;
+
+	DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, TDisplayTask::fntSystem , 0, getString(*m_valuePtr));
 }

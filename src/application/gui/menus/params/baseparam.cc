@@ -2,6 +2,9 @@
 
 #include "BF706_send.h"
 #include "enc.h"
+#include "eepr.h"
+
+#include "display.h"
 
 BaseParam::BaseParam(gui_param_type paramType, const char* name, void* paramValuePtr)
 {
@@ -44,10 +47,15 @@ void BaseParam::setByteSize(uint8_t size)
 	m_byteSize = size;
 }
 
-uint8_t BaseParam::value() const
+uint32_t BaseParam::value() const
 {
 	if(!m_valuePtr) return 0;
-	else return *m_valuePtr + m_offset;
+	else
+	{
+		uint32_t fullValue = 0;
+		kgp_sdk_libc::memcpy(&fullValue, m_valuePtr, m_byteSize);
+		return fullValue + m_offset;
+	}
 }
 
 void BaseParam::increaseParam()
@@ -79,7 +87,43 @@ void BaseParam::setToDsp()
 		if(m_bytePosition == PARAM_EQUAL_POS)
 			DSP_gui_set_parameter(m_moduleAddress, *(m_valuePtr+i) + m_offset, 0);
 		else
-			DSP_gui_set_parameter(m_moduleAddress,	m_bytePosition + i, *(m_valuePtr+i) + m_offset);
+			DSP_gui_set_parameter(m_moduleAddress,	m_bytePosition + i,
+					*(m_valuePtr + m_byteSize - 1 - i) + m_offset);
+	}
+}
+
+void BaseParam::printParam(uint8_t yDisplayPosition)
+{
+	if(m_disabled) return;
+
+	switch(m_type)
+	{
+		case BaseParam::GUI_PARAMETER_LEVEL:
+			DisplayTask->ParamIndic(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			break;
+		case BaseParam::GUI_PARAMETER_MIX:
+			DisplayTask->ParamIndicMix(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			break;
+		case BaseParam::GUI_PARAMETER_PAN:
+			DisplayTask->ParamIndicPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			break;
+		case BaseParam::GUI_PARAMETER_NUM:
+			DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			break;
+		case BaseParam::GUI_PARAMETER_DELAY_TIME:
+		{
+			if(!sys_para[tim_type])
+			{
+				DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, delay_time);
+			}
+			else
+			{
+				DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, 60000/delay_time);
+				DisplayTask->StringOut(m_xDisplayPosition + 45, yDisplayPosition, TDisplayTask::fntSystem, 0, (uint8_t*)"BPM");
+			}
+			break;
+		}
+		default: break;
 	}
 }
 

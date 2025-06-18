@@ -19,6 +19,8 @@ public:
 	void increaseParam() override;
 	void decreaseParam() override;
 
+	void printParam(uint8_t yPos) override;
+
 private:
 	char strings[24][16];
 	uint8_t m_stringCount;
