@@ -3,10 +3,8 @@
 
 
 #include "abstractmenu.h"
-#include "paramlistmenu.h"
 #include "copymenu.h"
 
-#include "params/submenuparam.h"
 
 class ModulesMenu : public AbstractMenu
 {
@@ -31,29 +29,14 @@ public:
 
 	uint8_t numMenu() {return m_numMenu;};
 
+	static void enableCab();
+
 private:
 	uint8_t m_numMenu = 0;
 
 	CopyMenu copyMenu{this};
 
-	ParamListMenu* createRfMenu();
-	ParamListMenu* createGateMenu();
-	ParamListMenu* createCompressorMenu();
-	ParamListMenu* createPreampMenu();
-	ParamListMenu* createAmpMenu();
-	ParamListMenu* createPhaserMenu();
-	ParamListMenu* createFlangerMenu();
-	ParamListMenu* createChorusMenu();
-	static AbstractMenu* createEarlyMenu(AbstractMenu* parentMenu);
-	static ParamListMenu* createDelayMenu(AbstractMenu* parentMenu);
-	ParamListMenu* createReverbMenu();
-	ParamListMenu* createTremoloMenu();
-
 	void icon_refresh(uint8_t num);
-
-	constexpr static uint8_t cab_list      [][8] ={"Pan","Browser","Volume"};
-	constexpr static uint8_t cab_out_list  [][6] ={"1 L+R","1R AP","2 L+R","1R A ","1R P "," 1 R "};
-	constexpr static uint8_t cab_list_menu [][9] ={"Cabinet1","Cabinet2"};
 
 	constexpr static uint8_t volum[]="Preset Level";
 	constexpr static uint8_t s_to_ch[]="      Save?";
@@ -67,9 +50,6 @@ private:
 	constexpr static uint8_t sd_lo [] = "MicroSD is loading..";
 
 	constexpr static uint8_t s_t_c_list    [][7] ={"  No  ","Return","   Yes"};
-
-	//	constexpr static uint8_t contr_list    [][7] ={"Contr","Source","Destin","MinVal","MaxVal","PC Out","SET"};
 };
-
 
 #endif /* MODULESMENU_H_ */
