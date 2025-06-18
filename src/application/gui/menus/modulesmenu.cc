@@ -17,9 +17,8 @@
 extern volatile uint8_t preset_edited;
 extern gui_menu_type current_menu;
 
-extern uint8_t key_shift;
 extern uint8_t control_destin;
-extern volatile uint8_t nam_sym_temp;
+
 
 const uint8_t ModulesMenu::cc[];
 const uint8_t ModulesMenu::contr_list[][7];
@@ -271,20 +270,8 @@ void ModulesMenu::key4()
 {
 	if(current_menu != MENU_MODULES) return;
 
-	// было своё copyMenu
-
-	DisplayTask->Clear();
-	current_menu = MENU_NAME_EDIT;
-	key_shift = 0;
-	eq_num = 0;
-	par_num = 0;
-	nam_sym_temp = 32;
-	DisplayTask->StringOut(2,0,TDisplayTask::fntSystem,0,(uint8_t*)imya);
-	DisplayTask->StringOut(2,1,TDisplayTask::fntSystem,0,(uint8_t*)imya1);
-	DisplayTask->SymbolOut(86,0,TDisplayTask::fntSystem,0,46);
-	DisplayTask->SymbolOut(86,1,TDisplayTask::fntSystem,0,46);
-	DisplayTask->StringOut(0,2,TDisplayTask::fntSystem,0,(uint8_t*)ascii_low1);
-	DisplayTask->StringOut(0,3,TDisplayTask::fntSystem,0,(uint8_t*)ascii_low2);
+	shownChildMenu = &nameEditMenu;
+	shownChildMenu->show();
 
 	clean_flag();
 
@@ -296,6 +283,8 @@ void ModulesMenu::key5()
 
 	shownChildMenu = &copyMenu;
 	shownChildMenu->show();
+
+	clean_flag();
 }
 
 void ModulesMenu::icon_refresh(uint8_t num)

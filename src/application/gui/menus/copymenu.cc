@@ -19,7 +19,7 @@ CopyMenu::CopyMenu(AbstractMenu* parent)
 	m_menuType = MENU_COPY;
 	topLevelMenu = parent;
 
-	copyPresetNum = prog1;
+	targetPresetNum = prog1;
 }
 
 void CopyMenu::show(TShowMode showMode)
@@ -27,13 +27,13 @@ void CopyMenu::show(TShowMode showMode)
 	current_menu = MENU_COPY;
 	currentMenu = this;
 
-	read_prog_temp(copyPresetNum);
+	read_prog_temp(targetPresetNum);
 	imya_temp = 1;
 	for(uint8_t i = 0 ; i < 15 ; i++) imya_t[i] = preset_temp[i];
 	for(uint8_t i = 0 ; i < 15 ; i++) imya1_t[i] = preset_temp[15 + i];
 
 	DisplayTask->Main_scr();
-	DisplayTask->Prog_ind(copyPresetNum);
+	DisplayTask->Prog_ind(targetPresetNum);
 	DisplayTask->StringOut(10,3,TDisplayTask::fntSystem,0,(uint8_t*)"Copy to ->");
 
 	clean_flag();
@@ -41,7 +41,7 @@ void CopyMenu::show(TShowMode showMode)
 
 void CopyMenu::task()
 {
-	if(tim5_fl == 0) DisplayTask->Prog_ind(copyPresetNum);
+	if(tim5_fl == 0) DisplayTask->Prog_ind(targetPresetNum);
 	else if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update) == 1) DisplayTask->Clear_str(87 , 0 , TDisplayTask::fnt33x30 , 39);
 }
 
@@ -52,16 +52,16 @@ void CopyMenu::encoderPressed()
 
 void CopyMenu::encoderClockwise()
 {
-	if(copyPresetNum < 98) copyPresetNum +=1;
-	else copyPresetNum = 0;
+	if(targetPresetNum < 98) targetPresetNum +=1;
+	else targetPresetNum = 0;
 
 	updatePresetData();
 }
 
 void CopyMenu::encoderCounterClockwise()
 {
-	if(copyPresetNum > 0) copyPresetNum -=1;
-	else copyPresetNum = 98;
+	if(targetPresetNum > 0) targetPresetNum -=1;
+	else targetPresetNum = 98;
 
 	updatePresetData();
 }
@@ -78,14 +78,14 @@ void CopyMenu::keyDown()
 
 void CopyMenu::updatePresetData()
 {
-	eepr_read_imya(copyPresetNum);
-	read_prog_temp(copyPresetNum);
+	eepr_read_imya(targetPresetNum);
+	read_prog_temp(targetPresetNum);
 	for(uint8_t i = 0 ; i < 15 ; i++) imya_t[i] = preset_temp[i];
 	for(uint8_t i = 0 ; i < 15 ; i++) imya1_t[i] = preset_temp[15 + i];
 	imya_temp = 1;
 	DisplayTask->Main_scr();
 	DisplayTask->StringOut(10,3,TDisplayTask::fntSystem,0,(uint8_t*)"Copy to ->");
-	DisplayTask->Prog_ind(copyPresetNum);
+	DisplayTask->Prog_ind(targetPresetNum);
 
 	TIM_SetCounter(TIM6,0x8000);
 	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
@@ -100,6 +100,7 @@ void CopyMenu::copyPreset()
 	  DisplayTask->Clear();
 	  DisplayTask->StringOut(38,2,TDisplayTask::fnt12x13,0,(uint8_t*)"Copy OK!");
 
+	  // parameter to copy in class?
 	  ModulesMenu* modulesMenu = static_cast<ModulesMenu*>(topLevelMenu);
 
 	  switch(modulesMenu->numMenu()){
@@ -124,8 +125,8 @@ void CopyMenu::copyPreset()
 			 if(cab_type == 2)for(uint16_t i = 0 ; i < 12288 ; i++)preset_temp[13408 + i] = cab_data1[i];
 			 else for(uint16_t i = 0 ; i < 12288 ; i++)preset_temp[25760 + i] = cab_data1[i];
 			 for(uint16_t i = 0 ; i < 512 ; i++)preset_temp[38048 + i] = impulse_path[i];
-			 send_cab_data(0, copyPresetNum + 1,0);
-			 if(cab_type == 2) send_cab_data1(0, copyPresetNum + 1);
+			 send_cab_data(0, targetPresetNum + 1,0);
+			 if(cab_type == 2) send_cab_data1(0, targetPresetNum + 1);
 			 preset_temp[30 + cab] = prog_data[cab];
 			 break;
 	  case 6:for(uint8_t i = 0 ; i < 8 ; i++)preset_temp[30 + eq1 + i] = prog_data[eq1 + i];
@@ -169,6 +170,7 @@ void CopyMenu::copyPreset()
 			 break;
 	  }
 
+
 //	  switch(sub_men)
 //	  {
 //	  case 1:preset_temp[30 + pres_lev] = prog_data[pres_lev];
@@ -181,9 +183,8 @@ void CopyMenu::copyPreset()
 //	  }
 
 	  imya_temp = 0;
-//	  sub_men = 0;
-	  send_cab_data(1, copyPresetNum + 1, 1);
-	  write_prog_temp(copyPresetNum);
+	  send_cab_data(1, targetPresetNum + 1, 1);
+	  write_prog_temp(targetPresetNum);
 
 	  topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 }

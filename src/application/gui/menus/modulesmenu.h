@@ -1,10 +1,9 @@
 #ifndef MODULESMENU_H_
 #define MODULESMENU_H_
 
-
 #include "abstractmenu.h"
 #include "copymenu.h"
-
+#include "nameeditmenu.h"
 
 class ModulesMenu : public AbstractMenu
 {
@@ -35,6 +34,7 @@ private:
 	uint8_t m_numMenu = 0;
 
 	CopyMenu copyMenu{this};
+	NameEditMenu nameEditMenu{this};
 
 	void icon_refresh(uint8_t num);
 

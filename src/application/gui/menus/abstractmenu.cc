@@ -1,5 +1,6 @@
 #include "abstractmenu.h"
 
+#include "../../display.h"
 #include "../gui_task.h"
 
 const uint8_t AbstractMenu::ascii_low1[];
@@ -33,5 +34,6 @@ void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 		shownChildMenu = nullptr;
 	}
 
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	show(TShowMode::ReturnShow);
 }

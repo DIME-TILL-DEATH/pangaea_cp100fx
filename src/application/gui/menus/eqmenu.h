@@ -1,12 +1,12 @@
-#ifndef COPYPRESETMENU_H_
-#define COPYPRESETMENU_H_
+#ifndef EQMENU_H_
+#define EQMENU_H_
 
 #include "abstractmenu.h"
 
-class CopyMenu : public AbstractMenu
+class EqMenu : public AbstractMenu
 {
 public:
-	CopyMenu(AbstractMenu* parent);
+	EqMenu(AbstractMenu* parent);
 
 	void show(TShowMode showMode = FirstShow) override;
 	void task() override;
@@ -15,16 +15,14 @@ public:
 	void encoderClockwise() override;
 	void encoderCounterClockwise() override;
 
-	void keyUp() override;
+//	void keyUp() override;
 	void keyDown() override;
 
+//	void key1() override();
 private:
-	uint8_t targetPresetNum = 0;
-
-	void updatePresetData();
-	void copyPreset();
+	uint8_t eq_num;
+	bool encoderKnobSelected;
 };
 
 
-
-#endif /* COPYPRESETMENU_H_ */
+#endif /* EQMENU_H_ */

@@ -8,7 +8,6 @@
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
-#include "BF706_send.h"
 
 extern volatile int8_t temp;
 extern const uint16_t bpm_time[];
@@ -24,7 +23,7 @@ ParamListMenu::~ParamListMenu()
 {
 	for(int i=0; i<maxParamCount; i++)
 	{
-		if(paramsList[i]) delete paramsList[i];
+		if(m_paramsList[i]) delete m_paramsList[i];
 	}
 }
 
@@ -32,17 +31,23 @@ void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingPara
 {
 	for(int i=0; i<maxParamCount; i++)
 	{
-		paramsList[i] = nullptr; // clean up
+		m_paramsList[i] = nullptr; // clean up
 	}
 
-	paramsCount = setlingParamCount;
+	m_paramsCount = setlingParamCount;
 
-	for(int i=0; i<paramsCount; i++)
+	for(int i=0; i<m_paramsCount; i++)
 	{
-		paramsList[i] = settlingParamList[i];
+		m_paramsList[i] = settlingParamList[i];
 	}
 
-	pagesCount = pages; // Библиотека математики ведёт себя странно, плюс требуется приведение к float
+	m_pagesCount = pages; // Библиотека математики ведёт себя странно, плюс требуется приведение к float
+}
+
+void ParamListMenu::setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource)
+{
+	m_volIndicatorType = volIndicatorType;
+	m_indicatorSource = indicatorSource;
 }
 
 void ParamListMenu::show(TShowMode showMode)
@@ -52,85 +57,87 @@ void ParamListMenu::show(TShowMode showMode)
 
 	if(showMode == FirstShow)
 	{
-		currentPageNumber = -1;
+		m_currentPageNumber = -1;
 
-		for(int i = 0; i<paramsCount; i++)
+		for(int i = 0; i<m_paramsCount; i++)
 		{
-			if(paramsList[i]->type() == BaseParam::GUI_PARAMETER_LIST)
+			if(m_paramsList[i]->type() == BaseParam::GUI_PARAMETER_LIST)
 			{
-				StringParam* strParam = static_cast<StringParam*>(paramsList[i]);
+				StringParam* strParam = static_cast<StringParam*>(m_paramsList[i]);
 				uint8_t* valDisableMask = strParam->getDisableMask();
-				for(int a=0; a<paramsCount; a++)
+				for(int a=0; a<m_paramsCount; a++)
 				{
-					paramsList[a]->setDisabled(valDisableMask[a]);
+					m_paramsList[a]->setDisabled(valDisableMask[a]);
 				}
 			}
 		}
-		encoderKnobSelected = false;
-		currentParamNum = 0;
+		m_encoderKnobSelected = false;
+		m_currentParamNum = 0;
 	}
 
 	printPage();
+	DisplayTask->SetVolIndicator(m_volIndicatorType, m_indicatorSource);
 }
 
 void ParamListMenu::task()
 {
-	if(!encoderKnobSelected)
+	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(leftPad, currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
-								tim5_fl * 2, (uint8_t*)(paramsList[currentParamNum]->name()));
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+								tim5_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 }
 
 void ParamListMenu::encoderPressed()
 {
-	if(paramsList[currentParamNum]->disabled()) return;
+	if(m_paramsList[m_currentParamNum]->disabled()) return;
 
-	if(paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_DELAY_TIME ||
-			paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
+	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME ||
+			m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
 	{
-		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(paramsList[currentParamNum]);
+		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(m_paramsList[m_currentParamNum]);
 		submenuParam->showSubmenu(this);
 	}
 	else
 	{
-		if(!encoderKnobSelected)
+		if(!m_encoderKnobSelected)
 		{
-			encoderKnobSelected = true;
-			DisplayTask->StringOut(leftPad, currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
-									2, (uint8_t*)(paramsList[currentParamNum]->name()));
+			m_encoderKnobSelected = true;
+			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+									2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 		else
 		{
-			encoderKnobSelected = false;
-			DisplayTask->StringOut(leftPad, currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
-									0, (uint8_t*)(paramsList[currentParamNum]->name()));
+			m_encoderKnobSelected = false;
+			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+									0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 	}
+
 	tim5_start(1);
 	clean_flag();
 }
 
 void ParamListMenu::encoderClockwise()
 {
-	if(!encoderKnobSelected)
+	if(!m_encoderKnobSelected)
 	{
-		if(currentParamNum < paramsCount - 1)
+		if(m_currentParamNum < m_paramsCount - 1)
 		{
 			do{
-				currentParamNum++; // Порядок важен!
-			}while(paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY && currentParamNum < paramsCount);
+				m_currentParamNum++; // Порядок важен!
+			}while(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY && m_currentParamNum < m_paramsCount);
 			printPage();
 			tim5_start(0);
 		}
 	}
 	else
 	{
-		if(paramsList[currentParamNum]->value() - paramsList[currentParamNum]->offset() < paramsList[currentParamNum]->maxValue())
+		if(m_paramsList[m_currentParamNum]->value() - m_paramsList[m_currentParamNum]->offset() < m_paramsList[m_currentParamNum]->maxValue())
 		{
-			paramsList[currentParamNum]->increaseParam();
-			printParam(paramsList[currentParamNum], currentParamNum % paramsOnPage);
-			paramsList[currentParamNum]->setToDsp();
+			m_paramsList[m_currentParamNum]->increaseParam();
+			m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
+			m_paramsList[m_currentParamNum]->setToDsp();
 		}
 	}
 
@@ -139,24 +146,24 @@ void ParamListMenu::encoderClockwise()
 
 void ParamListMenu::encoderCounterClockwise()
 {
-	if(!encoderKnobSelected)
+	if(!m_encoderKnobSelected)
 	{
-		if(currentParamNum > 0)
+		if(m_currentParamNum > 0)
 		{
 			do{
-				currentParamNum--; // Порядок важен!
-			}while(paramsList[currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY && currentParamNum > 0);
+				m_currentParamNum--; // Порядок важен!
+			}while(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY && m_currentParamNum > 0);
 			printPage();
 			tim5_start(0);
 		}
 	}
 	else
 	{
-		if(paramsList[currentParamNum]->value() - paramsList[currentParamNum]->offset() > paramsList[currentParamNum]->minValue())
+		if(m_paramsList[m_currentParamNum]->value() - m_paramsList[m_currentParamNum]->offset() > m_paramsList[m_currentParamNum]->minValue())
 		{
-			paramsList[currentParamNum]->decreaseParam();
-			printParam(paramsList[currentParamNum], currentParamNum % paramsOnPage);
-			paramsList[currentParamNum]->setToDsp();
+			m_paramsList[m_currentParamNum]->decreaseParam();
+			m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
+			m_paramsList[m_currentParamNum]->setToDsp();
 		}
 	}
 
@@ -255,73 +262,31 @@ void ParamListMenu::keyDown()
 void ParamListMenu::printPage()
 {
 	int8_t newPageNumber;
-	if(currentParamNum > 0) newPageNumber = currentParamNum / paramsOnPage;
+	if(m_currentParamNum > 0) newPageNumber = m_currentParamNum / paramsOnPage;
 	else newPageNumber = 0;
 
-	if(newPageNumber != currentPageNumber)
+	if(newPageNumber != m_currentPageNumber)
 	{
 		strelka_t drawStrelka;
 
-		if(newPageNumber < pagesCount - 1) drawStrelka = STRELKA_DOWN;
-		if(newPageNumber > 0 && newPageNumber < pagesCount) drawStrelka = STRELKA_UPDOWN;
-		if(newPageNumber == pagesCount - 1) drawStrelka = STRELKA_UP;
-		if(pagesCount == 1) drawStrelka = STRELKA_NONE;
+		if(newPageNumber < m_pagesCount - 1) drawStrelka = STRELKA_DOWN;
+		if(newPageNumber > 0 && newPageNumber < m_pagesCount) drawStrelka = STRELKA_UPDOWN;
+		if(newPageNumber == m_pagesCount - 1) drawStrelka = STRELKA_UP;
+		if(m_pagesCount == 1) drawStrelka = STRELKA_NONE;
 
 		DisplayTask->Clear();
 		DisplayTask->Icon_Strel(iconFormMenuType(m_menuType), drawStrelka);
-		currentPageNumber = newPageNumber;
+		m_currentPageNumber = newPageNumber;
 	}
 
-	uint8_t stringCount = paramsCount - currentPageNumber * paramsOnPage;
+	uint8_t stringCount = m_paramsCount - m_currentPageNumber * paramsOnPage;
 
 	for(uint8_t i = 0; i < stringCount; i++)
 	{
-		uint8_t displayParamNum = i + currentPageNumber * paramsOnPage;
-		if(paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
-		printParam(paramsList[displayParamNum], i);
-		DisplayTask->StringOut(leftPad, i, TDisplayTask::fntSystem , 0, (uint8_t*)(paramsList[displayParamNum]->name()));
-	}
-}
-
-void ParamListMenu::printParam(BaseParam* param, uint8_t yPos)
-{
-	if(param->disabled()) return;
-
-	switch(param->type())
-	{
-		case BaseParam::GUI_PARAMETER_DUMMY: break;
-		case BaseParam::GUI_PARAMETER_LEVEL:
-			DisplayTask->ParamIndic(param->xDisplayPosition(), yPos, param->value());
-			break;
-		case BaseParam::GUI_PARAMETER_MIX:
-			DisplayTask->ParamIndicMix(param->xDisplayPosition(), yPos, param->value());
-			break;
-		case BaseParam::GUI_PARAMETER_PAN:
-			DisplayTask->ParamIndicPan(param->xDisplayPosition(), yPos, param->value());
-			break;
-		case BaseParam::GUI_PARAMETER_SUBMENU:
-			break;
-		case BaseParam::GUI_PARAMETER_LIST:
-		{
-			StringParam* stringParam = static_cast<StringParam*>(param);
-			DisplayTask->StringOut(param->xDisplayPosition(), yPos, TDisplayTask::fntSystem , 0, stringParam->getString(param->value()));
-			break;
-		}
-		case BaseParam::GUI_PARAMETER_NUM:
-			DisplayTask->ParamIndicNum(param->xDisplayPosition(), yPos, param->value());
-			break;
-		case BaseParam::GUI_PARAMETER_DELAY_TIME:
-		{
-			DisplayTask->DelayTimeInd(param->xDisplayPosition(), yPos, delay_time);
-
-			if(!sys_para[tim_type]) DisplayTask->DelayTimeInd(param->xDisplayPosition(), yPos, delay_time);
-			else
-			{
-				DisplayTask->ParamIndicNum(param->xDisplayPosition(), yPos, 60000/delay_time);
-				DisplayTask->StringOut(param->xDisplayPosition() + 45, yPos,TDisplayTask::fntSystem, 0, (uint8_t*)"BPM");
-			}
-			break;
-		}
+		uint8_t displayParamNum = i + m_currentPageNumber * paramsOnPage;
+		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
+		m_paramsList[displayParamNum]->printParam(i);
+		DisplayTask->StringOut(leftPad, i, TDisplayTask::fntSystem , 0, (uint8_t*)(m_paramsList[displayParamNum]->name()));
 	}
 }
 
