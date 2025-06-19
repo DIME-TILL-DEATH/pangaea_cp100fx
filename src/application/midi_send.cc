@@ -17,7 +17,7 @@ inline void uart_send(uint8_t val)
 }
 inline void send_bank(void)
 {
-	uart_send(0xb0|sys_para[midi_c]);
+	uart_send(0xb0|sys_para[MIDI_CHANNEL]);
 	uart_send(0x0);
 	uart_send(0x0);
 	uart_send(0x20);
@@ -76,7 +76,7 @@ void TMidiSendTask::Code()
 				if(tmp&0x80)
 				{
 					data[0] = tmp;
-					if(tmp!=(sys_para[midi_c]|0xc0))
+					if(tmp!=(sys_para[MIDI_CHANNEL]|0xc0))
 						uart_send(tmp);
 					else
 						pc_in_fl = 1;
@@ -89,7 +89,7 @@ void TMidiSendTask::Code()
 				}
 				else
 				{
-					if(data[0]!=(sys_para[midi_c]|0xc0))
+					if(data[0]!=(sys_para[MIDI_CHANNEL]|0xc0))
 						uart_send(tmp);
 					if(contr_hader)
 					{
@@ -100,7 +100,7 @@ void TMidiSendTask::Code()
 						}
 						else
 						{
-							if(((data[0]&0xf)==sys_para[midi_c])&&((data[0]&0xf0)==0xb0))
+							if(((data[0]&0xf)==sys_para[MIDI_CHANNEL])&&((data[0]&0xf0)==0xb0))
 							{
 								midi_b[1] = data[1];
 								midi_b[2] = tmp;
@@ -130,7 +130,7 @@ void TMidiSendTask::Code()
 					}
 					else
 					{
-						if(((data[0]&0xf)==sys_para[midi_c])&&((data[0]&0xf0)==0xc0))
+						if(((data[0]&0xf)==sys_para[MIDI_CHANNEL])&&((data[0]&0xf0)==0xc0))
 						{
 							pc_in = tmp;
 							if(currentMenu->menuType()==MENU_MAIN)
@@ -149,7 +149,7 @@ void TMidiSendTask::Code()
 			{
 				if(!contr_cont)
 				{
-					uart_send(0xb0|sys_para[midi_c]);
+					uart_send(0xb0|sys_para[MIDI_CHANNEL]);
 					uart_send(sys_para[exp_ccN]-1);
 					uart_send(int_contr_buf[trans_contr_po++]);
 					if((data[0]&0xf0)!=0xb0)
@@ -168,7 +168,7 @@ void TMidiSendTask::Code()
 				{
 					send_bank();
 				}
-				uart_send(0xc0|sys_para[midi_c]);
+				uart_send(0xc0|sys_para[MIDI_CHANNEL]);
 				switch(control[510])
 				{
 					case 0:
@@ -195,7 +195,7 @@ void TMidiSendTask::Code()
 		{
 			if(!contr_cont)
 			{
-				uart_send(0xb0|sys_para[midi_c]);
+				uart_send(0xb0|sys_para[MIDI_CHANNEL]);
 				uart_send(sys_para[k1_cc]-1);
 				if(key_midi[0]==2)
 					uart_send(127);
@@ -211,7 +211,7 @@ void TMidiSendTask::Code()
 		{
 			if(!contr_cont)
 			{
-				uart_send(0xb0|sys_para[midi_c]);
+				uart_send(0xb0|sys_para[MIDI_CHANNEL]);
 				uart_send(sys_para[k2_cc]-1);
 				if(key_midi[1]==2)
 					uart_send(127);
@@ -227,7 +227,7 @@ void TMidiSendTask::Code()
 		{
 			if(!contr_cont)
 			{
-				uart_send(0xb0|sys_para[midi_c]);
+				uart_send(0xb0|sys_para[MIDI_CHANNEL]);
 				uart_send(sys_para[k3_cc]-1);
 				if(key_midi[2]==2)
 					uart_send(127);
@@ -243,7 +243,7 @@ void TMidiSendTask::Code()
 		{
 			if(!contr_cont)
 			{
-				uart_send(0xb0|sys_para[midi_c]);
+				uart_send(0xb0|sys_para[MIDI_CHANNEL]);
 				uart_send(sys_para[k11_cc]-1);
 				if(key_midi1[0]==2)
 					uart_send(127);
@@ -259,7 +259,7 @@ void TMidiSendTask::Code()
 		{
 			if(!contr_cont)
 			{
-				uart_send(0xb0|sys_para[midi_c]);
+				uart_send(0xb0|sys_para[MIDI_CHANNEL]);
 				uart_send(sys_para[k21_cc]-1);
 				if(key_midi1[1]==2)
 					uart_send(127);
@@ -275,7 +275,7 @@ void TMidiSendTask::Code()
 		{
 			if(!contr_cont)
 			{
-				uart_send(0xb0|sys_para[midi_c]);
+				uart_send(0xb0|sys_para[MIDI_CHANNEL]);
 				uart_send(sys_para[k31_cc]-1);
 				if(key_midi1[2]==2)
 					uart_send(127);

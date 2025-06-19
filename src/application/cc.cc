@@ -44,7 +44,7 @@ const uint8_t dest_tabl_start[55] =
 		50, 51, 52, 53, 54, 3, 4, 5, //47
 		6, 7, 15, 16, 17, 18, 19};   //53
 
-const uint8_t midi_dect_list[][14] =
+const uint8_t midi_dest_list[][14] =
 {
 /*0*/"Preamp On Off",
 /*1*/"Amplif On Off", "Amplif Volume", "Amplif Slave ",

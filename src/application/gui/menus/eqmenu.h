@@ -20,8 +20,8 @@ public:
 
 //	void key1() override();
 private:
-	uint8_t eq_num;
-	bool encoderKnobSelected;
+	uint8_t bandNum{0};
+	bool encoderKnobSelected{false};
 };
 
 

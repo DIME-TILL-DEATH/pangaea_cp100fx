@@ -2,8 +2,9 @@
 #define MODULESMENU_H_
 
 #include "abstractmenu.h"
-#include "copymenu.h"
 #include "nameeditmenu.h"
+#include "presetactionsmenu.h"
+#include "dialog.h"
 
 class ModulesMenu : public AbstractMenu
 {
@@ -33,13 +34,17 @@ public:
 private:
 	uint8_t m_numMenu = 0;
 
-	CopyMenu copyMenu{this};
+	PresetActionsMenu copyMenu{this, PresetActionsMenu::Copy};
+	PresetActionsMenu confirmSaveMenu{this, PresetActionsMenu::Save};
+	Dialog saveDialog{this, Dialog::SaveChanges};
+	Dialog erasePresetDialog{this, Dialog::ErasePreset};
 	NameEditMenu nameEditMenu{this};
 
 	void icon_refresh(uint8_t num);
+	bool presetEdited{false};
 
 	constexpr static uint8_t volum[]="Preset Level";
-	constexpr static uint8_t s_to_ch[]="      Save?";
+
 
 	constexpr static uint8_t cc[]="CC#";
 	constexpr static  uint8_t contr_list    [][7] ={"Contr","Source","Destin","MinVal","MaxVal","PC Out","SET"};
@@ -48,8 +53,6 @@ private:
 	constexpr static uint8_t imp_dir_n [] = "There is no directory";
 	constexpr static uint8_t imp_dir_no [ ]= "IMPULSE";
 	constexpr static uint8_t sd_lo [] = "MicroSD is loading..";
-
-	constexpr static uint8_t s_t_c_list    [][7] ={"  No  ","Return","   Yes"};
 };
 
 #endif /* MODULESMENU_H_ */

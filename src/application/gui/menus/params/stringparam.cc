@@ -10,7 +10,7 @@ StringParam::StringParam(const char* name, uint8_t* paramValuePtr, char** newStr
 	{
 		for(int i=0; i<strCount; i++)
 		{
-			kgp_sdk_libc::memcpy(strings[i], newStrings[i], 24);
+			kgp_sdk_libc::memcpy(m_strings[i], newStrings[i], 24);
 		}
 
 		m_stringCount = strCount;
@@ -20,18 +20,16 @@ StringParam::StringParam(const char* name, uint8_t* paramValuePtr, char** newStr
 
 StringParam::~StringParam()
 {
-//	for(int i=0; i<m_stringCount; i++)
-//	{
-//		for(int a=0; a<16; a++)
-//		{
-//			delete(&strings[a][i]);
-//		}
-//	}
+	if(m_strings)
+	{
+		for(int i = 0; i<m_stringCount; i++)
+				delete[] m_strings[i];
+	}
 }
 
 uint8_t* StringParam::getString(uint8_t stringNum)
 {
-	return (uint8_t*)strings[stringNum];
+	return (uint8_t*)m_strings[stringNum];
 }
 
 void StringParam::setAffectedParamsList(BaseParam** affectedParamList, uint8_t affectedParamCount)
@@ -93,5 +91,6 @@ void StringParam::printParam(uint8_t yDisplayPosition)
 {
 	if(m_disabled) return;
 
-	DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, TDisplayTask::fntSystem , 0, getString(*m_valuePtr));
+	if(*m_valuePtr < m_stringCount)
+		DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, TDisplayTask::fntSystem , 0, getString(*m_valuePtr));
 }

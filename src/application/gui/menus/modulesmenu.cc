@@ -14,7 +14,7 @@
 
 #include "modules.h"
 
-extern volatile uint8_t preset_edited;
+
 extern gui_menu_type current_menu;
 
 extern uint8_t control_destin;
@@ -23,14 +23,12 @@ extern uint8_t control_destin;
 const uint8_t ModulesMenu::cc[];
 const uint8_t ModulesMenu::contr_list[][7];
 const uint8_t ModulesMenu::volum[];
-const uint8_t ModulesMenu::s_to_ch[];
 
 const uint8_t ModulesMenu::sd_nr [];
 const uint8_t ModulesMenu::imp_dir_n [];
 const uint8_t ModulesMenu::imp_dir_no [ ];
 const uint8_t ModulesMenu::sd_lo [];
 
-const uint8_t ModulesMenu::s_t_c_list    [][7];
 
 GuiModules::TModule modules[14];
 
@@ -76,6 +74,8 @@ void ModulesMenu::show(TShowMode showMode)
 	current_menu = m_menuType;
 	currentMenu = this;
 
+	if(showMode == TShowMode::FirstShow) presetEdited = false;
+
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	DisplayTask->Menu_init();
 	tim5_start(0);
@@ -105,6 +105,8 @@ void ModulesMenu::task()
 void ModulesMenu::encoderPressed()
 {
 	if(current_menu != MENU_MODULES) return;
+
+	presetEdited = true;
 
 	*modules[m_numMenu].enablePtr = !((bool)*modules[m_numMenu].enablePtr);
 	gui_send(18, modules[m_numMenu].dspEnablePosition | (*modules[m_numMenu].enablePtr << 8));
@@ -148,28 +150,20 @@ void ModulesMenu::keyUp()
 {
 	if(current_menu != MENU_MODULES) return;
 
-	currentMenu = topLevelMenu;
 	//parent->show(); //????
 
-	if(preset_edited == 1)
+	if(presetEdited == 1)
 	{
-		current_menu = MENU_PRESET_SAVE;
-		DisplayTask->Clear();
-		DisplayTask->StringOut(10,2,TDisplayTask::fntSystem,0,(uint8_t*)s_to_ch);
-		for(uint8_t i = 0 ; i < 3 ; i++)DisplayTask->StringOut(i*42,0,TDisplayTask::fntSystem,0,(uint8_t*)s_t_c_list + i*7);
-		par_num = 2;
-		tim5_start(1);
+		confirmSaveMenu.setTopLevelMenu(topLevelMenu);
+		saveDialog.setYesMenu(&confirmSaveMenu);
+		saveDialog.setNoMenu(topLevelMenu);
+		saveDialog.show();
 	}
 	else
 	{
-		vol_fl = 0;
-		prog_cur = 0;
-		m_numMenu = 0;
-		DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-		DisplayTask->Menu_init();
-		tim5_start(0);
+		topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 	}
-
+	tim5_start(0);
 	clean_flag();
 }
 
@@ -181,6 +175,7 @@ void ModulesMenu::keyDown()
 	{
 		if(*modules[m_numMenu].enablePtr)
 		{
+			presetEdited = true;
 			shownChildMenu = modules[m_numMenu].createMenu(this);
 			shownChildMenu->show();
 		}
@@ -195,16 +190,8 @@ void ModulesMenu::key1()
 	if(current_menu != MENU_MODULES) return;
 
 
-	DisplayTask->Clear();
-
-	// было своё copyMenu
-
-	current_menu = MENU_ERASE;
-	par_num = 0;
-
-	DisplayTask->StringOut(36,2,TDisplayTask::fntSystem,0,(uint8_t*)"Preset");
-	DisplayTask->StringOut(12,3,TDisplayTask::fntSystem,0,(uint8_t*)"Default Settings?");
-	DisplayTask->StringOut(30,0,TDisplayTask::fntSystem,0,(uint8_t*)"No      Yes");
+	shownChildMenu = &erasePresetDialog;
+	shownChildMenu->show();
 
 	clean_flag();
 	tim5_start(0);
@@ -238,6 +225,8 @@ void ModulesMenu::key3()
 {
 	if(current_menu != MENU_MODULES) return;
 
+	// было своё copyMenu
+
 	current_menu = MENU_CONTROLLERS;
 	control_destin = dest_tabl_start[control[1]];
 	contrs = 0;
@@ -257,7 +246,7 @@ void ModulesMenu::key3()
 				 }
 				 else DisplayTask->StringOut(45,1,TDisplayTask::fntSystem , 0 , (uint8_t*)contr_ext_l + (control[0]-1)*12);
 			   }break;
-		case 2:DisplayTask->StringOut(45,2,TDisplayTask::fntSystem , 0 , (uint8_t*)midi_dect_list + control[1]*14);break;
+		case 2:DisplayTask->StringOut(45,2,TDisplayTask::fntSystem , 0 , (uint8_t*)midi_dest_list + control[1]*14);break;
 		}
 	}
 	DisplayTask->Strel(58,3,0);
@@ -269,6 +258,8 @@ void ModulesMenu::key3()
 void ModulesMenu::key4()
 {
 	if(current_menu != MENU_MODULES) return;
+
+	// было своё copyMenu
 
 	shownChildMenu = &nameEditMenu;
 	shownChildMenu->show();
@@ -289,8 +280,7 @@ void ModulesMenu::key5()
 
 void ModulesMenu::icon_refresh(uint8_t num)
 {
-	if(num < 7) DisplayTask->EfIcon(2 + 18*num, 0,(uint8_t*)modules[num].name, *modules[num].enablePtr);
-	else DisplayTask->EfIcon(2 + 18*(num - 7), 2,(uint8_t*)modules[num].name, *modules[num].enablePtr);
+	DisplayTask->EfIcon(2 + 18*(num%7), num/7,(uint8_t*)modules[num].name, *modules[num].enablePtr);
 }
 
 void ModulesMenu::enableCab()

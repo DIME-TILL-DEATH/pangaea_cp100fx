@@ -22,7 +22,7 @@ public:
 	void printParam(uint8_t yPos) override;
 
 private:
-	char strings[24][16];
+	char m_strings[24][16];
 	uint8_t m_stringCount;
 
 	uint8_t m_disableMask[24][16];

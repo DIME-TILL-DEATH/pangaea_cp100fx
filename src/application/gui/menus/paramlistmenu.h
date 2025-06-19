@@ -1,5 +1,5 @@
 #ifndef PARAMLISTMENU_H_
-#define GUI_PARAMLISTMENU_H_
+#define PARAMLISTMENU_H_
 
 #include "abstractmenu.h"
 
@@ -24,15 +24,18 @@ public:
 	void show(TShowMode showMode = FirstShow) override;
 	void task() override;
 
-	void encoderPressed() override;
-	void encoderClockwise() override;
-	void encoderCounterClockwise() override;
+	virtual void encoderPressed() override;
+	virtual void encoderClockwise() override;
+	virtual void encoderCounterClockwise() override;
 
-	void keyDown() override;
+	virtual void keyDown() override;
 
 	static constexpr uint8_t maxParamCount = 16;
 
-private:
+
+	void (*key1Callback)();
+
+protected:
 	uint8_t m_currentParamNum = 0;
 
 	BaseParam* m_paramsList[maxParamCount];
@@ -53,8 +56,6 @@ private:
 	static constexpr uint8_t leftPad = 3;
 
 	void printPage();
-
-//	void printParam(BaseParam* param, uint8_t yPos);
 };
 
 

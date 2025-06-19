@@ -32,6 +32,8 @@ private:
 	uint8_t symbolCursorPos;
 
 	bool encoderKnobPressed;
+
+	static constexpr uint8_t chartStringLength = 21;
 };
 
 #endif /* NAMEEDITMENU_H_ */

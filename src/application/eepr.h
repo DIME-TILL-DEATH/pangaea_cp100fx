@@ -1,18 +1,16 @@
+#ifndef EEPR_H_
+#define EEPR_H_
+
 #include "appdefs.h"
 
 enum
-{/*cab on off*/
-	mod_proc,
-	/*midi chanel*/midi_c,
-	/*num cab*/cab_nu,
+{
+	CAB_SIM_DISABLED,	//mod_proc /*cab on off*/
+	MIDI_CHANNEL, // midi_c/*midi chanel*/
+	cab_nu, // cab_nu /*num cab*/
 	/*type express*/exp_typ,
-	/*type foot sw*/fs1,
-	fs2,
-	fs3,
-	/*calibration*/calib1,
-	calib2,
-	calib3,
-	calib4,
+	/*type foot sw*/fs1, fs2, fs3,
+	/*calibration*/calib1, calib2, calib3, calib4,
 	/*preset map to foot sw*/pr11,
 	pr12,
 	pr13,
@@ -98,3 +96,4 @@ void read_prog_temp(uint8_t nu);
 void preset_erase(uint8_t nu);
 void eepr_read_prog_data(uint8_t nu);
 
+#endif

@@ -3,10 +3,8 @@
 #include "../../display.h"
 #include "../gui_task.h"
 
-const uint8_t AbstractMenu::ascii_low1[];
-const uint8_t AbstractMenu::ascii_low2[];
-const uint8_t AbstractMenu::ascii_hig1[];
-const uint8_t AbstractMenu::ascii_hig2[];
+const uint8_t AbstractMenu::ascii_low[];
+const uint8_t AbstractMenu::ascii_high[];
 
 gui_menu_type AbstractMenu::menuType()
 {
@@ -36,4 +34,9 @@ void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	show(TShowMode::ReturnShow);
+}
+
+void AbstractMenu::setTopLevelMenu(AbstractMenu* parent)
+{
+	topLevelMenu = parent;
 }

@@ -1,12 +1,18 @@
-#ifndef COPYPRESETMENU_H_
-#define COPYPRESETMENU_H_
+#ifndef PRESETACTIONSMENU_H_
+#define PRESETACTIONSMENU_H_
 
 #include "abstractmenu.h"
 
-class CopyMenu : public AbstractMenu
+class PresetActionsMenu : public AbstractMenu
 {
 public:
-	CopyMenu(AbstractMenu* parent);
+	enum TActionType
+	{
+		Save,
+		Copy
+	};
+
+	PresetActionsMenu(AbstractMenu* parent, TActionType actionType);
 
 	void show(TShowMode showMode = FirstShow) override;
 	void task() override;
@@ -19,12 +25,15 @@ public:
 	void keyDown() override;
 
 private:
+	TActionType m_actionType;
+
 	uint8_t targetPresetNum = 0;
 
 	void updatePresetData();
 	void copyPreset();
+	void savePreset();
 };
 
 
 
-#endif /* COPYPRESETMENU_H_ */
+#endif /* PRESETACTIONSMENU_H_ */

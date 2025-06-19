@@ -71,6 +71,8 @@ public:
 		DeleteChild
 	};
 
+	virtual ~AbstractMenu() {};
+
 	virtual void show(TShowMode swhoMode = FirstShow) {};
 	virtual void returnFromChildMenu(TReturnMode returnMode = DeleteChild);
 	virtual void task() {};
@@ -90,16 +92,17 @@ public:
 
 	gui_menu_type menuType();
 
+	void setTopLevelMenu(AbstractMenu* parent);
+
 protected:
 	AbstractMenu* topLevelMenu = nullptr;
 	AbstractMenu* shownChildMenu = nullptr;
 
 	gui_menu_type m_menuType{MENU_ABSTRACT};
 
-	constexpr static uint8_t ascii_low1[] = " abcdefghijklmnopqrst";
-	constexpr static uint8_t ascii_low2[] = "uvwxyz0123456789!@#$%";
-	constexpr static uint8_t ascii_hig1[] = "ABCDEFGHIJKLMNOPQRSTU";
-	constexpr static uint8_t ascii_hig2[] = "VWXYZ{}()-+_=<>?*.,/&";
+	constexpr static uint8_t ascii_low[] = " abcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+	constexpr static uint8_t ascii_high[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{}()-+_=<>?*.,/&";
+
 };
 
 extern AbstractMenu* currentMenu;
