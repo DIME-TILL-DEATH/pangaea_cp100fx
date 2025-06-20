@@ -27,7 +27,7 @@ ParamListMenu::~ParamListMenu()
 	}
 }
 
-void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingParamCount, uint8_t pages)
+void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingParamCount)
 {
 	for(int i=0; i<maxParamCount; i++)
 	{
@@ -41,13 +41,18 @@ void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingPara
 		m_paramsList[i] = settlingParamList[i];
 	}
 
-	m_pagesCount = pages; // Библиотека математики ведёт себя странно, плюс требуется приведение к float
+	m_pagesCount = ceil((float)m_paramsCount/(float)paramsOnPage);
 }
 
 void ParamListMenu::setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource)
 {
 	m_volIndicatorType = volIndicatorType;
 	m_indicatorSource = indicatorSource;
+}
+
+void ParamListMenu::setIcon(bool drawIcon, uint8_t iconNumber)
+{
+	ParamListMenu::m_drawIcon = drawIcon;
 }
 
 void ParamListMenu::show(TShowMode showMode)
@@ -85,6 +90,8 @@ void ParamListMenu::show(TShowMode showMode)
 
 void ParamListMenu::task()
 {
+	if(m_paramsCount == 1) m_encoderKnobSelected = true;
+
 	if(!m_encoderKnobSelected)
 	{
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
@@ -273,7 +280,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 	if(m_currentParamNum > 0) newPageNumber = m_currentParamNum / paramsOnPage;
 	else newPageNumber = 0;
 
-	if(newPageNumber != m_currentPageNumber || forceDrawIcon)
+	if((newPageNumber != m_currentPageNumber || forceDrawIcon) && m_drawIcon)
 	{
 		strelka_t drawStrelka;
 
@@ -284,16 +291,17 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 
 		DisplayTask->Clear();
 		DisplayTask->Icon_Strel(iconFormMenuType(m_menuType), drawStrelka);
-		m_currentPageNumber = newPageNumber;
+
 	}
+	m_currentPageNumber = newPageNumber;
 
 	uint8_t stringCount = m_paramsCount - m_currentPageNumber * paramsOnPage;
 
-	for(uint8_t i = 0; i < stringCount; i++)
+	for(uint8_t i = 0; i < min(stringCount, (uint8_t)4); i++)
 	{
 		uint8_t displayParamNum = i + m_currentPageNumber * paramsOnPage;
 
-		bool highlight = (m_currentParamNum == displayParamNum);
+		bool highlight = (m_currentParamNum == displayParamNum) && (m_pagesCount > 1);
 
 		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 		m_paramsList[displayParamNum]->printParam(i);

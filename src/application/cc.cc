@@ -151,9 +151,9 @@ void con_ch(uint8_t adr, uint8_t data)
 			contr_send(3, 2);
 		break;
 		case 9:
-			if(tap_temp_global()&&!sys_para[tap_typ])
+			if(tap_temp_global()&&!sys_para[TAP_TYPE])
 			{
-				delay_time = tap_global/3.0f/tap_tim_v[presetData[d_tap_t]];
+				delay_time = tap_global/3.0f/tap_time_coefs[presetData[d_tap_t]];
 				if(delay_time<2731)
 				{
 					if(!sys_para[TIME_FORMAT])
@@ -190,7 +190,7 @@ void con_ch(uint8_t adr, uint8_t data)
 				}
 				if(tap_trem_fl)
 				{
-					trem_time = tap_global/3.0f/tap_tim_v[presetData[t_tap_t]];
+					trem_time = tap_global/3.0f/tap_time_coefs[presetData[t_tap_t]];
 					if(trem_time>2730)
 						trem_time = 2730;
 					contr_send(10, 5);
@@ -305,9 +305,9 @@ void con_ch(uint8_t adr, uint8_t data)
 		case 26:
 			if(!tap_del_fl)
 			{
-				if(tap_temp_global()&&!sys_para[tap_typ])
+				if(tap_temp_global()&&!sys_para[TAP_TYPE])
 				{
-					trem_time = tap_global/3.0f/tap_tim_v[presetData[t_tap_t]];
+					trem_time = tap_global/3.0f/tap_time_coefs[presetData[t_tap_t]];
 					if(trem_time<2731)
 						contr_send(10, 5);
 					if(tap_moog_fl)
@@ -383,7 +383,7 @@ void con_ch(uint8_t adr, uint8_t data)
 		case 35:
 			if(!tap_del_fl&&!tap_trem_fl)
 			{
-				if(tap_temp_global()&&!sys_para[tap_typ])
+				if(tap_temp_global()&&!sys_para[TAP_TYPE])
 				{
 					moog_time = tap_global/3.0f;
 					contr_send(31, 13);

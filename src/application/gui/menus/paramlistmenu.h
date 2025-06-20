@@ -18,7 +18,7 @@ public:
 	ParamListMenu(AbstractMenu* parent, gui_menu_type menuType);
 	~ParamListMenu();
 
-	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount, uint8_t pages);
+	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount);
 	void setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
 
 	void show(TShowMode showMode = FirstShow) override;
@@ -32,6 +32,7 @@ public:
 
 	static constexpr uint8_t maxParamCount = 16;
 
+	void setIcon(bool drawIcon, uint8_t iconNumber);
 
 	void (*key1Callback)();
 
@@ -42,6 +43,7 @@ protected:
 	uint8_t m_paramsCount{0};
 
 	bool m_canTap{false};
+	bool m_drawIcon{true};
 
 	int8_t m_currentPageNumber{-1};
 

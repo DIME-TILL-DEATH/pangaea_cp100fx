@@ -105,7 +105,7 @@ void TMidiSendTask::Code()
 								midi_b[1] = data[1];
 								midi_b[2] = tmp;
 								mid_fl = 1;
-								if((midi_b[1]==(sys_para[tun_ext]&0x7f))&&(sys_para[tun_ext]&0x80))
+								if((midi_b[1]==(sys_para[TUNER_EXTERNAL]&0x7f))&&(sys_para[TUNER_EXTERNAL]&0x80))
 								{
 //						    	if(((!current_menu) || (current_menu = MENU_TUNER))&&(!edit_fl))
 									if(((!current_menu)||(current_menu==MENU_TUNER))) //&&(!edit_modules_fl))

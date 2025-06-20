@@ -29,6 +29,7 @@ public:
 	uint32_t (*valueCallback)(void *valuePtr){nullptr};
 
 	void (*encoderPressCallback)(void* parameter){nullptr};
+	void (*keyDownCallback)(void* parameter){nullptr};
 	void (*printCallback)(void* parameter){nullptr};
 
 private:

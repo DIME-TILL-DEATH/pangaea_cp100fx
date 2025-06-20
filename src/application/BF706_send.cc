@@ -278,7 +278,7 @@ void dsp_mute(uint8_t val)
 
 void global_temp(uint8_t val)
 {
-	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[tap_typ]|(sys_para[tap_hi]<<8));
+	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE]|(sys_para[TAP_HIGH]<<8));
 }
 
 extern uint8_t cab_data[];

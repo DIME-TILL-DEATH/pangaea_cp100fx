@@ -33,7 +33,6 @@ const uint8_t cc_of[] = "Off      ";
 const uint8_t sys_menu_list[][12] = {"Mode", "MIDI ch", "Cab num", "Expression", "Footswitch", "S/PDIF", "MIDI PC Map", "Tempo", "Tuner contr", "Time",
 		"Swap UpConf", "Speed tun"};
 const uint8_t expr_menu[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
-const uint8_t expr_on_off[][5] = {"On >", "Off "};
 const uint8_t expr_type[][12] = {"   Off     ", "Standard V ", "Alternat V ", "Standard CC", "Alternat CC"};
 const uint8_t footsw_menu[][12] = {"FSW-DOWN", "FSW-CONFIRM", "FSW-UP", "Speed FS"};
 const uint8_t ext_switch[][12] = {"Off        ", "Expression ", "Foot switch"};

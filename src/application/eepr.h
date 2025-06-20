@@ -33,14 +33,14 @@ enum
 	pr211, pr221, pr231, pr241,
 	pr311, pr321, pr331, pr341,
 	k11_cc, k21_cc, k31_cc,
-	/*tap type*/tap_typ,
-	tun_ext,/*tuner ext controller*/
+	/*tap type*/TAP_TYPE,
+	TUNER_EXTERNAL,/*tuner ext controller*/
 	/*speed foot*/foot_sp,
 	TIME_FORMAT,
-	/*global temp hi*/tap_hi,
+	/*global temp hi*/TAP_HIGH,
 	/*save expression level*/sav_exp,
 	/*swap up confirm*/SWAP_SWITCH,
-	/*speed tuner*/speed_tun,
+	/*speed tuner*/TUNER_SPEED,
 };
 
 extern uint16_t delay_time;

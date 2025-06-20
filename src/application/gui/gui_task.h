@@ -113,7 +113,7 @@ extern float ear_vol;
 extern uint32_t cR;
 //extern uint8_t edit_modules_fl;
 extern uint8_t tuner_use;
-extern const float tap_tim_v[];
+extern const float tap_time_coefs[];
 extern volatile uint8_t midi_f1;
 extern uint8_t tempo_fl;
 extern const float tap_moog[];

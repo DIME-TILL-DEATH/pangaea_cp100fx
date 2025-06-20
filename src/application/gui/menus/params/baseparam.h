@@ -46,7 +46,7 @@ public:
 	uint32_t minValue() const {return m_minValue;};
 	uint32_t maxValue() const {return m_maxValue;};
 
-	void setScaling(uint8_t stepSize, uint8_t offset);
+	void setScaling(uint8_t stepSize, int32_t offset);
 	uint8_t offset() const {return m_offset;};
 	uint8_t stepSize() {return m_stepSize;};
 
@@ -69,7 +69,7 @@ protected:
 	uint8_t m_xDisplayPosition{58};
 
 	uint8_t m_byteSize{1};
-	uint32_t m_offset{0};
+	int32_t m_offset{0};
 	uint8_t m_stepSize{1};
 
 	gui_param_type m_type{GUI_PARAMETER_DUMMY};

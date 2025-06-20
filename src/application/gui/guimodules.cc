@@ -36,7 +36,7 @@ AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_RESONANCE_FILTER, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_RESONANCE_FILTER);
-	if(menu) menu->setParams(params, paramNum, 3);
+	if(menu) menu->setParams(params, paramNum);
 
 	typeSelect->setAffectedParamsList(params, paramNum);
 
@@ -55,7 +55,7 @@ AbstractMenu* GuiModules::createGateMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<gateParamNum; i++) gateParams[i]->setDspAddress(DSP_ADDRESS_GATE, i);
 
 	ParamListMenu* gateMenu = new ParamListMenu(parentMenu, MENU_GATE);
-	if(gateMenu) gateMenu->setParams(gateParams, gateParamNum, 1);
+	if(gateMenu) gateMenu->setParams(gateParams, gateParamNum);
 
 	return gateMenu;
 }
@@ -74,7 +74,7 @@ AbstractMenu* GuiModules::createCompressorMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_COMPRESSOR, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_COMPRESSOR);
-	if(menu) menu->setParams(params, paramNum, 2);
+	if(menu) menu->setParams(params, paramNum);
 
 	return menu;
 }
@@ -102,7 +102,7 @@ AbstractMenu* GuiModules::createPreampMenu(AbstractMenu* parentMenu)
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_PREAMP);
 	if(menu)
 	{
-		menu->setParams(params, paramNum, 2);
+		menu->setParams(params, paramNum);
 		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_PREAMP);
 	}
 
@@ -132,7 +132,7 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_PA);
 	if(menu)
 	{
-		menu->setParams(params, paramNum, 2);
+		menu->setParams(params, paramNum);
 		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_AMP);
 	}
 
@@ -170,7 +170,7 @@ AbstractMenu* GuiModules::createPhaserMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_PHASER, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_PHASER);
-	if(menu) menu->setParams(params, paramNum, 2);
+	if(menu) menu->setParams(params, paramNum);
 
 	return menu;
 }
@@ -192,7 +192,7 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_FLANGER, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_FLANGER);
-	if(menu) menu->setParams(params, paramNum, 2);
+	if(menu) menu->setParams(params, paramNum);
 
 	return menu;
 }
@@ -217,7 +217,7 @@ AbstractMenu* GuiModules::createChorusMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_CHORUS, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CHORUS);
-	if(menu) menu->setParams(params, paramNum, 2);
+	if(menu) menu->setParams(params, paramNum);
 
 	typeSelect->setAffectedParamsList(params, paramNum);
 
@@ -235,7 +235,7 @@ AbstractMenu* GuiModules::createEarlyMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramCout; i++) params[i]->setDspAddress(DSP_ADDRESS_EARLY_REFLECTIONS, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_EARLY_REFLECTIONS);
-	if(menu) menu->setParams(params, paramCout, 1);
+	if(menu) menu->setParams(params, paramCout);
 
 	return menu;
 }
@@ -278,7 +278,7 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 	params[11]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_DIRECTION_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_DELAY);
-	if(menu) menu->setParams(params, paramNum, 3);
+	if(menu) menu->setParams(params, paramNum);
 
 	return menu;
 }
@@ -323,7 +323,7 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 	params[2]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TAIL_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_TAP_DELAY);
-	if(menu) menu->setParams(params, paramNum, 1);
+	if(menu) menu->setParams(params, paramNum);
 
 	return menu;
 }
@@ -356,7 +356,7 @@ AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_REVERB, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_REVERB);
-	if(menu) menu->setParams(params, paramNum, 3);
+	if(menu) menu->setParams(params, paramNum);
 
 	typeSelect->setAffectedParamsList(params, paramNum);
 
@@ -388,7 +388,7 @@ AbstractMenu* GuiModules::createTremoloMenu(AbstractMenu* parentMenu)
 	params[5]->setDspAddress(DSP_ADDRESS_TREMOLO, NOT_SEND_POS);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_TREMOLO);
-	if(menu) menu->setParams(params, paramNum, 2);
+	if(menu) menu->setParams(params, paramNum);
 
 	return menu;
 }

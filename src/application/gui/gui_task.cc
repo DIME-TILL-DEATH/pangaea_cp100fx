@@ -26,17 +26,14 @@ const uint8_t del_list[][8] =
 {"Mix", "Time", "F_Back", "LPF", "HPF", "D_Pan", "D2 Vol", "D2 Pan", "D->D2", "D_Mod", "M_Rate", "Direct"};
 const uint8_t del_tim_l[][5] =
 {"Time", "TAP", "Tail"};
-const uint8_t tap_tim[][6] =
-{"1/1  ", "1/1.5", "1/2  ", "1/3  ", "1/4  ", "2/1  "};
-const float tap_tim_v[6] =
-{1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
+const uint8_t tap_tim[][6] = {"1/1  ", "1/1.5", "1/2  ", "1/3  ", "1/4  ", "2/1  "};
+const float tap_time_coefs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 //const uint8_t s_t_c_list    [][7] ={"  No  ","Return","   Yes"};
 const uint8_t contr_list[][7] =
 {"Contr", "Source", "Destin", "MinVal", "MaxVal", "PC Out", "SET"};
 const uint8_t cab_list[][8] =
 {"Pan", "Browser", "Volume"};
-//const uint8_t cab_out_list[][6] =
-//{"1 L+R", "1R AP", "2 L+R", "1R A ", "1R P ", " 1 R "};
+
 const uint8_t cab_list_menu[][9] =
 {"Cabinet1", "Cabinet2"};
 
@@ -672,94 +669,6 @@ void gui(void)
 			//------------------------------------------System menu---------------------------------------------------------
 		case MENU_SYSTEM: break;
 
-			if(encoder_state_updated==1)
-			{
-				if(encoder_state==1)
-				{
-					if(encoder_knob_selected==0)
-					{
-
-					}
-					else
-					{
-						switch(par_num)
-						{
-
-
-							case 7:
-								if(sys_para[tap_typ])
-								{
-									DisplayTask->StringOut(38, 3, TDisplayTask::fntSystem, 0, (uint8_t*)tempo_type+--sys_para[tap_typ]*10);
-
-									sys_para[tap_hi] = 0;
-									gui_send(33, sys_para[tap_typ]|(sys_para[tap_hi]<<8));
-								}
-							break;
-							case 8:
-								if((sys_para[tun_ext]&0x80))
-								{
-									sys_para[tun_ext] &= ~0x80;
-									DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off+5);
-								}
-							break;
-
-							case 11:
-								if(sys_para[speed_tun])
-								{
-									uint8_t a = sys_para[speed_tun];
-									a = enc_speed_dec(a, 0);
-									sys_para[speed_tun] = a;
-									DisplayTask->ParamIndicNum(78, 3, a);
-									tun_del_val = (127-sys_para[speed_tun])*(90.0f/127.0f)+10.0f;
-								}
-							break;
-						}
-					}
-				}
-
-				if(encoder_state==2)
-				{
-					if(encoder_knob_selected==0)
-					{
-
-					}
-					else
-					{
-						switch(par_num)
-						{
-							case 7:
-								if(sys_para[tap_typ]<2)
-								{
-									DisplayTask->StringOut(38, 3, TDisplayTask::fntSystem, 0, (uint8_t*)tempo_type + ++sys_para[tap_typ]*10);
-
-									gui_send(33, sys_para[tap_typ]|(sys_para[tap_hi]<<8));
-								}
-							break;
-							case 8:
-								if(!(sys_para[tun_ext]&0x80))
-								{
-									sys_para[tun_ext] |= 0x80;
-									DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off);
-								}
-							break;
-
-							case 11:
-								if(sys_para[speed_tun]<127)
-								{
-									uint8_t a = sys_para[speed_tun];
-									a = enc_speed_inc(a, 127);
-									sys_para[speed_tun] = a;
-									DisplayTask->ParamIndicNum(78, 3, a);
-
-									tun_del_val = (127-sys_para[speed_tun])*(90.0f/127.0f)+10.0f;
-								}
-							break;
-						}
-					}
-				}
-				tim5_start(0);
-				clean_flag();
-			}
 			if(k_down==1)
 			{
 				if((par_num==3)&&(sys_para[EXPRESSION_TYPE]&0x80))
@@ -783,12 +692,12 @@ void gui(void)
 					eq_num = 0;
 					encoder_knob_selected = 0;
 				}
-				else if((par_num==8)&&(sys_para[tun_ext]&0x80))
+				else if((par_num==8)&&(sys_para[TUNER_EXTERNAL]&0x80))
 				{
 					current_menu = MENU_TUNER_EXT;
 					DisplayTask->Clear();
 					DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"CC#");
-					DisplayTask->ParamIndicNum(50, 0, sys_para[tun_ext]&0x7f);
+					DisplayTask->ParamIndicNum(50, 0, sys_para[TUNER_EXTERNAL]&0x7f);
 				}
 				clean_flag();
 			}
@@ -861,15 +770,6 @@ void gui(void)
 						NVIC_SystemReset();
 					}
 				}
-				current_menu = MENU_MAIN; //edit_modules_fl = 0;
-				eq_num = prog;
-				write_sys();
-				encoder_knob_selected = 0;
-
-				DisplayTask->Clear();
-				tim5_start(0);
-				CSTask->Give();
-				break;
 			}
 		break;
 //--------------------------------------------------------------------------Menu Volume------------------------------------------------------
@@ -1582,35 +1482,35 @@ void gui(void)
 			}
 			if(k_up==1)
 			{
-				current_menu = MENU_SYSTEM;
-				encoder_knob_selected = 0;
-				DisplayTask->Clear();
-				DisplayTask->Icon_Strel(ICON_SY, STRELKA_DOWN);
-				for(uint8_t i = 0; i<4; i++)
-				{
-					DisplayTask->StringOut(3, i, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+i*12);
-					switch(i)
-					{
-						case 0:
-//							DisplayTask->StringOut(36, i, TDisplayTask::fntSystem, 0,
-//									(uint8_t*)mode_list+sys_para[i]*12);
-//							gui_send(14, 0);
-						break;
-						case 1:
-							DisplayTask->ParamIndicNum(60, i, sys_para[i]+1);
-						break;
-						case 2:
-//							DisplayTask->StringOut(60, i, TDisplayTask::fntSystem, 0,
-//									(uint8_t*)cab_out_list+sys_para[i]*6);
-						break;
-						case 3:
-							if(!sys_para[EXPRESSION_TYPE])
-								DisplayTask->StringOut(78, i, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off+5);
-							else
-								DisplayTask->StringOut(78, i, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off);
-						break;
-					}
-				}
+//				current_menu = MENU_SYSTEM;
+//				encoder_knob_selected = 0;
+//				DisplayTask->Clear();
+//				DisplayTask->Icon_Strel(ICON_SY, STRELKA_DOWN);
+//				for(uint8_t i = 0; i<4; i++)
+//				{
+//					DisplayTask->StringOut(3, i, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+i*12);
+//					switch(i)
+//					{
+//						case 0:
+////							DisplayTask->StringOut(36, i, TDisplayTask::fntSystem, 0,
+////									(uint8_t*)mode_list+sys_para[i]*12);
+////							gui_send(14, 0);
+//						break;
+//						case 1:
+//							DisplayTask->ParamIndicNum(60, i, sys_para[i]+1);
+//						break;
+//						case 2:
+////							DisplayTask->StringOut(60, i, TDisplayTask::fntSystem, 0,
+////									(uint8_t*)cab_out_list+sys_para[i]*6);
+//						break;
+//						case 3:
+////							if(!sys_para[EXPRESSION_TYPE])
+////								DisplayTask->StringOut(78, i, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off+5);
+////							else
+////								DisplayTask->StringOut(78, i, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off);
+//						break;
+//					}
+//				}
 				clean_flag();
 			}
 		break;
@@ -2244,7 +2144,7 @@ void gui(void)
 //								(uint8_t*)spdif_type+sys_para[SPDIF_OT_TYPE]*12);
 					if(i==3)
 						DisplayTask->StringOut(44, i, TDisplayTask::fntSystem, 0,
-								(uint8_t*)tempo_type+sys_para[tap_typ]*7);
+								(uint8_t*)tempo_type+sys_para[TAP_TYPE]*7);
 				}
 				current_menu = MENU_SYSTEM;
 				DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
@@ -3168,7 +3068,7 @@ void gui(void)
 //								(uint8_t*)spdif_type+sys_para[SPDIF_OT_TYPE]*12);
 					if(i==3)
 						DisplayTask->StringOut(44, i, TDisplayTask::fntSystem, 0,
-								(uint8_t*)tempo_type+sys_para[tap_typ]*7);
+								(uint8_t*)tempo_type+sys_para[TAP_TYPE]*7);
 				}
 				current_menu = MENU_SYSTEM;
 				DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
@@ -3178,27 +3078,27 @@ void gui(void)
 			}
 		break;
 //-----------------------------------------------------Tuner ext controller----------------------------
-		case MENU_TUNER_EXT:
+		case MENU_TUNER_EXT: break;
 			if(encoder_state_updated==1)
 			{
-				uint8_t a = sys_para[tun_ext]&0x7f;
+				uint8_t a = sys_para[TUNER_EXTERNAL]&0x7f;
 				if(encoder_state==1)
 				{
 					if(a>1)
 					{
 						a = enc_speed_dec(a, 1);
 						DisplayTask->ParamIndicNum(50, 0, a);
-						sys_para[tun_ext] = (sys_para[tun_ext]&0x80)+a;
+						sys_para[TUNER_EXTERNAL] = (sys_para[TUNER_EXTERNAL]&0x80)+a;
 					}
 				}
 				if(encoder_state==2)
 				{
-					uint8_t a = sys_para[tun_ext]&0x7f;
+					uint8_t a = sys_para[TUNER_EXTERNAL]&0x7f;
 					if(a<127)
 					{
 						a = enc_speed_inc(a, 128);
 						DisplayTask->ParamIndicNum(50, 0, a);
-						sys_para[tun_ext] = (sys_para[tun_ext]&0x80)+a;
+						sys_para[TUNER_EXTERNAL] = (sys_para[TUNER_EXTERNAL]&0x80)+a;
 					}
 				}
 				tim5_start(0);
@@ -3211,10 +3111,10 @@ void gui(void)
 				encoder_knob_selected = 0;
 				DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
 				DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+(par_num+1)*12);
-				if(sys_para[tun_ext]&0x80)
-					DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off);
-				else
-					DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off+5);
+//				if(sys_para[TUNER_EXTERNAL]&0x80)
+//					DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off);
+//				else
+//					DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off+5);
 				DisplayTask->StringOut(3, 1, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+(par_num+1)*12);
 //				DisplayTask->StringOut(39, 1, TDisplayTask::fntSystem, 0, (uint8_t*)time_type+sys_para[TIME_FORMAT]*4);
 				DisplayTask->StringOut(3, 2, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+(par_num+2)*12);
@@ -3223,13 +3123,13 @@ void gui(void)
 				else
 					DisplayTask->StringOut(78, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"On");
 				DisplayTask->StringOut(3, 3, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+(par_num+3)*12);
-				DisplayTask->ParamIndicNum(78, 3, sys_para[speed_tun]);
+				DisplayTask->ParamIndicNum(78, 3, sys_para[TUNER_SPEED]);
 				tim5_start(0);
 				clean_flag();
 			}
 		break;
 	}
-	if(sys_para[tap_typ]==2)
+	if(sys_para[TAP_TYPE]==2)
 	{
 		extern volatile uint16_t midi_clk_buf[];
 		uint16_t mediann_tap(uint16_t *array, int length);
@@ -3250,16 +3150,16 @@ uint8_t tap_temp_global(void)
 	if(tap_temp<=131070)
 	{
 		tap_global = tap_temp>>4;
-		if(sys_para[tap_typ]) // global temp On
+		if(sys_para[TAP_TYPE]) // global temp On
 		{
-			sys_para[tap_hi] = (tap_global/3)>>8;
+			sys_para[TAP_HIGH] = (tap_global/3)>>8;
 			gui_send(33, tap_global/3);
 			moog_time = tap_global/3.0f;
 			gui_send(31, 13);
-			delay_time = tap_global/3.0f/tap_tim_v[presetData[d_tap_t]];
+			delay_time = tap_global/3.0f/tap_time_coefs[presetData[d_tap_t]];
 			if(delay_time<2731)
 				gui_send(3, 1);
-			trem_time = tap_global/3.0f/tap_tim_v[presetData[t_tap_t]];
+			trem_time = tap_global/3.0f/tap_time_coefs[presetData[t_tap_t]];
 			if(trem_time<2731)
 				gui_send(10, 5);
 		}

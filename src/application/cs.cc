@@ -72,7 +72,7 @@ void TCSTask::Code()
   	gui_send(14,0); // global cab on off
   	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
   	gui_send(26,sys_para[SPDIF_OUT_TYPE]);
-  	gui_send(33,sys_para[tap_typ] | (sys_para[tap_hi] << 8)); //global temp
+  	gui_send(33,sys_para[TAP_TYPE] | (sys_para[TAP_HIGH] << 8)); //global temp
 	tempo_fl = 1;
 	gui_send(28,sys_para[2]); // left cab bypass
 	if(!sys_para[125])sys_para[125] = 127;
@@ -91,7 +91,7 @@ void TCSTask::Code()
 	sys_para[511] = f;
 	for(uint8_t i = 0 ; i < 4 ; i++)gui_send(25,i);
 	gui_send(18, 14 | (sys_para[120] << 8)); // master eq
-	tun_del_val = (127 - sys_para[speed_tun]) * (90.0f/127.0f) + 10.0f;
+	tun_del_val = (127 - sys_para[TUNER_SPEED]) * (90.0f/127.0f) + 10.0f;
 	Delay(500);
 	prog_ch();
 	eepr_read_imya(prog1);

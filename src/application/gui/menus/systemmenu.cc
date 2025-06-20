@@ -21,27 +21,99 @@ SystemMenu::SystemMenu(AbstractMenu* parent, gui_menu_type menuType)
 
 }
 
-//
-//void SystemMenu::encoderPressed()
-//{
-//
-//}
-//
-//void SystemMenu::encoderClockwise()
-//{
-//
-//}
 
-//void SystemMenu::encoderCounterClockwise()
-//{
-//
-//}
+void SystemMenu::encoderPressed()
+{
+	if(m_paramsList[m_currentParamNum]->disabled()) return;
+
+
+	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
+	{
+		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(m_paramsList[m_currentParamNum]);
+		submenuParam->showSubmenu(this);
+	}
+	else
+	{
+		if(!m_encoderKnobSelected)
+		{
+			m_encoderKnobSelected = true;
+			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+									2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+		}
+		else
+		{
+			m_encoderKnobSelected = false;
+			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+									0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+		}
+	}
+
+	tim5_start(1);
+	clean_flag();
+}
+
 
 void SystemMenu::keyDown()
 {
-
+	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
+	{
+		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(m_paramsList[m_currentParamNum]);
+		submenuParam->showSubmenu(this);
+	}
+	else if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_CUSTOM)
+	{
+		CustomParam* customParam = static_cast<CustomParam*>(m_paramsList[m_currentParamNum]);
+		if(customParam->keyDownCallback) customParam->keyDownCallback(customParam->valuePtr());
+	}
 }
 
+void SystemMenu::key1()
+{
+	if(editingFinished())
+	{
+		topLevelMenu->returnFromChildMenu();
+		topLevelMenu->key1();
+	}
+}
+
+void SystemMenu::key2()
+{
+	if(editingFinished())
+	{
+		topLevelMenu->returnFromChildMenu();
+		topLevelMenu->key2();
+	}
+}
+
+void SystemMenu::key3()
+{
+	if(editingFinished())
+	{
+		topLevelMenu->returnFromChildMenu();
+		topLevelMenu->key3();
+	}
+}
+
+void SystemMenu::key4()
+{
+	if(editingFinished())
+	{
+		topLevelMenu->returnFromChildMenu();
+	}
+}
+void SystemMenu::key5()
+{
+	if(editingFinished())
+	{
+		topLevelMenu->returnFromChildMenu();
+		topLevelMenu->key5();
+	}
+}
+
+bool SystemMenu::editingFinished()
+{
+	return true;
+}
 //const uint8_t sys_menu_list[][12] = {"Mode", "MIDI ch", "Cab num", "Expression", "Footswitch", "S/PDIF", "MIDI PC Map", "Tempo", "Tuner contr", "Time",
 //		"Swap UpConf", "Speed tun"};
 //const uint8_t expr_menu[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
@@ -52,7 +124,6 @@ void SystemMenu::keyDown()
 //const uint8_t int_sw_list[][12] = {"True bypass", "Controllers", "Presets sw "};
 //const uint8_t contr_ext_l[][12] = {"Expression ", " FSW DOWN  ", "FSW CONFIRM", "  FSW UP   "};
 //const uint8_t fsw_t[][12] = {"Default    ", "Controller ", "Tuner      ", "Preset Map1", "Preset Map2", "Preset Map3", "Preset Map4"};
-//const uint8_t tempo_type[][10] = {"Preset   ", "Global   ", "Glob+MIDI"};
 
 
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
@@ -78,33 +149,30 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	customParam->decreaseCallback = expressionDescrease;
 	customParam->increaseCallback = expressionIncrease;
 	customParam->printCallback = expressionPrint;
+	customParam->keyDownCallback = expressionKeyDown;
 	params[3] = customParam;
 
-	customParam = new CustomParam(CustomParam::TDisplayType::Number, "Footswitch", &sys_para[EXPRESSION_TYPE]);
-//	customParam->decreaseCallback = expressionDescrease;
-//	customParam->increaseCallback = expressionIncrease;
-//	customParam->printCallback = expressionPrint;
-	params[4] = customParam;
+	params[4] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Footswitch", &SystemMenu::createFootswitchMenu, nullptr);
 
 	params[5] = new StringParam("S/PDIF", &sys_para[SPDIF_OUT_TYPE], {"Main Output", " Dry Input "}, 12);
 	params[5]->setDspAddress(DSP_ADDRESS_SPDIF, PARAM_EQUAL_POS);
 	params[5]->setDisplayPosition(44);
 
-	SubmenuParam* midiMapParam = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::create, nullptr);
-	params[6] = midiMapParam;
+	params[6] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::createMidiPcMapMenu, nullptr);
 
-	customParam = new CustomParam(CustomParam::TDisplayType::Number, "Tempo", &sys_para[EXPRESSION_TYPE]);
-//	customParam->decreaseCallback = expressionDescrease;
-//	customParam->increaseCallback = expressionIncrease;
-//	customParam->printCallback = expressionPrint;
+	customParam = new CustomParam(CustomParam::TDisplayType::String, "Tempo", &sys_para[TAP_TYPE]);
+	customParam->setStrings({"Preset   ", "Global   ", "Glob+MIDI"}, 10);
+	customParam->setDisplayPosition(38);
+	customParam->decreaseCallback = tempoDescrease;
+	customParam->increaseCallback = tempoIncrease;
 	params[7] = customParam;
 
-	customParam = new CustomParam(CustomParam::TDisplayType::Number, "Tuner contr", &sys_para[EXPRESSION_TYPE]);
-//	customParam->decreaseCallback = expressionDescrease;
-//	customParam->increaseCallback = expressionIncrease;
-//	customParam->printCallback = expressionPrint;
+	customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Tuner contr", &sys_para[TUNER_EXTERNAL]);
+	customParam->decreaseCallback = tunerExtDescrease;
+	customParam->increaseCallback = tunerExtIncrease;
+	customParam->printCallback = tunerExtPrint;
+	customParam->keyDownCallback = tunerExtKeyDown;
 	params[8] = customParam;
-
 
 	params[9] = new StringParam("Time", &sys_para[TIME_FORMAT], {"Sec", "BPM"}, 3);
 	params[9]->setDisplayPosition(39);
@@ -112,16 +180,38 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[10] = new StringParam("Swap UpConf", &sys_para[SWAP_SWITCH], {"Off", "On "}, 3);
 	params[10]->setDisplayPosition(78);
 
-	customParam = new CustomParam(CustomParam::TDisplayType::Number, "Speed tun", &sys_para[EXPRESSION_TYPE]);
-//	customParam->decreaseCallback = expressionDescrease;
-//	customParam->increaseCallback = expressionIncrease;
-//	customParam->printCallback = expressionPrint;
+	customParam = new CustomParam(CustomParam::TDisplayType::Number, "Speed tun", &sys_para[TUNER_SPEED]);
+	customParam->setDisplayPosition(78);
+	customParam->decreaseCallback = tunerSpeedDescrease;
+	customParam->increaseCallback = tunerSpeedIncrease;
 	params[11] = customParam;
 
 	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
-	systemMenu->setParams(params, paramNum, 3);
+	systemMenu->setParams(params, paramNum);
 
 	return systemMenu;
+}
+
+AbstractMenu* SystemMenu::createFootswitchMenu(AbstractMenu* parent)
+{
+	const uint8_t paramNum = 4;
+	BaseParam* params[paramNum];
+
+	ParamListMenu* menu = new ParamListMenu(parent, MENU_FSW_TYPE);
+	if(menu) menu->setParams(params, paramNum);
+
+	return menu;
+}
+
+AbstractMenu* SystemMenu::createMidiPcMapMenu(AbstractMenu* parent)
+{
+	const uint8_t paramNum = 1;
+	BaseParam* params[paramNum];
+
+	ParamListMenu* menu = new ParamListMenu(parent, MENU_FSW_TYPE);
+	if(menu) menu->setParams(params, paramNum);
+
+	return menu;
 }
 
 void SystemMenu::expressionPrint(void* parameter)
@@ -146,4 +236,85 @@ void SystemMenu::expressionIncrease(void* parameter)
 	adc_init(1);
 }
 
+void SystemMenu::expressionKeyDown(void* parameter)
+{
+	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
+	if(!(*valuePtr&0x80))
+	{
 
+	}
+}
+
+void SystemMenu::tunerExtPrint(void* parameter)
+{
+	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
+	if(*valuePtr&0x80) DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"On >");
+	else DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"Off" );
+}
+
+void SystemMenu::tunerExtDescrease(void* parameter)
+{
+	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
+	if(*valuePtr&0x80) sys_para[TUNER_EXTERNAL] &= ~0x80;
+}
+
+void SystemMenu::tunerExtIncrease(void* parameter)
+{
+	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
+	if(!(*valuePtr&0x80)) sys_para[TUNER_EXTERNAL] |= 0x80;
+}
+
+void SystemMenu::tunerExtKeyDown(void* parameter)
+{
+	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
+	if(*valuePtr&0x80)
+	{
+		BaseParam* ccParam = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "    CC#", &sys_para[TUNER_EXTERNAL]);
+		ccParam->setScaling(1, -127);
+		ccParam->setBounds(128, 255);
+
+		ParamListMenu* ccMenu = new ParamListMenu(currentMenu, MENU_TUNER_EXT);
+		if(ccMenu)
+		{
+			ccMenu->setParams(&ccParam, 1);
+
+			ccMenu->setIcon(false, 0);
+			currentMenu = ccMenu;
+			currentMenu->show();
+		}
+	}
+}
+
+void SystemMenu::tempoDescrease(void* parameter)
+{
+	sys_para[TAP_HIGH] = 0;
+	if(sys_para[TAP_TYPE] > 0) sys_para[TAP_TYPE]--;
+	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE]|(sys_para[TAP_HIGH]<<8));
+}
+
+void SystemMenu::tempoIncrease(void* parameter)
+{
+//	sys_para[tap_hi] = 0; //???
+	if(sys_para[TAP_TYPE] < 2) sys_para[TAP_TYPE]++;
+	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE]|(sys_para[TAP_HIGH]<<8));
+}
+
+void SystemMenu::tunerSpeedDescrease(void* parameter)
+{
+	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
+	if(*valuePtr > 0)
+	{
+		*valuePtr = enc_speed_dec(*valuePtr, 0);
+		tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
+	}
+}
+
+void SystemMenu::tunerSpeedIncrease(void* parameter)
+{
+	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
+	if(*valuePtr < 127)
+	{
+		*valuePtr = enc_speed_inc(*valuePtr, 127);
+		tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
+	}
+}
