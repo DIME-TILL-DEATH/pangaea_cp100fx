@@ -32,9 +32,10 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 			break;
 		case BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME:
 		{
+			// переделать в CustomParam
 			DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, delay_time);
 
-			if(!sys_para[tim_type])
+			if(!sys_para[TIME_FORMAT])
 			{
 				DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, delay_time);
 				DisplayTask->StringOut(m_xDisplayPosition + 35, yDisplayPosition,TDisplayTask::fntSystem , 0 , (uint8_t*)" >");

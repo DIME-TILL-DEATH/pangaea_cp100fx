@@ -3,7 +3,6 @@
 #include "appdefs.h"
 #include "cs.h"
 #include "fs.h"
-#include "filt.h"
 #include "eepr.h"
 #include "fonts/allFonts.h"
 #include "display.h"
@@ -11,15 +10,14 @@
 #include "cc.h"
 #include "BF706_send.h"
 #include "midi_send.h"
-#include "spectrum.h"
-#include "vdt/vdt.h"
 
 #include "modules.h"
 
 #include "abstractmenu.h"
+#include "paramlistmenu.h"
+#include "systemmenu.h"
 
 extern uint8_t tim5_fl2;
-extern volatile uint8_t preset_edited;
 extern gui_menu_type current_menu;
 extern uint8_t copy_temp;
 extern uint8_t cab_type;
@@ -34,9 +32,9 @@ extern uint8_t temp_sys;
 const uint8_t MainMenu::att_db[][4];
 const char MainMenu::atten[];
 
-const uint8_t MainMenu::cab_list[][8];
-const uint8_t MainMenu::cab_out_list[][6];
-const uint8_t MainMenu::cab_list_menu[][9];
+//const uint8_t MainMenu::cab_list[][8];
+//const uint8_t MainMenu::cab_out_list[][6];
+//const uint8_t MainMenu::cab_list_menu[][9];
 
 const uint8_t MainMenu::decib[];
 
@@ -56,6 +54,13 @@ void MainMenu::show(TShowMode swhoMode)
 	currentMenu = this;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+
+	DisplayTask->Main_scr();
+	DisplayTask->Prog_ind(prog1);
+
+	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[fsm1])) DisplayTask->IndFoot(0, contr_kn[0]);
+	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[fsm2])) DisplayTask->IndFoot(1, contr_kn[1]);
+	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3])) DisplayTask->IndFoot(2, contr_kn[2]);
 }
 
 void MainMenu::task()
@@ -69,7 +74,7 @@ void MainMenu::task()
 			DisplayTask->Prog_ind(prog1);
 			if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3]))
 			{
-				DisplayTask->IndFoot(2,contr_kn[2]);
+				DisplayTask->IndFoot(2, contr_kn[2]);
 			}
 		}
 		else
@@ -97,7 +102,6 @@ void MainMenu::encoderPressed()
 	DisplayTask->Prog_ind(prog1);
 	sys_para[31] = prog;
 	prog_ch();
-	num_men = 0;
 
 	clean_flag();
 	tim5_start(1);
@@ -167,7 +171,7 @@ void MainMenu::keyUp()
 	}
 	else
 	{
-		if((!prog_sym_cur) && prog_data[cab])
+		if((!prog_sym_cur) && presetData[cab])
 		{
 			DisplayTask->Clear();
 			current_menu = MENU_CABNAME;
@@ -210,7 +214,6 @@ void MainMenu::keyDown()
 	shownChildMenu = &modulesMenu;
 	modulesMenu.show();
 
-	preset_edited = 1;
 	prog_cur = 1;
 
 	tim5_start(0);
@@ -301,27 +304,8 @@ void MainMenu::key4()
 {
 	if(current_menu != MENU_MAIN) return;
 
-	temp_sys = sys_para[2];
-	DisplayTask->Clear();
-	current_menu = MENU_SYSTEM;
-	DisplayTask->Clear();
-	DisplayTask->Icon_Strel(ICON_SY, STRELKA_DOWN);
-	for(uint8_t i = 0 ; i < 4 ; i++)
-	{
-		if(!i) DisplayTask->StringOut(3,i,TDisplayTask::fntSystem,2,(uint8_t*)sys_menu_list + i*12);
-		else DisplayTask->StringOut(3,i,TDisplayTask::fntSystem,0,(uint8_t*)sys_menu_list + i*12);
-
-		switch(i)
-		{
-			case 0:DisplayTask->StringOut(36,i,TDisplayTask::fntSystem,0,(uint8_t*)mode_list + sys_para[i]*12);break;
-			case 1:DisplayTask->ParamIndicNum(60,i,sys_para[i] + 1);break;
-			case 2:DisplayTask->StringOut(60,i,TDisplayTask::fntSystem,0,(uint8_t*)cab_out_list + sys_para[i]*6);break;
-			case 3:if(!(sys_para[exp_typ] & 0x80))DisplayTask->StringOut(78,i,TDisplayTask::fntSystem,0,(uint8_t*)expr_on_off + 5);
-				   else DisplayTask->StringOut(78,i,TDisplayTask::fntSystem,0,(uint8_t*)expr_on_off);
-			break;
-		}
-	}
-	par_num = 0;
+	shownChildMenu = SystemMenu::create(this);
+	shownChildMenu->show();
 
 	clean_flag();
 	tim5_start(0);

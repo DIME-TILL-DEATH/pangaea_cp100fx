@@ -18,13 +18,34 @@ StringParam::StringParam(const char* name, uint8_t* paramValuePtr, char** newStr
 	}
 }
 
+StringParam::StringParam(const char* name, uint8_t* paramValuePtr,
+		std::initializer_list<const char*>stringList, uint8_t maxStringLength)
+			:BaseParam(BaseParam::GUI_PARAMETER_LIST, name, paramValuePtr)
+{
+	m_stringCount = stringList.size();
+	m_maxStringLength = maxStringLength;
+
+//	m_strings = new char*[m_stringCount];
+//	for(int i = 0; i<m_stringCount; i++)
+//		m_strings[i] = new char[m_maxStringLength];
+
+	uint8_t strCounter = 0;
+	for(auto strIter = stringList.begin(); strIter != stringList.end(); ++strIter)
+	{
+		kgp_sdk_libc::strcpy(m_strings[strCounter], *strIter);
+		strCounter++;
+	}
+
+	m_maxValue = m_stringCount;
+}
+
 StringParam::~StringParam()
 {
-	if(m_strings)
-	{
-		for(int i = 0; i<m_stringCount; i++)
-				delete[] m_strings[i];
-	}
+//	if(m_strings)
+//	{
+//		for(int i = 0; i<m_stringCount; i++)
+//				delete[] m_strings[i];
+//	}
 }
 
 uint8_t* StringParam::getString(uint8_t stringNum)
@@ -67,11 +88,14 @@ void StringParam::increaseParam()
 {
 	if(!m_valuePtr) return;
 
-	*m_valuePtr += 1;
-
-	for(int i=0; i<m_affectedParamsCount; i++)
+	if(*m_valuePtr < m_maxValue)
 	{
-		m_affectedParamsList[i]->setDisabled(m_disableMask[*m_valuePtr][i]);
+		*m_valuePtr += 1;
+
+		for(int i=0; i<m_affectedParamsCount; i++)
+		{
+			m_affectedParamsList[i]->setDisabled(m_disableMask[*m_valuePtr][i]);
+		}
 	}
 }
 
@@ -79,11 +103,14 @@ void StringParam::decreaseParam()
 {
 	if(!m_valuePtr) return;
 
-	*m_valuePtr -= 1;
-
-	for(int i=0; i<m_affectedParamsCount; i++)
+	if(*m_valuePtr > m_minValue)
 	{
-		m_affectedParamsList[i]->setDisabled(m_disableMask[*m_valuePtr][i]);
+		*m_valuePtr -= 1;
+
+		for(int i=0; i<m_affectedParamsCount; i++)
+		{
+			m_affectedParamsList[i]->setDisabled(m_disableMask[*m_valuePtr][i]);
+		}
 	}
 }
 

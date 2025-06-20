@@ -71,92 +71,92 @@ const uint8_t midi_dest_list[][14] =
 
 void con_ch(uint8_t adr, uint8_t data)
 {
-	float i = control[adr*4+2]+(control[adr*4+3]-control[adr*4+2])*data/127.0f;
-	volatile uint8_t p = control[adr*4+1];
+	float i = presetControllers[adr*4+2]+(presetControllers[adr*4+3]-presetControllers[adr*4+2])*data/127.0f;
+	volatile uint8_t p = presetControllers[adr*4+1];
 	switch(p)
 	{
 		case 0:
 			if(i<64.0f)
-				prog_data[pream] = 0;
+				presetData[pream] = 0;
 			else
-				prog_data[pream] = 1;
-			contr_send(18, 10|(prog_data[pream]<<8));
+				presetData[pream] = 1;
+			contr_send(18, 10|(presetData[pream]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(56, 0, (uint8_t*)pr, prog_data[pream]);
+				DisplayTask->EfIcon(56, 0, (uint8_t*)pr, presetData[pream]);
 			}
 		break; // if(!current_menu)&&(edit_modules_fl)
 //-------------------------------------------------PA-------------------------------------------------
 		case 1:
 			if(i<64.0f)
-				prog_data[amp] = 0;
+				presetData[amp] = 0;
 			else
-				prog_data[amp] = 1;
-			contr_send(18, 0|(prog_data[amp]<<8));
+				presetData[amp] = 1;
+			contr_send(18, 0|(presetData[amp]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(74, 0, (uint8_t*)am, prog_data[amp]);
+				DisplayTask->EfIcon(74, 0, (uint8_t*)am, presetData[amp]);
 			}
 		break; //if(!current_menu)&&(edit_modules_fl)
 		case 2:
-			prog_data[am_v] = i;/*DisplayTask->ParamIndic(58,0,prog_data[am_v]);*/
+			presetData[am_v] = i;/*DisplayTask->ParamIndic(58,0,prog_data[am_v]);*/
 			contr_send(11, 0);
 		break;
 		case 3:
-			prog_data[am_out] = i;/*DisplayTask->ParamIndic(58,2,prog_data[am_out]);*/
+			presetData[am_out] = i;/*DisplayTask->ParamIndic(58,2,prog_data[am_out]);*/
 			contr_send(11, 2);
 		break;
 //-------------------------------------------------CAB SIM--------------------------------------------
 		case 4:
 			if(i<64.0f)
-				prog_data[cab] = 0;
+				presetData[cab] = 0;
 			else
-				prog_data[cab] = 1;
-			contr_send(18, 1|(prog_data[cab]<<8));
+				presetData[cab] = 1;
+			contr_send(18, 1|(presetData[cab]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(92, 0, (uint8_t*)cs, prog_data[cab]);
+				DisplayTask->EfIcon(92, 0, (uint8_t*)cs, presetData[cab]);
 			}
 		break; //if(!current_menu)&&(edit_modules_fl)
 //-------------------------------------------------EQ-------------------------------------------------
 		case 5:
 			if(i<64.0f)
-				prog_data[eq] = 0;
+				presetData[eq] = 0;
 			else
-				prog_data[eq] = 1;
-			contr_send(18, 2|(prog_data[eq]<<8));
+				presetData[eq] = 1;
+			contr_send(18, 2|(presetData[eq]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(110, 0, (uint8_t*)equ, prog_data[eq]);
+				DisplayTask->EfIcon(110, 0, (uint8_t*)equ, presetData[eq]);
 			}
 		break; //if(!current_menu)&&(edit_modules_fl)
 //-------------------------------------------------Delay----------------------------------------------
 		case 6:
 			if(i<64.0f)
-				prog_data[delay] = 0;
+				presetData[delay] = 0;
 			else
-				prog_data[delay] = 1;
-			contr_send(18, 3|(prog_data[delay]<<8));
+				presetData[delay] = 1;
+			contr_send(18, 3|(presetData[delay]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(56, 2, (uint8_t*)dl, prog_data[delay]);
+				DisplayTask->EfIcon(56, 2, (uint8_t*)dl, presetData[delay]);
 			}
 		break; //if(!current_menu)&&(edit_modules_fl)
 		case 7:
-			prog_data[d_vol] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[d_vol]);*/
+			presetData[d_vol] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[d_vol]);*/
 			contr_send(3, 0);
 		break;
 		case 8:
-			prog_data[d_fed] = i;/*DisplayTask->ParamIndic(53,2,prog_data[d_fed]);*/
+			presetData[d_fed] = i;/*DisplayTask->ParamIndic(53,2,prog_data[d_fed]);*/
 			contr_send(3, 2);
 		break;
 		case 9:
 			if(tap_temp_global()&&!sys_para[tap_typ])
 			{
-				delay_time = tap_global/3.0f/tap_tim_v[prog_data[d_tap_t]];
+				delay_time = tap_global/3.0f/tap_tim_v[presetData[d_tap_t]];
 				if(delay_time<2731)
 				{
-					if(!sys_para[tim_type])
+					if(!sys_para[TIME_FORMAT])
 					{
 						contr_send(3, 1);
 						if(current_menu==MENU_DELAY)
@@ -190,7 +190,7 @@ void con_ch(uint8_t adr, uint8_t data)
 				}
 				if(tap_trem_fl)
 				{
-					trem_time = tap_global/3.0f/tap_tim_v[prog_data[t_tap_t]];
+					trem_time = tap_global/3.0f/tap_tim_v[presetData[t_tap_t]];
 					if(trem_time>2730)
 						trem_time = 2730;
 					contr_send(10, 5);
@@ -205,101 +205,101 @@ void con_ch(uint8_t adr, uint8_t data)
 //-------------------------------------------------Phazer---------------------------------------------
 		case 10:
 			if(i<64.0f)
-				prog_data[phas] = 0;
+				presetData[phas] = 0;
 			else
-				prog_data[phas] = 1;
-			contr_send(18, 4|(prog_data[phas]<<8));
+				presetData[phas] = 1;
+			contr_send(18, 4|(presetData[phas]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(2, 2, (uint8_t*)ph, prog_data[phas]);
+				DisplayTask->EfIcon(2, 2, (uint8_t*)ph, presetData[phas]);
 			}
 		break;
 		case 11:
-			prog_data[phaser_vol] = i;
+			presetData[phaser_vol] = i;
 			contr_send(5, 0);
 		break;
 		case 12:
-			prog_data[phaser_rate] = i;
+			presetData[phaser_rate] = i;
 			contr_send(5, 1);
 		break;
 //-------------------------------------------------Flanger--------------------------------------------
 		case 13:
 			if(i<64.0f)
-				prog_data[fl] = 0;
+				presetData[fl] = 0;
 			else
-				prog_data[fl] = 1;
-			contr_send(18, 5|(prog_data[fl]<<8));
+				presetData[fl] = 1;
+			contr_send(18, 5|(presetData[fl]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(20, 2, (uint8_t*)rm, prog_data[fl]);
+				DisplayTask->EfIcon(20, 2, (uint8_t*)rm, presetData[fl]);
 			}
 		break;
 		case 14:
-			prog_data[fl_v] = i;
+			presetData[fl_v] = i;
 			contr_send(8, 0);
 		break;
 		case 15:
-			prog_data[fl_r] = i;
+			presetData[fl_r] = i;
 			contr_send(8, 2);
 		break;
 //-------------------------------------------------Chorus---------------------------------------------
 		case 16:
 			if(i<64.0f)
-				prog_data[chor] = 0;
+				presetData[chor] = 0;
 			else
-				prog_data[chor] = 1;
-			contr_send(18, 6|(prog_data[chor]<<8));
+				presetData[chor] = 1;
+			contr_send(18, 6|(presetData[chor]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(38, 2, (uint8_t*)ch, prog_data[chor]);
+				DisplayTask->EfIcon(38, 2, (uint8_t*)ch, presetData[chor]);
 			}
 		break;
 		case 17:
-			prog_data[chor_volum] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[chor_volum]);*/
+			presetData[chor_volum] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[chor_volum]);*/
 			contr_send(9, 0);
 		break;
 		case 18:
-			prog_data[chor_rat] = i;/*DisplayTask->ParamIndic(53,1,prog_data[chor_volum + 1]);*/
+			presetData[chor_rat] = i;/*DisplayTask->ParamIndic(53,1,prog_data[chor_volum + 1]);*/
 			contr_send(9, 1);
 		break;
 //-------------------------------------------------Reverb---------------------------------------------
 		case 19:
 			if(i<64.0f)
-				prog_data[reve] = 0;
+				presetData[reve] = 0;
 			else
-				prog_data[reve] = 1;
-			contr_send(18, 8|(prog_data[reve]<<8));
+				presetData[reve] = 1;
+			contr_send(18, 8|(presetData[reve]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(92, 2, (uint8_t*)rv, prog_data[reve]);
+				DisplayTask->EfIcon(92, 2, (uint8_t*)rv, presetData[reve]);
 			}
 		break;
 		case 20:
-			prog_data[r_vol] = i;
+			presetData[r_vol] = i;
 			contr_send(2, 0);
 		break;
 		case 21:
-			prog_data[r_time] = i;
+			presetData[r_time] = i;
 			contr_send(2, 2);
 		break;
 //-------------------------------------------------Tremolo--------------------------------------------
 		case 22:
 			if(i<64.0f)
-				prog_data[trem] = 0;
+				presetData[trem] = 0;
 			else
-				prog_data[trem] = 1;
-			contr_send(18, 9|(prog_data[trem]<<8));
+				presetData[trem] = 1;
+			contr_send(18, 9|(presetData[trem]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(110, 2, (uint8_t*)tr, prog_data[trem]);
+				DisplayTask->EfIcon(110, 2, (uint8_t*)tr, presetData[trem]);
 			}
 		break;
 		case 23:
-			prog_data[tr_vol] = i;
+			presetData[tr_vol] = i;
 			contr_send(10, 0);
 		break;
 		case 24:
-			prog_data[tr_rate] = i;
+			presetData[tr_rate] = i;
 			contr_send(10, 1);
 		break;
 		case 26:
@@ -307,7 +307,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			{
 				if(tap_temp_global()&&!sys_para[tap_typ])
 				{
-					trem_time = tap_global/3.0f/tap_tim_v[prog_data[t_tap_t]];
+					trem_time = tap_global/3.0f/tap_tim_v[presetData[t_tap_t]];
 					if(trem_time<2731)
 						contr_send(10, 5);
 					if(tap_moog_fl)
@@ -320,63 +320,63 @@ void con_ch(uint8_t adr, uint8_t data)
 		break;
 //---------------------------------------------------------------------------------------------------
 		case 25:
-			if(!prog_data[vol_contr])
+			if(!presetData[vol_contr])
 				contr_send(19, i);
 		break;
 //-------------------------------------------------Compressor--------------------------------------------
 		case 27:
 			if(i<64.0f)
-				prog_data[compr] = 0;
+				presetData[compr] = 0;
 			else
-				prog_data[compr] = 1;
-			contr_send(18, 12|(prog_data[compr]<<8));
+				presetData[compr] = 1;
+			contr_send(18, 12|(presetData[compr]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(38, 0, (uint8_t*)cm, prog_data[compr]);
+				DisplayTask->EfIcon(38, 0, (uint8_t*)cm, presetData[compr]);
 			}
 		break;
 		case 28:
-			prog_data[comp_thr] = i;
+			presetData[comp_thr] = i;
 			contr_send(30, 0);
 		break;
 		case 29:
-			prog_data[comp_v] = i;
+			presetData[comp_v] = i;
 			contr_send(30, 2);
 		break;
 //-------------------------------------------------Moog filter-------------------------------------------
 		case 30:
 			if(i<64.0f)
-				prog_data[moog] = 0;
+				presetData[moog] = 0;
 			else
-				prog_data[moog] = 1;
-			contr_send(18, 13|(prog_data[moog]<<8));
+				presetData[moog] = 1;
+			contr_send(18, 13|(presetData[moog]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(2, 0, (uint8_t*)rf, prog_data[moog]);
+				DisplayTask->EfIcon(2, 0, (uint8_t*)rf, presetData[moog]);
 			}
 		break;
 		case 31:
-			prog_data[mog_rate] = i;
+			presetData[mog_rate] = i;
 			contr_send(31, 3);
 		break;
 		case 32:
-			prog_data[mog_ext] = i;
+			presetData[mog_ext] = i;
 			contr_send(31, 12);
 		break;
 //--------------------------------------------------Early------------------------------------------------------------
 		case 33:
 			if(i<64.0f)
-				prog_data[early] = 0;
+				presetData[early] = 0;
 			else
-				prog_data[early] = 1;
-			contr_send(18, 7|(prog_data[early]<<8));
+				presetData[early] = 1;
+			contr_send(18, 7|(presetData[early]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(74, 2, (uint8_t*)er, prog_data[early]);
+				DisplayTask->EfIcon(74, 2, (uint8_t*)er, presetData[early]);
 			}
 		break;
 		case 34:
-			prog_data[early_vol] = i*0.5f;
+			presetData[early_vol] = i*0.5f;
 			contr_send(6, 0);
 		break;
 //---------------------------------------------------Moog Tape-------------------------------------------------------
@@ -392,92 +392,92 @@ void con_ch(uint8_t adr, uint8_t data)
 		break;
 		case 36:
 			if(i<64.0f)
-				prog_data[vol_contr] = 1;
+				presetData[vol_contr] = 1;
 			else
-				prog_data[vol_contr] = 0;
+				presetData[vol_contr] = 0;
 		break;
 		case 37:
-			prog_data[vol] = i;
+			presetData[vol] = i;
 			contr_send(7, 0);
 		break;
 		case 38:
-			prog_data[cab2_vol] = i;
+			presetData[cab2_vol] = i;
 			contr_send(7, 3);
 		break;
 		case 39:
 			if(i<64.0f)
-				prog_data[gate] = 0;
+				presetData[gate] = 0;
 			else
-				prog_data[gate] = 1;
-			contr_send(18, 11|(prog_data[gate]<<8));
+				presetData[gate] = 1;
+			contr_send(18, 11|(presetData[gate]<<8));
 			if(currentMenu->menuType()==MENU_MODULES)
 			{
-				DisplayTask->EfIcon(20, 0, (uint8_t*)gt, prog_data[gate]);
+				DisplayTask->EfIcon(20, 0, (uint8_t*)gt, presetData[gate]);
 			}
 		break;
 		case 40:
-			prog_data[gate_thr] = i;
+			presetData[gate_thr] = i;
 			contr_send(29, 0);
 		break;
 		case 41:
-			prog_data[hpf_v] = i;
+			presetData[hpf_v] = i;
 			contr_send(4, 5);
 		break;
 		case 42:
-			prog_data[lpf_v] = i;
+			presetData[lpf_v] = i;
 			contr_send(4, 6);
 		break;
 		case 43:
-			prog_data[pre_v] = i;
+			presetData[pre_v] = i;
 			contr_send(4, 7);
 		break;
 //------------------------------------------------------Preamp parameter--------------------------
 
 		case 44:
-			prog_data[pre_gain] = i;
+			presetData[pre_gain] = i;
 			contr_send(27, 0);
 		break;
 		case 45:
-			prog_data[pre_volume] = i;
+			presetData[pre_volume] = i;
 			contr_send(27, 1);
 		break;
 		case 46:
-			prog_data[pre_low] = i;
+			presetData[pre_low] = i;
 			contr_send(27, 3);
 		break;
 		case 47:
-			prog_data[pre_mid] = i;
+			presetData[pre_mid] = i;
 			contr_send(27, 4);
 		break;
 		case 48:
-			prog_data[pre_high] = i;
+			presetData[pre_high] = i;
 			contr_send(27, 5);
 		break;
 //-------------------------------------------------------------Eq band-------------------------------
 		case 49:
-			prog_data[eq1] = i*0.25f;
+			presetData[eq1] = i*0.25f;
 			contr_send(4, 0);
 		break;
 		case 50:
-			prog_data[eq2] = i*0.25f;
+			presetData[eq2] = i*0.25f;
 			contr_send(4, 1);
 		break;
 		case 51:
-			prog_data[eq3] = i*0.25f;
+			presetData[eq3] = i*0.25f;
 			contr_send(4, 2);
 		break;
 		case 52:
-			prog_data[eq4] = i*0.25f;
+			presetData[eq4] = i*0.25f;
 			contr_send(4, 3);
 		break;
 		case 53:
-			prog_data[eq5] = i*0.25f;
+			presetData[eq5] = i*0.25f;
 			contr_send(4, 4);
 		break;
 //-------------------------------------------------------------Reverb type---------------------------
 		case 54:
 			if(i<7)
-				prog_data[rev_t] = i;
+				presetData[rev_t] = i;
 			contr_send(2, 1);
 		break;
 	}
@@ -497,169 +497,169 @@ void TCCTask::Code()
 		sem->Take(portMAX_DELAY);
 		if(mid_fl&&!tuner_use&&pc_mute_fl)
 		{
-			if(control[0])
-				if(midi_b[1]==control[0]-5)
+			if(presetControllers[0])
+				if(midi_b[1]==presetControllers[0]-5)
 					con_ch(0, midi_b[2]);
-			if(control[4])
-				if(midi_b[1]==control[4]-5)
+			if(presetControllers[4])
+				if(midi_b[1]==presetControllers[4]-5)
 					con_ch(1, midi_b[2]);
-			if(control[8])
-				if(midi_b[1]==control[8]-5)
+			if(presetControllers[8])
+				if(midi_b[1]==presetControllers[8]-5)
 					con_ch(2, midi_b[2]);
-			if(control[12])
-				if(midi_b[1]==control[12]-5)
+			if(presetControllers[12])
+				if(midi_b[1]==presetControllers[12]-5)
 					con_ch(3, midi_b[2]);
-			if(control[16])
-				if(midi_b[1]==control[16]-5)
+			if(presetControllers[16])
+				if(midi_b[1]==presetControllers[16]-5)
 					con_ch(4, midi_b[2]);
-			if(control[20])
-				if(midi_b[1]==control[20]-5)
+			if(presetControllers[20])
+				if(midi_b[1]==presetControllers[20]-5)
 					con_ch(5, midi_b[2]);
-			if(control[24])
-				if(midi_b[1]==control[24]-5)
+			if(presetControllers[24])
+				if(midi_b[1]==presetControllers[24]-5)
 					con_ch(6, midi_b[2]);
-			if(control[28])
-				if(midi_b[1]==control[28]-5)
+			if(presetControllers[28])
+				if(midi_b[1]==presetControllers[28]-5)
 					con_ch(7, midi_b[2]);
-			if(control[32])
-				if(midi_b[1]==control[32]-5)
+			if(presetControllers[32])
+				if(midi_b[1]==presetControllers[32]-5)
 					con_ch(8, midi_b[2]);
-			if(control[36])
-				if(midi_b[1]==control[36]-5)
+			if(presetControllers[36])
+				if(midi_b[1]==presetControllers[36]-5)
 					con_ch(9, midi_b[2]);
-			if(control[40])
-				if(midi_b[1]==control[40]-5)
+			if(presetControllers[40])
+				if(midi_b[1]==presetControllers[40]-5)
 					con_ch(10, midi_b[2]);
-			if(control[44])
-				if(midi_b[1]==control[44]-5)
+			if(presetControllers[44])
+				if(midi_b[1]==presetControllers[44]-5)
 					con_ch(11, midi_b[2]);
-			if(control[48])
-				if(midi_b[1]==control[48]-5)
+			if(presetControllers[48])
+				if(midi_b[1]==presetControllers[48]-5)
 					con_ch(12, midi_b[2]);
-			if(control[52])
-				if(midi_b[1]==control[52]-5)
+			if(presetControllers[52])
+				if(midi_b[1]==presetControllers[52]-5)
 					con_ch(13, midi_b[2]);
-			if(control[56])
-				if(midi_b[1]==control[56]-5)
+			if(presetControllers[56])
+				if(midi_b[1]==presetControllers[56]-5)
 					con_ch(14, midi_b[2]);
-			if(control[60])
-				if(midi_b[1]==control[60]-5)
+			if(presetControllers[60])
+				if(midi_b[1]==presetControllers[60]-5)
 					con_ch(15, midi_b[2]);
-			if(control[64])
-				if(midi_b[1]==control[64]-5)
+			if(presetControllers[64])
+				if(midi_b[1]==presetControllers[64]-5)
 					con_ch(16, midi_b[2]);
-			if(control[68])
-				if(midi_b[1]==control[68]-5)
+			if(presetControllers[68])
+				if(midi_b[1]==presetControllers[68]-5)
 					con_ch(17, midi_b[2]);
-			if(control[72])
-				if(midi_b[1]==control[72]-5)
+			if(presetControllers[72])
+				if(midi_b[1]==presetControllers[72]-5)
 					con_ch(18, midi_b[2]);
-			if(control[76])
-				if(midi_b[1]==control[76]-5)
+			if(presetControllers[76])
+				if(midi_b[1]==presetControllers[76]-5)
 					con_ch(19, midi_b[2]);
-			if(control[80])
-				if(midi_b[1]==control[80]-5)
+			if(presetControllers[80])
+				if(midi_b[1]==presetControllers[80]-5)
 					con_ch(20, midi_b[2]);
-			if(control[84])
-				if(midi_b[1]==control[84]-5)
+			if(presetControllers[84])
+				if(midi_b[1]==presetControllers[84]-5)
 					con_ch(21, midi_b[2]);
-			if(control[88])
-				if(midi_b[1]==control[88]-5)
+			if(presetControllers[88])
+				if(midi_b[1]==presetControllers[88]-5)
 					con_ch(22, midi_b[2]);
-			if(control[92])
-				if(midi_b[1]==control[92]-5)
+			if(presetControllers[92])
+				if(midi_b[1]==presetControllers[92]-5)
 					con_ch(23, midi_b[2]);
-			if(control[96])
-				if(midi_b[1]==control[96]-5)
+			if(presetControllers[96])
+				if(midi_b[1]==presetControllers[96]-5)
 					con_ch(24, midi_b[2]);
-			if(control[100])
-				if(midi_b[1]==control[100]-5)
+			if(presetControllers[100])
+				if(midi_b[1]==presetControllers[100]-5)
 					con_ch(25, midi_b[2]);
-			if(control[104])
-				if(midi_b[1]==control[104]-5)
+			if(presetControllers[104])
+				if(midi_b[1]==presetControllers[104]-5)
 					con_ch(26, midi_b[2]);
-			if(control[108])
-				if(midi_b[1]==control[108]-5)
+			if(presetControllers[108])
+				if(midi_b[1]==presetControllers[108]-5)
 					con_ch(27, midi_b[2]);
-			if(control[112])
-				if(midi_b[1]==control[112]-5)
+			if(presetControllers[112])
+				if(midi_b[1]==presetControllers[112]-5)
 					con_ch(28, midi_b[2]);
-			if(control[116])
-				if(midi_b[1]==control[116]-5)
+			if(presetControllers[116])
+				if(midi_b[1]==presetControllers[116]-5)
 					con_ch(29, midi_b[2]);
-			if(control[120])
-				if(midi_b[1]==control[120]-5)
+			if(presetControllers[120])
+				if(midi_b[1]==presetControllers[120]-5)
 					con_ch(30, midi_b[2]);
-			if(control[124])
-				if(midi_b[1]==control[124]-5)
+			if(presetControllers[124])
+				if(midi_b[1]==presetControllers[124]-5)
 					con_ch(31, midi_b[2]);
 			mid_fl = 0;
 		}
 		if(ext_fl&&!tuner_use&&pc_mute_fl)
 		{
-			if(control[0]==ext_sourc)
+			if(presetControllers[0]==ext_sourc)
 				con_ch(0, ext_data);
-			if(control[4]==ext_sourc)
+			if(presetControllers[4]==ext_sourc)
 				con_ch(1, ext_data);
-			if(control[8]==ext_sourc)
+			if(presetControllers[8]==ext_sourc)
 				con_ch(2, ext_data);
-			if(control[12]==ext_sourc)
+			if(presetControllers[12]==ext_sourc)
 				con_ch(3, ext_data);
-			if(control[16]==ext_sourc)
+			if(presetControllers[16]==ext_sourc)
 				con_ch(4, ext_data);
-			if(control[20]==ext_sourc)
+			if(presetControllers[20]==ext_sourc)
 				con_ch(5, ext_data);
-			if(control[24]==ext_sourc)
+			if(presetControllers[24]==ext_sourc)
 				con_ch(6, ext_data);
-			if(control[28]==ext_sourc)
+			if(presetControllers[28]==ext_sourc)
 				con_ch(7, ext_data);
-			if(control[32]==ext_sourc)
+			if(presetControllers[32]==ext_sourc)
 				con_ch(8, ext_data);
-			if(control[36]==ext_sourc)
+			if(presetControllers[36]==ext_sourc)
 				con_ch(9, ext_data);
-			if(control[40]==ext_sourc)
+			if(presetControllers[40]==ext_sourc)
 				con_ch(10, ext_data);
-			if(control[44]==ext_sourc)
+			if(presetControllers[44]==ext_sourc)
 				con_ch(11, ext_data);
-			if(control[48]==ext_sourc)
+			if(presetControllers[48]==ext_sourc)
 				con_ch(12, ext_data);
-			if(control[52]==ext_sourc)
+			if(presetControllers[52]==ext_sourc)
 				con_ch(13, ext_data);
-			if(control[56]==ext_sourc)
+			if(presetControllers[56]==ext_sourc)
 				con_ch(14, ext_data);
-			if(control[60]==ext_sourc)
+			if(presetControllers[60]==ext_sourc)
 				con_ch(15, ext_data);
-			if(control[64]==ext_sourc)
+			if(presetControllers[64]==ext_sourc)
 				con_ch(16, ext_data);
-			if(control[68]==ext_sourc)
+			if(presetControllers[68]==ext_sourc)
 				con_ch(17, ext_data);
-			if(control[72]==ext_sourc)
+			if(presetControllers[72]==ext_sourc)
 				con_ch(18, ext_data);
-			if(control[76]==ext_sourc)
+			if(presetControllers[76]==ext_sourc)
 				con_ch(19, ext_data);
-			if(control[80]==ext_sourc)
+			if(presetControllers[80]==ext_sourc)
 				con_ch(20, ext_data);
-			if(control[84]==ext_sourc)
+			if(presetControllers[84]==ext_sourc)
 				con_ch(21, ext_data);
-			if(control[88]==ext_sourc)
+			if(presetControllers[88]==ext_sourc)
 				con_ch(22, ext_data);
-			if(control[92]==ext_sourc)
+			if(presetControllers[92]==ext_sourc)
 				con_ch(23, ext_data);
-			if(control[96]==ext_sourc)
+			if(presetControllers[96]==ext_sourc)
 				con_ch(24, ext_data);
-			if(control[100]==ext_sourc)
+			if(presetControllers[100]==ext_sourc)
 				con_ch(25, ext_data);
-			if(control[104]==ext_sourc)
+			if(presetControllers[104]==ext_sourc)
 				con_ch(26, ext_data);
-			if(control[108]==ext_sourc)
+			if(presetControllers[108]==ext_sourc)
 				con_ch(27, ext_data);
-			if(control[112]==ext_sourc)
+			if(presetControllers[112]==ext_sourc)
 				con_ch(28, ext_data);
-			if(control[116]==ext_sourc)
+			if(presetControllers[116]==ext_sourc)
 				con_ch(29, ext_data);
-			if(control[120]==ext_sourc)
+			if(presetControllers[120]==ext_sourc)
 				con_ch(30, ext_data);
-			if(control[124]==ext_sourc)
+			if(presetControllers[124]==ext_sourc)
 				con_ch(31, ext_data);
 			ext_fl = 0;
 		}

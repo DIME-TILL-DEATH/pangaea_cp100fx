@@ -140,7 +140,7 @@ static void get_state_command_handler ( TReadLine* rl , TReadLine::const_symbol_
 	for ( size_t i = 0 ; i < 512 ; i++ )
 	{
 		char hex[3] = {0,0,0} ;
-		i2hex(prog_data[i], hex);
+		i2hex(presetData[i], hex);
 		msg_console("%s" , hex ) ;
 	}
 	msg_console("\n") ;

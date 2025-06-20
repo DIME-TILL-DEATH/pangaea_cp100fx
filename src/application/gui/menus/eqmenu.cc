@@ -35,9 +35,9 @@ void EqMenu::task()
 	if(bandNum<5)
 	{
 		if(tim5_fl==0)
-			DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum], 0);
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 0);
 		else
-			DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
 	}
 	else
 	{
@@ -54,7 +54,7 @@ void EqMenu::encoderPressed()
 	{
 		encoderKnobSelected = 1;
 		if(bandNum<5)
-			DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
 		else
 			DisplayTask->StringOut(6, bandNum-5, TDisplayTask::fntSystem, 2, (uint8_t*)lpf_hpf+(bandNum-5)*9);
 	}
@@ -62,7 +62,7 @@ void EqMenu::encoderPressed()
 	{
 		encoderKnobSelected = 0;
 		if(bandNum<5)
-			DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
 		else
 			DisplayTask->StringOut(6, bandNum-5, TDisplayTask::fntSystem, 2, (uint8_t*)lpf_hpf+(bandNum-5)*9);
 	}
@@ -87,20 +87,20 @@ void EqMenu::encoderClockwise()
 			bandNum++;
 
 			DisplayTask->StringOut(6, 0, TDisplayTask::fntSystem, 2, (uint8_t*)lpf_hpf);
-			DisplayTask->EqLH(prog_data[hpf_v]*(980.0/127.0)+20.0, 0);
+			DisplayTask->EqLH(presetData[hpf_v]*(980.0/127.0)+20.0, 0);
 			DisplayTask->StringOut(28, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"(");
 			DisplayTask->StringOut(50, 0, TDisplayTask::fntSystem, 0, (uint8_t*)")");
 
-			DisplayTask->ParamIndicNum(33, 0, prog_data[hpf_v]);
-			DisplayTask->EqLH(powf(127-prog_data[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
+			DisplayTask->ParamIndicNum(33, 0, presetData[hpf_v]);
+			DisplayTask->EqLH(powf(127-presetData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 			DisplayTask->StringOut(28, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"(");
 			DisplayTask->StringOut(50, 1, TDisplayTask::fntSystem, 0, (uint8_t*)")");
 
-			DisplayTask->ParamIndicNum(33, 1, prog_data[lpf_v]);
-			DisplayTask->ParamIndic(56, 2, prog_data[pre_v]);
+			DisplayTask->ParamIndicNum(33, 1, presetData[lpf_v]);
+			DisplayTask->ParamIndic(56, 2, presetData[pre_v]);
 			DisplayTask->Icon_Strel(ICON_EQ, STRELKA_UP);
 			DisplayTask->StringOut(6, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&lpf_hpf[3]);
-			DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[prog_data[eq_pr_po]]);
+			DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[presetData[eq_pr_po]]);
 			tim5_start(0);
 		}
 		else
@@ -114,8 +114,8 @@ void EqMenu::encoderClockwise()
 		}
 		if(bandNum<4)
 		{
-			DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum++], 0);
-			DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum++], 0);
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
 			tim5_start(0);
 		}
 	}
@@ -123,40 +123,40 @@ void EqMenu::encoderClockwise()
 	{
 		if(bandNum<5)
 		{
-			if(prog_data[eq1+bandNum]<30)
-				DisplayTask->EqIndic(27+14*bandNum, 0, ++prog_data[eq1+bandNum], 1);
+			if(presetData[eq1+bandNum]<30)
+				DisplayTask->EqIndic(27+14*bandNum, 0, ++presetData[eq1+bandNum], 1);
 		}
 		else
 		{
 			switch(bandNum)
 			{
 				case 5:
-					if(prog_data[hpf_v]<127)
+					if(presetData[hpf_v]<127)
 					{
-						prog_data[hpf_v] = enc_speed_inc(prog_data[hpf_v], 127);
-						DisplayTask->ParamIndicNum(33, 0, prog_data[hpf_v]);
-						DisplayTask->EqLH(prog_data[hpf_v]*(980.0/127.0)+20.0, 0);
+						presetData[hpf_v] = enc_speed_inc(presetData[hpf_v], 127);
+						DisplayTask->ParamIndicNum(33, 0, presetData[hpf_v]);
+						DisplayTask->EqLH(presetData[hpf_v]*(980.0/127.0)+20.0, 0);
 					}
 				break;
 				case 6:
-					if(prog_data[lpf_v]>0)
+					if(presetData[lpf_v]>0)
 					{
-						prog_data[lpf_v] = enc_speed_dec(prog_data[lpf_v], 0);
-						DisplayTask->ParamIndicNum(33, 1, prog_data[lpf_v]);
-						DisplayTask->EqLH(powf(127-prog_data[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
+						presetData[lpf_v] = enc_speed_dec(presetData[lpf_v], 0);
+						DisplayTask->ParamIndicNum(33, 1, presetData[lpf_v]);
+						DisplayTask->EqLH(powf(127-presetData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 					}
 				break;
 				case 7:
-					if(prog_data[pre_v]<127)
+					if(presetData[pre_v]<127)
 					{
-						prog_data[pre_v] = enc_speed_inc(prog_data[pre_v], 127);
-						DisplayTask->ParamIndic(56, bandNum-5, prog_data[pre_v]);
+						presetData[pre_v] = enc_speed_inc(presetData[pre_v], 127);
+						DisplayTask->ParamIndic(56, bandNum-5, presetData[pre_v]);
 					}
 				break;
 				case 8:
-					if(!prog_data[eq_pr_po])
+					if(!presetData[eq_pr_po])
 					{
-						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[++prog_data[eq_pr_po]]);
+						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[++presetData[eq_pr_po]]);
 					}
 				break;
 			}
@@ -180,15 +180,15 @@ void EqMenu::encoderCounterClockwise()
 			DisplayTask->EqInit();
 			DisplayTask->Icon_Strel(ICON_EQ, STRELKA_DOWN);
 			bandNum--;
-			DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
 			tim5_start(0);
 		}
 		else
 		{
 			if((bandNum>0)&&(bandNum<5))
 			{
-				DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum--], 0);
-				DisplayTask->EqIndic(27+bandNum*14, 0, prog_data[eq1+bandNum], 1);
+				DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum--], 0);
+				DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
 				tim5_start(0);
 			}
 		}
@@ -203,40 +203,40 @@ void EqMenu::encoderCounterClockwise()
 	{
 		if(bandNum<5)
 		{
-			if(prog_data[eq1+bandNum]>0)
-				DisplayTask->EqIndic(27+14*bandNum, 0, --prog_data[eq1+bandNum], 1);
+			if(presetData[eq1+bandNum]>0)
+				DisplayTask->EqIndic(27+14*bandNum, 0, --presetData[eq1+bandNum], 1);
 		}
 		else
 		{
 			switch(bandNum)
 			{
 				case 5:
-					if(prog_data[hpf_v]>0)
+					if(presetData[hpf_v]>0)
 					{
-						prog_data[hpf_v] = enc_speed_dec(prog_data[hpf_v], 0);
-						DisplayTask->ParamIndicNum(33, 0, prog_data[hpf_v]);
-						DisplayTask->EqLH(prog_data[hpf_v]*(980.0/127.0)+20.0, 0);
+						presetData[hpf_v] = enc_speed_dec(presetData[hpf_v], 0);
+						DisplayTask->ParamIndicNum(33, 0, presetData[hpf_v]);
+						DisplayTask->EqLH(presetData[hpf_v]*(980.0/127.0)+20.0, 0);
 					}
 				break;
 				case 6:
-					if(prog_data[lpf_v]<127)
+					if(presetData[lpf_v]<127)
 					{
-						prog_data[lpf_v] = enc_speed_inc(prog_data[lpf_v], 127);
-						DisplayTask->ParamIndicNum(33, 1, prog_data[lpf_v]);
-						DisplayTask->EqLH(powf(127-prog_data[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
+						presetData[lpf_v] = enc_speed_inc(presetData[lpf_v], 127);
+						DisplayTask->ParamIndicNum(33, 1, presetData[lpf_v]);
+						DisplayTask->EqLH(powf(127-presetData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 					}
 				break;
 				case 7:
-					if(prog_data[pre_v]>0)
+					if(presetData[pre_v]>0)
 					{
-						prog_data[pre_v] = enc_speed_dec(prog_data[pre_v], 0);
-						DisplayTask->ParamIndic(56, 2, prog_data[pre_v]);
+						presetData[pre_v] = enc_speed_dec(presetData[pre_v], 0);
+						DisplayTask->ParamIndic(56, 2, presetData[pre_v]);
 					}
 				break;
 				case 8:
-					if(prog_data[eq_pr_po])
+					if(presetData[eq_pr_po])
 					{
-						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[--prog_data[eq_pr_po]]);
+						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[--presetData[eq_pr_po]]);
 					}
 				break;
 			}

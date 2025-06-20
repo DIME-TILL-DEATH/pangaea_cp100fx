@@ -5,26 +5,26 @@
 
 static void gate_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[ENABLE_GATE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_GATE, prog_data[ENABLE_GATE]);
+	default_param_handler(&presetData[ENABLE_GATE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_GATE, presetData[ENABLE_GATE]);
 }
 
 static void gate_threshold_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[GATE_THRESHOLD], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_GATE, GATE_THRESHOLD_POS, prog_data[GATE_THRESHOLD]);
+	default_param_handler(&presetData[GATE_THRESHOLD], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_GATE, GATE_THRESHOLD_POS, presetData[GATE_THRESHOLD]);
 }
 
 static void gate_attack_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[GATE_ATTACK], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_GATE, GATE_ATTACK_POS, prog_data[GATE_ATTACK]);
+	default_param_handler(&presetData[GATE_ATTACK], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_GATE, GATE_ATTACK_POS, presetData[GATE_ATTACK]);
 }
 
 static void gate_decay_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[GATE_DECAY], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_GATE, GATE_DECAY_POS, prog_data[GATE_DECAY]);
+	default_param_handler(&presetData[GATE_DECAY], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_GATE, GATE_DECAY_POS, presetData[GATE_DECAY]);
 }
 
 void set_gate_handlers(TReadLine *rl)

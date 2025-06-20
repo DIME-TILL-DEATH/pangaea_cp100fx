@@ -62,20 +62,26 @@ void BaseParam::increaseParam()
 {
 	if(!m_valuePtr) return;
 
-	if(m_type != GUI_PARAMETER_NUM)
-		encoderSpeedIncrease();
-	else
-		*m_valuePtr += m_stepSize;
+	if(*m_valuePtr < m_maxValue)
+	{
+		if(m_type != GUI_PARAMETER_NUM)
+			encoderSpeedIncrease();
+		else
+			*m_valuePtr += m_stepSize;
+	}
 }
 
 void BaseParam::decreaseParam()
 {
 	if(!m_valuePtr) return;
 
-	if(m_type != GUI_PARAMETER_NUM)
-		encoderSpeedDecrease();
-	else
-		*m_valuePtr -= m_stepSize;
+	if(*m_valuePtr > m_minValue)
+	{
+		if(m_type != GUI_PARAMETER_NUM)
+			encoderSpeedDecrease();
+		else
+			*m_valuePtr -= m_stepSize;
+	}
 }
 
 void BaseParam::setToDsp()
@@ -94,7 +100,10 @@ void BaseParam::setToDsp()
 
 void BaseParam::printParam(uint8_t yDisplayPosition)
 {
-	if(m_disabled) return;
+	if(m_disabled)
+	{
+		return;
+	}
 
 	switch(m_type)
 	{
@@ -112,7 +121,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 			break;
 		case BaseParam::GUI_PARAMETER_DELAY_TIME:
 		{
-			if(!sys_para[tim_type])
+			if(!sys_para[TIME_FORMAT])
 			{
 				DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, delay_time);
 			}

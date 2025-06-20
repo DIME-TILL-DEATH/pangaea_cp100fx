@@ -5,20 +5,20 @@
 
 static void early_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[ENABLE_EARLY_REFLECTIONS], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EARLY_REFLECTIONS, prog_data[ENABLE_EARLY_REFLECTIONS]);
+	default_param_handler(&presetData[ENABLE_EARLY_REFLECTIONS], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EARLY_REFLECTIONS, presetData[ENABLE_EARLY_REFLECTIONS]);
 }
 
 static void early_mix_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[EARLY_MIX], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_MIX_POS, prog_data[EARLY_MIX]);
+	default_param_handler(&presetData[EARLY_MIX], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_MIX_POS, presetData[EARLY_MIX]);
 }
 
 static void early_size_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[EARLY_SIZE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_SIZE_POS, prog_data[EARLY_SIZE]);
+	default_param_handler(&presetData[EARLY_SIZE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_SIZE_POS, presetData[EARLY_SIZE]);
 }
 
 void set_early_handlers(TReadLine *rl)

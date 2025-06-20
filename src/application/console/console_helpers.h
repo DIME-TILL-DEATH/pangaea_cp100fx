@@ -12,7 +12,7 @@
 
 #include "../gui/gui_task.h"
 
-extern uint8_t prog_data[];
+extern uint8_t presetData[];
 
 static const char hexes[] = "0123456789abcdef";
 

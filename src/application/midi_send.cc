@@ -169,7 +169,7 @@ void TMidiSendTask::Code()
 					send_bank();
 				}
 				uart_send(0xc0|sys_para[MIDI_CHANNEL]);
-				switch(control[510])
+				switch(presetControllers[510])
 				{
 					case 0:
 						if(midi_f1)
@@ -181,7 +181,7 @@ void TMidiSendTask::Code()
 						uart_send(sys_para[prog+128]);
 					break;
 					case 2:
-						uart_send(control[511]&0x7f);
+						uart_send(presetControllers[511]&0x7f);
 					break;
 				}
 				if((data[0]&0xf0)!=0xc0)
@@ -367,7 +367,7 @@ void adc_proc(void)
 		int_contr_buf[int_contr_po++] = adc_bu2;
 		MidiSendTask->Give();
 	}
-	if((sys_para[exp_typ]&0x7f)<3)
+	if((sys_para[EXPRESSION_TYPE]&0x7f)<3)
 	{
 		if(pc_mute_fl)
 			ext_send(adc_bu2);

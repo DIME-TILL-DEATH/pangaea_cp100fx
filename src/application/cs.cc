@@ -71,7 +71,7 @@ void TCSTask::Code()
 
   	gui_send(14,0); // global cab on off
   	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-  	gui_send(26,sys_para[spdif_t]);
+  	gui_send(26,sys_para[SPDIF_OUT_TYPE]);
   	gui_send(33,sys_para[tap_typ] | (sys_para[tap_hi] << 8)); //global temp
 	tempo_fl = 1;
 	gui_send(28,sys_para[2]); // left cab bypass
@@ -99,8 +99,8 @@ void TCSTask::Code()
 	DisplayTask->Prog_ind(prog1);
     for(uint8_t i = 0 ; i < 3 ; i++)
     {
-    	contr_kn[i] = prog_data[fo1 + i];
-    	contr_kn1[i] = prog_data[fo11 + i];
+    	contr_kn[i] = presetData[fo1 + i];
+    	contr_kn1[i] = presetData[fo11 + i];
     }
 	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[fsm1]))DisplayTask->IndFoot(0,contr_kn[0]);
 	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[fsm2]))DisplayTask->IndFoot(1,contr_kn[1]);

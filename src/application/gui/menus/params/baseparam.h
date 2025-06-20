@@ -64,7 +64,7 @@ protected:
 	bool m_disabled{false};
 
 	dsp_module_address_t m_moduleAddress;
-	uint8_t m_bytePosition{0};
+	uint8_t m_bytePosition{NOT_SEND_POS};
 
 	uint8_t m_xDisplayPosition{58};
 

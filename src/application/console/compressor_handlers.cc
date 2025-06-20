@@ -5,38 +5,38 @@
 
 static void compressor_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[ENABLE_COMPRESSOR], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_COMPRESSOR, prog_data[ENABLE_COMPRESSOR]);
+	default_param_handler(&presetData[ENABLE_COMPRESSOR], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_COMPRESSOR, presetData[ENABLE_COMPRESSOR]);
 }
 
 static void compressor_threshold_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[COMPRESSOR_THRESHOLD], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_THRESHOLD_POS, prog_data[COMPRESSOR_THRESHOLD]);
+	default_param_handler(&presetData[COMPRESSOR_THRESHOLD], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_THRESHOLD_POS, presetData[COMPRESSOR_THRESHOLD]);
 }
 
 static void compressor_ratio_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[COMPRESSOR_RATIO], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_RATIO_POS, prog_data[COMPRESSOR_RATIO]);
+	default_param_handler(&presetData[COMPRESSOR_RATIO], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_RATIO_POS, presetData[COMPRESSOR_RATIO]);
 }
 
 static void compressor_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[COMPRESSOR_VOLUME], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_VOLUME_POS, prog_data[COMPRESSOR_VOLUME]);
+	default_param_handler(&presetData[COMPRESSOR_VOLUME], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_VOLUME_POS, presetData[COMPRESSOR_VOLUME]);
 }
 
 static void compressor_attack_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[COMPRESSOR_ATTACK], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_ATTACK_POS, prog_data[COMPRESSOR_ATTACK]);
+	default_param_handler(&presetData[COMPRESSOR_ATTACK], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_ATTACK_POS, presetData[COMPRESSOR_ATTACK]);
 }
 
 static void compressor_release_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&prog_data[COMPRESSOR_RELEASE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_RELEASE_POS, prog_data[COMPRESSOR_RELEASE]);
+	default_param_handler(&presetData[COMPRESSOR_RELEASE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_RELEASE_POS, presetData[COMPRESSOR_RELEASE]);
 }
 
 

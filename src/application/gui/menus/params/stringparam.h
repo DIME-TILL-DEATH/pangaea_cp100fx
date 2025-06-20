@@ -7,6 +7,8 @@ class StringParam : public BaseParam
 {
 public:
 	StringParam(const char* name, uint8_t* paramValuePtr, char** newStrings, uint8_t strCount);
+	StringParam(const char* name, uint8_t* paramValuePtr,
+			std::initializer_list<const char*> stringList, uint8_t maxStringLength);
 	~StringParam();
 
 	uint8_t* getString(uint8_t stringNum);
@@ -24,8 +26,9 @@ public:
 private:
 	char m_strings[24][16];
 	uint8_t m_stringCount;
+	uint8_t m_maxStringLength;
 
-	uint8_t m_disableMask[24][16];
+	uint8_t m_disableMask[24][16]{0};
 	BaseParam* m_affectedParamsList[16];
 	uint8_t m_affectedParamsCount{0};
 };

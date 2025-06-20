@@ -129,9 +129,9 @@ void Dialog::encoderPressed()
 				case TDialogType::ErasePreset:
 				{
 					preset_erase(prog);
-					kgp_sdk_libc::memcpy(prog_data, prog_data_init, 512);
-					prog_data[delay_tim_lo] = 0xf4;
-					prog_data[delay_tim_hi] = 1;
+					kgp_sdk_libc::memcpy(presetData, prog_data_init, 512);
+					presetData[delay_tim_lo] = 0xf4;
+					presetData[delay_tim_hi] = 1;
 
 					cab_data_ready = false;
 					send_cab_data(1, prog+1, 0);
@@ -154,7 +154,7 @@ void Dialog::encoderPressed()
 
 void Dialog::encoderClockwise()
 {
-	if(m_paramNum<m_btnCount)
+	if(m_paramNum < m_btnCount-1)
 		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, TDisplayTask::fntSystem, 0, (uint8_t*)m_btnNames[m_paramNum++]);
 
 	tim5_start(1);
@@ -163,7 +163,7 @@ void Dialog::encoderClockwise()
 
 void Dialog::encoderCounterClockwise()
 {
-	if(m_paramNum>0)
+	if(m_paramNum > 0)
 		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, TDisplayTask::fntSystem, 0, (uint8_t*)m_btnNames[m_paramNum--]);
 
 	tim5_start(0);

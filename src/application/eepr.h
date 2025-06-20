@@ -5,59 +5,41 @@
 
 enum
 {
-	CAB_SIM_DISABLED,	//mod_proc /*cab on off*/
-	MIDI_CHANNEL, // midi_c/*midi chanel*/
-	cab_nu, // cab_nu /*num cab*/
-	/*type express*/exp_typ,
-	/*type foot sw*/fs1, fs2, fs3,
-	/*calibration*/calib1, calib2, calib3, calib4,
-	/*preset map to foot sw*/pr11,
-	pr12,
-	pr13,
-	pr14,
-	pr21,
-	pr22,
-	pr23,
-	pr24,
-	pr31,
-	pr32,
-	pr33,
-	pr34,
-	/*type s/pdif*/spdif_t,
-	/*num CC to express and foot*/exp_ccN,
-	k1_cc,
-	k2_cc,
-	k3_cc,
+	CAB_SIM_DISABLED,
+	MIDI_CHANNEL,
+	CAB_SIM_CONFIG,
+	EXPRESSION_TYPE, // exp_typ
+	/*type foot sw*/
+	fs1, fs2, fs3,
+	/*calibration*/
+	calib1, calib2, calib3, calib4,
+	/*preset map to foot sw*/
+	pr11, pr12, pr13, pr14,
+	pr21, pr22, pr23, pr24,
+	pr31, pr32, pr33, pr34,
+	SPDIF_OUT_TYPE,
+	/*num CC to express and foot*/
+	exp_ccN, k1_cc, k2_cc, k3_cc,
 	/*service*/midi_pc_ind,
 	/*31 - last num preset*/
-	/*mode foot*/fsm1 = 32,
-	fsm2,
-	fsm3,/*type foot sw1*/
+	/*mode foot*/
+	fsm1 = 32, fsm2, fsm3,
+	/*type foot sw1*/
 	fs11,
 	fs21,
 	fs31,
-	/*preset map to foot sw1*/pr111,
-	pr121,
-	pr131,
-	pr141,
-	pr211,
-	pr221,
-	pr231,
-	pr241,
-	pr311,
-	pr321,
-	pr331,
-	pr341,
-	k11_cc,
-	k21_cc,
-	k31_cc,
-	/*tap type*/tap_typ,/*tuner ext controller*/
-	tun_ext,
-	/*speed foot*/foot_sp,/*time type*/
-	tim_type,
+	/*preset map to foot sw1*/
+	pr111, pr121, pr131, pr141,
+	pr211, pr221, pr231, pr241,
+	pr311, pr321, pr331, pr341,
+	k11_cc, k21_cc, k31_cc,
+	/*tap type*/tap_typ,
+	tun_ext,/*tuner ext controller*/
+	/*speed foot*/foot_sp,
+	TIME_FORMAT,
 	/*global temp hi*/tap_hi,
 	/*save expression level*/sav_exp,
-	/*swap up confirm*/swap_switch,
+	/*swap up confirm*/SWAP_SWITCH,
 	/*speed tuner*/speed_tun,
 };
 
@@ -66,15 +48,15 @@ extern volatile uint8_t prog;
 extern volatile uint8_t prog1;
 extern volatile uint8_t prog_old;
 extern volatile uint32_t flash_adr;
-extern uint8_t prog_data[];
+extern uint8_t presetData[];
 extern const uint8_t prog_data_init[];
 extern uint8_t preset_temp[];
-extern uint8_t imya[];
-extern uint8_t imya1[];
+extern uint8_t presetName[];
+extern uint8_t presetComment[];
 extern const uint8_t imya_init[];
 extern uint8_t imya_t[];
 extern uint8_t imya1_t[];
-extern uint8_t control[];
+extern uint8_t presetControllers[];
 extern uint8_t sys_para[];
 extern uint8_t imp_buf_uint[];
 extern char name_buf[];

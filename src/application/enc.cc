@@ -170,7 +170,7 @@ void foot_run(uint8_t num)
 					switch(num)
 					{
 						case 0:
-							if((sys_para[fs2]&&!sys_para[swap_switch])||(sys_para[fs3]&&sys_para[swap_switch]))
+							if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
 							{
 								if(prog1==0)
 									prog1 = 98;
@@ -187,14 +187,14 @@ void foot_run(uint8_t num)
 							CSTask->Give();
 						break;
 						case 1:
-							if(!sys_para[swap_switch])
+							if(!sys_para[SWAP_SWITCH])
 							{
 								encoder_knob_pressed = 1;
 								CSTask->Give();
 							}
 							else
 							{
-								if((sys_para[fs2]&&!sys_para[swap_switch])||(sys_para[fs3]&&sys_para[swap_switch]))
+								if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
 								{
 									if(prog1==98)
 										prog1 = 0;
@@ -212,9 +212,9 @@ void foot_run(uint8_t num)
 							}
 						break;
 						case 2:
-							if(!sys_para[swap_switch])
+							if(!sys_para[SWAP_SWITCH])
 							{
-								if((sys_para[fs2]&&!sys_para[swap_switch])||(sys_para[fs3]&&sys_para[swap_switch]))
+								if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
 								{
 									if(prog1==98)
 										prog1 = 0;
@@ -242,11 +242,11 @@ void foot_run(uint8_t num)
 			case 1:
 				if(!contr_kn[num])
 				{
-					contr_kn[num] = prog_data[fo1+num] = 1;
+					contr_kn[num] = presetData[fo1+num] = 1;
 					ext_data = 127;
 				}
 				else
-					ext_data = contr_kn[num] = prog_data[fo1+num] = 0;
+					ext_data = contr_kn[num] = presetData[fo1+num] = 0;
 				if(currentMenu->menuType()==MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn[num]);
 				if(sys_para[k1_cc+num])
@@ -322,7 +322,7 @@ void foot_run1(uint8_t num)
 					switch(num)
 					{
 						case 0:
-							if((sys_para[fs21]&&!sys_para[swap_switch])||(sys_para[fs31]&&sys_para[swap_switch]))
+							if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
 							{
 								if(prog1==0)
 									prog1 = 98;
@@ -339,14 +339,14 @@ void foot_run1(uint8_t num)
 							CSTask->Give();
 						break;
 						case 1:
-							if(!sys_para[swap_switch])
+							if(!sys_para[SWAP_SWITCH])
 							{
 								encoder_knob_pressed = 1;
 								CSTask->Give();
 							}
 							else
 							{
-								if((sys_para[fs21]&&!sys_para[swap_switch])||(sys_para[fs31]&&sys_para[swap_switch]))
+								if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
 								{
 									if(prog1==98)
 										prog1 = 0;
@@ -364,9 +364,9 @@ void foot_run1(uint8_t num)
 							}
 						break;
 						case 2:
-							if(!sys_para[swap_switch])
+							if(!sys_para[SWAP_SWITCH])
 							{
-								if((sys_para[fs21]&&!sys_para[swap_switch])||(sys_para[fs31]&&sys_para[swap_switch]))
+								if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
 								{
 									if(prog1==98)
 										prog1 = 0;
@@ -394,11 +394,11 @@ void foot_run1(uint8_t num)
 			case 1:
 				if(!contr_kn1[num])
 				{
-					contr_kn1[num] = prog_data[fo11+num] = 1;
+					contr_kn1[num] = presetData[fo11+num] = 1;
 					ext_data = 127;
 				}
 				else
-					ext_data = contr_kn1[num] = prog_data[fo11+num] = 0;
+					ext_data = contr_kn1[num] = presetData[fo11+num] = 0;
 				if(currentMenu->menuType()==MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn1[num]);
 				if(sys_para[k11_cc+num])
@@ -645,7 +645,7 @@ void TENCTask::Code()
 		uint8_t a = 0;
 		for(uint8_t i = 0; i<14; i++)
 			if(i!=0&&i!=1&&i!=10)
-				a += prog_data[i];
+				a += presetData[i];
 		if(a)
 			GPIO_SetBits(GPIOB, GPIO_Pin_14);
 		else

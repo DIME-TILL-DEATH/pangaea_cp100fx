@@ -39,23 +39,25 @@ void CustomParam::setStrings(std::initializer_list<const char*> stringList, uint
 	uint8_t strCounter = 0;
 	for(auto strIter = stringList.begin(); strIter != stringList.end(); ++strIter)
 	{
-		kgp_sdk_libc::strcpy(m_strings[strCounter], *strIter);
+		kgp_sdk_libc::strcpy(m_strings[strCounter++], *strIter);
 	}
+
+	m_maxValue = m_stringCount;
 }
 
 void CustomParam::increaseParam()
 {
-	if(increaseFunctionCallback) increaseFunctionCallback(m_valuePtr);
+	if(increaseCallback) increaseCallback(m_valuePtr);
 }
 
 void CustomParam::decreaseParam()
 {
-	if(decreaseFunctionCallback) decreaseFunctionCallback(m_valuePtr);
+	if(decreaseCallback) decreaseCallback(m_valuePtr);
 }
 
 uint32_t CustomParam::value() const
 {
-	if(valueFunctionCallback) return valueFunctionCallback(m_valuePtr);
+	if(valueCallback) return valueCallback(m_valuePtr);
 	else return 0;
 }
 
@@ -75,6 +77,12 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 		{
 			if(*m_valuePtr < m_stringCount)
 				DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, TDisplayTask::fntSystem , 0, (uint8_t*)m_strings[*m_valuePtr]);
+			break;
+		}
+
+		case TDisplayType::Custom:
+		{
+			if(printCallback) printCallback(m_valuePtr);
 			break;
 		}
 	}

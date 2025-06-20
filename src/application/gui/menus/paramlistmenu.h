@@ -55,7 +55,7 @@ protected:
 	static constexpr uint8_t paramsOnPage = 4;
 	static constexpr uint8_t leftPad = 3;
 
-	void printPage();
+	void printPage(bool forceDrawIcon = false);
 };
 
 

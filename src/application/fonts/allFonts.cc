@@ -37,13 +37,53 @@ const uint8_t expr_on_off[][5] = {"On >", "Off "};
 const uint8_t expr_type[][12] = {"   Off     ", "Standard V ", "Alternat V ", "Standard CC", "Alternat CC"};
 const uint8_t footsw_menu[][12] = {"FSW-DOWN", "FSW-CONFIRM", "FSW-UP", "Speed FS"};
 const uint8_t ext_switch[][12] = {"Off        ", "Expression ", "Foot switch"};
-const uint8_t mode_list[][12] = {"CabSim On  ", "CabSim Off "};
 const uint8_t int_sw_list[][12] = {"True bypass", "Controllers", "Presets sw "};
 const uint8_t contr_ext_l[][12] = {"Expression ", " FSW DOWN  ", "FSW CONFIRM", "  FSW UP   "};
 const uint8_t fsw_t[][12] = {"Default    ", "Controller ", "Tuner      ", "Preset Map1", "Preset Map2", "Preset Map3", "Preset Map4"};
-const uint8_t spdif_type[][12] = {"Main Output", " Dry Input "};
 const uint8_t tempo_type[][10] = {"Preset   ", "Global   ", "Glob+MIDI"};
-const uint8_t time_type[][4] = {"Sec", "BPM"};
+
+
+enum TControllerSrc
+{
+	OFF,
+	EXPRESSION,
+	FSW_DOWN, FSW_CONFIRM, FSW_UP,
+	CC1, CC2, CC3, CC4
+};
+
+enum TControllerDst
+{
+	Preamp_On_Off,
+	Amp_On_Off, Amp_Volume, Amp_Slave,
+	CabSim_On_Off, Eq_On_Off,
+	Delay_On_Off, Delay_Volume, Delay_Fedback, Delay_Tap,
+//	/*10*/"Phaser On Off", "Phaser Volume", "Phaser Rate  ",
+//	/*13*/"Flanger OnOff", "Flang  Volume", "Flang  Rate  ",
+//	/*16*/"Chorus On Off", "Chorus Volume", "Chorus Rate  ",
+//	/*19*/"Reverb On Off", "Reverb Volume", "Reverb Time  ",
+//	/*22*/"Tremolo OnOff", "Tremolo Inten", "Tremolo Rate ",
+//	/*25*/"Preset Level ",
+//	/*26*/"Tremolo TAP  ",
+//	/*27*/"Compr On Off ", "Compr Thresh ", "Compr Volume ",
+//	/*30*/"Filt  On Off ", "Filt LFOrate ", "Filt freq    ",
+//	/*33*/"ER On Off    ", "ER Volume    ",
+//	/*35*/"Filt LFO TAP ",
+//	/*36*/"Vol Ct On Off",
+//	/*37*/"Cab1 Volume  ", "Cab2 Volume  ",
+//	/*39*/"Gate On Off  ", "Gate Thresh  ",
+//	/*41*/"HPF frequency", "LPF frequency", "Presence val ",
+//	/*44*/"Preamp Gain  ", "Preamp Volume", "Preamp Low   ", "Preamp Mid   ", "Preamp High  ",
+//	/*49*/"Eq Band1 Lev ", "Eq Band2 Lev ", "Eq Band3 Lev ", "Eq Band4 Lev ", "Eq Band5 Lev ",
+//	/*54*/"Reverb Type
+};
+
+typedef struct
+{
+	TControllerSrc controllerSrc;
+	TControllerDst controllerDst;
+	uint8_t minValue;
+	uint8_t maxValue;
+}TControllerData;
 
 uint32_t ind_in_p[2];
 uint32_t ind_out_l[2];
@@ -322,12 +362,12 @@ void main_screen(void)
 {
 	oled023_1_disp_clear();
 	ind_poin = 0;
-	Arsys_clean(2, 0, (uint8_t*)imya);
-	Arsys_clean(2, 1, (uint8_t*)imya);
+	Arsys_clean(2, 0, (uint8_t*)presetName);
+	Arsys_clean(2, 1, (uint8_t*)presetName);
 	if(!imya_temp)
 	{
-		Arsys_line(2, 0, (uint8_t*)imya, 0);
-		Arsys_line(2, 1, (uint8_t*)imya1, 0);
+		Arsys_line(2, 0, (uint8_t*)presetName, 0);
+		Arsys_line(2, 1, (uint8_t*)presetComment, 0);
 	}
 	else
 	{
@@ -339,20 +379,20 @@ void main_screen(void)
 void menu_init(void)
 {
 	oled023_1_disp_clear();
-	Arsys_ef(2, 0, (uint8_t*)rf, prog_data[moog]);
-	Arsys_ef(20, 0, (uint8_t*)gt, prog_data[gate]);
-	Arsys_ef(38, 0, (uint8_t*)cm, prog_data[compr]);
-	Arsys_ef(56, 0, (uint8_t*)pr, prog_data[pream]);
-	Arsys_ef(74, 0, (uint8_t*)am, prog_data[amp]);                         //   2,20,38,56,74,92,110
-	Arsys_ef(92, 0, (uint8_t*)cs, prog_data[cab]);
-	Arsys_ef(110, 0, (uint8_t*)equ, prog_data[eq]);
-	Arsys_ef(2, 2, (uint8_t*)ph, prog_data[phas]);
-	Arsys_ef(20, 2, (uint8_t*)rm, prog_data[fl]);
-	Arsys_ef(38, 2, (uint8_t*)ch, prog_data[chor]);
-	Arsys_ef(56, 2, (uint8_t*)dl, prog_data[delay]);
-	Arsys_ef(74, 2, (uint8_t*)er, prog_data[early]);
-	Arsys_ef(92, 2, (uint8_t*)rv, prog_data[reve]);
-	Arsys_ef(110, 2, (uint8_t*)tr, prog_data[trem]);
+	Arsys_ef(2, 0, (uint8_t*)rf, presetData[moog]);
+	Arsys_ef(20, 0, (uint8_t*)gt, presetData[gate]);
+	Arsys_ef(38, 0, (uint8_t*)cm, presetData[compr]);
+	Arsys_ef(56, 0, (uint8_t*)pr, presetData[pream]);
+	Arsys_ef(74, 0, (uint8_t*)am, presetData[amp]);                         //   2,20,38,56,74,92,110
+	Arsys_ef(92, 0, (uint8_t*)cs, presetData[cab]);
+	Arsys_ef(110, 0, (uint8_t*)equ, presetData[eq]);
+	Arsys_ef(2, 2, (uint8_t*)ph, presetData[phas]);
+	Arsys_ef(20, 2, (uint8_t*)rm, presetData[fl]);
+	Arsys_ef(38, 2, (uint8_t*)ch, presetData[chor]);
+	Arsys_ef(56, 2, (uint8_t*)dl, presetData[delay]);
+	Arsys_ef(74, 2, (uint8_t*)er, presetData[early]);
+	Arsys_ef(92, 2, (uint8_t*)rv, presetData[reve]);
+	Arsys_ef(110, 2, (uint8_t*)tr, presetData[trem]);
 }
 
 void prog_ind(uint32_t val)

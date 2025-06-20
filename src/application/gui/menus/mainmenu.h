@@ -29,9 +29,6 @@ public:
 private:
 	ModulesMenu modulesMenu{this};
 
-	uint8_t num_men = 0;
-	uint8_t num_men_temp = 0;
-
 	constexpr static uint8_t att_db [][4] = {" +4"," +3"," +2"," +1","  0"," -1"," -2"," -3"," -4"," -5"," -6"," -7"," -8"," -9","-10","-11",
 		"-12","-13","-14","-15","-16","-17","-18","-19","-20","-21","-23","-24","-27","-30","-34","-35","-36","-37",
 		"-38","-40","-41","-42","-43","-44","-45","-46","-47","-48","-49","-50","-51","-52","-53","-54","-55","-56",
@@ -39,10 +36,6 @@ private:
 
 	constexpr static char atten[] = {"Attenuator"};
 	constexpr static uint8_t decib[] = "dB";
-
-	constexpr static uint8_t cab_list      [][8] ={"Pan","Browser","Volume"};
-	constexpr static uint8_t cab_out_list  [][6] ={"1 L+R","1R AP","2 L+R","1R A ","1R P "," 1 R "};
-	constexpr static uint8_t cab_list_menu [][9] ={"Cabinet1","Cabinet2"};
 
 
 	constexpr static uint8_t master_eq_of[] = {"Master EQ Bypass"};

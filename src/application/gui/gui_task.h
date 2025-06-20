@@ -60,10 +60,6 @@ enum {/*+++switch*/amp = 0,cab,eq,delay,phas,fl,chor,early,reve,trem,pream,gate,
    /*+++bpm del*/bpm_del = 511
    };
 
-//enum {menu_main,power_amplif,cabinet_sim,cabinet_type,cabinet_browser,equaliser,diley,phazer,flanger,chorus,rever,
-//	   tremolo,volume,controllers,name_edit,save_pres,preset_write,tuner_menu,sys_menu,early_menu,att_menu,
-//	   master_v,adc_calibrate,eq_band,master_eq,cab_name,fsw_menu,fsw_typ,exp_menu,sw_sel,copy_men,pre_menu,erase_menu,
-//	   gate_menu,compr_menu,midi_pc_menu,tap_del_menu,sw_mode,sw_sel1,moog_menu,tuner_ext_menu};
 
 
 

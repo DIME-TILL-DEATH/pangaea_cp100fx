@@ -14,8 +14,8 @@ constexpr static uint8_t cab_list_menu[][9] =
 {"Cabinet1", "Cabinet2"};
 constexpr static uint8_t cab_list[][8] =
 {"Pan", "Browser", "Volume"};
-constexpr static uint8_t cab_out_list[][6] =
-{"1 L+R", "1R AP", "2 L+R", "1R A ", "1R P ", " 1 R "};
+//constexpr static uint8_t cab_out_list[][6] =
+//{"1 L+R", "1R AP", "2 L+R", "1R A ", "1R P ", " 1 R "};
 
 extern uint8_t cab_type;
 extern uint8_t name_run_fl;
@@ -38,8 +38,8 @@ void CabTypeMenu::show(TShowMode showMode)
 		name_run_fl = 1;
 		DisplayTask->StringOut(1, 2, TDisplayTask::fntSystem, 0, (uint8_t*)cab_list+8);
 		DisplayTask->StringOut(1, 3, TDisplayTask::fntSystem, 0, (uint8_t*)cab_list+16);
-		DisplayTask->ParamIndicNum(42, 3, prog_data[vol]);
-		vol_vol = prog_data[vol];
+		DisplayTask->ParamIndicNum(42, 3, presetData[vol]);
+		vol_vol = presetData[vol];
 		gui_send(7, 0);
 		current_menu = MENU_CABSIM;
 		DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
@@ -106,9 +106,9 @@ void CabTypeMenu::select()
 		else
 			name_run_fl = 1;
 
-		DisplayTask->ParamIndicPan(72, 1, prog_data[cab1_pan]);
-		DisplayTask->ParamIndicNum(42, 3, prog_data[vol]);
-		vol_vol = prog_data[vol];
+		DisplayTask->ParamIndicPan(72, 1, presetData[cab1_pan]);
+		DisplayTask->ParamIndicNum(42, 3, presetData[vol]);
+		vol_vol = presetData[vol];
 		DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1);
 	}
 	else
@@ -121,9 +121,9 @@ void CabTypeMenu::select()
 		else
 			name_run_fl = 1;
 
-		DisplayTask->ParamIndicPan(72, 1, prog_data[cab2_pan]);
-		DisplayTask->ParamIndicNum(42, 3, prog_data[cab2_vol]);
-		vol_vol = prog_data[cab2_vol];
+		DisplayTask->ParamIndicPan(72, 1, presetData[cab2_pan]);
+		DisplayTask->ParamIndicNum(42, 3, presetData[cab2_vol]);
+		vol_vol = presetData[cab2_vol];
 		DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2);
 	}
 

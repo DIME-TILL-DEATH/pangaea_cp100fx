@@ -146,34 +146,34 @@ void PresetActionsMenu::copyPreset()
 	{
 		case 0:
 			for(uint8_t i = 0; i<11; i++)
-				preset_temp[30+mog_mix+i] = prog_data[mog_mix+i];
-			preset_temp[30+moog] = prog_data[moog];
-			preset_temp[30+mog_gen_t] = prog_data[mog_gen_t];
+				preset_temp[30+mog_mix+i] = presetData[mog_mix+i];
+			preset_temp[30+moog] = presetData[moog];
+			preset_temp[30+mog_gen_t] = presetData[mog_gen_t];
 		break;
 		case 1:
 			for(uint8_t i = 0; i<3; i++)
-				preset_temp[30+gate_thr+i] = prog_data[gate_thr+i];
-			preset_temp[30+gate] = prog_data[gate];
+				preset_temp[30+gate_thr+i] = presetData[gate_thr+i];
+			preset_temp[30+gate] = presetData[gate];
 		break;
 		case 2:
 			for(uint8_t i = 0; i<5; i++)
-				preset_temp[30+comp_thr+i] = prog_data[comp_thr+i];
-			preset_temp[30+compr] = prog_data[compr];
+				preset_temp[30+comp_thr+i] = presetData[comp_thr+i];
+			preset_temp[30+compr] = presetData[compr];
 		break;
 		case 3:
 			for(uint8_t i = 0; i<6; i++)
-				preset_temp[30+pre_gain+i] = prog_data[pre_gain+i];
-			preset_temp[30+pream] = prog_data[pream];
+				preset_temp[30+pre_gain+i] = presetData[pre_gain+i];
+			preset_temp[30+pream] = presetData[pream];
 		break;
 		case 4:
 			for(uint8_t i = 0; i<3; i++)
-				preset_temp[30+am_v+i] = prog_data[am_v+i];
-			preset_temp[30+pre_v] = prog_data[pre_v];
-			preset_temp[30+amp] = prog_data[amp];
+				preset_temp[30+am_v+i] = presetData[am_v+i];
+			preset_temp[30+pre_v] = presetData[pre_v];
+			preset_temp[30+amp] = presetData[amp];
 		break;
 		case 5:
 			for(uint8_t i = 0; i<6; i++)
-				preset_temp[30+vol+i] = prog_data[vol+i];
+				preset_temp[30+vol+i] = presetData[vol+i];
 			for(uint8_t i = 0; i<64; i++)
 				preset_temp[13344+i] = name_buf[i];
 			for(uint8_t i = 0; i<64; i++)
@@ -191,65 +191,65 @@ void PresetActionsMenu::copyPreset()
 			send_cab_data(0, targetPresetNum+1, 0);
 			if(cab_type==2)
 				send_cab_data1(0, targetPresetNum+1);
-			preset_temp[30+cab] = prog_data[cab];
+			preset_temp[30+cab] = presetData[cab];
 		break;
 		case 6:
 			for(uint8_t i = 0; i<8; i++)
-				preset_temp[30+eq1+i] = prog_data[eq1+i];
+				preset_temp[30+eq1+i] = presetData[eq1+i];
 			for(uint8_t i = 0; i<10; i++)
-				preset_temp[30+f1+i] = prog_data[f1+i];
-			preset_temp[30+eq] = prog_data[eq];
-			preset_temp[30+eq_pr_po] = prog_data[eq_pr_po];
+				preset_temp[30+f1+i] = presetData[f1+i];
+			preset_temp[30+eq] = presetData[eq];
+			preset_temp[30+eq_pr_po] = presetData[eq_pr_po];
 		break;
 		case 7:
 			for(uint8_t i = 0; i<6; i++)
-				preset_temp[30+phaser_vol+i] = prog_data[phaser_vol+i];
-			preset_temp[30+phas] = prog_data[phas];
-			preset_temp[30+hpf_ph] = prog_data[hpf_ph];
-			preset_temp[30+phas_pos] = prog_data[phas_pos];
+				preset_temp[30+phaser_vol+i] = presetData[phaser_vol+i];
+			preset_temp[30+phas] = presetData[phas];
+			preset_temp[30+hpf_ph] = presetData[hpf_ph];
+			preset_temp[30+phas_pos] = presetData[phas_pos];
 		break;
 		case 8:
 			for(uint8_t i = 0; i<6; i++)
-				preset_temp[30+fl_v+i] = prog_data[fl_v+i];
-			preset_temp[30+fl] = prog_data[fl];
-			preset_temp[30+hpf_fl] = prog_data[hpf_fl];
-			preset_temp[30+flan_pos] = prog_data[flan_pos];
+				preset_temp[30+fl_v+i] = presetData[fl_v+i];
+			preset_temp[30+fl] = presetData[fl];
+			preset_temp[30+hpf_fl] = presetData[hpf_fl];
+			preset_temp[30+flan_pos] = presetData[flan_pos];
 		break;
 		case 9:
 			for(uint8_t i = 0; i<5; i++)
-				preset_temp[30+chor_volum+i] = prog_data[chor_volum+i];
-			preset_temp[30+chor] = prog_data[chor];
-			preset_temp[30+hpf_ch] = prog_data[hpf_ch];
+				preset_temp[30+chor_volum+i] = presetData[chor_volum+i];
+			preset_temp[30+chor] = presetData[chor];
+			preset_temp[30+hpf_ch] = presetData[hpf_ch];
 		break;
 		case 10:
 			for(uint8_t i = 0; i<11; i++)
-				preset_temp[30+d_vol+i] = prog_data[d_vol+i];
+				preset_temp[30+d_vol+i] = presetData[d_vol+i];
 			preset_temp[1054] = delay_time;
 			preset_temp[1055] = delay_time>>8;
-			preset_temp[30+delay] = prog_data[delay];
-			preset_temp[30+d_tap_t] = prog_data[d_tap_t];
-			preset_temp[30+d_tail] = prog_data[d_tail];
+			preset_temp[30+delay] = presetData[delay];
+			preset_temp[30+d_tap_t] = presetData[d_tap_t];
+			preset_temp[30+d_tail] = presetData[d_tail];
 		break;
 		case 11:
 			for(uint8_t i = 0; i<2; i++)
-				preset_temp[30+early_vol+i] = prog_data[early_vol+i];
-			preset_temp[30+early] = prog_data[early];
+				preset_temp[30+early_vol+i] = presetData[early_vol+i];
+			preset_temp[30+early] = presetData[early];
 		break;
 		case 12:
 			for(uint8_t i = 0; i<7; i++)
-				preset_temp[30+r_vol+i] = prog_data[r_vol+i];
-			preset_temp[30+reve] = prog_data[reve];
-			preset_temp[30+rev_t] = prog_data[rev_t];
-			preset_temp[30+rev_di] = prog_data[rev_di];
-			preset_temp[30+r_pre] = prog_data[r_pre];
-			preset_temp[30+r_tail] = prog_data[r_tail];
+				preset_temp[30+r_vol+i] = presetData[r_vol+i];
+			preset_temp[30+reve] = presetData[reve];
+			preset_temp[30+rev_t] = presetData[rev_t];
+			preset_temp[30+rev_di] = presetData[rev_di];
+			preset_temp[30+r_pre] = presetData[r_pre];
+			preset_temp[30+r_tail] = presetData[r_tail];
 		break;
 		case 13:
 			for(uint8_t i = 0; i<4; i++)
-				preset_temp[30+tr_vol+i] = prog_data[tr_vol+i];
-			preset_temp[30+trem] = prog_data[trem];
-			preset_temp[30+t_tap_t] = prog_data[t_tap_t];
-			preset_temp[30+tr_lfo_t] = prog_data[tr_lfo_t];
+				preset_temp[30+tr_vol+i] = presetData[tr_vol+i];
+			preset_temp[30+trem] = presetData[trem];
+			preset_temp[30+t_tap_t] = presetData[t_tap_t];
+			preset_temp[30+tr_lfo_t] = presetData[tr_lfo_t];
 		break;
 	}
 
@@ -273,8 +273,8 @@ void PresetActionsMenu::savePreset()
 {
 	DisplayTask->Clear();
 	DisplayTask->StringOut(38, 2, TDisplayTask::fnt12x13, 0, (uint8_t*)" Save");
-	prog_data[147] = delay_time;
-	prog_data[148] = delay_time>>8;
+	presetData[147] = delay_time;
+	presetData[148] = delay_time>>8;
 	eepr_write(prog1);
 
 	send_cab_data(0, prog1+1, 0);

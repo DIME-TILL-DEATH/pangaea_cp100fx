@@ -57,14 +57,18 @@ const uint8_t imya_init[]
 {"Preset        "};
 const uint8_t imya_init1[]
 {"Name          "};
-uint8_t __CCM_BSS__ prog_data[512];
+
 uint8_t __CCM_BSS__ sys_para[512] =
 {/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
 /*foot3*/0,/*calibrate*/0, 0, 0xff, 0xf};
-uint8_t __CCM_BSS__ control[512];
+
 uint8_t impulse_path[512];
-uint8_t __CCM_BSS__ imya[15];
-uint8_t __CCM_BSS__ imya1[15];
+
+uint8_t __CCM_BSS__ presetData[512];
+uint8_t __CCM_BSS__ presetControllers[512];
+uint8_t __CCM_BSS__ presetName[15];
+uint8_t __CCM_BSS__ presetComment[15];
+
 uint8_t __CCM_BSS__ imya_t[15];
 uint8_t __CCM_BSS__ imya1_t[15];
 volatile uint32_t fl_st;
@@ -90,10 +94,10 @@ void eepr_write(uint8_t nu)
 		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
 	f_mount(&fs, "1:", 1);
 	f_open(&file, fna, FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
-	f_write(&file, imya, 15, &f_size);
-	f_write(&file, imya1, 15, &f_size);
-	f_write(&file, prog_data, 512, &f_size);
-	f_write(&file, control, 512, &f_size);
+	f_write(&file, presetName, 15, &f_size);
+	f_write(&file, presetComment, 15, &f_size);
+	f_write(&file, presetData, 512, &f_size);
+	f_write(&file, presetControllers, 512, &f_size);
 	uint8_t del_t_b[2];
 	del_t_b[0] = delay_time;
 	del_t_b[1] = delay_time>>8;
@@ -131,13 +135,14 @@ void eepr_read_prog_data(uint8_t nu)
 	if(fs_res==FR_OK)
 	{
 		f_lseek(&file, 30);
-		f_read(&file, prog_data, 512, &f_size);
+		f_read(&file, presetData, 512, &f_size);
 	}
 	else
 		for(uint16_t i = 0; i<512; i++)
-			prog_data[i] = prog_data_init[i];
+			presetData[i] = prog_data_init[i];
 	f_close(&file);
 }
+
 void eepr_read_prog(uint8_t nu)
 {
 	FSTask->Suspend();
@@ -154,12 +159,13 @@ void eepr_read_prog(uint8_t nu)
 	fs_res = f_open(&file, fna, FA_READ);
 	if(fs_res==FR_OK)
 	{
-		f_read(&file, imya, 15, &f_size);
-		f_read(&file, imya1, 15, &f_size);
+		f_read(&file, presetName, 15, &f_size);
+		f_read(&file, presetComment, 15, &f_size);
 		f_lseek(&file, 542);
-		f_read(&file, control, 512, &f_size);
+		f_read(&file, presetControllers, 512, &f_size);
 		uint8_t del_t_b[2];
 		f_read(&file, del_t_b, 2, &f_size);
+
 		extern uint8_t tempo_fl;
 //		if(!tempo_fl || !sys_para[tap_typ])
 //	    {
@@ -208,16 +214,16 @@ void eepr_read_prog(uint8_t nu)
 	else
 	{
 		for(uint16_t i = 0; i<512; i++)
-			prog_data[i] = prog_data_init[i];
+			presetData[i] = prog_data_init[i];
 		for(uint8_t i = 0; i<15; i++)
-			imya[i] = imya_init[i];
+			presetName[i] = imya_init[i];
 		for(uint8_t i = 0; i<15; i++)
-			imya1[i] = imya_init1[i];
+			presetComment[i] = imya_init1[i];
 		kgp_sdk_libc::memset(cab_data, 0, 12288);
 		kgp_sdk_libc::memset(cab_data1, 0, 12288);
-		kgp_sdk_libc::memset(control, 0, 512);
+		kgp_sdk_libc::memset(presetControllers, 0, 512);
 		for(uint8_t i = 0; i<128; i++)
-			control[i*4+3] = 127;
+			presetControllers[i*4+3] = 127;
 		delay_time = del_tim_init;
 		name_buf[0] = name_buf1[0] = 0;
 		cab_data[0] = 0xff;
@@ -237,8 +243,8 @@ void eepr_read_prog(uint8_t nu)
 	f_write(&file, sys_para, 512, &f_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
-	imya[14] = 0;
-	imya1[14] = 0;
+	presetName[14] = 0;
+	presetComment[14] = 0;
 	name_buf[63] = name_buf1[63] = 0;
 	FSTask->Resume();
 }
@@ -467,14 +473,14 @@ void load_mass_imp(void)
 				SPI_I2S_SendData(SPI2, buf);
 			}
 			f_lseek(&file, 30);
-			f_read(&file, prog_data, 512, &f_size);
+			f_read(&file, presetData, 512, &f_size);
 			f_lseek(&file, 1054);
-			f_read(&file, prog_data+147, 2, &f_size);
+			f_read(&file, presetData+147, 2, &f_size);
 			for(uint32_t ii = 0; ii<512; ii++)
 			{
 				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 				EXTI_ClearITPendingBit(EXTI_Line9);
-				buf = prog_data[ii];
+				buf = presetData[ii];
 				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
 				{
 				}

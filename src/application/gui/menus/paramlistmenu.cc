@@ -21,7 +21,7 @@ ParamListMenu::ParamListMenu(AbstractMenu* parent, gui_menu_type menuType)
 
 ParamListMenu::~ParamListMenu()
 {
-	for(int i=0; i<maxParamCount; i++)
+	for(int i=0; i<m_paramsCount; i++)
 	{
 		if(m_paramsList[i]) delete m_paramsList[i];
 	}
@@ -55,9 +55,13 @@ void ParamListMenu::show(TShowMode showMode)
 	current_menu = m_menuType;
 	currentMenu = this;
 
+	DisplayTask->Clear();
+
 	if(showMode == FirstShow)
 	{
 		m_currentPageNumber = -1;
+
+//		for(int a=0; a<m_paramsCount; a++) m_paramsList[a]->setDisabled(0); //cleanup
 
 		for(int i = 0; i<m_paramsCount; i++)
 		{
@@ -67,7 +71,7 @@ void ParamListMenu::show(TShowMode showMode)
 				uint8_t* valDisableMask = strParam->getDisableMask();
 				for(int a=0; a<m_paramsCount; a++)
 				{
-					m_paramsList[a]->setDisabled(valDisableMask[a]);
+					m_paramsList[a]->setDisabled(m_paramsList[a]->disabled() | valDisableMask[a]);
 				}
 			}
 		}
@@ -92,6 +96,7 @@ void ParamListMenu::encoderPressed()
 {
 	if(m_paramsList[m_currentParamNum]->disabled()) return;
 
+	// CustomParam
 	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME ||
 			m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
 	{
@@ -133,12 +138,14 @@ void ParamListMenu::encoderClockwise()
 	}
 	else
 	{
-		if(m_paramsList[m_currentParamNum]->value() - m_paramsList[m_currentParamNum]->offset() < m_paramsList[m_currentParamNum]->maxValue())
-		{
-			m_paramsList[m_currentParamNum]->increaseParam();
+		m_paramsList[m_currentParamNum]->increaseParam();
+		m_paramsList[m_currentParamNum]->setToDsp();
+
+		// Support CustomParam
+		if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)
+			printPage();	// whole page to show "disabled" param changes
+		else
 			m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
-			m_paramsList[m_currentParamNum]->setToDsp();
-		}
 	}
 
 	clean_flag();
@@ -159,12 +166,13 @@ void ParamListMenu::encoderCounterClockwise()
 	}
 	else
 	{
-		if(m_paramsList[m_currentParamNum]->value() - m_paramsList[m_currentParamNum]->offset() > m_paramsList[m_currentParamNum]->minValue())
-		{
-			m_paramsList[m_currentParamNum]->decreaseParam();
+		m_paramsList[m_currentParamNum]->decreaseParam();
+		m_paramsList[m_currentParamNum]->setToDsp();
+
+		if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)
+			printPage();	// whole page to show "disabled" param changes
+		else
 			m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
-			m_paramsList[m_currentParamNum]->setToDsp();
-		}
 	}
 
 	clean_flag();
@@ -259,13 +267,13 @@ void ParamListMenu::keyDown()
 	  clean_flag();
 }
 
-void ParamListMenu::printPage()
+void ParamListMenu::printPage(bool forceDrawIcon)
 {
 	int8_t newPageNumber;
 	if(m_currentParamNum > 0) newPageNumber = m_currentParamNum / paramsOnPage;
 	else newPageNumber = 0;
 
-	if(newPageNumber != m_currentPageNumber)
+	if(newPageNumber != m_currentPageNumber || forceDrawIcon)
 	{
 		strelka_t drawStrelka;
 
@@ -284,9 +292,12 @@ void ParamListMenu::printPage()
 	for(uint8_t i = 0; i < stringCount; i++)
 	{
 		uint8_t displayParamNum = i + m_currentPageNumber * paramsOnPage;
+
+		bool highlight = (m_currentParamNum == displayParamNum);
+
 		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 		m_paramsList[displayParamNum]->printParam(i);
-		DisplayTask->StringOut(leftPad, i, TDisplayTask::fntSystem , 0, (uint8_t*)(m_paramsList[displayParamNum]->name()));
+		DisplayTask->StringOut(leftPad, i, TDisplayTask::fntSystem , 2 * highlight, (uint8_t*)(m_paramsList[displayParamNum]->name()));
 	}
 }
 
