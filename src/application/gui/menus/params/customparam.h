@@ -35,7 +35,7 @@ public:
 private:
 	TDisplayType m_displayType;
 
-	char** m_strings;
+	char** m_strings{nullptr};
 	uint8_t valuesTable;
 	uint8_t m_stringCount;
 	uint8_t m_maxStringLength;
