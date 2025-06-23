@@ -18,7 +18,7 @@
 SystemMenu::SystemMenu(AbstractMenu* parent, gui_menu_type menuType)
 		:ParamListMenu(parent, menuType)
 {
-
+	m_previousCabConfig = sys_para[CAB_SIM_CONFIG];
 }
 
 
@@ -69,53 +69,52 @@ void SystemMenu::keyDown()
 
 void SystemMenu::key1()
 {
-	if(editingFinished())
-	{
-		topLevelMenu->returnFromChildMenu();
-		topLevelMenu->key1();
-	}
+	if(editingFinished()) topLevelMenu->key1();
 }
 
 void SystemMenu::key2()
 {
-	if(editingFinished())
-	{
-		topLevelMenu->returnFromChildMenu();
-		topLevelMenu->key2();
-	}
+	if(editingFinished()) topLevelMenu->key2();
 }
 
 void SystemMenu::key3()
 {
-	if(editingFinished())
-	{
-		topLevelMenu->returnFromChildMenu();
-		topLevelMenu->key3();
-	}
+	if(editingFinished()) topLevelMenu->key3();
 }
 
 void SystemMenu::key4()
 {
-	if(editingFinished())
-	{
-		topLevelMenu->returnFromChildMenu();
-	}
+	if(editingFinished()) topLevelMenu->returnFromChildMenu();
+	clean_flag();
 }
 void SystemMenu::key5()
 {
-	if(editingFinished())
-	{
-		topLevelMenu->returnFromChildMenu();
-		topLevelMenu->key5();
-	}
+	if(editingFinished()) topLevelMenu->key5();
 }
 
 bool SystemMenu::editingFinished()
 {
+	if(m_previousCabConfig == 2)
+	{
+		if(m_previousCabConfig!=sys_para[CAB_SIM_CONFIG])
+		{
+			write_sys();
+			NVIC_SystemReset();
+		}
+	}
+	else
+	{
+		if(sys_para[CAB_SIM_CONFIG] == 2)
+		{
+			write_sys();
+			NVIC_SystemReset();
+		}
+	}
+	write_sys();
+
 	return true;
 }
-//const uint8_t sys_menu_list[][12] = {"Mode", "MIDI ch", "Cab num", "Expression", "Footswitch", "S/PDIF", "MIDI PC Map", "Tempo", "Tuner contr", "Time",
-//		"Swap UpConf", "Speed tun"};
+
 //const uint8_t expr_menu[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
 
 //const uint8_t expr_type[][12] = {"   Off     ", "Standard V ", "Alternat V ", "Standard CC", "Alternat CC"};
@@ -194,7 +193,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 
 AbstractMenu* SystemMenu::createFootswitchMenu(AbstractMenu* parent)
 {
-	const uint8_t paramNum = 4;
+	const uint8_t paramNum = 0;
 	BaseParam* params[paramNum];
 
 	ParamListMenu* menu = new ParamListMenu(parent, MENU_FSW_TYPE);
@@ -217,8 +216,8 @@ AbstractMenu* SystemMenu::createMidiPcMapMenu(AbstractMenu* parent)
 void SystemMenu::expressionPrint(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr&0x80) DisplayTask->StringOut(78, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Off ");
-	else DisplayTask->StringOut(78, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"On >");
+	if(*valuePtr&0x80) DisplayTask->StringOut(78, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"On >");
+	else DisplayTask->StringOut(78, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Off ");
 }
 
 void SystemMenu::expressionDescrease(void* parameter)
@@ -239,7 +238,7 @@ void SystemMenu::expressionIncrease(void* parameter)
 void SystemMenu::expressionKeyDown(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(!(*valuePtr&0x80))
+	if(*valuePtr&0x80)
 	{
 
 	}
@@ -270,8 +269,8 @@ void SystemMenu::tunerExtKeyDown(void* parameter)
 	if(*valuePtr&0x80)
 	{
 		BaseParam* ccParam = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "    CC#", &sys_para[TUNER_EXTERNAL]);
-		ccParam->setScaling(1, -127);
-		ccParam->setBounds(128, 255);
+		ccParam->setScaling(1, -128);
+		ccParam->setBounds(129, 255);
 
 		ParamListMenu* ccMenu = new ParamListMenu(currentMenu, MENU_TUNER_EXT);
 		if(ccMenu)

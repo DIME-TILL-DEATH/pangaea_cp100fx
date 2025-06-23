@@ -34,7 +34,11 @@ public:
 
 	void setIcon(bool drawIcon, uint8_t iconNumber);
 
-	void (*key1Callback)();
+//	void (*key1Callback)(AbstractMenu* thisObject);
+//	void (*key2Callback)(AbstractMenu* thisObject);
+//	void (*key3Callback)(AbstractMenu* thisObject);
+//	void (*key4Callback)(AbstractMenu* thisObject);
+//	void (*key5Callback)(AbstractMenu* thisObject);
 
 protected:
 	uint8_t m_currentParamNum = 0;

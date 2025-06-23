@@ -22,10 +22,8 @@
 const uint8_t ef_list[][8] =
 		{"Cab Sim", "Volume ", "    Eq ", "Phaser ", "Chorus ", " Delay ", " Early ", "Reverb ", " Name  ", " Write ",
 				"Write ?"};
-const uint8_t del_list[][8] =
-{"Mix", "Time", "F_Back", "LPF", "HPF", "D_Pan", "D2 Vol", "D2 Pan", "D->D2", "D_Mod", "M_Rate", "Direct"};
-const uint8_t del_tim_l[][5] =
-{"Time", "TAP", "Tail"};
+
+
 const uint8_t tap_tim[][6] = {"1/1  ", "1/1.5", "1/2  ", "1/3  ", "1/4  ", "2/1  "};
 const float tap_time_coefs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 //const uint8_t s_t_c_list    [][7] ={"  No  ","Return","   Yes"};
@@ -236,17 +234,8 @@ uint8_t d_w_init(uint8_t val)
 	}
 	return b;
 }
-void write_sys(void)
-{
-	FATFS fs;
-	FIL file;
-	UINT f_size;
-	f_mount(&fs, "1:", 1);
-	f_open(&file, "1:system.pan", FA_WRITE);
-	f_write(&file, sys_para, 512, &f_size);
-	f_close(&file);
-	f_mount(0, "1:", 0);
-}
+
+
 
 volatile uint16_t dsaf = 0x8000;
 //---------------------------------------------------------GUI----------------------------------------------------
@@ -692,14 +681,6 @@ void gui(void)
 					eq_num = 0;
 					encoder_knob_selected = 0;
 				}
-				else if((par_num==8)&&(sys_para[TUNER_EXTERNAL]&0x80))
-				{
-					current_menu = MENU_TUNER_EXT;
-					DisplayTask->Clear();
-					DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"CC#");
-					DisplayTask->ParamIndicNum(50, 0, sys_para[TUNER_EXTERNAL]&0x7f);
-				}
-				clean_flag();
 			}
 			if(encoder_knob_pressed==1)
 			{
@@ -729,48 +710,7 @@ void gui(void)
 				tim5_start(0);
 				clean_flag();
 			}
-			if((k_up==1)||(k_sys==1))
-			{
-				if(temp_sys==2)
-				{
-					if(temp_sys!=sys_para[2])
-					{
-						write_sys();
-						NVIC_SystemReset();
-					}
-				}
-				else
-				{
-					if(sys_para[2]==2)
-					{
-						write_sys();
-						NVIC_SystemReset();
-					}
-				}
-				write_sys();
-				eq_num = prog;
 
-				// return to main menu
-			}
-			if((k_att==1)||(k_master==1)||(k_tuner==1)||(k_master_eq==1))
-			{
-				if(temp_sys==2)
-				{
-					if(temp_sys!=sys_para[2])
-					{
-						write_sys();
-						NVIC_SystemReset();
-					}
-				}
-				else
-				{
-					if(sys_para[2]==2)
-					{
-						write_sys();
-						NVIC_SystemReset();
-					}
-				}
-			}
 		break;
 //--------------------------------------------------------------------------Menu Volume------------------------------------------------------
 		case MENU_VOLUME:
@@ -1613,113 +1553,6 @@ void gui(void)
 				clean_flag();
 			}
 		break;
-//----------------------------------------------------Master Volume---------------------------------------------
-		case MENU_MASTER_VOLUME:
-			if(encoder_knob_selected==0)
-			{
-				if(tim5_fl==1)
-					DisplayTask->StringOut(3, par_num, TDisplayTask::fntSystem, 2, (uint8_t*)master_vo+par_num*14);
-				else
-					DisplayTask->StringOut(3, par_num, TDisplayTask::fntSystem, 0, (uint8_t*)master_vo+par_num*14);
-			}
-			if(encoder_state_updated==1)
-			{
-				if(encoder_state==1)
-				{
-					if(encoder_knob_selected)
-					{
-						if(sys_para[126-par_num]>0)
-						{
-							sys_para[126-par_num] = enc_speed_dec(sys_para[126-par_num], 0);
-							DisplayTask->ParamIndicNum(85, par_num, sys_para[126-par_num]);
-							if(!par_num)
-								gui_send(1, sys_para[126]);
-							else
-								DisplayTask->Pot_Write();
-						}
-					}
-					else
-					{
-						if(par_num)
-						{
-							DisplayTask->StringOut(3, par_num, TDisplayTask::fntSystem, 0,
-									(uint8_t*)master_vo+par_num--*14);
-							DisplayTask->StringOut(3, par_num, TDisplayTask::fntSystem, 2,
-									(uint8_t*)master_vo+par_num*14);
-						}
-					}
-				}
-				if(encoder_state==2)
-				{
-					if(encoder_knob_selected)
-					{
-						if(sys_para[126-par_num]<127)
-						{
-							sys_para[126-par_num] = enc_speed_inc(sys_para[126-par_num], 127);
-							DisplayTask->ParamIndicNum(85, par_num, sys_para[126-par_num]);
-							if(!par_num)
-								gui_send(1, sys_para[126]);
-							else
-								DisplayTask->Pot_Write();
-						}
-					}
-					else
-					{
-						if(!par_num)
-						{
-							DisplayTask->StringOut(3, par_num, TDisplayTask::fntSystem, 0,
-									(uint8_t*)master_vo+par_num++*14);
-							DisplayTask->StringOut(3, par_num, TDisplayTask::fntSystem, 2,
-									(uint8_t*)master_vo+par_num*14);
-						}
-					}
-				}
-				tim5_start(0);
-				clean_flag();
-			}
-			if(encoder_knob_pressed==1)
-			{
-				if(encoder_knob_selected==0)
-				{
-					encoder_knob_selected = 1;
-					DisplayTask->StringOut(3, par_num, TDisplayTask::fntSystem, 2, (uint8_t*)master_vo+par_num*14);
-				}
-				else
-				{
-					encoder_knob_selected = 0;
-					DisplayTask->StringOut(3, par_num, TDisplayTask::fntSystem, 0, (uint8_t*)master_vo+par_num*14);
-				}
-				tim5_start(1);
-				clean_flag();
-			}
-			if((k_att==1)||(k_sys==1)||(k_tuner==1)||(k_master_eq==1))
-			{
-				current_menu = MENU_MAIN; //edit_modules_fl = 0;
-				write_sys();
-				encoder_knob_selected = 0;
-
-				DisplayTask->Clear();
-				tim5_start(0);
-				CSTask->Give();
-				break;
-			}
-			if((k_up==1)||(k_master==1))
-			{
-				write_sys();
-				encoder_knob_selected = 0;
-				current_menu = MENU_MAIN; //edit_modules_fl = 0;
-				DisplayTask->Main_scr();
-				DisplayTask->Prog_ind(prog1);
-				if((sys_para[fs1]==1)||((sys_para[fs11]==1)&&sys_para[fsm1]))
-					DisplayTask->IndFoot(0, contr_kn[0]);
-				if((sys_para[fs2]==1)||((sys_para[fs21]==1)&&sys_para[fsm2]))
-					DisplayTask->IndFoot(1, contr_kn[1]);
-				if((sys_para[fs3]==1)||((sys_para[fs31]==1)&&sys_para[fsm3]))
-					DisplayTask->IndFoot(2, contr_kn[2]);
-				tim5_start(0);
-				clean_flag();
-			}
-		break;
 //----------------------------------------------------Master EQ----------------------------------------
 		case MENU_MASTER_EQ:
 			if(sys_para[120])
@@ -1894,93 +1727,44 @@ void gui(void)
 					sys_para[120] = 0;
 				else
 					sys_para[120] = 1;
-				current_menu = MENU_MAIN; //edit_modules_fl = 0;
-				k_down = 0;
 				k_master_eq = 1;
 				write_sys();
-				encoder_knob_selected = 0;
-
 				gui_send(18, 14|(sys_para[120]<<8));
-				DisplayTask->Clear();
-				tim5_start(0);
-				CSTask->Give();
+
+//				current_menu = MENU_MAIN; //edit_modules_fl = 0;
+//				k_down = 0;
+//				encoder_knob_selected = 0;
+//				DisplayTask->Clear();
+//				tim5_start(0);
+//				CSTask->Give();
 				break;
 			}
 			if((k_att==1)||(k_sys==1)||(k_tuner==1)||(k_master==1))
 			{
 				current_menu = MENU_MAIN; //edit_modules_fl = 0;
 				write_sys();
-				encoder_knob_selected = 0;
-
-				DisplayTask->Clear();
-				tim5_start(0);
-				CSTask->Give();
+//				encoder_knob_selected = 0;
+//
+//				DisplayTask->Clear();
+//				tim5_start(0);
+//				CSTask->Give();
 				break;
 			}
 			if((k_up==1)||(k_master_eq==1))
 			{
 				write_sys();
-				encoder_knob_selected = 0;
-				current_menu = MENU_MAIN; //edit_modules_fl = 0;
-				DisplayTask->Main_scr();
-				DisplayTask->Prog_ind(prog1);
-				if((sys_para[fs1]==1)||((sys_para[fs11]==1)&&sys_para[fsm1]))
-					DisplayTask->IndFoot(0, contr_kn[0]);
-				if((sys_para[fs2]==1)||((sys_para[fs21]==1)&&sys_para[fsm2]))
-					DisplayTask->IndFoot(1, contr_kn[1]);
-				if((sys_para[fs3]==1)||((sys_para[fs31]==1)&&sys_para[fsm3]))
-					DisplayTask->IndFoot(2, contr_kn[2]);
+//				encoder_knob_selected = 0;
+//				current_menu = MENU_MAIN; //edit_modules_fl = 0;
+//				DisplayTask->Main_scr();
+//				DisplayTask->Prog_ind(prog1);
+//				if((sys_para[fs1]==1)||((sys_para[fs11]==1)&&sys_para[fsm1]))
+//					DisplayTask->IndFoot(0, contr_kn[0]);
+//				if((sys_para[fs2]==1)||((sys_para[fs21]==1)&&sys_para[fsm2]))
+//					DisplayTask->IndFoot(1, contr_kn[1]);
+//				if((sys_para[fs3]==1)||((sys_para[fs31]==1)&&sys_para[fsm3]))
+//					DisplayTask->IndFoot(2, contr_kn[2]);
 				tim5_start(0);
 				clean_flag();
-			}
-		break;
-//----------------------------------------------------Tuner-------------------------------------------------------
-		case MENU_TUNER:
-			if(encoder_state_updated)
-			{
-				if(encoder_state==1)
-				{
-					if(SpectrumTask->ref_freq>430.0f)
-						SpectrumTask->ref_freq -= 1.0f;
-				}
-				if(encoder_state==2)
-				{
-					if(SpectrumTask->ref_freq<450.0f)
-						SpectrumTask->ref_freq += 1.0f;
-				}
-				clean_flag();
-			}
-			if((k_up==1)||(k_tuner==1))
-			{
-				tuner_use = 0;
-				current_menu = MENU_MAIN;
-				DisplayTask->Main_scr();
-				DisplayTask->Prog_ind(prog1);
-				if((sys_para[fs1]==1)||((sys_para[fs11]==1)&&sys_para[fsm1]))
-					DisplayTask->IndFoot(0, contr_kn[0]);
-				if((sys_para[fs2]==1)||((sys_para[fs21]==1)&&sys_para[fsm2]))
-					DisplayTask->IndFoot(1, contr_kn[1]);
-				if((sys_para[fs3]==1)||((sys_para[fs31]==1)&&sys_para[fsm3]))
-					DisplayTask->IndFoot(2, contr_kn[2]);
-				gui_send(13, 1);
-				tim5_start(0);
-				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-				clean_flag();
-				send_codec(0xa103);
-			}
-			if((k_att==1)||(k_sys==1)||(k_master==1)||(k_master_eq==1))
-			{
-				tuner_use = 0;
-				gui_send(13, 1);
-				current_menu = MENU_MAIN; //edit_modules_fl = 0;
-				encoder_knob_selected = 0;
-
-				DisplayTask->Clear();
-				tim5_start(0);
-				CSTask->Give();
-				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-				send_codec(0xa103);
-				break;
 			}
 		break;
 //-------------------------------------------------------Cab Name---------------------------------------------
@@ -3073,57 +2857,6 @@ void gui(void)
 				current_menu = MENU_SYSTEM;
 				DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
 				encoder_knob_selected = 0;
-				tim5_start(0);
-				clean_flag();
-			}
-		break;
-//-----------------------------------------------------Tuner ext controller----------------------------
-		case MENU_TUNER_EXT: break;
-			if(encoder_state_updated==1)
-			{
-				uint8_t a = sys_para[TUNER_EXTERNAL]&0x7f;
-				if(encoder_state==1)
-				{
-					if(a>1)
-					{
-						a = enc_speed_dec(a, 1);
-						DisplayTask->ParamIndicNum(50, 0, a);
-						sys_para[TUNER_EXTERNAL] = (sys_para[TUNER_EXTERNAL]&0x80)+a;
-					}
-				}
-				if(encoder_state==2)
-				{
-					uint8_t a = sys_para[TUNER_EXTERNAL]&0x7f;
-					if(a<127)
-					{
-						a = enc_speed_inc(a, 128);
-						DisplayTask->ParamIndicNum(50, 0, a);
-						sys_para[TUNER_EXTERNAL] = (sys_para[TUNER_EXTERNAL]&0x80)+a;
-					}
-				}
-				tim5_start(0);
-				clean_flag();
-			}
-			if(k_up==1)
-			{
-				current_menu = MENU_SYSTEM;
-				DisplayTask->Clear();
-				encoder_knob_selected = 0;
-				DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
-				DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+(par_num+1)*12);
-//				if(sys_para[TUNER_EXTERNAL]&0x80)
-//					DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off);
-//				else
-//					DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off+5);
-				DisplayTask->StringOut(3, 1, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+(par_num+1)*12);
-//				DisplayTask->StringOut(39, 1, TDisplayTask::fntSystem, 0, (uint8_t*)time_type+sys_para[TIME_FORMAT]*4);
-				DisplayTask->StringOut(3, 2, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+(par_num+2)*12);
-				if(!sys_para[SWAP_SWITCH])
-					DisplayTask->StringOut(78, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"Off");
-				else
-					DisplayTask->StringOut(78, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"On");
-				DisplayTask->StringOut(3, 3, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+(par_num+3)*12);
-				DisplayTask->ParamIndicNum(78, 3, sys_para[TUNER_SPEED]);
 				tim5_start(0);
 				clean_flag();
 			}

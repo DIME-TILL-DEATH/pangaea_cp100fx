@@ -41,6 +41,9 @@ enum
 	/*save expression level*/sav_exp,
 	/*swap up confirm*/SWAP_SWITCH,
 	/*speed tuner*/TUNER_SPEED,
+
+	PHONES_VOLUME = 125,
+	MASTER_VOLUME
 };
 
 extern uint16_t delay_time;
@@ -70,6 +73,7 @@ extern volatile float adc_val1;
 extern uint8_t cab_num;
 extern uint8_t __CCM_BSS__ preset_temp[];
 
+void write_sys(void);
 void eepr_write(uint8_t nu);
 void eepr_read_prog(uint8_t nu);
 void eepr_read_imya(uint8_t nu);

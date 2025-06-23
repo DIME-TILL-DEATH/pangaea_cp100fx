@@ -20,6 +20,8 @@ public:
 	static AbstractMenu* create(AbstractMenu* parent);
 
 private:
+	uint8_t m_previousCabConfig;
+
 	bool editingFinished();
 
 	static AbstractMenu* createFootswitchMenu(AbstractMenu* parent);

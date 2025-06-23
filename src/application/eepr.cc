@@ -82,6 +82,19 @@ extern uint8_t name_run_fl;
 extern emb_string full_curr_dir_path;
 
 char fna[_MAX_LFN];
+
+void write_sys(void)
+{
+	FATFS fs;
+	FIL file;
+	UINT f_size;
+	f_mount(&fs, "1:", 1);
+	f_open(&file, "1:system.pan", FA_WRITE);
+	f_write(&file, sys_para, 512, &f_size);
+	f_close(&file);
+	f_mount(0, "1:", 0);
+}
+
 void eepr_write(uint8_t nu)
 {
 	nu++;

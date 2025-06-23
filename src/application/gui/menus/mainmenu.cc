@@ -16,6 +16,8 @@
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
 #include "systemmenu.h"
+#include "mastervolumemenu.h"
+#include "tunermenu.h"
 
 extern uint8_t tim5_fl2;
 extern gui_menu_type current_menu;
@@ -41,7 +43,6 @@ const uint8_t MainMenu::decib[];
 const uint8_t MainMenu::master_eq_of[];
 const uint8_t MainMenu::master_eq_on[];
 const uint8_t MainMenu::mas_eq_list[][9];
-const uint8_t MainMenu::master_vo[][14];
 
 MainMenu::MainMenu()
 {
@@ -222,7 +223,8 @@ void MainMenu::keyDown()
 
 void MainMenu::key1()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(shownChildMenu) delete shownChildMenu;
+	shownChildMenu = nullptr;
 
 	clean_flag();
 	DisplayTask->Clear();
@@ -240,16 +242,10 @@ void MainMenu::key1()
 
 void MainMenu::key2()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(shownChildMenu) delete shownChildMenu;
 
-	DisplayTask->Clear();
-	par_num = 0;
-
-	current_menu = MENU_MASTER_VOLUME;
-	DisplayTask->StringOut(3,0,TDisplayTask::fntSystem,2,(uint8_t*)master_vo);
-	DisplayTask->ParamIndicNum(85,0,sys_para[126]);
-	DisplayTask->StringOut(3,1,TDisplayTask::fntSystem,0,(uint8_t*)master_vo + 14);
-	DisplayTask->ParamIndicNum(85,1,sys_para[125]);
+	shownChildMenu = new MasterVolumeMenu(this);
+	shownChildMenu->show();
 
 	clean_flag();
 	tim5_start(0);
@@ -257,7 +253,8 @@ void MainMenu::key2()
 
 void MainMenu::key3()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(shownChildMenu) delete shownChildMenu;
+	shownChildMenu = nullptr;
 
 	DisplayTask->Clear();
 	current_menu = MENU_MASTER_EQ;
@@ -302,7 +299,7 @@ void MainMenu::key3()
 
 void MainMenu::key4()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(shownChildMenu) delete shownChildMenu;
 
 	shownChildMenu = SystemMenu::create(this);
 	shownChildMenu->show();
@@ -313,17 +310,13 @@ void MainMenu::key4()
 
 void MainMenu::key5()
 {
-	if(current_menu != MENU_MAIN) return;
+	if(shownChildMenu) delete shownChildMenu;
+	shownChildMenu = nullptr;
 
-	send_codec(0xa102);
-	gui_send(13,0);
-	tun_base_old = 0.0f;
-	tun_ini();
-	tuner_use = 1;
-	current_menu = MENU_TUNER;
-
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
+	shownChildMenu = new TunerMenu(this);
+	shownChildMenu->show();
 
 	clean_flag();
 	tim5_start(0);
 }
+

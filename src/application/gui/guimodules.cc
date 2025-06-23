@@ -45,19 +45,19 @@ AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 
 AbstractMenu* GuiModules::createGateMenu(AbstractMenu* parentMenu)
 {
-	const uint8_t gateParamNum = 3;
-	BaseParam* gateParams[gateParamNum];
+	const uint8_t paramCount = 3;
+	BaseParam* params[paramCount];
 
-	gateParams[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &presetData[GATE_THRESHOLD]);
-	gateParams[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &presetData[GATE_ATTACK]);
-	gateParams[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Decay", &presetData[GATE_DECAY]);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &presetData[GATE_THRESHOLD]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &presetData[GATE_ATTACK]);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Decay", &presetData[GATE_DECAY]);
 
-	for(int i=0; i<gateParamNum; i++) gateParams[i]->setDspAddress(DSP_ADDRESS_GATE, i);
+	for(int i=0; i<paramCount; i++) params[i]->setDspAddress(DSP_ADDRESS_GATE, i);
 
-	ParamListMenu* gateMenu = new ParamListMenu(parentMenu, MENU_GATE);
-	if(gateMenu) gateMenu->setParams(gateParams, gateParamNum);
+	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_GATE);
+	if(menu) menu->setParams(params, paramCount);
 
-	return gateMenu;
+	return menu;
 }
 
 AbstractMenu* GuiModules::createCompressorMenu(AbstractMenu* parentMenu)
