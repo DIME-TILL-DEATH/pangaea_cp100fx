@@ -34,6 +34,9 @@ public:
 
 	void setIcon(bool drawIcon, uint8_t iconNumber);
 
+	static constexpr uint8_t paramsOnPage = 4;
+	static constexpr uint8_t leftPad = 3;
+
 //	void (*key1Callback)(AbstractMenu* thisObject);
 //	void (*key2Callback)(AbstractMenu* thisObject);
 //	void (*key3Callback)(AbstractMenu* thisObject);
@@ -45,6 +48,9 @@ protected:
 
 	BaseParam* m_paramsList[maxParamCount];
 	uint8_t m_paramsCount{0};
+
+	uint8_t m_firstSelectableParam{0};
+	uint8_t m_lastSelectableParam;
 
 	bool m_canTap{false};
 	bool m_drawIcon{true};
@@ -58,8 +64,7 @@ protected:
 	TDisplayTask::TVolIndicatorType m_volIndicatorType{TDisplayTask::VOL_INDICATOR_OFF};
 	dsp_indicator_source_t m_indicatorSource;
 
-	static constexpr uint8_t paramsOnPage = 4;
-	static constexpr uint8_t leftPad = 3;
+
 
 	void printPage(bool forceDrawIcon = false);
 };

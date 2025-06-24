@@ -469,7 +469,7 @@ uint8_t name_run_fl = 0;
 volatile uint8_t enc_run = 0;
 volatile uint32_t reset_disp_count = 0;
 
-volatile uint32_t name_temp_po_time1 = 150000;
+//volatile uint32_t name_temp_po_time1 = 150000;
 void ADC_process();
 
 void TENCTask::Code()
@@ -603,44 +603,9 @@ void TENCTask::Code()
 				kn2_in_fl = fsw1_in_fl = fsw2_in_fl = fsw3_in_fl = tim3_end_fl = 0;
 		}
 //---------------------------------------------Run string-------------------------------------
-		if((current_menu==MENU_CABSIM)&&name_run_fl)
-		{
-			if(name_temp_po_time++>=name_temp_po_time1)
-			{
-				uint8_t a;
+		StringOutParam* runningString = currentMenu->getRunningString();
+		if(runningString) runningString->task();
 
-				if(!cab_num)
-					a = name_buf[0];
-				else
-					a = name_buf1[0];
-
-				name_temp_po_time1 = 150000;
-				name_temp_po++;
-				for(uint8_t i = 0; i<21; i++)
-				{
-					if(!cab_num)
-						name_temp_buf[i] = name_buf[name_temp_po+i];
-					else
-						name_temp_buf[i] = name_buf1[name_temp_po+i];
-
-					if((name_temp_po+i+1)==a)
-					{
-						name_temp_po = 0;
-						name_temp_buf[i+1] = 0;
-						name_temp_po_time1 = 1500000;
-						break;
-					}
-				}
-				if(current_menu==MENU_CABSIM)
-					DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)name_temp_buf);
-				name_temp_po_time = 0;
-			}
-		}
-		else
-		{
-			name_temp_po_time = 0xfffffff0;
-			name_temp_po = 0;
-		}
 //----------------------------------------------------LED FX-----------------------------------------------
 		uint8_t a = 0;
 		for(uint8_t i = 0; i<14; i++)

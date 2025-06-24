@@ -40,3 +40,13 @@ void AbstractMenu::setTopLevelMenu(AbstractMenu* parent)
 {
 	topLevelMenu = parent;
 }
+
+void AbstractMenu::setRunningString(StringOutParam* runningString)
+{
+	m_runningString = runningString;
+}
+
+StringOutParam* AbstractMenu::getRunningString()
+{
+	return m_runningString;
+}

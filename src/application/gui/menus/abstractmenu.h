@@ -3,6 +3,8 @@
 
 #include "appdefs.h"
 
+#include "params/stringoutparam.h"
+
 enum gui_menu_type
 {
 	MENU_MAIN,
@@ -94,6 +96,9 @@ public:
 
 	void setTopLevelMenu(AbstractMenu* parent);
 
+	void setRunningString(StringOutParam* strings);
+	StringOutParam* getRunningString();
+
 protected:
 	AbstractMenu* topLevelMenu = nullptr;
 	AbstractMenu* shownChildMenu = nullptr;
@@ -102,6 +107,9 @@ protected:
 
 	constexpr static uint8_t ascii_low[] = " abcdefghijklmnopqrstuvwxyz0123456789!@#$%";
 	constexpr static uint8_t ascii_high[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{}()-+_=<>?*.,/&";
+
+	StringOutParam* m_runningString{nullptr};
+//	uint8_t m_runningStringsCount{0};
 
 };
 

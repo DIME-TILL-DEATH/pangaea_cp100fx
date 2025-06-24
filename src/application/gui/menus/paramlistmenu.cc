@@ -9,6 +9,8 @@
 #include "enc.h"
 #include "cc.h"
 
+#include "params/stringoutparam.h"
+
 extern volatile int8_t temp;
 extern const uint16_t bpm_time[];
 extern uint16_t trem_time;
@@ -81,7 +83,12 @@ void ParamListMenu::show(TShowMode showMode)
 			}
 		}
 		m_encoderKnobSelected = false;
-		m_currentParamNum = 0;
+		m_firstSelectableParam = 0;
+		while(m_paramsList[m_firstSelectableParam]->type() == BaseParam::GUI_PARAMETER_DUMMY
+			||m_paramsList[m_firstSelectableParam]->type() == BaseParam::GUI_PARAMETER_STRING_OUT) m_firstSelectableParam++;
+
+		m_currentParamNum = m_firstSelectableParam;
+		m_lastSelectableParam = m_paramsCount - 1;
 	}
 
 	printPage();
@@ -134,11 +141,13 @@ void ParamListMenu::encoderClockwise()
 {
 	if(!m_encoderKnobSelected)
 	{
-		if(m_currentParamNum < m_paramsCount - 1)
+		if(m_currentParamNum < m_lastSelectableParam) //(paramsCount - 1)
 		{
 			do{
 				m_currentParamNum++; // Порядок важен!
-			}while(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY && m_currentParamNum < m_paramsCount);
+			}while((m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY
+					|| m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_STRING_OUT)
+					&& m_currentParamNum < m_lastSelectableParam);
 			printPage();
 			tim5_start(0);
 		}
@@ -164,11 +173,13 @@ void ParamListMenu::encoderCounterClockwise()
 {
 	if(!m_encoderKnobSelected)
 	{
-		if(m_currentParamNum > 0)
+		if(m_currentParamNum > m_firstSelectableParam)
 		{
 			do{
 				m_currentParamNum--; // Порядок важен!
-			}while(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY && m_currentParamNum > 0);
+			}while((m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY
+					|| m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_STRING_OUT)
+					&& m_currentParamNum > m_firstSelectableParam);
 			printPage();
 			tim5_start(0);
 		}
@@ -308,7 +319,9 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 
 		bool highlight = (m_currentParamNum == displayParamNum) && (m_pagesCount > 1);
 
-		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
+		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY
+			|| m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_STRING_OUT) continue;
+
 		m_paramsList[displayParamNum]->printParam(i);
 		DisplayTask->StringOut(leftPad, i, TDisplayTask::fntSystem , 2 * highlight, (uint8_t*)(m_paramsList[displayParamNum]->name()));
 	}

@@ -156,6 +156,7 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 
 		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
 		paramsMenu->setParams(params, paramNum);
+		paramsMenu->setIcon(false, 0);
 
 		menu = paramsMenu;
 	}
@@ -173,17 +174,30 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	BaseParam* params[paramNum];
 
 	params[0] = new StringOutParam(name_buf);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &presetData[IR_PAN1]);
-	params[1]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN1_POS);
-	params[2] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCabBrowserMenu);
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "Volume", &presetData[IR_VOLUME1]);
+	params[0]->setDisplayPosition(ParamListMenu::leftPad);
+
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCabBrowserMenu);
+
+	if(cab_type==2)
+	{
+		params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &presetData[IR_PAN1]);
+		params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN1_POS);
+	}
+	else params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", nullptr);
+
+
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &presetData[IR_VOLUME1]);
 	params[3]->setDspAddress(DSP_ADDRESS_CAB, IR_VOLUME1_POS);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CABSIM);
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
+//		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1);
+		menu->setIcon(false, 0);
+
+		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
+		menu->setRunningString(runningString);
 	}
 
 	return menu;
