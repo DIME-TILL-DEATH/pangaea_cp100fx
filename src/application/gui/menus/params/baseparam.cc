@@ -58,6 +58,11 @@ uint32_t BaseParam::value() const
 	}
 }
 
+void BaseParam::setInverse(bool isInverse)
+{
+	m_inverse = isInverse;
+}
+
 void BaseParam::increaseParam()
 {
 	if(!m_valuePtr) return;

@@ -43,7 +43,8 @@ enum
 	/*speed tuner*/TUNER_SPEED,
 
 	PHONES_VOLUME = 125,
-	MASTER_VOLUME
+	MASTER_VOLUME,
+	ATTENUATOR
 };
 
 extern uint16_t delay_time;

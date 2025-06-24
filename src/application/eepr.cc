@@ -204,7 +204,7 @@ void eepr_read_prog(uint8_t nu)
 		kgp_sdk_libc::memset(impulse_path, 0, 512);
 		char *tmp = new char[_MAX_LFN];
 		if(!tmp)
-			throw_exeption_catcher("not enother memory");
+			throw_exeption_catcher("not enough memory");
 		f_read(&file, tmp, _MAX_LFN, &f_size);
 		if(f_size)
 		{

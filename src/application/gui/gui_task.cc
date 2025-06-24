@@ -44,11 +44,11 @@ const uint8_t switch_slow[][10] =
 const uint8_t out_pc_list[][8] =
 {"MIDI IN", "  MAP  ", "  SET  "};
 
-const uint8_t att_db[][4] =
-{" +4", " +3", " +2", " +1", "  0", " -1", " -2", " -3", " -4", " -5", " -6", " -7", " -8", " -9", "-10", "-11", "-12",
-		"-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-23", "-24", "-27", "-30", "-34", "-35", "-36",
-		"-37", "-38", "-40", "-41", "-42", "-43", "-44", "-45", "-46", "-47", "-48", "-49", "-50", "-51", "-52", "-53",
-		"-54", "-55", "-56", "-57", "-58", "-59", "-60"};
+//const uint8_t att_db[][4] =
+//{" +4", " +3", " +2", " +1", "  0", " -1", " -2", " -3", " -4", " -5", " -6", " -7", " -8", " -9", "-10", "-11", "-12",
+//		"-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-23", "-24", "-27", "-30", "-34", "-35", "-36",
+//		"-37", "-38", "-40", "-41", "-42", "-43", "-44", "-45", "-46", "-47", "-48", "-49", "-50", "-51", "-52", "-53",
+//		"-54", "-55", "-56", "-57", "-58", "-59", "-60"};
 
 const uint8_t pres_num_pos[4] =
 {58, 46, 37, 28};
@@ -1497,60 +1497,6 @@ void gui(void)
 				tim5_start(0);
 				clean_flag();
 				adc_calib();
-			}
-		break;
-//---------------------------------------------------Attenuator--------------------------------------------------
-		case MENU_ATTENUATOR:
-			if(encoder_state_updated==1)
-			{
-				if(encoder_state==2)
-				{
-					if(sys_para[127]>0)
-					{
-						sys_para[127] = enc_speed_dec(sys_para[127], 0);
-						DisplayTask->Pot_Write();
-						DisplayTask->StringOut(76, 0, TDisplayTask::fntSystem, 0, (uint8_t*)att_db+sys_para[127]*4);
-					}
-				}
-				if(encoder_state==1)
-				{
-					if(sys_para[127]<55)
-					{
-						sys_para[127] = enc_speed_inc(sys_para[127], 55);
-						DisplayTask->Pot_Write();
-						DisplayTask->StringOut(76, 0, TDisplayTask::fntSystem, 0, (uint8_t*)att_db+sys_para[127]*4);
-					}
-				}
-				tim5_start(0);
-				clean_flag();
-			}
-			if((k_master==1)||(k_sys==1)||(k_tuner==1)||(k_master_eq==1))
-			{
-				current_menu = MENU_MAIN; //edit_modules_fl = 0;
-				write_sys();
-				encoder_knob_selected = 0;
-
-				DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-				DisplayTask->Clear();
-				tim5_start(0);
-				CSTask->Give();
-				break;
-			}
-			if((k_up==1)||(k_att==1))
-			{
-				write_sys();
-				current_menu = MENU_MAIN; //edit_modules_fl = 0;
-				DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-				DisplayTask->Main_scr();
-				DisplayTask->Prog_ind(prog1);
-				if((sys_para[fs1]==1)||((sys_para[fs11]==1)&&sys_para[fsm1]))
-					DisplayTask->IndFoot(0, contr_kn[0]);
-				if((sys_para[fs2]==1)||((sys_para[fs21]==1)&&sys_para[fsm2]))
-					DisplayTask->IndFoot(1, contr_kn[1]);
-				if((sys_para[fs3]==1)||((sys_para[fs31]==1)&&sys_para[fsm3]))
-					DisplayTask->IndFoot(2, contr_kn[2]);
-				tim5_start(0);
-				clean_flag();
 			}
 		break;
 //----------------------------------------------------Master EQ----------------------------------------

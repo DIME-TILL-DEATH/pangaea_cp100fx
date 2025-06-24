@@ -9,7 +9,7 @@
 #include "modules.h"
 
 #include "params/baseparam.h"
-#include "params/stringparam.h"
+#include "params/stringlistparam.h"
 #include "params/submenuparam.h"
 
 class ParamListMenu : public AbstractMenu

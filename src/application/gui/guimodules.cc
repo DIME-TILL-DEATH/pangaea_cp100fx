@@ -4,10 +4,14 @@
 
 #include "menus/abstractmenu.h"
 #include "menus/eqmenu.h"
-#include "menus/cabtypemenu.h"
+#include "menus/cabbrowsermenu.h"
 #include "menus/paramlistmenu.h"
 
 #include "menus/params/submenuparam.h"
+#include "menus/params/stringoutparam.h"
+
+extern uint8_t cab_type;
+extern uint8_t name_run_fl;
 
 AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 {
@@ -15,9 +19,9 @@ AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 	BaseParam* params[paramNum];
 
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &presetData[RFILTER_MIX]);
-	params[1] = new StringParam("F Type", &presetData[RFILTER_FTYPE], {"LPF","HPF","BPF"}, 3);
+	params[1] = new StringListParam("F Type", &presetData[RFILTER_FTYPE], {"LPF","HPF","BPF"}, 3);
 
-	StringParam* typeSelect = new StringParam("F Mod", &presetData[RFILTER_FMOD], {"LFO", "Dyn", "Ext"}, 3);
+	StringListParam* typeSelect = new StringListParam("F Mod", &presetData[RFILTER_FMOD], {"LFO", "Dyn", "Ext"}, 3);
 	typeSelect->setDisableMask(0, {0, 0, 0, 0, 0, 0, 0, 1, 1, 1});
 	typeSelect->setDisableMask(2, {0, 0, 0, 0, 0, 0, 0, 1, 1, 1});
 	params[2] = typeSelect;
@@ -30,7 +34,7 @@ AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Dyn att", &presetData[RFILTER_DYN_ATTACK]);
 	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Dyn rel", &presetData[RFLITER_DYN_RELEASE]);
 	params[10] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &presetData[RFILTER_VOLUME]);
-	params[11] = new StringParam("F Mod", &presetData[RFILTER_LFO_TYPE],
+	params[11] = new StringListParam("F Mod", &presetData[RFILTER_LFO_TYPE],
 			{"Tri   ","Rand  ","Rand/2","Rand/3","Rand/4","Rand/6","Rand/8"}, 7);
 
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_RESONANCE_FILTER, i);
@@ -122,7 +126,7 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 	params[2]->setDspAddress(DSP_ADDRESS_AMP, AMP_LEVEL_POS);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", &presetData[PREAMP_0]);
 	params[3]->setDspAddress(DSP_ADDRESS_AMP, NOT_SEND_POS);
-	params[4] = new StringParam("Type", &presetData[AMP_TYPE],
+	params[4] = new StringListParam("Type", &presetData[AMP_TYPE],
 		 {"  PP 6L6  ", "  PP EL34 ", "  SE 6L6  ", "  SE EL34 ", " AMT TC-3 ",
 		  "California",	"British M ", "British L ", "    Flat   ","Calif mod ",
 		  "Calif vint", "PVH PR0RS0", "PVH PR5RS5", "PVH PR8RS7"}, 11);
@@ -141,7 +145,58 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 
 AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 {
-	return new CabTypeMenu(parentMenu);
+	AbstractMenu* menu;
+	if(cab_type==2)
+	{
+		const uint8_t paramNum = 2;
+		BaseParam* params[paramNum];
+
+		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 1", &GuiModules::createCab1Menu, nullptr);
+		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 2", &GuiModules::createCab2Menu, nullptr);
+
+		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
+		paramsMenu->setParams(params, paramNum);
+
+		menu = paramsMenu;
+	}
+	else
+	{
+		menu = GuiModules::createCab1Menu(parentMenu);
+	}
+
+	return menu;
+}
+
+AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
+{
+	const uint8_t paramNum = 4;
+	BaseParam* params[paramNum];
+
+	params[0] = new StringOutParam(name_buf);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &presetData[IR_PAN1]);
+	params[1]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN1_POS);
+	params[2] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCabBrowserMenu);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "Volume", &presetData[IR_VOLUME1]);
+	params[3]->setDspAddress(DSP_ADDRESS_CAB, IR_VOLUME1_POS);
+
+	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CABSIM);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
+	}
+
+	return menu;
+}
+
+AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
+{
+	return nullptr;
+}
+
+AbstractMenu* GuiModules::createCabBrowserMenu(AbstractMenu* parentMenu)
+{
+	return new CabBrowserMenu(parentMenu);
 }
 
 AbstractMenu* GuiModules::createEqMenu(AbstractMenu* parentMenu)
@@ -165,7 +220,7 @@ AbstractMenu* GuiModules::createPhaserMenu(AbstractMenu* parentMenu)
 	params[5]->setBounds(0, 4);
 	params[5]->setDisplayPosition(62);
 	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Hpf", &presetData[PHASER_HPF]);
-	params[7] = new StringParam("Pos.", &presetData[PHASER_PREPOST], {"Post", "Pre "}, 4);
+	params[7] = new StringListParam("Pos.", &presetData[PHASER_PREPOST], {"Post", "Pre "}, 4);
 
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_PHASER, i);
 
@@ -181,13 +236,13 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	BaseParam* params[paramNum];
 
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &presetData[FLANGER_MIX]);
-	params[1] = new StringParam("LFO", &presetData[FLANGER_LFO], {"Triangle", "Sinus   "}, 8);
+	params[1] = new StringListParam("LFO", &presetData[FLANGER_LFO], {"Triangle", "Sinus   "}, 8);
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &presetData[FLANGER_RATE]);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &presetData[FLANGER_WIDTH]);
 	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &presetData[FLANGER_DELAY]);
 	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &presetData[FLANGER_FEEDBACK]);
 	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &presetData[FLANGER_HPF]);
-	params[7] = new StringParam("Pos.", &presetData[FLANGER_LFO], {"Post", "Pre "}, 4);
+	params[7] = new StringListParam("Pos.", &presetData[FLANGER_LFO], {"Post", "Pre "}, 4);
 
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_FLANGER, i);
 
@@ -206,7 +261,7 @@ AbstractMenu* GuiModules::createChorusMenu(AbstractMenu* parentMenu)
 	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &presetData[CHORUS_RATE]);
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &presetData[CHORUS_WIDTH]);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &presetData[CHORUS_DELAY]);
-	StringParam* typeSelect = new StringParam("Type", &presetData[CHORUS_TYPE],
+	StringListParam* typeSelect = new StringListParam("Type", &presetData[CHORUS_TYPE],
 			{"  Chorus   ","  Chorus S "," Chorus x3 ","Chorus x3 S","  Detune   ","MidSide Dub"}, 12);
 	typeSelect->setDisplayPosition(36);
 	typeSelect->setDisableMask(4, {0, 0, 1, 1, 0, 0});
@@ -274,7 +329,7 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 	params[9]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_MODULATION_POS);
 	params[10] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "M_Rate", &presetData[DELAY_MODULATION_RATE]);
 	params[10]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_MODULATION_RATE_POS);
-	params[11] = new StringParam("Direct", &presetData[DELAY_DIRECTION], {"Forward", "Reverse"}, 7);
+	params[11] = new StringListParam("Direct", &presetData[DELAY_DIRECTION], {"Forward", "Reverse"}, 7);
 	params[11]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_DIRECTION_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_DELAY);
@@ -315,11 +370,11 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 	params[0]->setBounds(10, 2730);
 	params[0]->setScaling(10, 0);
 
-	params[1] = new StringParam("TAP", &presetData[TREMOLO_TAP],
+	params[1] = new StringListParam("TAP", &presetData[TREMOLO_TAP],
 			{"1/1  ", "1/1.5" ,"1/2  " ,"1/3  " ,"1/4  " ,"2/1  "}, 6);
 	params[1]->setDspAddress(DSP_ADDRESS_DELAY, NOT_SEND_POS);
 
-	params[2] = new StringParam("Tail", &presetData[REVERB_TAIL], {"On ", "Off"}, 3);
+	params[2] = new StringListParam("Tail", &presetData[REVERB_TAIL], {"On ", "Off"}, 3);
 	params[2]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TAIL_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_TAP_DELAY);
@@ -335,7 +390,7 @@ AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &presetData[REVERB_MIX]);
 
-	StringParam* typeSelect = new StringParam("Type", &presetData[REVERB_TYPE],
+	StringListParam* typeSelect = new StringListParam("Type", &presetData[REVERB_TYPE],
 			{"Default", "Hall   ", "Room   ", "Plate  ", "Spring ", "Gate   ", "Reverse"}, 8);
 	typeSelect->setDisableMask(0, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0});
 	typeSelect->setDisableMask(4, {0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0});
@@ -351,7 +406,7 @@ AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Detune", &presetData[REVERB_DETUNE]);
 	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Diffus", &presetData[REVERB_DIFFUSION]);
 	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "PreD", &presetData[REVERB_PREDELAY]);
-	params[10] = new StringParam("Tail", &presetData[REVERB_TAIL], {"On ", "Off"}, 3);
+	params[10] = new StringListParam("Tail", &presetData[REVERB_TAIL], {"On ", "Off"}, 3);
 
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_REVERB, i);
 
@@ -374,16 +429,16 @@ AbstractMenu* GuiModules::createTremoloMenu(AbstractMenu* parentMenu)
 	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &presetData[TREMOLO_RATE]);
 	params[1]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_RATE_POS);
 
-	params[2] = new StringParam("LFOType", &presetData[TREMOLO_LFO_TYPE], {"Sin     ", "Square  ", "Sawtooth"}, 8);
+	params[2] = new StringListParam("LFOType", &presetData[TREMOLO_LFO_TYPE], {"Sin     ", "Square  ", "Sawtooth"}, 8);
 	params[2]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_TYPE_POS);
 
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "LFO mod", &presetData[TREMOLO_LFO_MOD]);
 	params[3]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_MOD_POS);
 
-	params[4] = new StringParam("Type", &presetData[TREMOLO_MS], {"Mono  ", "Stereo"}, 6);
+	params[4] = new StringListParam("Type", &presetData[TREMOLO_MS], {"Mono  ", "Stereo"}, 6);
 	params[4]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_MS_POS);
 
-	params[5] = new StringParam("TAP", &presetData[TREMOLO_TAP],
+	params[5] = new StringListParam("TAP", &presetData[TREMOLO_TAP],
 			{"1    ", "1/1.5", "1/2  ", "1/3  ", "1/4  "}, 6);
 	params[5]->setDspAddress(DSP_ADDRESS_TREMOLO, NOT_SEND_POS);
 

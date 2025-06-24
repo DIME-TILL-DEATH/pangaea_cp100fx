@@ -3,13 +3,12 @@
 
 #include "baseparam.h"
 
-class StringParam : public BaseParam
+class StringListParam : public BaseParam
 {
 public:
-	StringParam(const char* name, uint8_t* paramValuePtr, char** newStrings, uint8_t strCount);
-	StringParam(const char* name, uint8_t* paramValuePtr,
+	StringListParam(const char* name, uint8_t* paramValuePtr,
 			std::initializer_list<const char*> stringList, uint8_t maxStringLength);
-	~StringParam();
+	~StringListParam();
 
 	uint8_t* getString(uint8_t stringNum);
 
@@ -24,7 +23,7 @@ public:
 	void printParam(uint8_t yPos) override;
 
 private:
-	char m_strings[24][16];
+	char** m_strings{nullptr};
 	uint8_t m_stringCount;
 	uint8_t m_maxStringLength;
 

@@ -15,8 +15,9 @@
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
-#include "systemmenu.h"
+#include "attenuatormenu.h"
 #include "mastervolumemenu.h"
+#include "systemmenu.h"
 #include "tunermenu.h"
 
 extern uint8_t tim5_fl2;
@@ -29,16 +30,8 @@ extern volatile uint8_t cab_n_fl2;
 extern volatile uint8_t tim_fl;
 
 
-extern uint8_t temp_sys;
+//extern uint8_t temp_sys;
 
-const uint8_t MainMenu::att_db[][4];
-const char MainMenu::atten[];
-
-//const uint8_t MainMenu::cab_list[][8];
-//const uint8_t MainMenu::cab_out_list[][6];
-//const uint8_t MainMenu::cab_list_menu[][9];
-
-const uint8_t MainMenu::decib[];
 
 const uint8_t MainMenu::master_eq_of[];
 const uint8_t MainMenu::master_eq_on[];
@@ -157,7 +150,7 @@ void MainMenu::encoderCounterClockwise()
 void MainMenu::keyUp()
 {
 	if(current_menu != MENU_MAIN) return;
-
+/*
 	if(prog1 != prog)
 	{
 		prog_cur = 0;
@@ -202,7 +195,7 @@ void MainMenu::keyUp()
 			tim_fl = 1;
 		}
 	}
-
+*/
 	clean_flag();
 }
 
@@ -224,17 +217,9 @@ void MainMenu::keyDown()
 void MainMenu::key1()
 {
 	if(shownChildMenu) delete shownChildMenu;
-	shownChildMenu = nullptr;
 
-	clean_flag();
-	DisplayTask->Clear();
-
-	current_menu = MENU_ATTENUATOR;
-	DisplayTask->StringOut(3,0,TDisplayTask::fntSystem,0,(uint8_t*)atten);
-	DisplayTask->StringOut(76,0,TDisplayTask::fntSystem,0,(uint8_t*)att_db + sys_para[127]*4);
-	DisplayTask->StringOut(95,0,TDisplayTask::fntSystem,0,(uint8_t*)decib);
-
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
+	shownChildMenu = new AttenuatorMenu(this);
+	shownChildMenu->show();
 
 	clean_flag();
 	tim5_start(0);

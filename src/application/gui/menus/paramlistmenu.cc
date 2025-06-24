@@ -72,7 +72,7 @@ void ParamListMenu::show(TShowMode showMode)
 		{
 			if(m_paramsList[i]->type() == BaseParam::GUI_PARAMETER_LIST)
 			{
-				StringParam* strParam = static_cast<StringParam*>(m_paramsList[i]);
+				StringListParam* strParam = static_cast<StringListParam*>(m_paramsList[i]);
 				uint8_t* valDisableMask = strParam->getDisableMask();
 				for(int a=0; a<m_paramsCount; a++)
 				{
@@ -145,7 +145,9 @@ void ParamListMenu::encoderClockwise()
 	}
 	else
 	{
-		m_paramsList[m_currentParamNum]->increaseParam();
+		if(!m_paramsList[m_currentParamNum]->inverse()) m_paramsList[m_currentParamNum]->increaseParam();
+		else m_paramsList[m_currentParamNum]->decreaseParam();
+
 		m_paramsList[m_currentParamNum]->setToDsp();
 
 		// Support CustomParam
@@ -173,7 +175,10 @@ void ParamListMenu::encoderCounterClockwise()
 	}
 	else
 	{
-		m_paramsList[m_currentParamNum]->decreaseParam();
+		if(!m_paramsList[m_currentParamNum]->inverse()) m_paramsList[m_currentParamNum]->decreaseParam();
+				else m_paramsList[m_currentParamNum]->increaseParam();
+
+
 		m_paramsList[m_currentParamNum]->setToDsp();
 
 		if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)

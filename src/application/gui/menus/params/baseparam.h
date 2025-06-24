@@ -18,7 +18,9 @@ public:
 		GUI_PARAMETER_DELAY_TIME,
 		GUI_PARAMETER_SUBMENU_DELAY_TIME,
 		GUI_PARAMETER_SUBMENU,
-		GUI_PARAMETER_CUSTOM
+		GUI_PARAMETER_CUSTOM,
+		GUI_PARAMETER_REAL,
+		GUI_PARAMETER_STRING_OUT
 	};
 
 
@@ -50,6 +52,9 @@ public:
 	uint8_t offset() const {return m_offset;};
 	uint8_t stepSize() {return m_stepSize;};
 
+	void setInverse(bool isInverse);
+	bool inverse() {return m_inverse;}
+
 	void setDisplayPosition(uint8_t xCoord);
 	uint8_t xDisplayPosition() const {return m_xDisplayPosition;};
 
@@ -62,6 +67,7 @@ protected:
 	const char* m_name;
 
 	bool m_disabled{false};
+	bool m_inverse{false};
 
 	dsp_module_address_t m_moduleAddress;
 	uint8_t m_bytePosition{NOT_SEND_POS};

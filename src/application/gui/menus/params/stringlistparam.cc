@@ -1,33 +1,17 @@
-#include "stringparam.h"
+#include "stringlistparam.h"
 
 #include "display.h"
 
-
-StringParam::StringParam(const char* name, uint8_t* paramValuePtr, char** newStrings, uint8_t strCount)
-			:BaseParam(BaseParam::GUI_PARAMETER_LIST, name, paramValuePtr)
-{
-	if(strCount <= 24)
-	{
-		for(int i=0; i<strCount; i++)
-		{
-			kgp_sdk_libc::memcpy(m_strings[i], newStrings[i], 24);
-		}
-
-		m_stringCount = strCount;
-		m_maxValue = strCount - 1;
-	}
-}
-
-StringParam::StringParam(const char* name, uint8_t* paramValuePtr,
+StringListParam::StringListParam(const char* name, uint8_t* paramValuePtr,
 		std::initializer_list<const char*>stringList, uint8_t maxStringLength)
 			:BaseParam(BaseParam::GUI_PARAMETER_LIST, name, paramValuePtr)
 {
 	m_stringCount = stringList.size();
 	m_maxStringLength = maxStringLength;
 
-//	m_strings = new char*[m_stringCount];
-//	for(int i = 0; i<m_stringCount; i++)
-//		m_strings[i] = new char[m_maxStringLength];
+	m_strings = new char*[m_stringCount];
+	for(int i = 0; i<m_stringCount; i++)
+		m_strings[i] = new char[m_maxStringLength];
 
 	uint8_t strCounter = 0;
 	for(auto strIter = stringList.begin(); strIter != stringList.end(); ++strIter)
@@ -39,21 +23,21 @@ StringParam::StringParam(const char* name, uint8_t* paramValuePtr,
 	m_maxValue = m_stringCount;
 }
 
-StringParam::~StringParam()
+StringListParam::~StringListParam()
 {
-//	if(m_strings)
-//	{
-//		for(int i = 0; i<m_stringCount; i++)
-//				delete[] m_strings[i];
-//	}
+	if(m_strings)
+	{
+		for(int i = 0; i<m_stringCount; i++)
+				delete[] m_strings[i];
+	}
 }
 
-uint8_t* StringParam::getString(uint8_t stringNum)
+uint8_t* StringListParam::getString(uint8_t stringNum)
 {
 	return (uint8_t*)m_strings[stringNum];
 }
 
-void StringParam::setAffectedParamsList(BaseParam** affectedParamList, uint8_t affectedParamCount)
+void StringListParam::setAffectedParamsList(BaseParam** affectedParamList, uint8_t affectedParamCount)
 {
 	for(int i=0; i<affectedParamCount; i++)
 	{
@@ -63,7 +47,7 @@ void StringParam::setAffectedParamsList(BaseParam** affectedParamList, uint8_t a
 	m_affectedParamsCount = affectedParamCount;
 }
 
-void StringParam::setDisableMask(uint8_t stringNum, std::initializer_list<uint8_t> disableMask)
+void StringListParam::setDisableMask(uint8_t stringNum, std::initializer_list<uint8_t> disableMask)
 {
 //	kgp_sdk_libc::memcpy(m_disableMask[stringNum], disableMask, 16);
 	uint8_t i = 0;
@@ -74,17 +58,17 @@ void StringParam::setDisableMask(uint8_t stringNum, std::initializer_list<uint8_
 	}
 }
 
-uint8_t* StringParam::getDisableMask(uint8_t stringNum)
+uint8_t* StringListParam::getDisableMask(uint8_t stringNum)
 {
 	return m_disableMask[stringNum];
 }
 
-uint8_t* StringParam::getDisableMask()
+uint8_t* StringListParam::getDisableMask()
 {
 	return m_disableMask[value()];
 }
 
-void StringParam::increaseParam()
+void StringListParam::increaseParam()
 {
 	if(!m_valuePtr) return;
 
@@ -99,7 +83,7 @@ void StringParam::increaseParam()
 	}
 }
 
-void StringParam::decreaseParam()
+void StringListParam::decreaseParam()
 {
 	if(!m_valuePtr) return;
 
@@ -114,7 +98,7 @@ void StringParam::decreaseParam()
 	}
 }
 
-void StringParam::printParam(uint8_t yDisplayPosition)
+void StringListParam::printParam(uint8_t yDisplayPosition)
 {
 	if(m_disabled) return;
 
