@@ -5,7 +5,7 @@
 #include "cs.h"
 #include "enc.h"
 #include "display.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "BF706_send.h"
 #include "midi_send.h"
 

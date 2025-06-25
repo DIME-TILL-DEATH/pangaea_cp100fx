@@ -1,4 +1,7 @@
-//#include "fonts/ERC12864-4.h"
+#ifndef SYSTEMFONT5X7_H_
+#define SYSTEMFONT5X7_H_
+
+
 const uint8_t SystemFont5x7[]={
     0x00, 0x00, 0x00, 0x00, 0x00,0x00,// (space)
 	0x00, 0x00, 0x5F, 0x00, 0x00,0x00,// !
@@ -186,3 +189,5 @@ inline void Arsys_clean_(uint8_t col , uint8_t pag , uint8_t size )
       col = Arsys_sym(col,pag,32,0);
     }
 }
+
+#endif

@@ -1,17 +1,10 @@
-/*
- * display.h
- *
- *  Created on: Aug 30, 2014
- *      Author: s
- */
-
 #ifndef __DISPLAY_H__
 #define __DISPLAY_H__
 
 #include "appdefs.h"
 #include "modules.h"
 
-#include "fonts/icon_bit.h"
+#include "gui/icon_bit.h"
 
 #define FILE_NAME_LENGTH 64
 
@@ -74,6 +67,7 @@ public:
 		dcEqLH,
 		dcEqPar,
 		dcParamIndic,
+		dcParamIndicTransparent,
 		dcParamIndicNum,
 		dcParamIndicPan,
 		dcParamIndicMix,
@@ -343,6 +337,7 @@ public:
 	void EqInit(void);
 	void EqLH(float num, uint8_t type);
 	void ParamIndic(uint8_t x, uint8_t y, uint8_t data);
+	void ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data);
 	void ParamIndicNum(uint8_t x, uint8_t y, uint16_t data);
 	void ParamIndicPan(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndicMix(uint8_t x, uint8_t y, uint8_t data);

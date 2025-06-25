@@ -12,16 +12,6 @@
 const uint8_t in_out_strings[][IN_OUT_STR_SIZE] = {"Input ", "Output"};
 
 
-
-
-
-
-
-
-
-
-
-
 enum {/*+++switch*/amp = 0,cab,eq,delay,phas,fl,chor,early,reve,trem,pream,gate,compr,moog,
 	 /*+++cab_mono*/cab_m = 41,
 	 /*+++cab*/vol,cab1_pan,cab1_del,cab2_vol,cab2_pan,cab2_del,
@@ -93,7 +83,7 @@ extern uint32_t ind_out_l[];
 extern uint32_t ind_out_r[];
 extern volatile uint8_t sram_fl;
 extern volatile uint8_t sram_fl1;
-extern gui_menu_type current_menu ;
+extern gui_menu_type current_menu;
 extern float del_vol_ind;
 extern float phas_vol_ind;
 extern float chor_vol_ind;

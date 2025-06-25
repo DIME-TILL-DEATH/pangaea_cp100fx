@@ -4,7 +4,7 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -17,6 +17,7 @@
 #include "paramlistmenu.h"
 #include "attenuatormenu.h"
 #include "mastervolumemenu.h"
+#include "mastereqmenu.h"
 #include "systemmenu.h"
 #include "tunermenu.h"
 
@@ -29,13 +30,6 @@ extern volatile uint8_t cab_n_fl1;
 extern volatile uint8_t cab_n_fl2;
 extern volatile uint8_t tim_fl;
 
-
-//extern uint8_t temp_sys;
-
-
-const uint8_t MainMenu::master_eq_of[];
-const uint8_t MainMenu::master_eq_on[];
-const uint8_t MainMenu::mas_eq_list[][9];
 
 MainMenu::MainMenu()
 {
@@ -241,42 +235,8 @@ void MainMenu::key3()
 	if(shownChildMenu) delete shownChildMenu;
 	shownChildMenu = nullptr;
 
-	DisplayTask->Clear();
-	current_menu = MENU_MASTER_EQ;
-	if(!sys_para[120])
-	{
-		DisplayTask->StringOut(12,1,TDisplayTask::fntSystem,0,(uint8_t*)master_eq_of);
-		DisplayTask->StringOut(1,3,TDisplayTask::fntSystem,0,(uint8_t*)master_eq_on);
-	}
-	else
-	{
-		for(uint8_t i = 0 ; i < 4 ; i++)
-		{
-			uint16_t a = sys_para[121 + i];
-			if(i == 2)
-			{
-				a = sys_para[510] << 8;
-				a |= sys_para[511];
-				DisplayTask->EqPar(72,2,a,0,5);
-				DisplayTask->StringOut(106,i,TDisplayTask::fntSystem,0,(uint8_t*)"Hz");
-			}
-			else {
-				DisplayTask->ParamIndicMix(66,i,(a * (63.0f/24.0f)) + 63);
-				DisplayTask->ParamIndicNum(100,i,abs(a/2));
-				uint8_t b;
-				if(abs(a/2) < 10)b = 112;
-				else b = 115;
-				if(a & 1)DisplayTask->StringOut(b,i,TDisplayTask::fntSystem,0,(uint8_t*)".5");
-				else DisplayTask->StringOut(b,i,TDisplayTask::fntSystem,0,(uint8_t*)".0");
-				if(a < 0)DisplayTask->SymbolOut(58,i,TDisplayTask::fntSystem,0,45);
-				else if(a > 0)DisplayTask->SymbolOut(58,i,TDisplayTask::fntSystem,0,43);
-				DisplayTask->StringOut(45,i,TDisplayTask::fntSystem,0,(uint8_t*)"dB");
-			}
-			if(!i)DisplayTask->StringOut(3,i,TDisplayTask::fntSystem,2,(uint8_t*)mas_eq_list + i*9);
-			else DisplayTask->StringOut(3,i,TDisplayTask::fntSystem,0,(uint8_t*)mas_eq_list + i*9);
-		}
-	}
-	par_num = 0;
+	shownChildMenu = new MasterEqMenu(this);
+	shownChildMenu->show();
 
 	clean_flag();
 	tim5_start(0);

@@ -1,7 +1,7 @@
 #include "fs.h"
 #include "cs.h"
 #include "format.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "display.h"
 uint8_t print_flag;
 
@@ -19,8 +19,8 @@ TFSTask::~TFSTask()
 	delete queue;
 }
 
-uint8_t __CCM_BSS__ cab_data[12288];
-uint8_t __CCM_BSS__ cab_data1[12288];
+uint8_t __CCM_BSS__ cab1_data[12288];
+uint8_t __CCM_BSS__ cab2_data[12288];
 uint8_t sd_buf[512];
 bool cab_data_ready;
 //-----------------------------------------------------------------------------------------------------

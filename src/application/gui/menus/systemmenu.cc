@@ -3,7 +3,7 @@
 #include "appdefs.h"
 #include "cs.h"
 #include "eepr.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -270,7 +270,8 @@ void SystemMenu::tunerExtKeyDown(void* parameter)
 	{
 		BaseParam* ccParam = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "    CC#", &sys_para[TUNER_EXTERNAL]);
 		ccParam->setScaling(1, -128);
-		ccParam->setBounds(129, 255);
+//		ccParam->setBounds(129, 255);
+		ccParam->setBounds(-127, -1);
 
 		ParamListMenu* ccMenu = new ParamListMenu(currentMenu, MENU_TUNER_EXT);
 		if(ccMenu)

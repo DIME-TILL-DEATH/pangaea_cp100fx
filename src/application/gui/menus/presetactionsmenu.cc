@@ -4,7 +4,7 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "eepr.h"
@@ -175,17 +175,17 @@ void PresetActionsMenu::copyPreset()
 			for(uint8_t i = 0; i<6; i++)
 				preset_temp[30+vol+i] = presetData[vol+i];
 			for(uint8_t i = 0; i<64; i++)
-				preset_temp[13344+i] = name_buf[i];
+				preset_temp[13344+i] = cab1_name_buf[i];
 			for(uint8_t i = 0; i<64; i++)
-				preset_temp[25696+i] = name_buf1[i];
+				preset_temp[25696+i] = cab2_name_buf[i];
 			for(uint16_t i = 0; i<12288; i++)
-				preset_temp[1056+i] = cab_data[i];
+				preset_temp[1056+i] = cab1_data[i];
 			if(cab_type==2)
 				for(uint16_t i = 0; i<12288; i++)
-					preset_temp[13408+i] = cab_data1[i];
+					preset_temp[13408+i] = cab2_data[i];
 			else
 				for(uint16_t i = 0; i<12288; i++)
-					preset_temp[25760+i] = cab_data1[i];
+					preset_temp[25760+i] = cab2_data[i];
 			for(uint16_t i = 0; i<512; i++)
 				preset_temp[38048+i] = impulse_path[i];
 			send_cab_data(0, targetPresetNum+1, 0);

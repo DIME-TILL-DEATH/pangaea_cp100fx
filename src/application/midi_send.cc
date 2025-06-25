@@ -6,7 +6,7 @@
 #include "cs.h"
 #include "eepr.h"
 #include "BF706_send.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 
 TMidiSendTask *MidiSendTask;
 

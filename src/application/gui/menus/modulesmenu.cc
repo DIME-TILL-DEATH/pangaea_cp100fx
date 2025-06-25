@@ -6,13 +6,18 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
 #include "BF706_send.h"
 
 #include "modules.h"
+
+#include "paramlistmenu.h"
+
+#include "params/stringlistparam.h"
+#include "params/stringoutparam.h"
 
 
 extern gui_menu_type current_menu;
@@ -203,22 +208,29 @@ void ModulesMenu::key2()
 
 	// было своё copyMenu
 
+	const uint8_t paramCount = 3;
+	BaseParam* params[paramCount];
 
-	DisplayTask->Clear();
-	par_num = 0;
+	params[0] = new StringOutParam("    Preset level");
+	params[1] = new StringListParam("Control", &presetData[PRESET_VOLUME_CONTROL], {"On ", "Off"}, 3);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &presetData[PRESET_VOLUME]);
+	params[2]->setDspAddress(DSP_ADDRESS_PRESET_VOLUME, PARAM_EQUAL_POS);
 
-	current_menu = MENU_VOLUME;
-	DisplayTask->StringOut(28,0,TDisplayTask::fntSystem , 0 , (uint8_t*)volum);
-	DisplayTask->StringOut(28,2,TDisplayTask::fntSystem , 2 , (uint8_t*)"Control");
-	if(presetData[vol_contr])DisplayTask->StringOut(83,2,TDisplayTask::fntSystem , 0 , (uint8_t*)"Off");
-	else DisplayTask->StringOut(83,2,TDisplayTask::fntSystem , 0 , (uint8_t*)"On ");
-	DisplayTask->StringOut(2,3,TDisplayTask::fntSystem , 0 , (uint8_t*)in_out_strings + 7);
-	DisplayTask->ParamIndicNum(42,3,presetData[pres_lev]);
-	vol_vol = presetData[pres_lev];
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	ParamListMenu* menu = new ParamListMenu(this, MENU_VOLUME);
+	if(menu)
+	{
+		menu->setParams(params, paramCount);
+		menu->setIcon(false, 0);
+		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
+	}
+
+	shownChildMenu = menu;
+	shownChildMenu->show();
 
 	clean_flag();
 	tim5_start(0);
+
+
 }
 
 void ModulesMenu::key3()
@@ -285,22 +297,24 @@ void ModulesMenu::icon_refresh(uint8_t num)
 
 void ModulesMenu::enableCab()
 {
-	if(name_buf[0] == 0)
+	if(cab1_name_buf[0] == 0)
 	{
-	kgp_sdk_libc::memset(preset_temp,0,24576);
-	kgp_sdk_libc::memset(name_buf_temp,0,64);
-	cab_num = 0;
-	extern uint8_t sd_init_fl;
-	if(sd_init_fl == 1)
-	{
-		  current_menu = MENU_CABBROWSER;
+		kgp_sdk_libc::memset(preset_temp, 0, 24576);
+		kgp_sdk_libc::memset(name_buf_temp, 0, 64);
+		cab_num = 0;
+		extern uint8_t sd_init_fl;
+
+		if(sd_init_fl == 1)
+		{
+		 // current_menu = MENU_CABBROWSER;
 		  DisplayTask->Clear();
 		  extern volatile uint8_t imp_dir_fl;
 		  if(imp_dir_fl)
 		  {
-			  vol_vol = presetData[vol];
+			  vol_ind_level_pos = presetData[vol];
 			  gui_send(7,0);
 			  DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
+
 			  FSTask->SendCommand( TFsBrowser::bcCurrent );
 			  FSTask->SendCommand( TFsBrowser::bcLoadImp );
 		  }
@@ -317,14 +331,15 @@ void ModulesMenu::enableCab()
 		}
 		else
 		{
-		  DisplayTask->Clear();
-		  if(!sd_init_fl)DisplayTask->StringOut(6,1,TDisplayTask::fntSystem,0,(uint8_t*)sd_nr);
-		  else DisplayTask->StringOut(0,1,TDisplayTask::fntSystem,0,(uint8_t*)sd_lo);
-		  CSTask->CS_del(1000);
-		  presetData[cab] = 0;
-		  current_menu = MENU_MAIN;
-		  encoder_knob_selected = 0;
-		  DisplayTask->Menu_init();
+			DisplayTask->Clear();
+			if(!sd_init_fl)DisplayTask->StringOut(6,1,TDisplayTask::fntSystem,0,(uint8_t*)sd_nr);
+			else DisplayTask->StringOut(0,1,TDisplayTask::fntSystem,0,(uint8_t*)sd_lo);
+			CSTask->CS_del(1000);
+
+			presetData[cab] = 0;
+			current_menu = MENU_MAIN;
+			encoder_knob_selected = 0;
+			DisplayTask->Menu_init();
 		}
 	}
 }

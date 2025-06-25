@@ -8,19 +8,13 @@ class RealParam: public BaseParam
 public:
 	RealParam(const char* name, void* paramValuePtr);
 
-	enum TIndicatorType{
-		None,
-		Bar,
-		Pan
-	};
-
-	void increaseParam();
-	void decreaseParam();
 
 	void printParam(uint8_t yPos);
 
-	void setDisplayStep(float step);
-	void setDisplayBounds(float m_minDisplayValue, float m_maxDisplayValue);
+	void setUnits(const char* units, uint8_t strSize);
+
+	void setDisplayBounds(float minDisplayValue, float maxDisplayValue);
+	void setDisplayPrecision(uint8_t precision);
 
 private:
 	float m_displayValue;
@@ -30,7 +24,7 @@ private:
 	float m_k1;
 	float m_k2;
 
-	uint8_t m_precision{0};
+	uint8_t m_precision{1};
 
 	char m_unitsName[4]{0};
 
@@ -38,8 +32,6 @@ private:
 	bool m_signVisible{true};
 
 	void calcDisplayValue();
-
-	TIndicatorType m_indicatorType{TIndicatorType::None};
 
 	static constexpr char spaceSymbol = ' ';
 	static constexpr char minusSymbol = 45;

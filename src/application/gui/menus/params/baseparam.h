@@ -12,6 +12,7 @@ public:
 		GUI_PARAMETER_DUMMY,
 		GUI_PARAMETER_NUM,
 		GUI_PARAMETER_LEVEL,
+		GUI_PARAMETER_VOLUME,
 		GUI_PARAMETER_MIX,
 		GUI_PARAMETER_PAN,
 		GUI_PARAMETER_LIST,
@@ -23,6 +24,14 @@ public:
 		GUI_PARAMETER_STRING_OUT
 	};
 
+	// Сделан только для RealParam
+	enum TIndicatorType{
+		IndNone,
+		IndBarFilled,
+		IndBarTransparent,
+		IndMix,
+		IndPan
+	};
 
 	BaseParam(gui_param_type paramType, const char* name, void* paramValuePtr);
 	virtual ~BaseParam() {};
@@ -44,12 +53,12 @@ public:
 	bool disabled() {return m_disabled;};
 	void setDisabled(bool disabled) {m_disabled = disabled;};
 
-	void setBounds(uint32_t minBound, uint32_t maxBound);
-	uint32_t minValue() const {return m_minValue;};
-	uint32_t maxValue() const {return m_maxValue;};
+	void setBounds(int32_t minBound, int32_t maxBound);
+	int32_t minValue() const {return m_minValue;};
+	int32_t maxValue() const {return m_maxValue;};
 
 	void setScaling(uint8_t stepSize, int32_t offset);
-	uint8_t offset() const {return m_offset;};
+	int32_t offset() const {return m_offset;};
 	uint8_t stepSize() {return m_stepSize;};
 
 	void setInverse(bool isInverse);
@@ -61,10 +70,14 @@ public:
 	void setByteSize(uint8_t size);
 	uint8_t byteSize() const {return m_byteSize;};
 
+	void setIndicatorType(TIndicatorType indicatorType);
+
 	void setToDsp();
 
 protected:
 	const char* m_name;
+
+	TIndicatorType m_indicatorType{IndNone};
 
 	bool m_disabled{false};
 	bool m_inverse{false};
@@ -82,8 +95,8 @@ protected:
 
 	uint8_t* m_valuePtr;
 
-	uint32_t m_minValue{0};
-	uint32_t m_maxValue{127};
+	int32_t m_minValue{0};
+	int32_t m_maxValue{127};
 
 	void encoderSpeedIncrease();
 	void encoderSpeedDecrease();

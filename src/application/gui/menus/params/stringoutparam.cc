@@ -7,7 +7,7 @@ StringOutParam::StringOutParam(const char* stringPtr)
 {
 	m_stringPtr = stringPtr;
 
-	kgp_sdk_libc::memset(m_nameBuffer, 0, 22);
+	kgp_sdk_libc::memset(m_nameBuffer, 0, bufSize);
 }
 
 void StringOutParam::printParam(uint8_t yDisplayPosition)

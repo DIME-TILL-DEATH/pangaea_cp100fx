@@ -34,8 +34,8 @@ private:
 	fs_object_list_t object_list;
 };
 
-extern uint8_t cab_data[];
-extern uint8_t cab_data1[];
+extern uint8_t cab1_data[];
+extern uint8_t cab2_data[];
 extern uint8_t print_flag;
 extern TFSTask *FSTask;
 

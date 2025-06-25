@@ -131,8 +131,8 @@ void eq_mas_par(uint8_t num)
 	}
 	else
 	{
-		dsp_send(DSP_ADDRESS_EQ, 10|(sys_para[510]<<8));
-		dsp_send(DSP_ADDRESS_EQ, 10|(sys_para[511]<<8));
+		dsp_send(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS|(sys_para[MASTER_EQ_FREQ_LO]<<8));
+		dsp_send(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS|(sys_para[MASTER_EQ_FREQ_HI]<<8));
 	}
 }
 
@@ -202,7 +202,7 @@ void Early_par(uint8_t num)
 
 void master_volu(uint8_t val)
 {
-	dsp_send(19, val);
+	dsp_send(DSP_ADDRESS_MASTER, val);
 }
 
 void master_volum_contr(uint8_t val)
@@ -281,8 +281,8 @@ void global_temp(uint8_t val)
 	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE]|(sys_para[TAP_HIGH]<<8));
 }
 
-extern uint8_t cab_data[];
-extern uint8_t cab_data1[];
+extern uint8_t cab1_data[];
+extern uint8_t cab2_data[];
 
 void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 {
@@ -352,16 +352,16 @@ void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 		{
 			if(i<4096)
 			{
-				send_buf = cab_data[i*3]<<8;
-				send_buf |= cab_data[i*3+1]<<16;
-				send_buf |= cab_data[i*3+2]<<24;
+				send_buf = cab1_data[i*3]<<8;
+				send_buf |= cab1_data[i*3+1]<<16;
+				send_buf |= cab1_data[i*3+2]<<24;
 			}
 			else
 			{
 				a = i-4096;
-				send_buf = cab_data1[a*3]<<8;
-				send_buf |= cab_data1[a*3+1]<<16;
-				send_buf |= cab_data1[a*3+2]<<24;
+				send_buf = cab2_data[a*3]<<8;
+				send_buf |= cab2_data[a*3+1]<<16;
+				send_buf |= cab2_data[a*3+2]<<24;
 			}
 		}
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
@@ -427,9 +427,9 @@ void send_cab_data1(uint8_t val, uint8_t num)
 		}
 		else
 		{
-			send_buf = cab_data1[i*3]<<8;
-			send_buf |= cab_data1[i*3+1]<<16;
-			send_buf |= cab_data1[i*3+2]<<24;
+			send_buf = cab2_data[i*3]<<8;
+			send_buf |= cab2_data[i*3+1]<<16;
+			send_buf |= cab2_data[i*3+2]<<24;
 		}
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
 		{
@@ -507,7 +507,7 @@ void gui_send(uint8_t num, uint16_t val)
 			send_cab_data1(val, 0);
 		break;
 		case 18:
-			dsp_send(4, val);
+			dsp_send(DSP_ADDRESS_MODULES_ENABLE, val);
 		break;
 		case 19:
 			pres_volum_cont(val);

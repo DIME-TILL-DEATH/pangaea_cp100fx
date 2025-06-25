@@ -8,6 +8,9 @@ class MasterVolumeMenu: public ParamListMenu
 public:
 	MasterVolumeMenu(AbstractMenu* parentMenu);
 
+	void encoderClockwise() override;
+	void encoderCounterClockwise() override;
+
 	void keyUp() override;
 
 	void key1() override;

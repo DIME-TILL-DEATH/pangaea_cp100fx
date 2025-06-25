@@ -1,6 +1,6 @@
 #include "dialog.h"
 
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "eepr.h"

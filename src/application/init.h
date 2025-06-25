@@ -1,6 +1,9 @@
 #ifndef __INIT_H__
 #define __INIT_H__
 
+#include "appdefs.h"
+//#include "gui/allFonts.h"
+
 extern uint32_t sram_point;
 extern uint8_t tim5_fl;
 extern uint8_t usart_buf[4];
@@ -42,8 +45,8 @@ typedef union
 	};
 } da_data_t;
 
-ad_data_t& init_get_adc_data();
-da_data_t& init_get_dac_data();
+//ad_data_t& init_get_adc_data();
+//da_data_t& init_get_dac_data();
 
 void send_codec(uint16_t data);
 void init(void);

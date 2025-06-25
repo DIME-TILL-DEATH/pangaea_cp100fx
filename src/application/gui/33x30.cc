@@ -1,4 +1,4 @@
-#include "fonts/ER_OLEDM023-1B.h"
+#include "gui/ER_OLEDM023-1B.h"
 uint8_t prog_cur;
 volatile uint8_t prog_sym_cur = 0;
 const uint8_t Tahoma33x30[] = {

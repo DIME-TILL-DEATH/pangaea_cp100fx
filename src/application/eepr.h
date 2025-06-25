@@ -33,19 +33,32 @@ enum
 	pr211, pr221, pr231, pr241,
 	pr311, pr321, pr331, pr341,
 	k11_cc, k21_cc, k31_cc,
-	/*tap type*/TAP_TYPE,
-	TUNER_EXTERNAL,/*tuner ext controller*/
+	TAP_TYPE,		/*tap type*/
+	TUNER_EXTERNAL,	/*tuner ext controller*/
 	/*speed foot*/foot_sp,
-	TIME_FORMAT,
+	TIME_FORMAT,	// Sec, BPM
 	/*global temp hi*/TAP_HIGH,
 	/*save expression level*/sav_exp,
 	/*swap up confirm*/SWAP_SWITCH,
 	/*speed tuner*/TUNER_SPEED,
 
+	MASTER_EQ_ON = 120,
+	MASTER_EQ_LOW = 121,
+	MASTER_EQ_MID = 122,
+	MASTER_EQ_HIGH = 124,
+
 	PHONES_VOLUME = 125,
 	MASTER_VOLUME,
-	ATTENUATOR
+	ATTENUATOR,
+
+	MASTER_EQ_FREQ_VAL_LO = 508,
+	MASTER_EQ_FREQ_VAL_HI,
+
+	MASTER_EQ_FREQ_LO = 510,
+	MASTER_EQ_FREQ_HI
 };
+
+extern int16_t mstEqMidFreq;
 
 extern uint16_t delay_time;
 extern volatile uint8_t prog;
@@ -63,8 +76,8 @@ extern uint8_t imya1_t[];
 extern uint8_t presetControllers[];
 extern uint8_t sys_para[];
 extern uint8_t imp_buf_uint[];
-extern char name_buf[];
-extern char name_buf1[];
+extern char cab1_name_buf[];
+extern char cab2_name_buf[];
 extern char name_buf_temp[];
 extern const uint8_t no_loaded[];
 extern volatile uint16_t adc_low;

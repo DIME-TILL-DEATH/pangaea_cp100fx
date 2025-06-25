@@ -30,7 +30,7 @@ void BaseParam::setScaling(uint8_t stepSize, int32_t offset)
 	m_offset = offset;
 }
 
-void BaseParam::setBounds(uint32_t minBound, uint32_t maxBound)
+void BaseParam::setBounds(int32_t minBound, int32_t maxBound)
 {
 	m_minValue = minBound;
 	m_maxValue = maxBound;
@@ -45,6 +45,11 @@ const char* BaseParam::name()
 void BaseParam::setByteSize(uint8_t size)
 {
 	m_byteSize = size;
+}
+
+void BaseParam::setIndicatorType(TIndicatorType indicatorType)
+{
+	m_indicatorType = indicatorType;
 }
 
 uint32_t BaseParam::value() const
@@ -67,7 +72,11 @@ void BaseParam::increaseParam()
 {
 	if(!m_valuePtr) return;
 
-	if(*m_valuePtr < m_maxValue)
+	int32_t data = 0;
+	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
+	else data = (int8_t)(*m_valuePtr);
+
+	if(data < m_maxValue)
 	{
 		if(m_type != GUI_PARAMETER_NUM)
 			encoderSpeedIncrease();
@@ -80,7 +89,11 @@ void BaseParam::decreaseParam()
 {
 	if(!m_valuePtr) return;
 
-	if(*m_valuePtr > m_minValue)
+	int32_t data = 0;
+	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
+	else data = (int8_t)(*m_valuePtr);
+
+	if(data > m_minValue)
 	{
 		if(m_type != GUI_PARAMETER_NUM)
 			encoderSpeedDecrease();
@@ -110,6 +123,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 		return;
 	}
 
+	// переделать на IndicatorType
 	switch(m_type)
 	{
 		case BaseParam::GUI_PARAMETER_LEVEL:
@@ -120,6 +134,9 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 			break;
 		case BaseParam::GUI_PARAMETER_PAN:
 			DisplayTask->ParamIndicPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			break;
+		case BaseParam::GUI_PARAMETER_VOLUME:
+			DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_NUM:
 			DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
@@ -145,8 +162,9 @@ void BaseParam::encoderSpeedIncrease()
 {
 	TIM_Cmd(TIM6, DISABLE);
 
-	uint32_t data = 0;
-	kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
+	int32_t data = 0;
+	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
+	else data = (int8_t)(*m_valuePtr);
 
 	if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update))
 	{
@@ -189,8 +207,9 @@ void BaseParam::encoderSpeedDecrease()
 {
 	TIM_Cmd(TIM6, DISABLE);
 
-	uint32_t data = 0;
-	kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
+	int32_t data = 0;
+	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
+	else data = (int8_t)(*m_valuePtr);
 
 	if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update))
 	{

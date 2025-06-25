@@ -21,8 +21,8 @@ public:
 	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount);
 	void setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
 
-	void show(TShowMode showMode = FirstShow) override;
-	void task() override;
+	virtual void show(TShowMode showMode = FirstShow) override;
+	virtual void task() override;
 
 	virtual void encoderPressed() override;
 	virtual void encoderClockwise() override;
@@ -49,7 +49,7 @@ protected:
 	BaseParam* m_paramsList[maxParamCount];
 	uint8_t m_paramsCount{0};
 
-	uint8_t m_firstSelectableParam{0};
+	uint8_t m_firstSelectableParam;
 	uint8_t m_lastSelectableParam;
 
 	bool m_canTap{false};

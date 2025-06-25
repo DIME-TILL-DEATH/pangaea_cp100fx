@@ -1,3 +1,6 @@
+#ifndef ALLFONTS_H_
+#define ALLFONTS_H
+
 #include "appdefs.h"
 #include "ER_OLEDM023-1B.h"
 #include "SystemFont5x7.h"
@@ -53,7 +56,7 @@ extern uint32_t ind_in_p[];
 extern uint32_t ind_out_l[];
 extern uint16_t ind_poin;
 extern uint8_t vol_fl;
-extern uint8_t vol_vol;
+extern uint8_t vol_ind_level_pos;
 //extern uint8_t edit_modules_fl;
 extern uint8_t imya_temp;
 extern uint8_t prog_cur;
@@ -79,64 +82,8 @@ void tun_ind(void);
 void ind_foot(uint8_t num , uint8_t val);
 void strel_print(uint8_t col , uint8_t pag , uint8_t dir);
 
-inline void del_sec_ind(uint8_t col , uint8_t pag , uint32_t d)
-{
-	uint16_t t3[4];
-	t3[0] = d / 1000;
-	t3[2] = d % 1000;
-	t3[1] = t3[2] / 100 ;
-	t3[3] = t3[2] % 100;
-	t3[2] = t3[3] / 10;
-	t3[3] = t3[3] % 10;
-	Set_Column_Address(col);
-	Set_Page_Address(pag);
-	col = Arsys_sym(col,pag,t3[0]+48,0);
-	col = Arsys_sym(col,pag,44,0);
-	for(uint8_t i = 1 ; i < 4 ; i++)col = Arsys_sym(col,pag,t3[i]+48,0);
-	col = Arsys_sym(col,pag,115,0);
-}
-inline void del_tim_ind(uint8_t col , uint8_t pag , uint32_t d)
-{
-	if(!sys_para[56])del_sec_ind(col , pag , d);
-	else {
-		Arsys_line(90,pag,(uint8_t*)"bpm",0);
-		Set_Column_Address(col);
-		Set_Page_Address(pag);
-		uint16_t t3[4];
-		volatile float a = 60.0f / (d * 0.001f);
-		uint16_t b = a;
-		if(a >= 1000.0f)
-		{
-			t3[0] = b / 1000;
-			t3[2] = b % 1000;
-			t3[1] = t3[2] / 100;
-			t3[3] = t3[2] % 100;
-			t3[2] = t3[3] / 10;
-			t3[3] = t3[3] % 10;
-			for(uint8_t i = 0 ; i < 4 ; i++)col = Arsys_sym(col,pag,t3[i]+48,0);
-			col = Arsys_sym(col,pag,44,0);
-			return;
-		}
-		if(a >= 100.0f)
-		{
-			a = (a - b) * 10.0f;
-			t3[0] = b / 100;
-			t3[2] = b % 100;
-			t3[1] = t3[2] / 10;
-			t3[2] = t3[2] % 10;
-			for(uint8_t i = 0 ; i < 3 ; i++)col = Arsys_sym(col,pag,t3[i]+48,0);
-			col = Arsys_sym(col,pag,44,0);
-			Arsys_sym(col,pag,a+48,0);
-			return;
-		}
-		a = (a - b) * 100.0f;
-		t3[0] = b / 10;
-		t3[1] = b % 10;
-		for(uint8_t i = 0 ; i < 2 ; i++)col = Arsys_sym(col,pag,t3[i]+48,0);
-		col = Arsys_sym(col,pag,44,0);
-		b = a;
-		t3[0] = b / 10;
-		t3[1] = b % 10;
-		for(uint8_t i = 0 ; i < 2 ; i++)col = Arsys_sym(col,pag,t3[i]+48,0);
-	}
-}
+void del_sec_ind(uint8_t col , uint8_t pag , uint32_t d);
+void del_tim_ind(uint8_t col , uint8_t pag , uint32_t d);
+
+
+#endif

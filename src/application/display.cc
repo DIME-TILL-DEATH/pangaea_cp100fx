@@ -1,6 +1,6 @@
 #include "display.h"
-#include "fonts/allFonts.h"
-#include "fonts/icon_bit.h"
+#include "gui/allFonts.h"
+#include "gui/icon_bit.h"
 #include "eepr.h"
 
 #include "BF706_send.h"
@@ -148,6 +148,11 @@ void TDisplayTask::Code()
 
 			case dcParamIndic:
 				par_ind(cmd.ParamIndicParam.pos.x, cmd.ParamIndicParam.pos.y,
+						cmd.ParamIndicParam.data);
+			break;
+
+			case dcParamIndicTransparent:
+				p_ind(cmd.ParamIndicParam.pos.x, cmd.ParamIndicParam.pos.y,
 						cmd.ParamIndicParam.data);
 			break;
 
@@ -412,6 +417,14 @@ void TDisplayTask::ParamIndic(uint8_t x, uint8_t y , uint8_t data)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcParamIndic;
+	cmd.ParamIndicParam.pos = {x,y};
+	cmd.ParamIndicParam.data = data;
+	Command(&cmd);
+}
+void TDisplayTask::ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data)
+{
+	TDisplayCmd cmd;
+	cmd.cmd=dcParamIndicTransparent;
 	cmd.ParamIndicParam.pos = {x,y};
 	cmd.ParamIndicParam.data = data;
 	Command(&cmd);

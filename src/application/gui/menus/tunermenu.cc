@@ -3,7 +3,7 @@
 #include "appdefs.h"
 #include "cs.h"
 #include "eepr.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "spectrum.h"

@@ -3,7 +3,7 @@
 #include "cc.h"
 #include "init.h"
 #include "filt.h"
-#include "fonts/allFonts.h"
+#include "gui/allFonts.h"
 #include "fs.h"
 #include "eepr.h"
 #include "display.h"
@@ -20,7 +20,7 @@ TCSTask* CSTask ;
 void oled023_1_disp_init(void);
 void led_disp_write(void);
 extern uint8_t led_buf[];
-volatile uint16_t mas_eq_fr;
+//volatile uint16_t mas_eq_fr;
 
 AbstractMenu* currentMenu;
 MainMenu* mainMenu;
@@ -78,17 +78,29 @@ void TCSTask::Code()
 	if(!sys_para[125])sys_para[125] = 127;
   	DisplayTask->Pot_Write();
 	gui_send(1,sys_para[126]); //master volum
-	if(!sys_para[508] && !sys_para[509])
+
+//	if(!sys_para[508] && !sys_para[509])
+//	{
+//		sys_para[508] = 2;
+//		sys_para[509] = 0x6a;
+//	}
+//	mas_eq_fr = sys_para[508] << 8;
+//	mas_eq_fr |= sys_para[509];
+
+
+//	mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
+
+
+	if(!sys_para[MASTER_EQ_FREQ_LO] && !sys_para[MASTER_EQ_FREQ_HI])
 	{
-		sys_para[508] = 2;
-		sys_para[509] = 0x6a;
+		mstEqMidFreq = 1000;
 	}
-	mas_eq_fr = sys_para[508] << 8;
-	mas_eq_fr |= sys_para[509];
-	uint16_t f = mas_eq_fr;
-	f *= mas_eq_fr * (20.0f/20000.0f) + 1;
-	sys_para[510] = f >> 8;
-	sys_para[511] = f;
+	else
+	{
+		mstEqMidFreq = sys_para[MASTER_EQ_FREQ_LO] << 8;
+		mstEqMidFreq |= sys_para[MASTER_EQ_FREQ_HI];
+	}
+
 	for(uint8_t i = 0 ; i < 4 ; i++)gui_send(25,i);
 	gui_send(18, 14 | (sys_para[120] << 8)); // master eq
 	tun_del_val = (127 - sys_para[TUNER_SPEED]) * (90.0f/127.0f) + 10.0f;

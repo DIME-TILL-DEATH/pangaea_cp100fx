@@ -73,8 +73,8 @@ uint8_t __CCM_BSS__ imya_t[15];
 uint8_t __CCM_BSS__ imya1_t[15];
 volatile uint32_t fl_st;
 const uint8_t no_loaded[] = "No loaded";
-char __CCM_BSS__ name_buf [64];
-char __CCM_BSS__ name_buf1[64];
+char __CCM_BSS__ cab1_name_buf [64];
+char __CCM_BSS__ cab2_name_buf[64];
 char __CCM_BSS__ name_buf_temp[64];
 uint8_t cab_num = 0;
 extern volatile uint8_t prog_sym_cur;
@@ -83,8 +83,21 @@ extern emb_string full_curr_dir_path;
 
 char fna[_MAX_LFN];
 
+int16_t mstEqMidFreq;
+
 void write_sys(void)
 {
+	// Значения поумолчанию чтобы не решать квадратное уравнение
+	// mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
+	//	mas_eq_fr = sys_para[508] << 8;
+	//	mas_eq_fr |= sys_para[509];
+	sys_para[MASTER_EQ_FREQ_VAL_LO] = 2;
+	sys_para[MASTER_EQ_FREQ_VAL_HI] = 0x6a;
+
+	sys_para[MASTER_EQ_FREQ_LO] = (mstEqMidFreq>>8) & 0xF;
+	sys_para[MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xF;
+
+
 	FATFS fs;
 	FIL file;
 	UINT f_size;
@@ -115,18 +128,18 @@ void eepr_write(uint8_t nu)
 	del_t_b[0] = delay_time;
 	del_t_b[1] = delay_time>>8;
 	f_write(&file, del_t_b, 2, &f_size);
-	f_write(&file, cab_data, 12288, &f_size);
-	f_write(&file, name_buf, 64, &f_size);
+	f_write(&file, cab1_data, 12288, &f_size);
+	f_write(&file, cab1_name_buf, 64, &f_size);
 	if(cab_type==2)
 	{
-		f_write(&file, cab_data1, 12288, &f_size);
-		f_write(&file, name_buf1, 64, &f_size);
+		f_write(&file, cab2_data, 12288, &f_size);
+		f_write(&file, cab2_name_buf, 64, &f_size);
 		f_lseek(&file, 38048);
 	}
 	else
 	{
 		f_lseek(&file, 25760);
-		f_write(&file, cab_data1, 12288, &f_size);
+		f_write(&file, cab2_data, 12288, &f_size);
 	}
 	f_write(&file, impulse_path, 512, &f_size);
 	f_close(&file);
@@ -185,20 +198,20 @@ void eepr_read_prog(uint8_t nu)
 		delay_time = del_t_b[0];
 		delay_time |= del_t_b[1]<<8;
 //	    }
-		f_read(&file, cab_data, 12288, &f_size);
-		f_read(&file, name_buf, 64, &f_size);
+		f_read(&file, cab1_data, 12288, &f_size);
+		f_read(&file, cab1_name_buf, 64, &f_size);
 		if(cab_type==2)
 		{
-			f_read(&file, cab_data1, 12288, &f_size);
-			f_read(&file, name_buf1, 64, &f_size);
+			f_read(&file, cab2_data, 12288, &f_size);
+			f_read(&file, cab2_name_buf, 64, &f_size);
 		}
 		else
 		{
 			f_lseek(&file, 25760);
 			if(f_size(&file)<=25760)
-				kgp_sdk_libc::memset(cab_data1, 0, 12288);
+				kgp_sdk_libc::memset(cab2_data, 0, 12288);
 			else
-				f_read(&file, cab_data1, 12288, &f_size);
+				f_read(&file, cab2_data, 12288, &f_size);
 		}
 		f_lseek(&file, 38048);
 		kgp_sdk_libc::memset(impulse_path, 0, 512);
@@ -232,21 +245,21 @@ void eepr_read_prog(uint8_t nu)
 			presetName[i] = imya_init[i];
 		for(uint8_t i = 0; i<15; i++)
 			presetComment[i] = imya_init1[i];
-		kgp_sdk_libc::memset(cab_data, 0, 12288);
-		kgp_sdk_libc::memset(cab_data1, 0, 12288);
+		kgp_sdk_libc::memset(cab1_data, 0, 12288);
+		kgp_sdk_libc::memset(cab2_data, 0, 12288);
 		kgp_sdk_libc::memset(presetControllers, 0, 512);
 		for(uint8_t i = 0; i<128; i++)
 			presetControllers[i*4+3] = 127;
 		delay_time = del_tim_init;
-		name_buf[0] = name_buf1[0] = 0;
-		cab_data[0] = 0xff;
-		cab_data[1] = 0xff;
-		cab_data[2] = 0x7f;
+		cab1_name_buf[0] = cab2_name_buf[0] = 0;
+		cab1_data[0] = 0xff;
+		cab1_data[1] = 0xff;
+		cab1_data[2] = 0x7f;
 		if(cab_type==2)
 		{
-			cab_data1[0] = 0xff;
-			cab_data1[1] = 0xff;
-			cab_data1[2] = 0x7f;
+			cab2_data[0] = 0xff;
+			cab2_data[1] = 0xff;
+			cab2_data[2] = 0x7f;
 		}
 		prog_sym_cur = 1;
 	}
@@ -258,7 +271,7 @@ void eepr_read_prog(uint8_t nu)
 	f_mount(0, "1:", 0);
 	presetName[14] = 0;
 	presetComment[14] = 0;
-	name_buf[63] = name_buf1[63] = 0;
+	cab1_name_buf[63] = cab2_name_buf[63] = 0;
 	FSTask->Resume();
 }
 void read_prog_temp(uint8_t nu)
@@ -431,14 +444,14 @@ void load_mass_imp(void)
 			;
 			SPI_I2S_SendData(SPI2, i-1);
 			f_lseek(&file, 1056);
-			f_read(&file, cab_data, 12288, &f_size);
+			f_read(&file, cab1_data, 12288, &f_size);
 			for(uint32_t ii = 0; ii<4096; ii++)
 			{
 				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 				EXTI_ClearITPendingBit(EXTI_Line9);
-				buf = cab_data[ii*3]<<8;
-				buf |= cab_data[ii*3+1]<<16;
-				buf |= cab_data[ii*3+2]<<24;
+				buf = cab1_data[ii*3]<<8;
+				buf |= cab1_data[ii*3+1]<<16;
+				buf |= cab1_data[ii*3+2]<<24;
 				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
 				{
 				}
@@ -454,26 +467,26 @@ void load_mass_imp(void)
 			{
 				if(f_size(&file)<=25760)
 				{
-					kgp_sdk_libc::memset(cab_data1, 0, 12288);
+					kgp_sdk_libc::memset(cab2_data, 0, 12288);
 				}
 				else
 				{
 					f_lseek(&file, 25760);
-					f_read(&file, cab_data1, 12288, &f_size);
+					f_read(&file, cab2_data, 12288, &f_size);
 				}
 			}
 			else
 			{
 				f_lseek(&file, 13408);
-				f_read(&file, cab_data1, 12288, &f_size);
+				f_read(&file, cab2_data, 12288, &f_size);
 			}
 			for(uint32_t ii = 0; ii<4096; ii++)
 			{
 				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 				EXTI_ClearITPendingBit(EXTI_Line9);
-				buf = cab_data1[ii*3]<<8;
-				buf |= cab_data1[ii*3+1]<<16;
-				buf |= cab_data1[ii*3+2]<<24;
+				buf = cab2_data[ii*3]<<8;
+				buf |= cab2_data[ii*3+1]<<16;
+				buf |= cab2_data[ii*3+2]<<24;
 				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
 				{
 				}

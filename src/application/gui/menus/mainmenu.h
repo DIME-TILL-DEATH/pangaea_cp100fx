@@ -29,8 +29,7 @@ public:
 private:
 	ModulesMenu modulesMenu{this};
 
-	constexpr static uint8_t master_eq_of[] = {"Master EQ Bypass"};
-	constexpr static uint8_t master_eq_on[] = {"EQ on/off press EDIT"};
+
 	constexpr static uint8_t mas_eq_list   [][9] ={"Low","Mid","Mid Freq","High"};
 };
 
