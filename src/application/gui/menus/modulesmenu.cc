@@ -211,7 +211,8 @@ void ModulesMenu::key2()
 	const uint8_t paramCount = 3;
 	BaseParam* params[paramCount];
 
-	params[0] = new StringOutParam("    Preset level");
+	params[0] = new StringOutParam("Preset level");
+	params[0]->setDisplayPosition(40);
 	params[1] = new StringListParam("Control", &presetData[PRESET_VOLUME_CONTROL], {"On ", "Off"}, 3);
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &presetData[PRESET_VOLUME]);
 	params[2]->setDspAddress(DSP_ADDRESS_PRESET_VOLUME, PARAM_EQUAL_POS);

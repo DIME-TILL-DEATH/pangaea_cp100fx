@@ -7,12 +7,30 @@ StringOutParam::StringOutParam(const char* stringPtr)
 {
 	m_stringPtr = stringPtr;
 
+	m_name = "";
+
 	kgp_sdk_libc::memset(m_nameBuffer, 0, bufSize);
+}
+
+void StringOutParam::setRunning(bool enable, AbstractMenu* owner)
+{
+	if(enable)
+	{
+		m_running = true;
+		owner->setRunningString(this);
+	}
+	else
+	{
+		m_running = false;
+		owner->setRunningString(nullptr);
+	}
 }
 
 void StringOutParam::printParam(uint8_t yDisplayPosition)
 {
 	m_yDisplayPosition = yDisplayPosition;
+
+	if(!m_running) DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, TDisplayTask::fntSystem, 0, (uint8_t*)m_stringPtr);
 }
 
 void StringOutParam::task()

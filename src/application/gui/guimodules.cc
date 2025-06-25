@@ -198,7 +198,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 		menu->setIcon(false, 0);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
-		menu->setRunningString(runningString);
+		runningString->setRunning(true, menu);
 	}
 
 	return menu;

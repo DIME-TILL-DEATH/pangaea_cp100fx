@@ -3,6 +3,10 @@
 
 #include "baseparam.h"
 
+//#include "../abstractmenu.h"
+
+class AbstractMenu;
+
 class StringOutParam: public BaseParam
 {
 public:
@@ -14,10 +18,14 @@ public:
 
 	void printParam(uint8_t yPos) override;
 
+	void setRunning(bool enable, AbstractMenu* owner);
+
 	void task();
 
 private:
 	const char* m_stringPtr;
+
+	bool m_running{false};
 
 	uint8_t m_yDisplayPosition{0};
 

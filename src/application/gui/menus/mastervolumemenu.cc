@@ -21,25 +21,49 @@ MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 
 void MasterVolumeMenu::encoderClockwise()
 {
-	m_paramsList[m_currentParamNum]->increaseParam();
+	if(!m_encoderKnobSelected)
+	{
+		if(m_currentParamNum < m_paramsCount - 1)
+		{
+			m_currentParamNum++;
+			printPage();
+			tim5_start(0);
+		}
+	}
+	else
+	{
+		m_paramsList[m_currentParamNum]->increaseParam();
 
-	m_paramsList[m_currentParamNum]->setToDsp();
-	DisplayTask->Pot_Write();
+		m_paramsList[m_currentParamNum]->setToDsp();
+		DisplayTask->Pot_Write();
 
-	m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
-
+		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
+	}
 	clean_flag();
 }
 
 void MasterVolumeMenu::encoderCounterClockwise()
 {
-	m_paramsList[m_currentParamNum]->decreaseParam();
+	if(!m_encoderKnobSelected)
+	{
+		if(m_currentParamNum > 0) //(paramsCount - 1)
+		{
+			m_currentParamNum--;
+			printPage();
+			tim5_start(0);
+		}
+	}
+	else
+	{
+		m_paramsList[m_currentParamNum]->decreaseParam();
 
-	m_paramsList[m_currentParamNum]->setToDsp();
-	DisplayTask->Pot_Write();
+		m_paramsList[m_currentParamNum]->setToDsp();
+		DisplayTask->Pot_Write();
 
-	m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
+		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 
+
+	}
 	clean_flag();
 }
 

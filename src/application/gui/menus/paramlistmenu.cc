@@ -317,10 +317,9 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 	{
 		uint8_t displayParamNum = i + m_currentPageNumber * paramsOnPage;
 
-		bool highlight = (m_currentParamNum == displayParamNum) && (m_pagesCount > 1);
+		bool highlight = (m_currentParamNum == displayParamNum) && (m_paramsCount > 1);
 
-		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY
-			|| m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_STRING_OUT) continue;
+		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 
 		m_paramsList[displayParamNum]->printParam(i);
 		DisplayTask->StringOut(leftPad, i, TDisplayTask::fntSystem , 2 * highlight, (uint8_t*)(m_paramsList[displayParamNum]->name()));

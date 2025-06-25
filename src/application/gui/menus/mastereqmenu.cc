@@ -41,7 +41,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	params[1] = realParam;
 
 	realParam = new RealParam("Mid Freq", &mstEqMidFreq);
-	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_MID_GAIN_POS);
+	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS);
 	realParam->setByteSize(2);
 	realParam->setBounds(20, 4000);
 	realParam->setDisplayBounds(20, 4000);
@@ -51,7 +51,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	realParam->setDisplayPosition(60);
 	params[2] = realParam;
 
-	realParam = new RealParam("Mid", &sys_para[MASTER_EQ_HIGH]);
+	realParam = new RealParam("High", &sys_para[MASTER_EQ_HIGH]);
 	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_HIGH_GAIN_POS);
 	realParam->setScaling(1, 24);
 	realParam->setBounds(-24, +24);
