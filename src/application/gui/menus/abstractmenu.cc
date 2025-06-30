@@ -29,8 +29,8 @@ void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 	if(returnMode == TReturnMode::DeleteChild)
 	{
 		delete shownChildMenu;
-		shownChildMenu = nullptr;
 	}
+	shownChildMenu = nullptr;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	show(TShowMode::ReturnShow);
