@@ -6,7 +6,7 @@
 #include "cs.h"
 #include "eepr.h"
 #include "BF706_send.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 
 TMidiSendTask *MidiSendTask;
 
@@ -108,7 +108,7 @@ void TMidiSendTask::Code()
 								if((midi_b[1]==(sys_para[TUNER_EXTERNAL]&0x7f))&&(sys_para[TUNER_EXTERNAL]&0x80))
 								{
 //						    	if(((!current_menu) || (current_menu = MENU_TUNER))&&(!edit_fl))
-									if(((!current_menu)||(current_menu==MENU_TUNER))) //&&(!edit_modules_fl))
+									if(((!current_menu_type)||(current_menu_type==MENU_TUNER))) //&&(!edit_modules_fl))
 									{
 										k_tuner = 1;
 										CSTask->Give();
@@ -117,7 +117,7 @@ void TMidiSendTask::Code()
 								else
 								{
 									CCTask->Give();
-									if((current_menu==MENU_CONTROLLERS&&(par_num<3))||(current_menu==MENU_TUNER_EXT))
+									if((current_menu_type==MENU_CONTROLLERS&&(par_num<3))||(current_menu_type==MENU_TUNER_EXT))
 									{
 										uint8_t midi_in_cc[] = "midi in CC#->";
 										DisplayTask->StringOut(20, 3, TDisplayTask::fntSystem, 0, (uint8_t*)midi_in_cc);
@@ -135,7 +135,7 @@ void TMidiSendTask::Code()
 							pc_in = tmp;
 							if(currentMenu->menuType()==MENU_MAIN)
 							{
-								prog1 = sys_para[tmp+128]%100;
+								preselectedPresetNumber = sys_para[tmp+128]%100;
 								encoder_knob_pressed = 1;
 								midi_f1 = 1;
 								CSTask->Give();
@@ -175,10 +175,10 @@ void TMidiSendTask::Code()
 						if(midi_f1)
 							uart_send(pc_in);
 						else
-							uart_send(prog);
+							uart_send(currentPresetNumber);
 					break;
 					case 1:
-						uart_send(sys_para[prog+128]);
+						uart_send(sys_para[currentPresetNumber+128]);
 					break;
 					case 2:
 						uart_send(presetControllers[511]&0x7f);

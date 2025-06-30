@@ -1,7 +1,7 @@
 #include "appdefs.h"
 #include "allFonts.h"
 
-#include "../gui/gui_task.h"
+#include "../gui_task.h"
 #include "fs.h"
 #include "eepr.h"
 #include "cs.h"

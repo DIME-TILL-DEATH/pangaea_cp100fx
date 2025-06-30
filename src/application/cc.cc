@@ -5,7 +5,7 @@
 #include "cs.h"
 #include "enc.h"
 #include "display.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "BF706_send.h"
 #include "midi_send.h"
 
@@ -159,9 +159,9 @@ void con_ch(uint8_t adr, uint8_t data)
 					if(!sys_para[TIME_FORMAT])
 					{
 						contr_send(3, 1);
-						if(current_menu==MENU_DELAY)
+						if(current_menu_type==MENU_DELAY)
 							DisplayTask->DelayTimeInd(53, 1, delay_time);
-						if(current_menu==MENU_TAP_DELAY)
+						if(current_menu_type==MENU_TAP_DELAY)
 							DisplayTask->DelayTimeInd(53, 0, delay_time);
 					}
 					else
@@ -174,13 +174,13 @@ void con_ch(uint8_t adr, uint8_t data)
 							delay_time = bpm_time[temp];
 							contr_send(3, 1);
 
-							if(current_menu==MENU_DELAY)
+							if(current_menu_type==MENU_DELAY)
 							{
 								DisplayTask->ParamIndicNum(53, 1, 60000/delay_time);
 								DisplayTask->StringOut(90, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"BPM");
 							}
 
-							if(current_menu==MENU_TAP_DELAY)
+							if(current_menu_type==MENU_TAP_DELAY)
 							{
 								DisplayTask->ParamIndicNum(53, 0, 60000/delay_time);
 								DisplayTask->StringOut(90, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"BPM");

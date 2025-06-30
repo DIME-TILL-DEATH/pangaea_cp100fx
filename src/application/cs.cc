@@ -3,7 +3,7 @@
 #include "cc.h"
 #include "init.h"
 #include "filt.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "fs.h"
 #include "eepr.h"
 #include "display.h"
@@ -51,7 +51,7 @@ void TCSTask::Code()
 
 	CSTask->DisplayAccess(false);
 
-    prog = prog1 = sys_para[31];
+    currentPresetNumber = preselectedPresetNumber = sys_para[31];
 
     DisplayTask->StartScreen(1);
 
@@ -106,9 +106,9 @@ void TCSTask::Code()
 	tun_del_val = (127 - sys_para[TUNER_SPEED]) * (90.0f/127.0f) + 10.0f;
 	Delay(500);
 	prog_ch();
-	eepr_read_imya(prog1);
+	eepr_read_imya(preselectedPresetNumber);
 	DisplayTask->Main_scr();
-	DisplayTask->Prog_ind(prog1);
+	DisplayTask->Prog_ind(preselectedPresetNumber);
     for(uint8_t i = 0 ; i < 3 ; i++)
     {
     	contr_kn[i] = presetData[fo1 + i];

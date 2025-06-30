@@ -6,7 +6,7 @@
 class CabBrowserMenu: public AbstractMenu
 {
 public:
-	CabBrowserMenu(AbstractMenu *parent);
+	CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber);
 
 	void show(TShowMode showMode = FirstShow) override;
 
@@ -15,6 +15,9 @@ public:
 	void encoderClockwise() override;
 
 	void keyUp() override;
+
+private:
+	uint8_t m_cabNumber{0};
 
 };
 

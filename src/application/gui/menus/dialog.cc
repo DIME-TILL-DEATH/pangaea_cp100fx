@@ -1,6 +1,6 @@
 #include "dialog.h"
 
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "eepr.h"
@@ -83,7 +83,7 @@ void Dialog::setNoMenu(AbstractMenu* noMenu)
 
 void Dialog::show(TShowMode showMode)
 {
-	current_menu = m_menuType;
+	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	m_paramNum = m_btnCount - 1;
@@ -108,7 +108,7 @@ void Dialog::encoderPressed()
 	switch(m_paramNum)
 	{
 		case 2:
-			eepr_read_imya(prog1);
+			eepr_read_imya(preselectedPresetNumber);
 
 			currentMenu = m_yesMenu;
 			m_yesMenu->show();
@@ -116,8 +116,7 @@ void Dialog::encoderPressed()
 		break;
 		case 0:
 			prog_ch();
-			eepr_read_imya(prog1);
-			prog_cur = 0;
+			eepr_read_imya(preselectedPresetNumber);
 
 			currentMenu = m_noMenu;
 			m_noMenu->show();
@@ -128,15 +127,15 @@ void Dialog::encoderPressed()
 			{
 				case TDialogType::ErasePreset:
 				{
-					preset_erase(prog);
+					preset_erase(currentPresetNumber);
 					kgp_sdk_libc::memcpy(presetData, prog_data_init, 512);
 					presetData[delay_tim_lo] = 0xf4;
 					presetData[delay_tim_hi] = 1;
 
 					cab_data_ready = false;
-					send_cab_data(1, prog+1, 0);
+					send_cab_data(1, currentPresetNumber+1, 0);
 					if(cab_num==2)
-						send_cab_data1(1, prog+1);
+						send_cab_data1(1, currentPresetNumber+1);
 
 					prog_ch();
 					break;

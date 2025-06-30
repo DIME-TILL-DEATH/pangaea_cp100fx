@@ -10,6 +10,8 @@ StringOutParam::StringOutParam(const char* stringPtr)
 	m_name = "";
 
 	kgp_sdk_libc::memset(m_nameBuffer, 0, bufSize);
+
+	m_timeCounter = m_timeThreshold;
 }
 
 void StringOutParam::setRunning(bool enable, AbstractMenu* owner)

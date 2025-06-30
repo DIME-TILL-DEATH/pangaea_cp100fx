@@ -4,7 +4,7 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -24,7 +24,7 @@ EqBandMenu::EqBandMenu(AbstractMenu *parent, uint8_t bandNum)
 
 void EqBandMenu::show(TShowMode showMode)
 {
-	current_menu = MENU_EQ_BAND;
+	current_menu_type = MENU_EQ_BAND;
 	currentMenu = this;
 
 	DisplayTask->Clear();

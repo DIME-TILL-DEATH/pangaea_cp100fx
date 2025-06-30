@@ -4,7 +4,7 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -17,7 +17,7 @@ NameEditMenu::NameEditMenu(AbstractMenu* parent)
 
 void NameEditMenu::show(TShowMode swhoMode)
 {
-	current_menu = MENU_NAME_EDIT;
+	current_menu_type = MENU_NAME_EDIT;
 	currentMenu = this;
 	// было своё copyMenu
 

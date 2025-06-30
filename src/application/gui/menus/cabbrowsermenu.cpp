@@ -4,8 +4,8 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
-#include "gui/icon_bit.h"
+#include "gui/elements/allFonts.h"
+#include "gui/elements/icon_bit.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -19,15 +19,17 @@ extern volatile uint8_t action_fl;
 
 extern uint8_t cab_type;
 
-CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent)
+CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 {
 	topLevelMenu = parent;
 	m_menuType = MENU_CABBROWSER;
+
+	m_cabNumber = cabNumber;
 }
 
 void CabBrowserMenu::show(TShowMode showMode)
 {
-	current_menu = m_menuType;
+	current_menu_type = m_menuType;
 
 	if(sd_init_fl==1)
 	{
@@ -69,7 +71,7 @@ void CabBrowserMenu::keyUp()
 {
 	DisplayTask->Clear();
 
-	if(!cab_num)
+	if(m_cabNumber == 0)
 	{
 //		if(name_buf[0]==0)
 //		{
@@ -121,7 +123,7 @@ void CabBrowserMenu::encoderPressed()
 		file_fl = 0;
 		DisplayTask->Clear();
 
-		if(cab_num==0)
+		if(m_cabNumber==0)
 		{
 			kgp_sdk_libc::memcpy(cab1_data, preset_temp, 12288);
 

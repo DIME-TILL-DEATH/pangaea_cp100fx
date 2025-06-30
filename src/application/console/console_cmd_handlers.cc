@@ -3,7 +3,7 @@
 #include "eepr.h"
 #include "ff.h"
 
-#include "gui/amt.h"
+#include "gui/elements/amt.h"
 
 #include "../gui/gui_task.h"
 

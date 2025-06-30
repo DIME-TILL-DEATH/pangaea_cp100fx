@@ -3,7 +3,7 @@
 #include "appdefs.h"
 #include "cs.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "spectrum.h"
@@ -23,7 +23,7 @@ void TunerMenu::show(TShowMode showMode)
 	tun_base_old = 0.0f;
 	tun_ini();
 	tuner_use = 1;
-	current_menu = MENU_TUNER;
+	current_menu_type = MENU_TUNER;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
 }

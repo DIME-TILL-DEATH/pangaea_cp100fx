@@ -1,7 +1,7 @@
 #include "appdefs.h"
 #include "init.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "fs.h"
 #include "cs.h"
 #include "AT45DB321.h"

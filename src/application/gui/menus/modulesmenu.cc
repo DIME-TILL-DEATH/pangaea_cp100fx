@@ -6,7 +6,7 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -20,7 +20,7 @@
 #include "params/stringoutparam.h"
 
 
-extern gui_menu_type current_menu;
+extern gui_menu_type current_menu_type;
 
 extern uint8_t control_destin;
 
@@ -76,7 +76,7 @@ ModulesMenu::ModulesMenu(AbstractMenu* parent)
 
 void ModulesMenu::show(TShowMode showMode)
 {
-	current_menu = m_menuType;
+	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	if(showMode == TShowMode::FirstShow) presetEdited = false;
@@ -88,7 +88,7 @@ void ModulesMenu::show(TShowMode showMode)
 
 void ModulesMenu::task()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 	uint8_t xCoord, yCoord;
 
@@ -109,7 +109,7 @@ void ModulesMenu::task()
 
 void ModulesMenu::encoderPressed()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 	presetEdited = true;
 
@@ -124,7 +124,7 @@ void ModulesMenu::encoderPressed()
 
 void ModulesMenu::encoderClockwise()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 	icon_refresh(m_numMenu);
 
@@ -138,7 +138,7 @@ void ModulesMenu::encoderClockwise()
 
 void ModulesMenu::encoderCounterClockwise()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 
 	icon_refresh(m_numMenu);
@@ -153,7 +153,7 @@ void ModulesMenu::encoderCounterClockwise()
 
 void ModulesMenu::keyUp()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 	//parent->show(); //????
 
@@ -174,9 +174,9 @@ void ModulesMenu::keyUp()
 
 void ModulesMenu::keyDown()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
-	if(prog1 == prog)
+	if(preselectedPresetNumber == currentPresetNumber)
 	{
 		if(*modules[m_numMenu].enablePtr)
 		{
@@ -192,7 +192,7 @@ void ModulesMenu::keyDown()
 
 void ModulesMenu::key1()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 
 	shownChildMenu = &erasePresetDialog;
@@ -204,7 +204,7 @@ void ModulesMenu::key1()
 
 void ModulesMenu::key2()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 	// было своё copyMenu
 
@@ -236,11 +236,11 @@ void ModulesMenu::key2()
 
 void ModulesMenu::key3()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 	// было своё copyMenu
 
-	current_menu = MENU_CONTROLLERS;
+	current_menu_type = MENU_CONTROLLERS;
 	control_destin = dest_tabl_start[presetControllers[1]];
 	contrs = 0;
 	DisplayTask->Clear();
@@ -270,7 +270,7 @@ void ModulesMenu::key3()
 
 void ModulesMenu::key4()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 	// было своё copyMenu
 
@@ -283,7 +283,7 @@ void ModulesMenu::key4()
 
 void ModulesMenu::key5()
 {
-	if(current_menu != MENU_MODULES) return;
+	if(current_menu_type != MENU_MODULES) return;
 
 	shownChildMenu = &copyMenu;
 	shownChildMenu->show();
@@ -325,7 +325,7 @@ void ModulesMenu::enableCab()
 			  DisplayTask->StringOut(42,3,TDisplayTask::fntSystem,0,(uint8_t*)imp_dir_no);
 			  CSTask->CS_del(1000);
 			  presetData[cab] = 0;
-			  current_menu = MENU_MAIN;
+			  current_menu_type = MENU_MAIN;
 			  encoder_knob_selected = 0;
 			  DisplayTask->Menu_init();
 		  }
@@ -338,7 +338,7 @@ void ModulesMenu::enableCab()
 			CSTask->CS_del(1000);
 
 			presetData[cab] = 0;
-			current_menu = MENU_MAIN;
+			current_menu_type = MENU_MAIN;
 			encoder_knob_selected = 0;
 			DisplayTask->Menu_init();
 		}

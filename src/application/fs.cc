@@ -1,7 +1,7 @@
 #include "fs.h"
 #include "cs.h"
 #include "format.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "display.h"
 uint8_t print_flag;
 

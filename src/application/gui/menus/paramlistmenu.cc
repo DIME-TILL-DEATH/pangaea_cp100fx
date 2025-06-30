@@ -3,8 +3,8 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
-#include "gui/icon_bit.h"
+#include "gui/elements/allFonts.h"
+#include "gui/elements/icon_bit.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -59,7 +59,7 @@ void ParamListMenu::setIcon(bool drawIcon, uint8_t iconNumber)
 
 void ParamListMenu::show(TShowMode showMode)
 {
-	current_menu = m_menuType;
+	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	DisplayTask->Clear();

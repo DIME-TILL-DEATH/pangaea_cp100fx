@@ -1,5 +1,7 @@
 #ifndef EQ_BITMAP_H_
-#define EQ_BITMAP_H
+#define EQ_BITMAP_H_
+
+#include "appdefs.h"
 
 extern const uint8_t eq_list [][4];
 extern volatile uint8_t eq_num;

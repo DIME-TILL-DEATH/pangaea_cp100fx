@@ -4,7 +4,7 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "eepr.h"
@@ -27,12 +27,12 @@ PresetActionsMenu::PresetActionsMenu(AbstractMenu *parent, TActionType actionTyp
 
 	topLevelMenu = parent;
 
-	targetPresetNum = prog;
+	targetPresetNum = currentPresetNumber;
 }
 
 void PresetActionsMenu::show(TShowMode showMode)
 {
-	current_menu = m_menuType;
+	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	read_prog_temp(targetPresetNum);
@@ -275,15 +275,15 @@ void PresetActionsMenu::savePreset()
 	DisplayTask->StringOut(38, 2, TDisplayTask::fnt12x13, 0, (uint8_t*)" Save");
 	presetData[147] = delay_time;
 	presetData[148] = delay_time>>8;
-	eepr_write(prog1);
+	eepr_write(preselectedPresetNumber);
 
-	send_cab_data(0, prog1+1, 0);
+	send_cab_data(0, preselectedPresetNumber+1, 0);
 	if(cab_type==2)
-		send_cab_data1(0, prog1+1);
+		send_cab_data1(0, preselectedPresetNumber+1);
 
-	prog1 = prog;
-	prog_cur = vol_fl = write_fl = 0;
+	preselectedPresetNumber = currentPresetNumber;
+	vol_fl = write_fl = 0;
 	prog_ch();
 
-	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+//	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 }

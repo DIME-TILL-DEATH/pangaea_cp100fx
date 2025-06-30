@@ -11,7 +11,7 @@
 #include "eepr.h"
 #include "storage.h"
 #include "AT45DB321.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 
 const char *fs_object_type_strings[] =
 {"File", "Dir", "Unknown"};

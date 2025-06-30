@@ -5,8 +5,8 @@
 #include "fs.h"
 #include "filt.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
-#include "gui/icon_bit.h"
+#include "gui/elements/allFonts.h"
+#include "gui/elements/icon_bit.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -84,7 +84,7 @@ volatile uint8_t par_num1 = 0;
 volatile uint8_t par_num2 = 0;
 volatile uint8_t prog_old;
 volatile uint8_t calib_fl = 0;
-gui_menu_type current_menu;
+gui_menu_type current_menu_type;
 uint8_t copy_temp = 0;
 extern uint8_t cab_type;
 
@@ -103,9 +103,6 @@ extern volatile uint8_t master_volume_controller;
 volatile uint8_t encoder_knob_selected;
 volatile uint16_t count_enc = 0xf000;
 volatile uint8_t write_fl = 0;
-volatile uint8_t cab_n_fl1 = 0;
-volatile uint8_t cab_n_fl2 = 0;
-volatile uint8_t tim_fl = 0;
 
 uint16_t att_temp;
 uint32_t send_buf;
@@ -163,9 +160,9 @@ void clean_flag(void)
 extern volatile uint8_t pc_mute_fl;
 void prog_ch(void)
 {
-	gui_send(32, prog);
-	eepr_read_prog_data(prog);
-	eepr_read_prog(prog);
+	gui_send(32, currentPresetNumber);
+	eepr_read_prog_data(currentPresetNumber);
+	eepr_read_prog(currentPresetNumber);
 	pc_mute_fl = 0;
 
 	MidiSendTask->prog_ch_midi_start();
@@ -227,7 +224,7 @@ volatile uint16_t dsaf = 0x8000;
 //---------------------------------------------------------GUI----------------------------------------------------
 void GUI_return_to_main_menu()
 {
-	current_menu = MENU_MAIN;
+	current_menu_type = MENU_MAIN;
 	encoder_knob_selected = 0;
 	DisplayTask->Menu_init();
 	tim5_start(0);
@@ -268,7 +265,7 @@ void gui(void)
 		currentMenu->key5();
 
 //		clean_flag();
-	switch(current_menu)
+	switch(current_menu_type)
 	{
 		//----------------------------------------------------Menu controllers---------------------------------------------
 		case MENU_CONTROLLERS:
@@ -430,7 +427,7 @@ void gui(void)
 								if(presetControllers[511]&0x80)
 									a = presetControllers[511]&0x7f;
 								else
-									a = prog;
+									a = currentPresetNumber;
 								if(a>0)
 								{
 									a = enc_speed_dec(a, 0);
@@ -575,7 +572,7 @@ void gui(void)
 								if(presetControllers[511]&0x80)
 									a = presetControllers[511]&0x7f;
 								else
-									a = prog;
+									a = currentPresetNumber;
 								if(a<127)
 								{
 									a = enc_speed_inc(a, 127);
@@ -629,7 +626,7 @@ void gui(void)
 			{
 				if(k_tuner==1)
 					num_men = 14;
-				current_menu = MENU_MAIN;
+				current_menu_type = MENU_MAIN;
 				encoder_knob_selected = 0;
 				tim5_start(0);
 				CSTask->Give();
@@ -648,7 +645,7 @@ void gui(void)
 			{
 				if((par_num==3)&&(sys_para[EXPRESSION_TYPE]&0x80))
 				{
-					current_menu = MENU_EXPRESSION;
+					current_menu_type = MENU_EXPRESSION;
 					DisplayTask->Clear();
 					for(uint8_t i = 0; i<4; i++)
 					{
@@ -673,7 +670,7 @@ void gui(void)
 				switch(par_num)
 				{
 					case 4:
-						current_menu = MENU_FSW_TYPE;
+						current_menu_type = MENU_FSW_TYPE;
 						DisplayTask->Clear();
 						for(uint8_t i = 0; i<4; i++)
 							DisplayTask->StringOut(3, i, TDisplayTask::fntSystem, 0, (uint8_t*)footsw_menu+i*12);
@@ -682,7 +679,7 @@ void gui(void)
 						DisplayTask->ParamIndic(58, 3, sys_para[foot_sp]);
 					break;
 					case 6:
-						current_menu = MENU_MIDI_PC;
+						current_menu_type = MENU_MIDI_PC;
 						DisplayTask->Clear();
 						eq_num = 0;
 						encoder_knob_pressed = 0;
@@ -818,7 +815,7 @@ void gui(void)
 						break;
 						case 1:
 							DisplayTask->StringOut(67, 1, TDisplayTask::fntSystem, 0, (uint8_t*)set_min);
-							current_menu = MENU_ADC_CALIBRATE;
+							current_menu_type = MENU_ADC_CALIBRATE;
 							tim5_start(0);
 						break;
 						case 2:
@@ -905,7 +902,7 @@ void gui(void)
 					DisplayTask->StringOut(92, 1, TDisplayTask::fntSystem, 0, (uint8_t*)ok);
 					dela(0x7fffff);
 					calib_fl = 0;
-					current_menu = MENU_EXPRESSION;
+					current_menu_type = MENU_EXPRESSION;
 					encoder_knob_selected = 0;
 				}
 				tim5_start(0);
@@ -914,66 +911,6 @@ void gui(void)
 			}
 		break;
 
-//-------------------------------------------------------Cab Name---------------------------------------------
-		case MENU_CABNAME:
-			if(tim5_fl)
-			{
-				if(tim_fl)
-					tim_fl = 0;
-				else
-				{
-					tim_fl = 1;
-					if((cab_n_fl1)&&cab_type)
-					{
-						if(cab2_name_buf[0])
-						{
-							DisplayTask->Clear();
-							DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"2 - ");
-							DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab2_name_buf+1);
-							cab_n_fl1 = 0;
-							cab_n_fl2 = 1;
-						}
-					}
-					else
-					{
-						if(cab1_name_buf[0])
-						{
-							DisplayTask->Clear();
-							if(cab_type==2)
-							{
-								DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"1 - ");
-								DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab1_name_buf+1);
-							}
-							else
-								DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab1_name_buf+1);
-							cab_n_fl1 = 1;
-							cab_n_fl2 = 0;
-						}
-					}
-				}
-			}
-			if(encoder_state_updated==1)
-			{
-				current_menu = MENU_MAIN;
-				CSTask->Give();
-				break;
-			}
-			if(k_up==1)
-			{
-				current_menu = MENU_MAIN;
-				prog_cur = 0;
-				eepr_read_imya(prog1);
-				DisplayTask->Main_scr();
-				DisplayTask->Prog_ind(prog1);
-				if((sys_para[fs1]==1)||((sys_para[fs11]==1)&&sys_para[fsm1]))
-					DisplayTask->IndFoot(0, contr_kn[0]);
-				if((sys_para[fs2]==1)||((sys_para[fs21]==1)&&sys_para[fsm2]))
-					DisplayTask->IndFoot(1, contr_kn[1]);
-				if((sys_para[fs3]==1)||((sys_para[fs31]==1)&&sys_para[fsm3]))
-					DisplayTask->IndFoot(2, contr_kn[2]);
-				clean_flag();
-			}
-		break;
 //----------------------------------------------------------Foot Switch type---------------------------------
 		case MENU_FSW_TYPE:
 			if(!encoder_knob_selected)
@@ -1037,7 +974,7 @@ void gui(void)
 				if(eq_num<3)
 				{
 					DisplayTask->Clear();
-					current_menu = MENU_SW_MODE;
+					current_menu_type = MENU_SW_MODE;
 					DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 0, (uint8_t*)mode_);
 					DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0,
 							(uint8_t*)switch_mod+sys_para[fsm1+eq_num]*7);
@@ -1077,7 +1014,7 @@ void gui(void)
 						DisplayTask->StringOut(44, i, TDisplayTask::fntSystem, 0,
 								(uint8_t*)tempo_type+sys_para[TAP_TYPE]*7);
 				}
-				current_menu = MENU_SYSTEM;
+				current_menu_type = MENU_SYSTEM;
 				DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
 				encoder_knob_selected = 0;
 				tim5_start(0);
@@ -1230,7 +1167,7 @@ void gui(void)
 						DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 0, (uint8_t*)expr_menu);
 						if(par_num1==1)
 						{
-							current_menu = MENU_SW_SELECT0;
+							current_menu_type = MENU_SW_SELECT0;
 							DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0,
 									(uint8_t*)fsw_t+sys_para[fs1+eq_num]*12);
 							if(sys_para[fs1+eq_num]>2)
@@ -1266,7 +1203,7 @@ void gui(void)
 						}
 						else
 						{
-							current_menu = MENU_SW_SELECT1;
+							current_menu_type = MENU_SW_SELECT1;
 							DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0,
 									(uint8_t*)fsw_t+sys_para[fs11+eq_num]*12);
 							if(sys_para[fs11+eq_num]>2)
@@ -1311,7 +1248,7 @@ void gui(void)
 				for(uint8_t i = 0; i<4; i++)
 					DisplayTask->StringOut(3, i, TDisplayTask::fntSystem, 0, (uint8_t*)footsw_menu+i*12);
 				DisplayTask->ParamIndic(58, 3, sys_para[foot_sp]);
-				current_menu = MENU_FSW_TYPE;
+				current_menu_type = MENU_FSW_TYPE;
 				encoder_knob_selected = 0;
 				tim5_start(0);
 				clean_flag();
@@ -1601,7 +1538,7 @@ void gui(void)
 			if(k_up==1)
 			{
 				DisplayTask->Clear();
-				current_menu = MENU_SW_MODE;
+				current_menu_type = MENU_SW_MODE;
 				DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 0, (uint8_t*)mode_);
 				DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, (uint8_t*)switch_mod+sys_para[fsm1+eq_num]*7);
 				if(sys_para[fsm1+eq_num])
@@ -1898,7 +1835,7 @@ void gui(void)
 			if(k_up==1)
 			{
 				DisplayTask->Clear();
-				current_menu = MENU_SW_MODE;
+				current_menu_type = MENU_SW_MODE;
 				DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 0, (uint8_t*)mode_);
 				DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, (uint8_t*)switch_mod+sys_para[fsm1+eq_num]*7);
 				if(sys_para[fsm1+eq_num])
@@ -2001,7 +1938,7 @@ void gui(void)
 						DisplayTask->StringOut(44, i, TDisplayTask::fntSystem, 0,
 								(uint8_t*)tempo_type+sys_para[TAP_TYPE]*7);
 				}
-				current_menu = MENU_SYSTEM;
+				current_menu_type = MENU_SYSTEM;
 				DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
 				encoder_knob_selected = 0;
 				tim5_start(0);

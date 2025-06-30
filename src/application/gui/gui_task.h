@@ -83,7 +83,7 @@ extern uint32_t ind_out_l[];
 extern uint32_t ind_out_r[];
 extern volatile uint8_t sram_fl;
 extern volatile uint8_t sram_fl1;
-extern gui_menu_type current_menu;
+extern gui_menu_type current_menu_type;
 extern float del_vol_ind;
 extern float phas_vol_ind;
 extern float chor_vol_ind;

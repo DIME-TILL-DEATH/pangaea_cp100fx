@@ -61,8 +61,8 @@ enum
 extern int16_t mstEqMidFreq;
 
 extern uint16_t delay_time;
-extern volatile uint8_t prog;
-extern volatile uint8_t prog1;
+extern volatile uint8_t currentPresetNumber;
+extern volatile uint8_t preselectedPresetNumber;
 extern volatile uint8_t prog_old;
 extern volatile uint32_t flash_adr;
 extern uint8_t presetData[];

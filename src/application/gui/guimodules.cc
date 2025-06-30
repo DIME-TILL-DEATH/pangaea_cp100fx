@@ -176,7 +176,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	params[0] = new StringOutParam(cab1_name_buf);
 	params[0]->setDisplayPosition(ParamListMenu::leftPad);
 
-	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCabBrowserMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab1BrowserMenu);
 
 	if(cab_type==2)
 	{
@@ -212,7 +212,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	params[0] = new StringOutParam(cab2_name_buf);
 	params[0]->setDisplayPosition(ParamListMenu::leftPad);
 
-	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCabBrowserMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab2BrowserMenu);
 
 	if(cab_type==2)
 	{
@@ -240,9 +240,14 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	return menu;
 }
 
-AbstractMenu* GuiModules::createCabBrowserMenu(AbstractMenu* parentMenu)
+AbstractMenu* GuiModules::createCab1BrowserMenu(AbstractMenu* parentMenu)
 {
-	return new CabBrowserMenu(parentMenu);
+	return new CabBrowserMenu(parentMenu, 0);
+}
+
+AbstractMenu* GuiModules::createCab2BrowserMenu(AbstractMenu* parentMenu)
+{
+	return new CabBrowserMenu(parentMenu, 1);
 }
 
 AbstractMenu* GuiModules::createEqMenu(AbstractMenu* parentMenu)

@@ -4,7 +4,7 @@
 #include "appdefs.h"
 #include "modules.h"
 
-#include "gui/icon_bit.h"
+#include "gui/elements/icon_bit.h"
 
 #define FILE_NAME_LENGTH 64
 

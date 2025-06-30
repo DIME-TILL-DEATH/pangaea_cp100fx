@@ -2,7 +2,7 @@
 #define ICON_BIT_H_
 
 #include "appdefs.h"
-#include "../gui/menus/abstractmenu.h"
+#include "../menus/abstractmenu.h"
 
 enum strelka_t
 {

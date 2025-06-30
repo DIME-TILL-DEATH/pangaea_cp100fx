@@ -21,7 +21,7 @@ public:
 	}
 	void Setcurrent_menu(gui_menu_type val)
 	{
-		current_menu = val;
+		current_menu_type = val;
 	}
 
 	void SetKUp(uint8_t val)
@@ -48,7 +48,7 @@ public:
 
 	inline void Restart(void)
 	{
-		current_menu = MENU_MAIN;
+		current_menu_type = MENU_MAIN;
 		clean_flag();
 		//DisplayTask->Menu_init(1,0,prog_data,prog1);
 	}

@@ -8,7 +8,7 @@
 #include "display.h"
 #include "sd_test.h"
 #include "midi_send.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "gui/gui_task.h"
 
 void start_usb();
@@ -172,12 +172,12 @@ void foot_run(uint8_t num)
 						case 0:
 							if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
 							{
-								if(prog1==0)
-									prog1 = 98;
+								if(preselectedPresetNumber==0)
+									preselectedPresetNumber = 98;
 								else
-									prog1 -= 1;
+									preselectedPresetNumber -= 1;
 								encoder_knob_pressed = 1;
-								prog_old = prog = prog1;
+								prog_old = currentPresetNumber = preselectedPresetNumber;
 							}
 							else
 							{
@@ -196,12 +196,12 @@ void foot_run(uint8_t num)
 							{
 								if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
 								{
-									if(prog1==98)
-										prog1 = 0;
+									if(preselectedPresetNumber==98)
+										preselectedPresetNumber = 0;
 									else
-										prog1 += 1;
+										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									prog_old = prog = prog1;
+									prog_old = currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -216,12 +216,12 @@ void foot_run(uint8_t num)
 							{
 								if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
 								{
-									if(prog1==98)
-										prog1 = 0;
+									if(preselectedPresetNumber==98)
+										preselectedPresetNumber = 0;
 									else
-										prog1 += 1;
+										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									prog_old = prog = prog1;
+									prog_old = currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -269,25 +269,25 @@ void foot_run(uint8_t num)
 						contr_pr[num]++;
 					if(contr_pr[num]>(sys_para[fs1+num]-3))
 						contr_pr[num] = 0;
-					prog1 = sys_para[pr11+num*4+contr_pr[num]];
+					preselectedPresetNumber = sys_para[pr11+num*4+contr_pr[num]];
 					num_key_prog = num;
 					if(sys_para[fs2])
 					{
 						if(!sys_para[fsm2])
 						{
-							prog_old = prog = prog1;
+							prog_old = currentPresetNumber = preselectedPresetNumber;
 							encoder_knob_pressed = 1;
 						}
 						else
 						{
 							if(sys_para[fs21])
 							{
-								prog_old = prog = prog1;
+								prog_old = currentPresetNumber = preselectedPresetNumber;
 								encoder_knob_pressed = 1;
 							}
 							else
 							{
-								prog_old = prog = --prog1;
+								prog_old = currentPresetNumber = --preselectedPresetNumber;
 								encoder_state_updated = 1;
 								encoder_state = 2;
 							}
@@ -295,7 +295,7 @@ void foot_run(uint8_t num)
 					}
 					else
 					{
-						prog_old = prog = --prog1;
+						prog_old = currentPresetNumber = --preselectedPresetNumber;
 						encoder_state_updated = 1;
 						encoder_state = 2;
 					}
@@ -324,12 +324,12 @@ void foot_run1(uint8_t num)
 						case 0:
 							if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
 							{
-								if(prog1==0)
-									prog1 = 98;
+								if(preselectedPresetNumber==0)
+									preselectedPresetNumber = 98;
 								else
-									prog1 -= 1;
+									preselectedPresetNumber -= 1;
 								encoder_knob_pressed = 1;
-								prog_old = prog = prog1;
+								prog_old = currentPresetNumber = preselectedPresetNumber;
 							}
 							else
 							{
@@ -348,12 +348,12 @@ void foot_run1(uint8_t num)
 							{
 								if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
 								{
-									if(prog1==98)
-										prog1 = 0;
+									if(preselectedPresetNumber==98)
+										preselectedPresetNumber = 0;
 									else
-										prog1 += 1;
+										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									prog_old = prog = prog1;
+									prog_old = currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -368,12 +368,12 @@ void foot_run1(uint8_t num)
 							{
 								if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
 								{
-									if(prog1==98)
-										prog1 = 0;
+									if(preselectedPresetNumber==98)
+										preselectedPresetNumber = 0;
 									else
-										prog1 += 1;
+										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									prog_old = prog = prog1;
+									prog_old = currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -419,24 +419,24 @@ void foot_run1(uint8_t num)
 				{
 					if(contr_pr[num]>(sys_para[fs11+num]-3))
 						contr_pr[num] = 0;
-					prog1 = sys_para[pr111+num*4+contr_pr[num]++];
+					preselectedPresetNumber = sys_para[pr111+num*4+contr_pr[num]++];
 					if(sys_para[fs21]) // && !sys_para[fsm2]
 					{
 						if(!sys_para[fsm2])
 						{
-							prog_old = prog = prog1;
+							prog_old = currentPresetNumber = preselectedPresetNumber;
 							encoder_knob_pressed = 1;
 						}
 						else
 						{
 							if(sys_para[fs2])
 							{
-								prog_old = prog = prog1;
+								prog_old = currentPresetNumber = preselectedPresetNumber;
 								encoder_knob_pressed = 1;
 							}
 							else
 							{
-								prog_old = prog = --prog1;
+								prog_old = currentPresetNumber = --preselectedPresetNumber;
 								encoder_state_updated = 1;
 								encoder_state = 2;
 							}
@@ -444,7 +444,7 @@ void foot_run1(uint8_t num)
 					}
 					else
 					{
-						prog_old = prog = --prog1;
+						prog_old = currentPresetNumber = --preselectedPresetNumber;
 						encoder_state_updated = 1;
 						encoder_state = 2;
 					}

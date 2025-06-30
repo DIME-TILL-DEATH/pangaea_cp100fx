@@ -4,7 +4,7 @@
 
 #include "appdefs.h"
 #include "eepr.h"
-#include "gui/allFonts.h"
+#include "gui/elements/allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "BF706_send.h"
@@ -69,7 +69,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 
 void MasterEqMenu::show(TShowMode showMode)
 {
-	current_menu = m_menuType;
+	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	m_currentParamNum = 0;

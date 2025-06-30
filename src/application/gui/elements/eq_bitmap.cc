@@ -1,8 +1,9 @@
 #include "appdefs.h"
 #include "eq_bitmap.h"
+
 #include "allFonts.h"
 #include "eepr.h"
-#include "../gui/gui_task.h"
+#include "../gui_task.h"
 #include "filt.h"
 #include "icon_bit.h"
 
@@ -58,6 +59,7 @@ void lo_hi_par(float num , uint8_t type)
 	if(!type)Arsys_line(29 + ewq, 0 , (uint8_t*)q_sym , 0);
 	else Arsys_line(23 + ewq, 1 , (uint8_t*)q_sym , 0);
 }
+
 uint8_t eq_ind(uint8_t col , uint8_t pag , uint32_t val , uint8_t cur )
 {
   uint32_t data;
@@ -143,6 +145,7 @@ void eq_init(void)
    Arsys_sym_down(102,2,66,0);
    icon_print(ICON_EQ, STRELKA_DOWN);
 }
+
 const uint16_t fr_l[5] = {120,360,800,2000,6000};
 void eq_par(uint8_t col , uint8_t pag , int16_t num , uint8_t type , uint8_t band)
 {

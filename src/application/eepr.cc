@@ -4,8 +4,8 @@
 
 uint16_t delay_time;
 
-volatile uint8_t prog;
-volatile uint8_t prog1;
+volatile uint8_t currentPresetNumber;
+volatile uint8_t preselectedPresetNumber;
 volatile uint32_t flash_adr;
 volatile uint16_t adc_low;
 volatile uint16_t adc_high;

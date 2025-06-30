@@ -2,7 +2,10 @@
 #define __INIT_H__
 
 #include "appdefs.h"
-//#include "gui/allFonts.h"
+//#include "gui/elements/allFonts.h"
+
+extern uint8_t cab_type;
+
 
 extern uint32_t sram_point;
 extern uint8_t tim5_fl;

@@ -1,3 +1,4 @@
+
 #ifndef ALLFONTS_H_
 #define ALLFONTS_H
 
@@ -59,8 +60,6 @@ extern uint8_t vol_fl;
 extern uint8_t vol_ind_level_pos;
 //extern uint8_t edit_modules_fl;
 extern uint8_t imya_temp;
-extern uint8_t prog_cur;
-
 extern uint8_t t_po;
 extern volatile uint8_t t_no;
 

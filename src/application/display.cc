@@ -1,6 +1,6 @@
 #include "display.h"
-#include "gui/allFonts.h"
-#include "gui/icon_bit.h"
+#include "gui/elements/allFonts.h"
+#include "gui/elements/icon_bit.h"
 #include "eepr.h"
 
 #include "BF706_send.h"

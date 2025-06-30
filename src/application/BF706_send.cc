@@ -288,7 +288,7 @@ void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 {
 	uint32_t a;
 	extern bool cab_data_ready;
-	if(cab_data_ready!=true&&current_menu!=MENU_COPY)
+	if(cab_data_ready!=true&&current_menu_type!=MENU_COPY)
 	{
 		kgp_sdk_libc::memset(preset_temp, 0, 24576);
 		preset_temp[0] = 0xff;
@@ -398,7 +398,7 @@ void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 void send_cab_data1(uint8_t val, uint8_t num)
 {
 	extern bool cab_data_ready;
-	if(cab_data_ready!=true&&current_menu!=MENU_COPY)
+	if(cab_data_ready!=true&&current_menu_type!=MENU_COPY)
 	{
 		kgp_sdk_libc::memset(preset_temp, 0, 12288);
 		preset_temp[0] = 0xff;
