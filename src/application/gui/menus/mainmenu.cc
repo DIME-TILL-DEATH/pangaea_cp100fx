@@ -162,7 +162,6 @@ void MainMenu::keyUp()
 	}
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void MainMenu::keyDown()
@@ -173,7 +172,6 @@ void MainMenu::keyDown()
 	modulesMenu.show();
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void MainMenu::key1()
@@ -183,7 +181,6 @@ void MainMenu::key1()
 	shownChildMenu = new AttenuatorMenu(this);
 	shownChildMenu->show();
 
-	clean_flag();
 	tim5_start(0);
 }
 
@@ -206,7 +203,6 @@ void MainMenu::key3()
 	shownChildMenu = new MasterEqMenu(this);
 	shownChildMenu->show();
 
-	clean_flag();
 	tim5_start(0);
 }
 
@@ -217,7 +213,6 @@ void MainMenu::key4()
 	shownChildMenu = SystemMenu::create(this);
 	shownChildMenu->show();
 
-	clean_flag();
 	tim5_start(0);
 }
 
@@ -229,7 +224,6 @@ void MainMenu::key5()
 	shownChildMenu = new TunerMenu(this);
 	shownChildMenu->show();
 
-	clean_flag();
 	tim5_start(0);
 }
 

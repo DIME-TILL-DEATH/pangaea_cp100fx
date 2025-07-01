@@ -199,7 +199,6 @@ void NameEditMenu::keyDown()
 	}
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void NameEditMenu::key1()
@@ -211,23 +210,19 @@ void NameEditMenu::key1()
 void NameEditMenu::key2()
 {
 	topLevelMenu->key2();
-	clean_flag();
 }
 
 void NameEditMenu::key3()
 {
 	topLevelMenu->key3();
-	clean_flag();
 }
 
 void NameEditMenu::key4()
 {
 	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
-	clean_flag();
 }
 
 void NameEditMenu::key5()
 {
 	topLevelMenu->key5();
-	clean_flag();
 }

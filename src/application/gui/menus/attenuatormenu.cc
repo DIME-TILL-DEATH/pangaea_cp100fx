@@ -63,7 +63,6 @@ void AttenuatorMenu::keyUp()
 
 void AttenuatorMenu::key1()
 {
-	clean_flag();
 	write_sys();
 	topLevelMenu->returnFromChildMenu();
 }

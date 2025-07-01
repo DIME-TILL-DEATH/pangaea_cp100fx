@@ -49,8 +49,8 @@ void PresetActionsMenu::show(TShowMode showMode)
 		DisplayTask->StringOut(10, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Copy to ->");
 	else
 		DisplayTask->StringOut(10, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Save to ->");
-
-	clean_flag();
+//
+//	clean_flag();
 }
 
 void PresetActionsMenu::task()
@@ -131,7 +131,7 @@ void PresetActionsMenu::updatePresetData()
 	TIM_Cmd(TIM6, ENABLE);
 
 	tim5_start(0);
-	clean_flag();
+//	clean_flag();
 }
 
 void PresetActionsMenu::copyPreset()

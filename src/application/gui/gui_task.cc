@@ -1,9 +1,9 @@
 #include "gui_task.h"
 
+#include "../filter.h"
 #include "appdefs.h"
 #include "cs.h"
 #include "fs.h"
-#include "filt.h"
 #include "eepr.h"
 #include "gui/elements/allFonts.h"
 #include "gui/elements/icon_bit.h"
@@ -252,17 +252,35 @@ void gui(void)
 	if(k_up)
 		currentMenu->keyUp();
 	if(k_down)
+	{
 		currentMenu->keyDown();
+		clean_flag();
+	}
 	if(k_att)
+	{
 		currentMenu->key1();
+		clean_flag();
+	}
 	if(k_master)
+	{
 		currentMenu->key2();
+		clean_flag();
+	}
 	if(k_master_eq)
+	{
 		currentMenu->key3();
+		clean_flag();
+	}
 	if(k_sys)
+	{
 		currentMenu->key4();
+		clean_flag();}
+
 	if(k_tuner)
+	{
 		currentMenu->key5();
+		clean_flag();
+	}
 
 //		clean_flag();
 	switch(current_menu_type)
@@ -678,15 +696,6 @@ void gui(void)
 						encoder_knob_pressed = 0;
 						DisplayTask->ParamIndic(58, 3, sys_para[foot_sp]);
 					break;
-					case 6:
-						current_menu_type = MENU_MIDI_PC;
-						DisplayTask->Clear();
-						eq_num = 0;
-						encoder_knob_pressed = 0;
-						DisplayTask->ParamIndicNum(3, 0, eq_num+1);
-						DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"->");
-						DisplayTask->ParamIndicNum(36, 0, sys_para[eq_num+128]+1);
-					break;
 					default:
 					break;
 				}
@@ -829,39 +838,6 @@ void gui(void)
 					encoder_knob_selected = 0;
 					DisplayTask->StringOut(3, eq_num, TDisplayTask::fntSystem, 0, (uint8_t*)expr_menu+eq_num*10);
 				}
-				clean_flag();
-			}
-			if(k_up==1)
-			{
-//				current_menu = MENU_SYSTEM;
-//				encoder_knob_selected = 0;
-//				DisplayTask->Clear();
-//				DisplayTask->Icon_Strel(ICON_SY, STRELKA_DOWN);
-//				for(uint8_t i = 0; i<4; i++)
-//				{
-//					DisplayTask->StringOut(3, i, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+i*12);
-//					switch(i)
-//					{
-//						case 0:
-////							DisplayTask->StringOut(36, i, TDisplayTask::fntSystem, 0,
-////									(uint8_t*)mode_list+sys_para[i]*12);
-////							gui_send(14, 0);
-//						break;
-//						case 1:
-//							DisplayTask->ParamIndicNum(60, i, sys_para[i]+1);
-//						break;
-//						case 2:
-////							DisplayTask->StringOut(60, i, TDisplayTask::fntSystem, 0,
-////									(uint8_t*)cab_out_list+sys_para[i]*6);
-//						break;
-//						case 3:
-////							if(!sys_para[EXPRESSION_TYPE])
-////								DisplayTask->StringOut(78, i, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off+5);
-////							else
-////								DisplayTask->StringOut(78, i, TDisplayTask::fntSystem, 0, (uint8_t*)expr_on_off);
-//						break;
-//					}
-//				}
 				clean_flag();
 			}
 		break;
@@ -1846,103 +1822,6 @@ void gui(void)
 				tim5_start(0);
 				clean_flag();
 				encoder_knob_selected = 0;
-			}
-		break;
-
-//------------------------------------------------------MIDI Map----------------------------------------------
-		case MENU_MIDI_PC:
-			if(!encoder_knob_selected)
-			{
-				if(tim5_fl)
-					DisplayTask->Clear_str(3, 0, TDisplayTask::fntSystem, 3);
-				else
-					DisplayTask->ParamIndicNum(3, 0, eq_num+1);
-			}
-			else
-			{
-				if(tim5_fl)
-					DisplayTask->Clear_str(36, 0, TDisplayTask::fntSystem, 3);
-				else
-					DisplayTask->ParamIndicNum(36, 0, sys_para[eq_num+128]+1);
-			}
-			if(encoder_state_updated==1)
-			{
-				if(encoder_state==1)
-				{
-					if(encoder_knob_selected==0)
-					{
-						if(eq_num>0)
-						{
-							eq_num = enc_speed_dec(eq_num, 0);
-							DisplayTask->ParamIndicNum(3, 0, eq_num+1);
-							DisplayTask->ParamIndicNum(36, 0, sys_para[eq_num+128]+1);
-						}
-					}
-					else
-					{
-						if(sys_para[eq_num+128]>0)
-						{
-							sys_para[eq_num+128] = enc_speed_dec(sys_para[eq_num+128], 0);
-							DisplayTask->ParamIndicNum(36, 0, sys_para[eq_num+128]+1);
-						}
-					}
-				}
-				if(encoder_state==2)
-				{
-					if(encoder_knob_selected==0)
-					{
-						if(eq_num<127)
-						{
-							eq_num = enc_speed_inc(eq_num, 127);
-							DisplayTask->ParamIndicNum(3, 0, eq_num+1);
-							DisplayTask->ParamIndicNum(36, 0, sys_para[eq_num+128]+1);
-						}
-					}
-					else
-					{
-						if(sys_para[eq_num+128]<98)
-						{
-							sys_para[eq_num+128] = enc_speed_inc(sys_para[eq_num+128], 98);
-							DisplayTask->ParamIndicNum(36, 0, sys_para[eq_num+128]+1);
-						}
-					}
-				}
-				tim5_start(1);
-				clean_flag();
-			}
-			if(encoder_knob_pressed==1)
-			{
-				if(encoder_knob_selected==0)
-				{
-					encoder_knob_selected = 1;
-					DisplayTask->ParamIndicNum(3, 0, eq_num+1);
-				}
-				else
-				{
-					DisplayTask->ParamIndicNum(36, 0, sys_para[eq_num+128]+1);
-					encoder_knob_selected = 0;
-				}
-				tim5_start(0);
-				clean_flag();
-			}
-			if(k_up==1)
-			{
-				DisplayTask->Clear();
-				for(uint8_t i = 0; i<4; i++)
-				{
-					DisplayTask->StringOut(3, i, TDisplayTask::fntSystem, 0, (uint8_t*)sys_menu_list+48+i*12);
-					if(i==1)
-//						DisplayTask->StringOut(44, i, TDisplayTask::fntSystem, 0,
-//								(uint8_t*)spdif_type+sys_para[SPDIF_OT_TYPE]*12);
-					if(i==3)
-						DisplayTask->StringOut(44, i, TDisplayTask::fntSystem, 0,
-								(uint8_t*)tempo_type+sys_para[TAP_TYPE]*7);
-				}
-				current_menu_type = MENU_SYSTEM;
-				DisplayTask->Icon_Strel(ICON_SY, STRELKA_UP);
-				encoder_knob_selected = 0;
-				tim5_start(0);
-				clean_flag();
 			}
 		break;
 	}

@@ -287,7 +287,6 @@ void ParamListMenu::keyDown()
 //  			  }
 //  		  }
 //	  }
-	  clean_flag();
 }
 
 void ParamListMenu::printPage(bool forceDrawIcon)

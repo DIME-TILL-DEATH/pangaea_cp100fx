@@ -262,7 +262,6 @@ void EqMenu::keyDown()
 	}
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void EqMenu::key3()
@@ -271,6 +270,4 @@ void EqMenu::key3()
 
 	DisplayTask->Clear();
 	DisplayTask->EqResponse();
-
-	clean_flag();
 }

@@ -55,39 +55,29 @@ void TunerMenu::key1()
 {
 	endTunerTask();
 	topLevelMenu->key1();
-
-	clean_flag();
 }
 
 void TunerMenu::key2()
 {
 	endTunerTask();
 	topLevelMenu->key2();
-
-	clean_flag();
 }
 
 void TunerMenu::key3()
 {
 	endTunerTask();
 	topLevelMenu->key3();
-
-	clean_flag();
 }
 
 void TunerMenu::key4()
 {
 	endTunerTask();
 	topLevelMenu->key4();
-
-	clean_flag();
 }
 
 void TunerMenu::key5()
 {
-	clean_flag();
 	endTunerTask();
-
 	tim5_start(0);
 	topLevelMenu->returnFromChildMenu();
 }

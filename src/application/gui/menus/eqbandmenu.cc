@@ -157,6 +157,4 @@ void EqBandMenu::key3()
 	DisplayTask->EqPar(40, 1, presetData[f1+m_bandNum+5], 1, m_bandNum);
 	gui_send(22, m_bandNum);
 	gui_send(22, m_bandNum+5);
-
-	clean_flag();
 }

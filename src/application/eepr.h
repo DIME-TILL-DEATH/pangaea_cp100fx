@@ -8,7 +8,7 @@ enum
 	CAB_SIM_DISABLED,
 	MIDI_CHANNEL,
 	CAB_SIM_CONFIG,
-	EXPRESSION_TYPE, // exp_typ
+	EXPRESSION_TYPE,
 	/*type foot sw*/
 	fs1, fs2, fs3,
 	/*calibration*/
@@ -33,14 +33,14 @@ enum
 	pr211, pr221, pr231, pr241,
 	pr311, pr321, pr331, pr341,
 	k11_cc, k21_cc, k31_cc,
-	TAP_TYPE,		/*tap type*/
-	TUNER_EXTERNAL,	/*tuner ext controller*/
+	TAP_TYPE,
+	TUNER_EXTERNAL,
 	/*speed foot*/foot_sp,
 	TIME_FORMAT,	// Sec, BPM
 	/*global temp hi*/TAP_HIGH,
 	/*save expression level*/sav_exp,
-	/*swap up confirm*/SWAP_SWITCH,
-	/*speed tuner*/TUNER_SPEED,
+	SWAP_SWITCH,
+	TUNER_SPEED,
 
 	MASTER_EQ_ON = 120,
 	MASTER_EQ_LOW = 121,
@@ -50,6 +50,8 @@ enum
 	PHONES_VOLUME = 125,
 	MASTER_VOLUME,
 	ATTENUATOR,
+
+	MIDI_MAP_START,
 
 	MASTER_EQ_FREQ_VAL_LO = 508,
 	MASTER_EQ_FREQ_VAL_HI,

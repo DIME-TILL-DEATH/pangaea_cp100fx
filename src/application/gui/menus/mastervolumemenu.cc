@@ -82,7 +82,6 @@ void MasterVolumeMenu::key1()
 void MasterVolumeMenu::key2()
 {
 	write_sys();
-	clean_flag();
 	topLevelMenu->returnFromChildMenu();
 }
 

@@ -9,6 +9,7 @@ public:
 	SystemMenu(AbstractMenu* parent, gui_menu_type menuType);
 
 	void encoderPressed() override;
+	void keyUp() override;
 	void keyDown() override;
 
 	void key1() override;

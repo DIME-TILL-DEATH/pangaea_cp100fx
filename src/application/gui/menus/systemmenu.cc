@@ -10,6 +10,8 @@
 #include "BF706_send.h"
 #include "midi_send.h"
 
+#include "midimapmenu.h"
+
 #include "params/baseparam.h"
 #include "params/customparam.h"
 #include "params/stringlistparam.h"
@@ -52,6 +54,16 @@ void SystemMenu::encoderPressed()
 	clean_flag();
 }
 
+void SystemMenu::keyUp()
+{
+	if(editingFinished())
+	{
+		currentMenu = topLevelMenu;
+		topLevelMenu->returnFromChildMenu();
+	}
+
+	clean_flag();
+}
 
 void SystemMenu::keyDown()
 {
@@ -85,7 +97,6 @@ void SystemMenu::key3()
 void SystemMenu::key4()
 {
 	if(editingFinished()) topLevelMenu->returnFromChildMenu();
-	clean_flag();
 }
 void SystemMenu::key5()
 {
@@ -204,13 +215,7 @@ AbstractMenu* SystemMenu::createFootswitchMenu(AbstractMenu* parent)
 
 AbstractMenu* SystemMenu::createMidiPcMapMenu(AbstractMenu* parent)
 {
-	const uint8_t paramNum = 1;
-	BaseParam* params[paramNum];
-
-	ParamListMenu* menu = new ParamListMenu(parent, MENU_FSW_TYPE);
-	if(menu) menu->setParams(params, paramNum);
-
-	return menu;
+	return new MidiMapMenu(parent);
 }
 
 void SystemMenu::expressionPrint(void* parameter)

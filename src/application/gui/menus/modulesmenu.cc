@@ -187,7 +187,6 @@ void ModulesMenu::keyDown()
 	}
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void ModulesMenu::key1()
@@ -198,7 +197,6 @@ void ModulesMenu::key1()
 	shownChildMenu = &erasePresetDialog;
 	shownChildMenu->show();
 
-	clean_flag();
 	tim5_start(0);
 }
 
@@ -228,10 +226,7 @@ void ModulesMenu::key2()
 	shownChildMenu = menu;
 	shownChildMenu->show();
 
-	clean_flag();
 	tim5_start(0);
-
-
 }
 
 void ModulesMenu::key3()
@@ -264,8 +259,6 @@ void ModulesMenu::key3()
 	}
 	DisplayTask->Strel(58,3,0);
 	par_num = 0;
-
-	clean_flag();
 }
 
 void ModulesMenu::key4()
@@ -276,9 +269,6 @@ void ModulesMenu::key4()
 
 	shownChildMenu = &nameEditMenu;
 	shownChildMenu->show();
-
-	clean_flag();
-
 }
 
 void ModulesMenu::key5()
@@ -287,8 +277,6 @@ void ModulesMenu::key5()
 
 	shownChildMenu = &copyMenu;
 	shownChildMenu->show();
-
-	clean_flag();
 }
 
 void ModulesMenu::icon_refresh(uint8_t num)

@@ -99,11 +99,9 @@ void MasterEqMenu::task()
 
 void MasterEqMenu::encoderPressed()
 {
-	if(!sys_para[MASTER_EQ_ON])
-	{
-		clean_flag();
-		return;
-	}
+	clean_flag();
+
+	if(!sys_para[MASTER_EQ_ON]) return;
 
 	if(!m_encoderKnobSelected)
 	{
@@ -118,16 +116,16 @@ void MasterEqMenu::encoderPressed()
 								0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 
-
 	tim5_start(1);
-	clean_flag();
 }
 
 void MasterEqMenu::encoderClockwise()
 {
+	clean_flag();
+
 	if(!sys_para[MASTER_EQ_ON])
 	{
-		clean_flag();
+
 		return;
 	}
 
@@ -147,17 +145,13 @@ void MasterEqMenu::encoderClockwise()
 		m_paramsList[m_currentParamNum]->setToDsp();
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
-
-	clean_flag();
 }
 
 void MasterEqMenu::encoderCounterClockwise()
 {
-	if(!sys_para[MASTER_EQ_ON])
-	{
-		clean_flag();
-		return;
-	}
+	clean_flag();
+
+	if(!sys_para[MASTER_EQ_ON]) return;
 
 	if(!m_encoderKnobSelected)
 	{
@@ -175,8 +169,6 @@ void MasterEqMenu::encoderCounterClockwise()
 		m_paramsList[m_currentParamNum]->setToDsp();
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
-
-	clean_flag();
 }
 
 void MasterEqMenu::keyUp()
@@ -188,8 +180,6 @@ void MasterEqMenu::keyUp()
 
 void MasterEqMenu::keyDown()
 {
-	clean_flag();
-
 	if(sys_para[MASTER_EQ_ON])
 	{
 		sys_para[MASTER_EQ_ON] = 0;
@@ -221,7 +211,6 @@ void MasterEqMenu::key2()
 
 void MasterEqMenu::key3()
 {
-	clean_flag();
 	write_sys();
 	topLevelMenu->returnFromChildMenu();
 }
