@@ -3,7 +3,7 @@
 
 #include "appdefs.h"
 
-#include "params/stringoutparam.h"
+#include "paramlistmenu/stringoutparam.h"
 
 enum gui_menu_type
 {
@@ -76,6 +76,7 @@ public:
 	virtual ~AbstractMenu() {};
 
 	virtual void show(TShowMode swhoMode = FirstShow) {};
+	virtual void refresh() {};
 	virtual void returnFromChildMenu(TReturnMode returnMode = DeleteChild);
 	virtual void task() {};
 
@@ -95,6 +96,7 @@ public:
 	gui_menu_type menuType();
 
 	void setTopLevelMenu(AbstractMenu* parent);
+	void showChild(AbstractMenu* child);
 
 	void setRunningString(StringOutParam* strings);
 	StringOutParam* getRunningString();

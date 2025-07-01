@@ -2,13 +2,13 @@
 
 #include "eepr.h"
 
-#include "menus/abstractmenu.h"
-#include "menus/eqmenu.h"
-#include "menus/cabbrowsermenu.h"
-#include "menus/paramlistmenu.h"
+#include "abstractmenu.h"
+#include "eqmenu.h"
+#include "cabbrowsermenu.h"
+#include "paramlistmenu.h"
 
-#include "menus/params/submenuparam.h"
-#include "menus/params/stringoutparam.h"
+#include "submenuparam.h"
+#include "stringoutparam.h"
 
 extern uint8_t cab_type;
 extern uint8_t name_run_fl;

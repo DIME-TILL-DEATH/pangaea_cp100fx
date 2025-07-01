@@ -1,4 +1,4 @@
-#include "customparam.h"
+#include "../paramlistmenu/customparam.h"
 
 #include "BF706_send.h"
 #include "enc.h"

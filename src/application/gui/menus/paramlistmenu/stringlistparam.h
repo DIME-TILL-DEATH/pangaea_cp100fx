@@ -1,7 +1,7 @@
 #ifndef STRINGPARAM_H_
 #define STRINGPARAM_H_
 
-#include "baseparam.h"
+#include "../paramlistmenu/baseparam.h"
 
 class StringListParam : public BaseParam
 {

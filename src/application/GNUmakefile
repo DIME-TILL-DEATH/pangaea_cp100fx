@@ -18,6 +18,12 @@ LIB_FLAGS=	-I$(READLINE_SRC_DIR) \
 			-I$(SRC_DIR)/libstorage \
 			-I$(SRC_DIR)/libusb/device \
 			-I$(SRC_DIR)/libusb/otg \
+			-I$(SRC_DIR)/application/gui\
+			-I$(SRC_DIR)/application/gui/elements\
+			-I$(SRC_DIR)/application/gui/menus\
+			-I$(SRC_DIR)/application/gui/menus/paramlistmenu\
+			-I$(SRC_DIR)/application/gui/menus/modulesmenu\
+			-I$(SRC_DIR)/application/gui/menus/systemmenu\
 			-DUSE_STDPERIPH_DRIVER \
 			$(APP_DEFS) \
 			$(HARDWARE_DEFS) \

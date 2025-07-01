@@ -1,4 +1,4 @@
-#include "realparam.h"
+#include "../paramlistmenu/realparam.h"
 
 #include "display.h"
 

@@ -57,7 +57,7 @@ public:
 		dcStringOut,
 		dcNumberOut,
 		dcIndicator,
-		dcMenu_init,
+//		dcMenu_init,
 		dcProg_ind,
 		dcEfIcon,
 		dcSetColumn,
@@ -328,7 +328,7 @@ public:
 	void NumberOut(uint8_t x, uint8_t y, TFontName name, TFontState state, uint32_t val);
 	void SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
 	void VolIndicator();
-	void Menu_init(void);
+//	void Menu_init(void);
 	void Prog_ind(uint8_t pro);
 	void EfIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
 	void SetColumn(uint8_t x);

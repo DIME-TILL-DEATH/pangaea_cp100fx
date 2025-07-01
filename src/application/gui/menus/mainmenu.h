@@ -2,7 +2,7 @@
 #define MAINMENU_H_
 
 #include "abstractmenu.h"
-#include "modulesmenu.h"
+#include "modulesmenu/modulesmenu.h"
 
 
 class MainMenu : public AbstractMenu

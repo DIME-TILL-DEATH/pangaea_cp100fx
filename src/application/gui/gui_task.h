@@ -5,7 +5,7 @@
 #include "../modules.h"
 #include "menus/abstractmenu.h"
 
-#include "menus/params/baseparam.h"
+#include "menus/paramlistmenu/baseparam.h"
 
 
 #define IN_OUT_STR_SIZE 7
@@ -62,7 +62,9 @@ void tim5_start(uint8_t val);
 void t_restart(void);
 void clean_flag (void);
 
-extern volatile uint8_t encoder_knob_selected;
+
+extern const uint8_t expr_type [][12];
+extern const uint8_t expr_menu [][10];
 
 extern volatile uint8_t write_fl;
 extern volatile uint16_t count_enc;
@@ -87,10 +89,12 @@ extern gui_menu_type current_menu_type;
 extern float del_vol_ind;
 extern float phas_vol_ind;
 extern float chor_vol_ind;
+
 extern uint8_t k_up;
 extern uint8_t k_down;
 extern uint8_t k_sys;
 extern uint8_t k_master;
+
 extern volatile uint8_t par_num;
 extern float del_fed;
 extern float del_vol;
@@ -101,7 +105,7 @@ extern float del_pan2;
 extern float del_pan3;
 extern float ear_vol;
 extern uint32_t cR;
-//extern uint8_t edit_modules_fl;
+
 extern uint8_t tuner_use;
 extern const float tap_time_coefs[];
 extern volatile uint8_t midi_f1;

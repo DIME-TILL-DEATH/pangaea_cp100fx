@@ -1,7 +1,7 @@
 #ifndef PRESETACTIONSMENU_H_
 #define PRESETACTIONSMENU_H_
 
-#include "abstractmenu.h"
+#include "../abstractmenu.h"
 
 class PresetActionsMenu : public AbstractMenu
 {

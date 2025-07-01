@@ -9,36 +9,43 @@ enum
 	MIDI_CHANNEL,
 	CAB_SIM_CONFIG,
 	EXPRESSION_TYPE,
+
 	/*type foot sw*/
+
 	fs1, fs2, fs3,
 	/*calibration*/
 	calib1, calib2, calib3, calib4,
+
 	/*preset map to foot sw*/
 	pr11, pr12, pr13, pr14,
 	pr21, pr22, pr23, pr24,
 	pr31, pr32, pr33, pr34,
+
 	SPDIF_OUT_TYPE,
+
 	/*num CC to express and foot*/
-	exp_ccN, k1_cc, k2_cc, k3_cc,
+	EXP_CCN, k1_cc, k2_cc, k3_cc,
 	/*service*/midi_pc_ind,
 	/*31 - last num preset*/
+
 	/*mode foot*/
 	fsm1 = 32, fsm2, fsm3,
+
 	/*type foot sw1*/
-	fs11,
-	fs21,
-	fs31,
+	fs11, fs21,fs31,
+
 	/*preset map to foot sw1*/
 	pr111, pr121, pr131, pr141,
 	pr211, pr221, pr231, pr241,
 	pr311, pr321, pr331, pr341,
 	k11_cc, k21_cc, k31_cc,
+
 	TAP_TYPE,
 	TUNER_EXTERNAL,
 	/*speed foot*/foot_sp,
 	TIME_FORMAT,	// Sec, BPM
-	/*global temp hi*/TAP_HIGH,
-	/*save expression level*/sav_exp,
+	TAP_HIGH, /*global temp hi*/
+	STORE_EXP_LEVEL, /*save expression level*/
 	SWAP_SWITCH,
 	TUNER_SPEED,
 

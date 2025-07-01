@@ -1,7 +1,8 @@
 #ifndef GUIMODULE_H_
 #define GUIMODULE_H_
 
-#include "menus/abstractmenu.h"
+#include "../abstractmenu.h"
+#include "modulesmenu.h"
 
 #include "modules.h"
 
@@ -13,7 +14,7 @@ typedef struct
 	const char* name;
 	uint8_t* enablePtr;
 	AbstractMenu* (*createMenu)(AbstractMenu* parent);
-	void (*enableFunction)();
+	void (*enableFunction)(ModulesMenu* parent);
 	dsp_enable_pos_t dspEnablePosition;
 }TModule;
 

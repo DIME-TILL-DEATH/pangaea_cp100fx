@@ -15,36 +15,20 @@
 
 #define disp_orient 0
 
-extern const uint8_t cs[];
-extern const uint8_t ph[];
-extern const uint8_t ch[];
-extern const uint8_t dl[];
-extern const uint8_t rm[];
-extern const uint8_t er[];
-extern const uint8_t rv[];
-extern const uint8_t tr[];
+
 extern const uint8_t syst[];
 extern const uint8_t equ[];
 extern const uint8_t volu[];
 extern const uint8_t in[];
 extern const uint8_t out[];
-extern const uint8_t cm[];
-extern const uint8_t am[];
-extern const uint8_t vl[];
-extern const uint8_t na[];
-extern const uint8_t pr[];
-extern const uint8_t gt[];
-extern const uint8_t cm[];
-extern const uint8_t rf[];
 extern const uint8_t inpp[];
 extern const uint8_t outt[];
 extern const uint8_t amt [];
 
 extern const uint8_t sys[];
 extern const uint8_t cc_of[];
-extern const uint8_t sys_menu_list [][12];
-extern const uint8_t expr_type [][12];
-extern const uint8_t expr_menu [][10];
+
+
 extern const uint8_t foot_sw_type[][12];
 extern const uint8_t footsw_menu[][12];
 extern const uint8_t ext_switch  [][12];

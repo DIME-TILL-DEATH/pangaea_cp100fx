@@ -19,7 +19,7 @@
 #include "attenuatormenu.h"
 #include "mastervolumemenu.h"
 #include "mastereqmenu.h"
-#include "systemmenu.h"
+#include "systemmenu/systemmenu.h"
 #include "tunermenu.h"
 
 extern uint8_t tim5_fl2;

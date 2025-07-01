@@ -12,6 +12,7 @@ public:
 	ModulesMenu(AbstractMenu* parent);
 
 	void show(TShowMode swhoMode = FirstShow) override;
+	void refresh() override;
 	void task() override;
 
 	void encoderPressed() override;
@@ -29,10 +30,13 @@ public:
 
 	uint8_t numMenu() {return m_numMenu;};
 
-	static void enableCab();
+	static void enableCab(ModulesMenu* parent);
+
+	static constexpr uint8_t modulesCount = 14;
 
 private:
 	uint8_t m_numMenu = 0;
+	bool presetEdited{false};
 
 	PresetActionsMenu copyMenu{this, PresetActionsMenu::Copy};
 	PresetActionsMenu confirmSaveMenu{this, PresetActionsMenu::Save};
@@ -40,11 +44,7 @@ private:
 	Dialog erasePresetDialog{this, Dialog::ErasePreset};
 	NameEditMenu nameEditMenu{this};
 
-	void icon_refresh(uint8_t num);
-	bool presetEdited{false};
-
-	constexpr static uint8_t volum[]="Preset Level";
-
+	void iconRefresh(uint8_t num);
 
 	constexpr static uint8_t cc[]="CC#";
 	constexpr static  uint8_t contr_list    [][7] ={"Contr","Source","Destin","MinVal","MaxVal","PC Out","SET"};

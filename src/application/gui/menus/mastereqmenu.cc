@@ -9,7 +9,7 @@
 #include "enc.h"
 #include "BF706_send.h"
 
-#include "params/realparam.h"
+#include "paramlistmenu/realparam.h"
 
 extern uint8_t k_master_eq;
 

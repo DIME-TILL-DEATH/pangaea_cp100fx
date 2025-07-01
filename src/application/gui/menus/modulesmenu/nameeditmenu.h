@@ -1,7 +1,7 @@
 #ifndef NAMEEDITMENU_H_
 #define SNAMEEDITMENU_H_
 
-#include "abstractmenu.h"
+#include "../abstractmenu.h"
 
 class NameEditMenu: public AbstractMenu
 {

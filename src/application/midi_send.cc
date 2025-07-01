@@ -150,7 +150,7 @@ void TMidiSendTask::Code()
 				if(!contr_cont)
 				{
 					uart_send(0xb0|sys_para[MIDI_CHANNEL]);
-					uart_send(sys_para[exp_ccN]-1);
+					uart_send(sys_para[EXP_CCN]-1);
 					uart_send(int_contr_buf[trans_contr_po++]);
 					if((data[0]&0xf0)!=0xb0)
 						uart_send(data[0]);
@@ -362,7 +362,7 @@ volatile uint8_t adc_point = 0;
 volatile uint8_t adc_inv_fl = 0;
 void adc_proc(void)
 {
-	if(sys_para[exp_ccN])
+	if(sys_para[EXP_CCN])
 	{
 		int_contr_buf[int_contr_po++] = adc_bu2;
 		MidiSendTask->Give();

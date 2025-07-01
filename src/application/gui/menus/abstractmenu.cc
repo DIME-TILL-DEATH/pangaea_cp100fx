@@ -41,6 +41,12 @@ void AbstractMenu::setTopLevelMenu(AbstractMenu* parent)
 	topLevelMenu = parent;
 }
 
+void AbstractMenu::showChild(AbstractMenu* child)
+{
+	shownChildMenu = child;
+	child->show();
+}
+
 void AbstractMenu::setRunningString(StringOutParam* runningString)
 {
 	m_runningString = runningString;

@@ -1,5 +1,6 @@
 #include "systemmenu.h"
 
+#include "../paramlistmenu/customparam.h"
 #include "appdefs.h"
 #include "cs.h"
 #include "eepr.h"
@@ -11,11 +12,11 @@
 #include "midi_send.h"
 
 #include "midimapmenu.h"
+#include "expressionmenu.h"
 
-#include "params/baseparam.h"
-#include "params/customparam.h"
-#include "params/stringlistparam.h"
-#include "params/submenuparam.h"
+#include "baseparam.h"
+#include "stringlistparam.h"
+#include "submenuparam.h"
 
 SystemMenu::SystemMenu(AbstractMenu* parent, gui_menu_type menuType)
 		:ParamListMenu(parent, menuType)
@@ -126,9 +127,7 @@ bool SystemMenu::editingFinished()
 	return true;
 }
 
-//const uint8_t expr_menu[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
 
-//const uint8_t expr_type[][12] = {"   Off     ", "Standard V ", "Alternat V ", "Standard CC", "Alternat CC"};
 //const uint8_t footsw_menu[][12] = {"FSW-DOWN", "FSW-CONFIRM", "FSW-UP", "Speed FS"};
 //const uint8_t ext_switch[][12] = {"Off        ", "Expression ", "Foot switch"};
 //const uint8_t int_sw_list[][12] = {"True bypass", "Controllers", "Presets sw "};
@@ -245,7 +244,8 @@ void SystemMenu::expressionKeyDown(void* parameter)
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	if(*valuePtr&0x80)
 	{
-
+		ExpressionMenu* expressionMenu = new ExpressionMenu(currentMenu);
+		currentMenu->showChild(expressionMenu);
 	}
 }
 

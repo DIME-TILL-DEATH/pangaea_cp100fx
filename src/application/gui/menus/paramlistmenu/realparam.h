@@ -1,7 +1,7 @@
 #ifndef REALPARAM_H_
 #define REALPARAM_H_
 
-#include "baseparam.h"
+#include "../paramlistmenu/baseparam.h"
 
 class RealParam: public BaseParam
 {

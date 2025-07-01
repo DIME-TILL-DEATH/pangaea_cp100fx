@@ -3,7 +3,7 @@
 #include "eepr.h"
 #include "../gui_task.h"
 
-#include "params/stringlistparam.h"
+#include "paramlistmenu/stringlistparam.h"
 
 AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	: ParamListMenu(parentMenu, MENU_ATTENUATOR)

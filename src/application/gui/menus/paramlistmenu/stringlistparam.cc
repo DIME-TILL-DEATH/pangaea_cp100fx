@@ -1,4 +1,4 @@
-#include "stringlistparam.h"
+#include "../paramlistmenu/stringlistparam.h"
 
 #include "display.h"
 

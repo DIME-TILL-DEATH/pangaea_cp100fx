@@ -1,7 +1,7 @@
 #ifndef CUSTOMPARAM_H_
 #define CUSTOMPARAM_H_
 
-#include "baseparam.h"
+#include "../paramlistmenu/baseparam.h"
 
 class CustomParam: public BaseParam
 {

@@ -5,11 +5,13 @@
 #include "cs.h"
 #include "enc.h"
 #include "display.h"
-#include "gui/elements/allFonts.h"
+
 #include "BF706_send.h"
 #include "midi_send.h"
 
-#include "gui/gui_task.h"
+#include "allFonts.h"
+#include "gui_task.h"
+#include "modulesmenu.h"
 
 TCCTask *CCTask;
 
@@ -81,11 +83,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[pream] = 1;
 			contr_send(18, 10|(presetData[pream]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(56, 0, (uint8_t*)pr, presetData[pream]);
-			}
-		break; // if(!current_menu)&&(edit_modules_fl)
+		break;
 //-------------------------------------------------PA-------------------------------------------------
 		case 1:
 			if(i<64.0f)
@@ -93,11 +91,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[amp] = 1;
 			contr_send(18, 0|(presetData[amp]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(74, 0, (uint8_t*)am, presetData[amp]);
-			}
-		break; //if(!current_menu)&&(edit_modules_fl)
+		break;
 		case 2:
 			presetData[am_v] = i;/*DisplayTask->ParamIndic(58,0,prog_data[am_v]);*/
 			contr_send(11, 0);
@@ -113,11 +107,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[cab] = 1;
 			contr_send(18, 1|(presetData[cab]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(92, 0, (uint8_t*)cs, presetData[cab]);
-			}
-		break; //if(!current_menu)&&(edit_modules_fl)
+		break;
 //-------------------------------------------------EQ-------------------------------------------------
 		case 5:
 			if(i<64.0f)
@@ -125,11 +115,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[eq] = 1;
 			contr_send(18, 2|(presetData[eq]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(110, 0, (uint8_t*)equ, presetData[eq]);
-			}
-		break; //if(!current_menu)&&(edit_modules_fl)
+		break;
 //-------------------------------------------------Delay----------------------------------------------
 		case 6:
 			if(i<64.0f)
@@ -137,11 +123,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[delay] = 1;
 			contr_send(18, 3|(presetData[delay]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(56, 2, (uint8_t*)dl, presetData[delay]);
-			}
-		break; //if(!current_menu)&&(edit_modules_fl)
+		break;
 		case 7:
 			presetData[d_vol] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[d_vol]);*/
 			contr_send(3, 0);
@@ -209,10 +191,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[phas] = 1;
 			contr_send(18, 4|(presetData[phas]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(2, 2, (uint8_t*)ph, presetData[phas]);
-			}
+
 		break;
 		case 11:
 			presetData[phaser_vol] = i;
@@ -229,10 +208,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[fl] = 1;
 			contr_send(18, 5|(presetData[fl]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(20, 2, (uint8_t*)rm, presetData[fl]);
-			}
+
 		break;
 		case 14:
 			presetData[fl_v] = i;
@@ -249,10 +225,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[chor] = 1;
 			contr_send(18, 6|(presetData[chor]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(38, 2, (uint8_t*)ch, presetData[chor]);
-			}
+
 		break;
 		case 17:
 			presetData[chor_volum] = i;/*DisplayTask->ParamIndicMix(53,0,prog_data[chor_volum]);*/
@@ -269,10 +242,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[reve] = 1;
 			contr_send(18, 8|(presetData[reve]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(92, 2, (uint8_t*)rv, presetData[reve]);
-			}
+
 		break;
 		case 20:
 			presetData[r_vol] = i;
@@ -289,10 +259,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[trem] = 1;
 			contr_send(18, 9|(presetData[trem]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(110, 2, (uint8_t*)tr, presetData[trem]);
-			}
+
 		break;
 		case 23:
 			presetData[tr_vol] = i;
@@ -330,10 +297,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[compr] = 1;
 			contr_send(18, 12|(presetData[compr]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(38, 0, (uint8_t*)cm, presetData[compr]);
-			}
+
 		break;
 		case 28:
 			presetData[comp_thr] = i;
@@ -350,10 +314,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[moog] = 1;
 			contr_send(18, 13|(presetData[moog]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(2, 0, (uint8_t*)rf, presetData[moog]);
-			}
+
 		break;
 		case 31:
 			presetData[mog_rate] = i;
@@ -370,10 +331,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[early] = 1;
 			contr_send(18, 7|(presetData[early]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(74, 2, (uint8_t*)er, presetData[early]);
-			}
+
 		break;
 		case 34:
 			presetData[early_vol] = i*0.5f;
@@ -410,10 +368,7 @@ void con_ch(uint8_t adr, uint8_t data)
 			else
 				presetData[gate] = 1;
 			contr_send(18, 11|(presetData[gate]<<8));
-			if(currentMenu->menuType()==MENU_MODULES)
-			{
-				DisplayTask->EfIcon(20, 0, (uint8_t*)gt, presetData[gate]);
-			}
+
 		break;
 		case 40:
 			presetData[gate_thr] = i;
@@ -481,6 +436,8 @@ void con_ch(uint8_t adr, uint8_t data)
 			contr_send(2, 1);
 		break;
 	}
+
+		currentMenu->refresh();
 }
 //------------------------------------------------------------------------------
 TCCTask::TCCTask() :

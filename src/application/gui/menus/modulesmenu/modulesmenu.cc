@@ -1,12 +1,12 @@
 #include "modulesmenu.h"
 
-#include "../guimodules.h"
+#include "guimodules.h"
 
 #include "appdefs.h"
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -16,8 +16,8 @@
 
 #include "paramlistmenu.h"
 
-#include "params/stringlistparam.h"
-#include "params/stringoutparam.h"
+#include "stringlistparam.h"
+#include "stringoutparam.h"
 
 
 extern gui_menu_type current_menu_type;
@@ -27,7 +27,6 @@ extern uint8_t control_destin;
 
 const uint8_t ModulesMenu::cc[];
 const uint8_t ModulesMenu::contr_list[][7];
-const uint8_t ModulesMenu::volum[];
 
 const uint8_t ModulesMenu::sd_nr [];
 const uint8_t ModulesMenu::imp_dir_n [];
@@ -35,7 +34,7 @@ const uint8_t ModulesMenu::imp_dir_no [ ];
 const uint8_t ModulesMenu::sd_lo [];
 
 
-GuiModules::TModule modules[14];
+GuiModules::TModule modules[ModulesMenu::modulesCount];
 
 GuiModules::TModule RF = {"RF", &presetData[ENABLE_RESONANCE_FILTER], &GuiModules::createRfMenu, nullptr, ENABLE_RESONANCE_FILTER};
 GuiModules::TModule GT = {"GT", &presetData[ENABLE_GATE], &GuiModules::createGateMenu, nullptr, ENABLE_GATE};
@@ -82,8 +81,18 @@ void ModulesMenu::show(TShowMode showMode)
 	if(showMode == TShowMode::FirstShow) presetEdited = false;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-	DisplayTask->Menu_init();
+	refresh();
+
 	tim5_start(0);
+}
+
+void ModulesMenu::refresh()
+{
+	DisplayTask->Clear();
+	for(uint8_t i=0; i<modulesCount; i++)
+	{
+		iconRefresh(i);
+	}
 }
 
 void ModulesMenu::task()
@@ -116,7 +125,7 @@ void ModulesMenu::encoderPressed()
 	*modules[m_numMenu].enablePtr = !((bool)*modules[m_numMenu].enablePtr);
 	gui_send(18, modules[m_numMenu].dspEnablePosition | (*modules[m_numMenu].enablePtr << 8));
 
-	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction();
+	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction(this);
 
 	clean_flag();
 	tim5_start(1);
@@ -126,7 +135,7 @@ void ModulesMenu::encoderClockwise()
 {
 	if(current_menu_type != MENU_MODULES) return;
 
-	icon_refresh(m_numMenu);
+	iconRefresh(m_numMenu);
 
 	if(m_numMenu < 13) m_numMenu++;
 	else m_numMenu = 0;
@@ -141,7 +150,7 @@ void ModulesMenu::encoderCounterClockwise()
 	if(current_menu_type != MENU_MODULES) return;
 
 
-	icon_refresh(m_numMenu);
+	iconRefresh(m_numMenu);
 
 	if(m_numMenu > 0) m_numMenu--;
 	else m_numMenu = 13;
@@ -279,12 +288,12 @@ void ModulesMenu::key5()
 	shownChildMenu->show();
 }
 
-void ModulesMenu::icon_refresh(uint8_t num)
+void ModulesMenu::iconRefresh(uint8_t num)
 {
 	DisplayTask->EfIcon(2 + (num%7) * 18, (num/7) * 2,(uint8_t*)modules[num].name, *modules[num].enablePtr);
 }
 
-void ModulesMenu::enableCab()
+void ModulesMenu::enableCab(ModulesMenu* parent)
 {
 	if(cab1_name_buf[0] == 0)
 	{
@@ -313,9 +322,8 @@ void ModulesMenu::enableCab()
 			  DisplayTask->StringOut(42,3,TDisplayTask::fntSystem,0,(uint8_t*)imp_dir_no);
 			  CSTask->CS_del(1000);
 			  presetData[cab] = 0;
-			  current_menu_type = MENU_MAIN;
-			  encoder_knob_selected = 0;
-			  DisplayTask->Menu_init();
+
+			  parent->refresh();
 		  }
 		}
 		else
@@ -326,9 +334,8 @@ void ModulesMenu::enableCab()
 			CSTask->CS_del(1000);
 
 			presetData[cab] = 0;
-			current_menu_type = MENU_MAIN;
-			encoder_knob_selected = 0;
-			DisplayTask->Menu_init();
+
+			parent->refresh();
 		}
 	}
 }

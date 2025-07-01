@@ -1,7 +1,7 @@
 #ifndef SRC_APPLICATION_GUI_MENUS_MIDIMAPMENU_H_
 #define SRC_APPLICATION_GUI_MENUS_MIDIMAPMENU_H_
 
-#include "abstractmenu.h"
+#include "../abstractmenu.h"
 
 class MidiMapMenu: public AbstractMenu
 {

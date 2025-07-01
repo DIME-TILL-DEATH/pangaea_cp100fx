@@ -9,7 +9,7 @@
 #include "enc.h"
 #include "cc.h"
 
-#include "params/stringoutparam.h"
+#include "paramlistmenu/stringoutparam.h"
 
 extern volatile int8_t temp;
 extern const uint16_t bpm_time[];

@@ -2,7 +2,7 @@
 #define SUBMENUPARAM_H_
 
 #include "../abstractmenu.h"
-#include "baseparam.h"
+#include "../paramlistmenu/baseparam.h"
 
 class SubmenuParam : public BaseParam
 {

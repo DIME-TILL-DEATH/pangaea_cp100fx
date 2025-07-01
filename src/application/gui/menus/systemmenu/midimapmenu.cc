@@ -1,13 +1,10 @@
 #include "midimapmenu.h"
 
 #include "cs.h"
-//#include "fs.h"
-#include "eepr.h"
 #include "gui/elements/allFonts.h"
-#include "gui/elements/icon_bit.h"
 #include "display.h"
 #include "enc.h"
-#include "cc.h"
+#include "eepr.h"
 
 MidiMapMenu::MidiMapMenu(AbstractMenu* parent)
 {

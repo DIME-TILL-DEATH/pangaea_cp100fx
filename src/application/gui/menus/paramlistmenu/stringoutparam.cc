@@ -1,4 +1,4 @@
-#include "stringoutparam.h"
+#include "../paramlistmenu/stringoutparam.h"
 
 #include "display.h"
 

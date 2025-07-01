@@ -1,39 +1,20 @@
 #include "appdefs.h"
 #include "allFonts.h"
 
-#include "../gui_task.h"
+#include "gui_task.h"
 #include "fs.h"
 #include "eepr.h"
 #include "cs.h"
 #include "amt.h"
 
-const uint8_t cs[] = "IR";
-const uint8_t ph[] = "PH";
-const uint8_t ch[] = "CH";
-const uint8_t dl[] = "DL";
-const uint8_t rm[] = "FL";
-const uint8_t er[] = "ER";
-const uint8_t rv[] = "RV";
-const uint8_t equ[] = "EQ";
-const uint8_t tr[] = "TR";
 const uint8_t syst[] = "CC";
 const uint8_t volu[] = "Vol";
 const uint8_t in[] = "In";
 const uint8_t out[] = "OUT";
-const uint8_t cm[] = "CM";
-const uint8_t am[] = "PA";
-const uint8_t vl[] = "PL";
-const uint8_t na[] = "NM";
-const uint8_t pr[] = "PR";
-const uint8_t gt[] = "GT";
-const uint8_t rf[] = "RF";
 
 const uint8_t sys[] = "System";
 const uint8_t cc_of[] = "Off      ";
-const uint8_t sys_menu_list[][12] = {"Mode", "MIDI ch", "Cab num", "Expression", "Footswitch", "S/PDIF", "MIDI PC Map", "Tempo", "Tuner contr", "Time",
-		"Swap UpConf", "Speed tun"};
-const uint8_t expr_menu[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
-const uint8_t expr_type[][12] = {"   Off     ", "Standard V ", "Alternat V ", "Standard CC", "Alternat CC"};
+
 const uint8_t footsw_menu[][12] = {"FSW-DOWN", "FSW-CONFIRM", "FSW-UP", "Speed FS"};
 const uint8_t ext_switch[][12] = {"Off        ", "Expression ", "Foot switch"};
 const uint8_t int_sw_list[][12] = {"True bypass", "Controllers", "Presets sw "};
@@ -374,24 +355,6 @@ void main_screen(void)
 		Arsys_line(2, 1, (uint8_t*)imya1_t, 0);
 		imya_temp = 0;
 	}
-}
-void menu_init(void)
-{
-	oled023_1_disp_clear();
-	Arsys_ef(2, 0, (uint8_t*)rf, presetData[moog]);
-	Arsys_ef(20, 0, (uint8_t*)gt, presetData[gate]);
-	Arsys_ef(38, 0, (uint8_t*)cm, presetData[compr]);
-	Arsys_ef(56, 0, (uint8_t*)pr, presetData[pream]);
-	Arsys_ef(74, 0, (uint8_t*)am, presetData[amp]);                         //   2,20,38,56,74,92,110
-	Arsys_ef(92, 0, (uint8_t*)cs, presetData[cab]);
-	Arsys_ef(110, 0, (uint8_t*)equ, presetData[eq]);
-	Arsys_ef(2, 2, (uint8_t*)ph, presetData[phas]);
-	Arsys_ef(20, 2, (uint8_t*)rm, presetData[fl]);
-	Arsys_ef(38, 2, (uint8_t*)ch, presetData[chor]);
-	Arsys_ef(56, 2, (uint8_t*)dl, presetData[delay]);
-	Arsys_ef(74, 2, (uint8_t*)er, presetData[early]);
-	Arsys_ef(92, 2, (uint8_t*)rv, presetData[reve]);
-	Arsys_ef(110, 2, (uint8_t*)tr, presetData[trem]);
 }
 
 void prog_ind(uint32_t val)

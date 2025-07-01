@@ -1,4 +1,4 @@
-#include "submenuparam.h"
+#include "../paramlistmenu/submenuparam.h"
 
 #include "BF706_send.h"
 #include "enc.h"

@@ -1,7 +1,7 @@
 #ifndef EQBANDMENU_H_
 #define EQBANDMENU_H_
 
-#include "abstractmenu.h"
+#include "../abstractmenu.h"
 
 class EqBandMenu: public AbstractMenu
 {

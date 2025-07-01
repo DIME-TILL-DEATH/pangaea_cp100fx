@@ -8,9 +8,9 @@
 #include "BF706_send.h"
 #include "modules.h"
 
-#include "params/baseparam.h"
-#include "params/stringlistparam.h"
-#include "params/submenuparam.h"
+#include "paramlistmenu/baseparam.h"
+#include "paramlistmenu/stringlistparam.h"
+#include "paramlistmenu/submenuparam.h"
 
 class ParamListMenu : public AbstractMenu
 {

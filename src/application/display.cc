@@ -98,9 +98,9 @@ void TDisplayTask::Code()
 				else vol_ind(58, 50);
             break;
 
-			case dcMenu_init:
-				menu_init();
-        	break;
+//			case dcMenu_init:
+//				menu_init();
+//        	break;
 
 			case dcMain_scr:
 				main_screen();
@@ -337,12 +337,12 @@ void TDisplayTask::VolIndicator()
 	Command(&cmd);
 }
 
-void TDisplayTask::Menu_init()
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcMenu_init;
-	Command(&cmd);
-}
+//void TDisplayTask::Menu_init()
+//{
+//	TDisplayCmd cmd;
+//	cmd.cmd=dcMenu_init;
+//	Command(&cmd);
+//}
 
 void TDisplayTask::Prog_ind(uint8_t pro)
 {
