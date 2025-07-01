@@ -66,6 +66,7 @@ public:
 		dcEqInit,
 		dcEqLH,
 		dcEqPar,
+		dcEqResponse,
 		dcParamIndic,
 		dcParamIndicTransparent,
 		dcParamIndicNum,
@@ -336,6 +337,7 @@ public:
 	void EqPar(uint8_t col, uint8_t pag, int16_t num, uint8_t type, uint8_t band);
 	void EqInit(void);
 	void EqLH(float num, uint8_t type);
+	void EqResponse();
 	void ParamIndic(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data);
 	void ParamIndicNum(uint8_t x, uint8_t y, uint16_t data);

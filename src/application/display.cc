@@ -146,6 +146,10 @@ void TDisplayTask::Code()
 				lo_hi_par(cmd.EqLHParam.num , cmd.EqLHParam.type);
 			break;
 
+			case dcEqResponse:
+				eq_response();
+			break;
+
 			case dcParamIndic:
 				par_ind(cmd.ParamIndicParam.pos.x, cmd.ParamIndicParam.pos.y,
 						cmd.ParamIndicParam.data);
@@ -405,6 +409,7 @@ void TDisplayTask::EqPar(uint8_t col , uint8_t pag , int16_t num, uint8_t type ,
 	cmd.EqParParam.band = band;
 	Command(&cmd);
 }
+
 void TDisplayTask::EqLH(float num , uint8_t type)
 {
 	TDisplayCmd cmd;
@@ -413,6 +418,14 @@ void TDisplayTask::EqLH(float num , uint8_t type)
 	cmd.EqLHParam.type = type;
 	Command(&cmd);
 }
+
+void TDisplayTask::EqResponse()
+{
+	TDisplayCmd cmd;
+	cmd.cmd=dcEqResponse;
+	Command(&cmd);
+}
+
 void TDisplayTask::ParamIndic(uint8_t x, uint8_t y , uint8_t data)
 {
 	TDisplayCmd cmd;

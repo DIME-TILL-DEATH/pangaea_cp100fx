@@ -4,9 +4,10 @@
 // https://code.google.com/p/ctuner/source/browse/trunk/windows/Tuner.c
 
 #include "spectrum.h"
+
+#include "filter.h"
 #include "rt_counter.h"
 #include "int2str.h"
-#include "filt.h"
 #include "gui/gui_task.h"
 
 static const char *note_name_table[] =
@@ -65,7 +66,7 @@ TSpectrumTask::TSpectrumTask()
 	fft_0.init(in_0, N, Wfwd, 0);
 	fft_1.init(in_1, N, Wfwd, 0);
 
-	Set_filt_LPF(500.0f);
+	Filter::Set_filt_LPF(500.0f);
 
 	ref_freq = 440.0f;
 }
@@ -133,7 +134,7 @@ void SpectrumBuffsUpdate(float u)
 
 	if(eSuspended==TTaskUtilities::GetTaskState(SpectrumTask->GetHandle()))
 	{
-		u = filt_lp(u);
+		u = Filter::filt_lp(u);
 		vec val(u, 0);
 		if(index<N)
 			in_0[index] = vec(u, 0);

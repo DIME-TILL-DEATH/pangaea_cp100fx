@@ -1,10 +1,10 @@
 #include "appdefs.h"
 #include "eq_bitmap.h"
 
+#include "../../filter.h"
 #include "allFonts.h"
 #include "eepr.h"
 #include "../gui_task.h"
-#include "filt.h"
 #include "icon_bit.h"
 
 const uint8_t eq_bit[] = {0x00,0x80,0xff,0x7f,
@@ -175,4 +175,18 @@ void eq_par(uint8_t col , uint8_t pag , int16_t num , uint8_t type , uint8_t ban
 		}
 	}
 	Arsys_line(col , pag , (uint8_t*)q_sym , 0);
+}
+
+void eq_response()
+{
+	Set_Column_Address(0);
+
+	uint8_t graphCenter = 16;
+
+	for(uint8_t i = 0; i<Filter::EqPointsNumber; i++)
+	{
+		uint8_t yPosition = graphCenter - round(Filter::eqResponsePoints[i]);
+		Set_Page_Address(yPosition/8);
+		oled023_1_write_data(1 << yPosition%8);
+	}
 }
