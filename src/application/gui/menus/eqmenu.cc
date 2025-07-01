@@ -7,12 +7,14 @@
 #include "display.h"
 #include "enc.h"
 #include "BF706_send.h"
+#include "filter.h"
 
 const uint8_t lpf_hpf[][9] =
 {"HPF", "LPF", "Presence", "Position"};
 const uint8_t eq_pre_post[][5] =
 {"Post", "Pre "};
 const uint8_t gerz[] = "Hz";
+
 
 EqMenu::EqMenu(AbstractMenu *parent)
 {
@@ -34,8 +36,8 @@ void EqMenu::task()
 {
 	if(bandNum<5)
 	{
-		if(tim5_fl==0)
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 0);
+		if(!encoderKnobSelected)
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], tim5_fl);
 		else
 			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
 	}
@@ -123,27 +125,27 @@ void EqMenu::encoderClockwise()
 	{
 		if(bandNum<5)
 		{
-			if(presetData[eq1+bandNum]<30)
-				DisplayTask->EqIndic(27+14*bandNum, 0, ++presetData[eq1+bandNum], 1);
+			if(presetData[EQ_G0+bandNum]<30)
+				DisplayTask->EqIndic(27+14*bandNum, 0, ++presetData[EQ_G0+bandNum], 1);
 		}
 		else
 		{
 			switch(bandNum)
 			{
 				case 5:
-					if(presetData[hpf_v]<127)
+					if(presetData[EQ_HPF]<127)
 					{
-						presetData[hpf_v] = enc_speed_inc(presetData[hpf_v], 127);
-						DisplayTask->ParamIndicNum(33, 0, presetData[hpf_v]);
-						DisplayTask->EqLH(presetData[hpf_v]*(980.0/127.0)+20.0, 0);
+						presetData[EQ_HPF] = enc_speed_inc(presetData[EQ_HPF], 127);
+						DisplayTask->ParamIndicNum(33, 0, presetData[EQ_HPF]);
+						DisplayTask->EqLH(presetData[EQ_HPF]*(980.0/127.0)+20.0, 0);
 					}
 				break;
 				case 6:
-					if(presetData[lpf_v]>0)
+					if(presetData[EQ_LPF]>0)
 					{
-						presetData[lpf_v] = enc_speed_dec(presetData[lpf_v], 0);
-						DisplayTask->ParamIndicNum(33, 1, presetData[lpf_v]);
-						DisplayTask->EqLH(powf(127-presetData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
+						presetData[EQ_LPF] = enc_speed_dec(presetData[EQ_LPF], 0);
+						DisplayTask->ParamIndicNum(33, 1, presetData[EQ_LPF]);
+						DisplayTask->EqLH(powf(127-presetData[EQ_LPF], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 					}
 				break;
 				case 7:
@@ -154,9 +156,9 @@ void EqMenu::encoderClockwise()
 					}
 				break;
 				case 8:
-					if(!presetData[eq_pr_po])
+					if(!presetData[EQ_PREPOST])
 					{
-						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[++presetData[eq_pr_po]]);
+						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[++presetData[EQ_PREPOST]]);
 					}
 				break;
 			}
@@ -187,8 +189,8 @@ void EqMenu::encoderCounterClockwise()
 		{
 			if((bandNum>0)&&(bandNum<5))
 			{
-				DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum--], 0);
-				DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
+				DisplayTask->EqIndic(27+bandNum*14, 0, presetData[EQ_G0+bandNum--], 0);
+				DisplayTask->EqIndic(27+bandNum*14, 0, presetData[EQ_G0+bandNum], 1);
 				tim5_start(0);
 			}
 		}
@@ -203,8 +205,8 @@ void EqMenu::encoderCounterClockwise()
 	{
 		if(bandNum<5)
 		{
-			if(presetData[eq1+bandNum]>0)
-				DisplayTask->EqIndic(27+14*bandNum, 0, --presetData[eq1+bandNum], 1);
+			if(presetData[EQ_G0+bandNum]>0)
+				DisplayTask->EqIndic(27+14*bandNum, 0, --presetData[EQ_G0+bandNum], 1);
 		}
 		else
 		{
@@ -234,9 +236,9 @@ void EqMenu::encoderCounterClockwise()
 					}
 				break;
 				case 8:
-					if(presetData[eq_pr_po])
+					if(presetData[EQ_PREPOST])
 					{
-						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[--presetData[eq_pr_po]]);
+						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[--presetData[EQ_PREPOST]]);
 					}
 				break;
 			}
@@ -249,10 +251,7 @@ void EqMenu::encoderCounterClockwise()
 	clean_flag();
 }
 
-//void EqMenu::keyUp()
-//{
-//	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
-//}
+
 
 void EqMenu::keyDown()
 {
@@ -266,3 +265,12 @@ void EqMenu::keyDown()
 	clean_flag();
 }
 
+void EqMenu::key3()
+{
+	Filter::calcEqResponse();
+
+	DisplayTask->Clear();
+	DisplayTask->EqResponse();
+
+	clean_flag();
+}

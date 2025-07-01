@@ -18,10 +18,12 @@ public:
 //	void keyUp() override;
 	void keyDown() override;
 
-//	void key1() override();
+	void key3() override;
 private:
 	uint8_t bandNum{0};
 	bool encoderKnobSelected{false};
+
+//	void calcEqResponse();
 };
 
 

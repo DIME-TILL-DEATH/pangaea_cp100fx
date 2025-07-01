@@ -2,13 +2,13 @@
 #include "cs.h"
 #include "cc.h"
 #include "init.h"
-#include "filt.h"
 #include "gui/elements/allFonts.h"
 #include "fs.h"
 #include "eepr.h"
 #include "display.h"
 #include "enc.h"
 #include "BF706_send.h"
+#include "filter.h"
 
 #include "gui/menus/mainmenu.h"
 

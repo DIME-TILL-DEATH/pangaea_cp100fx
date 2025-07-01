@@ -150,7 +150,7 @@ enum
 enum eq_parameters_t
 {
 	EQ_G0 = 48, EQ_G1, EQ_G2, EQ_G3, EQ_G4,
-	EEQ_HPF,
+	EQ_HPF,
 	EQ_LPF,
 	EQ_PRESENCE,
 	EQ_F0 = 101, EQ_F1, EQ_F2, EQ_F3, EQ_F4,
