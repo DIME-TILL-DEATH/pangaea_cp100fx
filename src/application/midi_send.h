@@ -14,6 +14,8 @@ extern volatile uint8_t program_change_midi;
 extern volatile uint8_t key_midi[];
 extern volatile uint8_t key_midi1[];
 
+extern volatile uint16_t adc_bu;
+
 class TMidiSendTask: public TTask
 {
 public:

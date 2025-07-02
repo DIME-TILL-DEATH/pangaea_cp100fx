@@ -38,8 +38,6 @@ void AttenuatorMenu::encoderClockwise()
 	DisplayTask->Pot_Write();
 
 	m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
-
-	clean_flag();
 }
 
 void AttenuatorMenu::encoderCounterClockwise()
@@ -50,13 +48,10 @@ void AttenuatorMenu::encoderCounterClockwise()
 	DisplayTask->Pot_Write();
 
 	m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
-
-	clean_flag();
 }
 
 void AttenuatorMenu::keyUp()
 {
-	clean_flag();
 	write_sys();
 	topLevelMenu->returnFromChildMenu();
 }

@@ -18,8 +18,6 @@ void AbstractMenu::keyUp()
 		currentMenu = topLevelMenu;
 		topLevelMenu->returnFromChildMenu();
 	}
-
-	clean_flag();
 }
 
 void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)

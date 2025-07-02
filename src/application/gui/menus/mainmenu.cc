@@ -12,6 +12,7 @@
 #include "midi_send.h"
 
 #include "modules.h"
+#include "footswitch.h"
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
@@ -19,11 +20,10 @@
 #include "attenuatormenu.h"
 #include "mastervolumemenu.h"
 #include "mastereqmenu.h"
-#include "systemmenu/systemmenu.h"
+#include "systemmenu.h"
 #include "tunermenu.h"
 
-extern uint8_t tim5_fl2;
-extern gui_menu_type current_menu_type;
+
 extern uint8_t copy_temp;
 extern uint8_t cab_type;
 extern volatile uint8_t prog_sym_cur;
@@ -47,21 +47,19 @@ void MainMenu::show(TShowMode swhoMode)
 	DisplayTask->Main_scr();
 	DisplayTask->Prog_ind(preselectedPresetNumber);
 
-	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[fsm1])) DisplayTask->IndFoot(0, contr_kn[0]);
-	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[fsm2])) DisplayTask->IndFoot(1, contr_kn[1]);
-	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3])) DisplayTask->IndFoot(2, contr_kn[2]);
+	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0, contr_kn[0]);
+	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1, contr_kn[1]);
+	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2, contr_kn[2]);
 }
 
 void MainMenu::task()
 {
-	if(current_menu_type != MENU_MAIN) return;
-
 	if(preselectedPresetNumber != currentPresetNumber)
 	{
-		if(tim5_fl == 0)
+		if(blinkFlag_fl == 0)
 		{
 			DisplayTask->Prog_ind(preselectedPresetNumber);
-			if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3]))
+			if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))
 			{
 				DisplayTask->IndFoot(2, contr_kn[2]);
 			}
@@ -71,7 +69,7 @@ void MainMenu::task()
 			if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update) == 1)
 			{
 				DisplayTask->Clear_str(87 , 0 , TDisplayTask::fnt33x30 , 39);
-				if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3]))
+				if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))
 				{
 					DisplayTask->IndFoot(2,contr_kn[2]);
 				}
@@ -82,8 +80,6 @@ void MainMenu::task()
 
 void MainMenu::encoderPressed()
 {
-	if(current_menu_type != MENU_MAIN) return;
-
 	currentPresetNumber = preselectedPresetNumber;
 	eepr_read_imya(preselectedPresetNumber);
 	imya_temp = 1;
@@ -92,48 +88,41 @@ void MainMenu::encoderPressed()
 	sys_para[31] = currentPresetNumber;
 	prog_ch();
 
-	clean_flag();
 	tim5_start(1);
 }
 
 void MainMenu::encoderClockwise()
 {
-	if(current_menu_type != MENU_MAIN) return;
-
 	if(preselectedPresetNumber == 98) preselectedPresetNumber = 0;
 	else preselectedPresetNumber++;
 
 	eepr_read_imya(preselectedPresetNumber);
 	imya_temp = 1;
 	DisplayTask->Main_scr();
-	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[fsm1]))DisplayTask->IndFoot(0,contr_kn[0]);
-	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[fsm2]))DisplayTask->IndFoot(1,contr_kn[1]);
+	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
+	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
 	DisplayTask->Prog_ind(preselectedPresetNumber);
-	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3]))DisplayTask->IndFoot(2,contr_kn[2]);
+	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
 
 	tim5_start(0);
 	TIM_SetCounter(TIM6,0x8000);
 	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
 	TIM_Cmd(TIM6,ENABLE);
-
-	clean_flag();
 }
 
 void MainMenu::encoderCounterClockwise()
 {
-	if(current_menu_type != MENU_MAIN) return;
-
 	if(preselectedPresetNumber == 0)preselectedPresetNumber = 98;
 	else preselectedPresetNumber -= 1;
 
 	eepr_read_imya(preselectedPresetNumber);
 	imya_temp = 1;
 	DisplayTask->Main_scr();
-	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[fsm1]))DisplayTask->IndFoot(0,contr_kn[0]);
-	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[fsm2]))DisplayTask->IndFoot(1,contr_kn[1]);
+	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
+	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
 
 	DisplayTask->Prog_ind(preselectedPresetNumber);
-	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3]))DisplayTask->IndFoot(2,contr_kn[2]);
+	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
 
 	TIM_SetCounter(TIM6,0xa000);
 	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
@@ -144,8 +133,6 @@ void MainMenu::encoderCounterClockwise()
 
 void MainMenu::keyUp()
 {
-	if(current_menu_type != MENU_MAIN) return;
-
 	if(preselectedPresetNumber != currentPresetNumber)
 	{
 		preselectedPresetNumber = currentPresetNumber;
@@ -166,8 +153,6 @@ void MainMenu::keyUp()
 
 void MainMenu::keyDown()
 {
-	if(current_menu_type != MENU_MAIN) return;
-
 	shownChildMenu = &modulesMenu;
 	modulesMenu.show();
 
@@ -191,7 +176,6 @@ void MainMenu::key2()
 	shownChildMenu = new MasterVolumeMenu(this);
 	shownChildMenu->show();
 
-	clean_flag();
 	tim5_start(0);
 }
 

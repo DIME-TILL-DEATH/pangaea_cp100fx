@@ -37,13 +37,13 @@ void EqMenu::task()
 	if(bandNum<5)
 	{
 		if(!encoderKnobSelected)
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], tim5_fl);
+			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], blinkFlag_fl);
 		else
 			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
 	}
 	else
 	{
-		if(tim5_fl==0)
+		if(blinkFlag_fl==0)
 			DisplayTask->StringOut(6, bandNum-5, TDisplayTask::fntSystem, 0, (uint8_t*)lpf_hpf+(bandNum-5)*9);
 		else
 			DisplayTask->StringOut(6, bandNum-5, TDisplayTask::fntSystem, 2, (uint8_t*)lpf_hpf+(bandNum-5)*9);
@@ -70,7 +70,6 @@ void EqMenu::encoderPressed()
 	}
 
 	tim5_start(1);
-	clean_flag();
 }
 
 void EqMenu::encoderClockwise()
@@ -169,8 +168,6 @@ void EqMenu::encoderClockwise()
 		gui_send(4, bandNum);
 	else
 		gui_send(4, 12);
-
-	clean_flag();
 }
 
 void EqMenu::encoderCounterClockwise()
@@ -248,10 +245,7 @@ void EqMenu::encoderCounterClockwise()
 		else
 			gui_send(4, 12);
 	}
-	clean_flag();
 }
-
-
 
 void EqMenu::keyDown()
 {

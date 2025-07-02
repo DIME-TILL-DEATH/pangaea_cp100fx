@@ -15,24 +15,10 @@
 #include "modules.h"
 
 #include "paramlistmenu.h"
+#include "controllersmenu.h"
 
 #include "stringlistparam.h"
 #include "stringoutparam.h"
-
-
-extern gui_menu_type current_menu_type;
-
-extern uint8_t control_destin;
-
-
-const uint8_t ModulesMenu::cc[];
-const uint8_t ModulesMenu::contr_list[][7];
-
-const uint8_t ModulesMenu::sd_nr [];
-const uint8_t ModulesMenu::imp_dir_n [];
-const uint8_t ModulesMenu::imp_dir_no [ ];
-const uint8_t ModulesMenu::sd_lo [];
-
 
 GuiModules::TModule modules[ModulesMenu::modulesCount];
 
@@ -97,8 +83,6 @@ void ModulesMenu::refresh()
 
 void ModulesMenu::task()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
 	uint8_t xCoord, yCoord;
 
 	if(m_numMenu < 7)
@@ -112,14 +96,12 @@ void ModulesMenu::task()
 		yCoord = 2;
 	}
 
-	if(tim5_fl == 0 )DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
+	if(blinkFlag_fl == 0 )DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
 	else DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, 2);
 }
 
 void ModulesMenu::encoderPressed()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
 	presetEdited = true;
 
 	*modules[m_numMenu].enablePtr = !((bool)*modules[m_numMenu].enablePtr);
@@ -127,45 +109,31 @@ void ModulesMenu::encoderPressed()
 
 	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction(this);
 
-	clean_flag();
 	tim5_start(1);
 }
 
 void ModulesMenu::encoderClockwise()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
 	iconRefresh(m_numMenu);
 
 	if(m_numMenu < 13) m_numMenu++;
 	else m_numMenu = 0;
 
 	tim5_start(0);
-
-	clean_flag();
 }
 
 void ModulesMenu::encoderCounterClockwise()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
-
 	iconRefresh(m_numMenu);
 
 	if(m_numMenu > 0) m_numMenu--;
 	else m_numMenu = 13;
 
 	tim5_start(0);
-
-	clean_flag();
 }
 
 void ModulesMenu::keyUp()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
-	//parent->show(); //????
-
 	if(presetEdited == 1)
 	{
 		confirmSaveMenu.setTopLevelMenu(topLevelMenu);
@@ -178,13 +146,10 @@ void ModulesMenu::keyUp()
 		topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 	}
 	tim5_start(0);
-	clean_flag();
 }
 
 void ModulesMenu::keyDown()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
 	if(preselectedPresetNumber == currentPresetNumber)
 	{
 		if(*modules[m_numMenu].enablePtr)
@@ -200,9 +165,6 @@ void ModulesMenu::keyDown()
 
 void ModulesMenu::key1()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
-
 	shownChildMenu = &erasePresetDialog;
 	shownChildMenu->show();
 
@@ -211,8 +173,6 @@ void ModulesMenu::key1()
 
 void ModulesMenu::key2()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
 	// было своё copyMenu
 
 	const uint8_t paramCount = 3;
@@ -224,7 +184,7 @@ void ModulesMenu::key2()
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &presetData[PRESET_VOLUME]);
 	params[2]->setDspAddress(DSP_ADDRESS_PRESET_VOLUME, PARAM_EQUAL_POS);
 
-	ParamListMenu* menu = new ParamListMenu(this, MENU_VOLUME);
+	ParamListMenu* menu = new ParamListMenu(this, MENU_PRESET_VOLUME);
 	if(menu)
 	{
 		menu->setParams(params, paramCount);
@@ -240,40 +200,15 @@ void ModulesMenu::key2()
 
 void ModulesMenu::key3()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
 	// было своё copyMenu
 
 	current_menu_type = MENU_CONTROLLERS;
-	control_destin = dest_tabl_start[presetControllers[1]];
-	contrs = 0;
-	DisplayTask->Clear();
-	for(uint8_t i = 0 ; i < 3 ; i++)
-	{
-		DisplayTask->StringOut(0,i,TDisplayTask::fntSystem , 0 , (uint8_t*)contr_list + i*7);
-		switch (i)
-		{
-		case 0:DisplayTask->ParamIndicNum(45,0,1);break;
-		case 1:if(presetControllers[0] == 0)DisplayTask->StringOut(45,1,TDisplayTask::fntSystem , 0 , (uint8_t*)cc_of);
-			   else {
-				 if(presetControllers[0] > 4)
-				 {
-					 DisplayTask->StringOut(45,1,TDisplayTask::fntSystem , 0 , (uint8_t*)cc);
-					 DisplayTask->ParamIndicNum(69,1,presetControllers[0] - 5);
-				 }
-				 else DisplayTask->StringOut(45,1,TDisplayTask::fntSystem , 0 , (uint8_t*)contr_ext_l + (presetControllers[0]-1)*12);
-			   }break;
-		case 2:DisplayTask->StringOut(45,2,TDisplayTask::fntSystem , 0 , (uint8_t*)midi_dest_list + presetControllers[1]*14);break;
-		}
-	}
-	DisplayTask->Strel(58,3,0);
-	par_num = 0;
+	shownChildMenu = new ControllersMenu(this);
+	shownChildMenu->show();
 }
 
 void ModulesMenu::key4()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
 	// было своё copyMenu
 
 	shownChildMenu = &nameEditMenu;
@@ -282,8 +217,6 @@ void ModulesMenu::key4()
 
 void ModulesMenu::key5()
 {
-	if(current_menu_type != MENU_MODULES) return;
-
 	shownChildMenu = &copyMenu;
 	shownChildMenu->show();
 }
@@ -318,8 +251,8 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		  }
 		  else
 		  {
-			  DisplayTask->StringOut(0,1,TDisplayTask::fntSystem,0,(uint8_t*)imp_dir_n);
-			  DisplayTask->StringOut(42,3,TDisplayTask::fntSystem,0,(uint8_t*)imp_dir_no);
+			  DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, "There is no directory");
+			  DisplayTask->StringOut(42, 3, TDisplayTask::fntSystem, 0, "IMPULSE");
 			  CSTask->CS_del(1000);
 			  presetData[cab] = 0;
 
@@ -329,8 +262,8 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		else
 		{
 			DisplayTask->Clear();
-			if(!sd_init_fl)DisplayTask->StringOut(6,1,TDisplayTask::fntSystem,0,(uint8_t*)sd_nr);
-			else DisplayTask->StringOut(0,1,TDisplayTask::fntSystem,0,(uint8_t*)sd_lo);
+			if(!sd_init_fl)DisplayTask->StringOut(6, 1, TDisplayTask::fntSystem, 0, "MicroSD is not ready");
+			else DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, "MicroSD is loading..");
 			CSTask->CS_del(1000);
 
 			presetData[cab] = 0;

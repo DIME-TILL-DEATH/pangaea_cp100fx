@@ -29,14 +29,7 @@ extern const uint8_t sys[];
 extern const uint8_t cc_of[];
 
 
-extern const uint8_t foot_sw_type[][12];
-extern const uint8_t footsw_menu[][12];
-extern const uint8_t ext_switch  [][12];
-extern const uint8_t int_sw_list [][12];
-extern const uint8_t contr_ext_l [][12];
-extern const uint8_t fsw_t[][12];
-extern const uint8_t tempo_type [][10];
-extern const uint8_t time_type [][4];
+
 extern uint32_t ind_in_p[];
 extern uint32_t ind_out_l[];
 extern uint16_t ind_poin;

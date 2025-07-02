@@ -105,10 +105,9 @@ void TMidiSendTask::Code()
 								midi_b[1] = data[1];
 								midi_b[2] = tmp;
 								mid_fl = 1;
-								if((midi_b[1]==(sys_para[TUNER_EXTERNAL]&0x7f))&&(sys_para[TUNER_EXTERNAL]&0x80))
+								if((midi_b[1]==(sys_para[TUNER_EXTERNAL]&0x7f)) && (sys_para[TUNER_EXTERNAL]&0x80))
 								{
-//						    	if(((!current_menu) || (current_menu = MENU_TUNER))&&(!edit_fl))
-									if(((!current_menu_type)||(current_menu_type==MENU_TUNER))) //&&(!edit_modules_fl))
+									if(current_menu_type==MENU_TUNER) //&&(!edit_modules_fl))
 									{
 										k_tuner = 1;
 										CSTask->Give();
@@ -117,12 +116,13 @@ void TMidiSendTask::Code()
 								else
 								{
 									CCTask->Give();
-									if((current_menu_type==MENU_CONTROLLERS&&(par_num<3))||(current_menu_type==MENU_TUNER_EXT))
-									{
-										uint8_t midi_in_cc[] = "midi in CC#->";
-										DisplayTask->StringOut(20, 3, TDisplayTask::fntSystem, 0, (uint8_t*)midi_in_cc);
-										DisplayTask->ParamIndicNum(100, 3, midi_b[1]);
-									}
+									//  Через menu->refresh()
+//									if((current_menu_type==MENU_CONTROLLERS&&(par_num<3))||(current_menu_type==MENU_TUNER_EXT))
+//									{
+//										uint8_t midi_in_cc[] = "midi in CC#->";
+//										DisplayTask->StringOut(20, 3, TDisplayTask::fntSystem, 0, (uint8_t*)midi_in_cc);
+//										DisplayTask->ParamIndicNum(100, 3, midi_b[1]);
+//									}
 								}
 							}
 							contr_cont = 0;

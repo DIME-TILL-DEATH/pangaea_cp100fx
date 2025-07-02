@@ -102,7 +102,7 @@ void ParamListMenu::task()
 	if(!m_encoderKnobSelected)
 	{
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
-								tim5_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+								blinkFlag_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 }
 
@@ -134,7 +134,6 @@ void ParamListMenu::encoderPressed()
 	}
 
 	tim5_start(1);
-	clean_flag();
 }
 
 void ParamListMenu::encoderClockwise()
@@ -165,8 +164,6 @@ void ParamListMenu::encoderClockwise()
 		else
 			m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
-
-	clean_flag();
 }
 
 void ParamListMenu::encoderCounterClockwise()
@@ -197,8 +194,6 @@ void ParamListMenu::encoderCounterClockwise()
 		else
 			m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
-
-	clean_flag();
 }
 
 void ParamListMenu::keyDown()
@@ -227,7 +222,6 @@ void ParamListMenu::keyDown()
 //			}
 //
 //		}
-//		clean_flag();
 //	}
 
 	// moog tap
@@ -236,7 +230,6 @@ void ParamListMenu::keyDown()
 //		moog_time = tap_global / 48.0f;
 //		gui_send(31,13);
 //	}
-//   clean_flag();
 
 	// delay tap
 //	  if(tap_temp_global() && !sys_para[tap_typ])

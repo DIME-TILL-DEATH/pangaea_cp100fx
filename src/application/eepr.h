@@ -11,10 +11,10 @@ enum
 	EXPRESSION_TYPE,
 
 	/*type foot sw*/
-
 	fs1, fs2, fs3,
+
 	/*calibration*/
-	calib1, calib2, calib3, calib4,
+	EXPR_CAL_MIN_HI, EXPR_CAL_MIN_LO, EXPR_CAL_MAX_HI, EXPR_CAL_MAX_LO,
 
 	/*preset map to foot sw*/
 	pr11, pr12, pr13, pr14,
@@ -24,15 +24,17 @@ enum
 	SPDIF_OUT_TYPE,
 
 	/*num CC to express and foot*/
-	EXP_CCN, k1_cc, k2_cc, k3_cc,
+	EXP_CCN,
+	k1_cc, k2_cc, k3_cc,
+
 	/*service*/midi_pc_ind,
 	/*31 - last num preset*/
 
-	/*mode foot*/
-	fsm1 = 32, fsm2, fsm3,
+	/*FSW button mode*/
+	FSW1_MODE = 32, FSW2_MODE, FSW3_MODE,
 
 	/*type foot sw1*/
-	fs11, fs21,fs31,
+	fs11, fs21, fs31,
 
 	/*preset map to foot sw1*/
 	pr111, pr121, pr131, pr141,
@@ -42,7 +44,7 @@ enum
 
 	TAP_TYPE,
 	TUNER_EXTERNAL,
-	/*speed foot*/foot_sp,
+	/*speed foot*/FSW_SPEED,
 	TIME_FORMAT,	// Sec, BPM
 	TAP_HIGH, /*global temp hi*/
 	STORE_EXP_LEVEL, /*save expression level*/
@@ -72,7 +74,6 @@ extern int16_t mstEqMidFreq;
 extern uint16_t delay_time;
 extern volatile uint8_t currentPresetNumber;
 extern volatile uint8_t preselectedPresetNumber;
-extern volatile uint8_t prog_old;
 extern volatile uint32_t flash_adr;
 extern uint8_t presetData[];
 extern const uint8_t prog_data_init[];

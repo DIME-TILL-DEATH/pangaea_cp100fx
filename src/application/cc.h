@@ -29,11 +29,7 @@ private:
 	TSemaphore *sem;
 };
 
-extern const uint8_t midi_dest_list[][14];
-extern const uint8_t dest_tabl[];
-extern const uint8_t dest_tabl_start[];
 extern volatile uint8_t midi_b[3];
-extern uint8_t contrs;
 extern uint8_t mid_fl;
 extern uint8_t ext_fl;
 extern uint8_t ext_f_fl;

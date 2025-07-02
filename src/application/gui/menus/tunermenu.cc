@@ -43,7 +43,6 @@ void TunerMenu::encoderCounterClockwise()
 void TunerMenu::keyUp()
 {
 	endTunerTask();
-	clean_flag();
 	if(topLevelMenu)
 	{
 		currentMenu = topLevelMenu;

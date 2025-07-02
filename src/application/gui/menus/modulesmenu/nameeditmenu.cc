@@ -11,13 +11,13 @@
 
 NameEditMenu::NameEditMenu(AbstractMenu* parent)
 {
-	m_menuType = MENU_NAME_EDIT;
+	m_menuType = MENU_PRESET_NAME_EDIT;
 	topLevelMenu = parent;
 }
 
 void NameEditMenu::show(TShowMode swhoMode)
 {
-	current_menu_type = MENU_NAME_EDIT;
+	current_menu_type = MENU_PRESET_NAME_EDIT;
 	currentMenu = this;
 	// было своё copyMenu
 
@@ -41,11 +41,11 @@ void NameEditMenu::task()
 {
 	if(nameCursorPos < 14)
 	{
-		DisplayTask->SymbolOut(nameCursorPos*6+2, 0,TDisplayTask::fntSystem, tim5_fl*2-encoderKnobPressed, presetName[nameCursorPos]);
+		DisplayTask->SymbolOut(nameCursorPos*6+2, 0,TDisplayTask::fntSystem, blinkFlag_fl*2-encoderKnobPressed, presetName[nameCursorPos]);
 	}
 	else
 	{
-		DisplayTask->SymbolOut((nameCursorPos-14)*6+2 , 1,TDisplayTask::fntSystem, tim5_fl*2-encoderKnobPressed, presetComment[(nameCursorPos-14)]);
+		DisplayTask->SymbolOut((nameCursorPos-14)*6+2 , 1,TDisplayTask::fntSystem, blinkFlag_fl*2-encoderKnobPressed, presetComment[(nameCursorPos-14)]);
 	}
 
 	if(encoderKnobPressed)
@@ -55,7 +55,7 @@ void NameEditMenu::task()
 		else symbolChart = ascii_high;
 
 		DisplayTask->SymbolOut((symbolCursorPos % chartStringLength)*6, 2 + (symbolCursorPos / chartStringLength),
-										TDisplayTask::fntSystem, tim5_fl, symbolChart[symbolCursorPos]);
+										TDisplayTask::fntSystem, blinkFlag_fl, symbolChart[symbolCursorPos]);
 	}
 }
 
@@ -89,7 +89,6 @@ void NameEditMenu::encoderPressed()
 										TDisplayTask::fntSystem, 0, symbolChart[symbolCursorPos]);
 	}
 	tim5_start(0);
-	clean_flag();
 }
 
 void NameEditMenu::encoderClockwise()
@@ -122,7 +121,6 @@ void NameEditMenu::encoderClockwise()
 	}
 
     tim5_start(0);
-    clean_flag();
 }
 
 void NameEditMenu::encoderCounterClockwise()
@@ -155,14 +153,11 @@ void NameEditMenu::encoderCounterClockwise()
 	}
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void NameEditMenu::keyUp()
 {
 	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
-
-	clean_flag();
 }
 
 void NameEditMenu::keyDown()
@@ -204,7 +199,6 @@ void NameEditMenu::keyDown()
 void NameEditMenu::key1()
 {
 	topLevelMenu->key1();
-	clean_flag();
 }
 
 void NameEditMenu::key2()

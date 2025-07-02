@@ -1,7 +1,7 @@
 #include "midimapmenu.h"
 
 #include "cs.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "eepr.h"
@@ -26,14 +26,14 @@ void MidiMapMenu::task()
 {
 	if(!m_encoderKnobSelected)
 	{
-		if(tim5_fl)
+		if(blinkFlag_fl)
 			DisplayTask->Clear_str(3, 0, TDisplayTask::fntSystem, 3);
 		else
 			DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
 	}
 	else
 	{
-		if(tim5_fl)
+		if(blinkFlag_fl)
 			DisplayTask->Clear_str(36, 0, TDisplayTask::fntSystem, 3);
 		else
 			DisplayTask->ParamIndicNum(36, 0, sys_para[MIDI_MAP_START + m_pcNum] + 1);
@@ -53,7 +53,6 @@ void MidiMapMenu::encoderPressed()
 		m_encoderKnobSelected = 0;
 	}
 	tim5_start(0);
-	clean_flag();
 }
 
 void MidiMapMenu::encoderClockwise()
@@ -77,7 +76,6 @@ void MidiMapMenu::encoderClockwise()
 	}
 
 	tim5_start(1);
-	clean_flag();
 }
 
 void MidiMapMenu::encoderCounterClockwise()
@@ -101,5 +99,4 @@ void MidiMapMenu::encoderCounterClockwise()
 	}
 
 	tim5_start(1);
-	clean_flag();
 }

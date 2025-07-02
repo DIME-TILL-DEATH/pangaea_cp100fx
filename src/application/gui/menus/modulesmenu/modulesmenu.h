@@ -45,14 +45,6 @@ private:
 	NameEditMenu nameEditMenu{this};
 
 	void iconRefresh(uint8_t num);
-
-	constexpr static uint8_t cc[]="CC#";
-	constexpr static  uint8_t contr_list    [][7] ={"Contr","Source","Destin","MinVal","MaxVal","PC Out","SET"};
-
-	constexpr static uint8_t sd_nr [] = "MicroSD is not ready";
-	constexpr static uint8_t imp_dir_n [] = "There is no directory";
-	constexpr static uint8_t imp_dir_no [ ]= "IMPULSE";
-	constexpr static uint8_t sd_lo [] = "MicroSD is loading..";
 };
 
 #endif /* MODULESMENU_H_ */

@@ -43,7 +43,7 @@ void EqBandMenu::show(TShowMode showMode)
 void EqBandMenu::task()
 {
 	if(!encoderKnobSelected)
-		DisplayTask->StringOut(6, m_paramNum, TDisplayTask::fntSystem, 2*tim5_fl, (uint8_t*)&eq_p_l[m_paramNum]);
+		DisplayTask->StringOut(6, m_paramNum, TDisplayTask::fntSystem, 2*blinkFlag_fl, (uint8_t*)&eq_p_l[m_paramNum]);
 }
 
 void EqBandMenu::encoderPressed()
@@ -60,7 +60,6 @@ void EqBandMenu::encoderPressed()
 	}
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void EqBandMenu::encoderClockwise()
@@ -99,8 +98,6 @@ void EqBandMenu::encoderClockwise()
 			}
 		}
 	}
-
-	clean_flag();
 }
 
 void EqBandMenu::encoderCounterClockwise()
@@ -139,8 +136,6 @@ void EqBandMenu::encoderCounterClockwise()
 			}
 		}
 	}
-
-	clean_flag();
 }
 
 void EqBandMenu::keyDown()

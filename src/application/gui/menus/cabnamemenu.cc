@@ -21,7 +21,7 @@ CabNameMenu::CabNameMenu(AbstractMenu* parent)
 
 void CabNameMenu::task()
 {
-	if(tim5_fl)
+	if(blinkFlag_fl)
 	{
 		if(tim_fl)
 			tim_fl = 0;
@@ -61,13 +61,11 @@ void CabNameMenu::task()
 
 void CabNameMenu::encoderPressed()
 {
-	clean_flag();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void CabNameMenu::keyUp()
 {
-	clean_flag();
 	topLevelMenu->returnFromChildMenu();
 }
 

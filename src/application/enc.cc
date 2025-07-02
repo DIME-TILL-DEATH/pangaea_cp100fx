@@ -19,7 +19,7 @@ volatile uint8_t contr_kn[3];
 volatile uint8_t contr_kn1[3];
 volatile uint8_t contr_pr[3];
 volatile uint8_t usb_flag = 0;
-extern uint8_t tim5_fl;
+extern uint8_t blinkFlag_fl;
 extern volatile uint8_t prog_sym_cur;
 
 uint8_t k_up = 0;
@@ -177,7 +177,7 @@ void foot_run(uint8_t num)
 								else
 									preselectedPresetNumber -= 1;
 								encoder_knob_pressed = 1;
-								prog_old = currentPresetNumber = preselectedPresetNumber;
+								currentPresetNumber = preselectedPresetNumber;
 							}
 							else
 							{
@@ -201,7 +201,7 @@ void foot_run(uint8_t num)
 									else
 										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									prog_old = currentPresetNumber = preselectedPresetNumber;
+									currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -221,7 +221,7 @@ void foot_run(uint8_t num)
 									else
 										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									prog_old = currentPresetNumber = preselectedPresetNumber;
+									currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -273,21 +273,21 @@ void foot_run(uint8_t num)
 					num_key_prog = num;
 					if(sys_para[fs2])
 					{
-						if(!sys_para[fsm2])
+						if(!sys_para[FSW2_MODE])
 						{
-							prog_old = currentPresetNumber = preselectedPresetNumber;
+							currentPresetNumber = preselectedPresetNumber;
 							encoder_knob_pressed = 1;
 						}
 						else
 						{
 							if(sys_para[fs21])
 							{
-								prog_old = currentPresetNumber = preselectedPresetNumber;
+								currentPresetNumber = preselectedPresetNumber;
 								encoder_knob_pressed = 1;
 							}
 							else
 							{
-								prog_old = currentPresetNumber = --preselectedPresetNumber;
+								currentPresetNumber = --preselectedPresetNumber;
 								encoder_state_updated = 1;
 								encoder_state = 2;
 							}
@@ -295,7 +295,7 @@ void foot_run(uint8_t num)
 					}
 					else
 					{
-						prog_old = currentPresetNumber = --preselectedPresetNumber;
+						currentPresetNumber = --preselectedPresetNumber;
 						encoder_state_updated = 1;
 						encoder_state = 2;
 					}
@@ -329,7 +329,7 @@ void foot_run1(uint8_t num)
 								else
 									preselectedPresetNumber -= 1;
 								encoder_knob_pressed = 1;
-								prog_old = currentPresetNumber = preselectedPresetNumber;
+								 currentPresetNumber = preselectedPresetNumber;
 							}
 							else
 							{
@@ -353,7 +353,7 @@ void foot_run1(uint8_t num)
 									else
 										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									prog_old = currentPresetNumber = preselectedPresetNumber;
+									 currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -373,7 +373,7 @@ void foot_run1(uint8_t num)
 									else
 										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									prog_old = currentPresetNumber = preselectedPresetNumber;
+									 currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -422,21 +422,21 @@ void foot_run1(uint8_t num)
 					preselectedPresetNumber = sys_para[pr111+num*4+contr_pr[num]++];
 					if(sys_para[fs21]) // && !sys_para[fsm2]
 					{
-						if(!sys_para[fsm2])
+						if(!sys_para[FSW2_MODE])
 						{
-							prog_old = currentPresetNumber = preselectedPresetNumber;
+							 currentPresetNumber = preselectedPresetNumber;
 							encoder_knob_pressed = 1;
 						}
 						else
 						{
 							if(sys_para[fs2])
 							{
-								prog_old = currentPresetNumber = preselectedPresetNumber;
+								 currentPresetNumber = preselectedPresetNumber;
 								encoder_knob_pressed = 1;
 							}
 							else
 							{
-								prog_old = currentPresetNumber = --preselectedPresetNumber;
+								 currentPresetNumber = --preselectedPresetNumber;
 								encoder_state_updated = 1;
 								encoder_state = 2;
 							}
@@ -444,7 +444,7 @@ void foot_run1(uint8_t num)
 					}
 					else
 					{
-						prog_old = currentPresetNumber = --preselectedPresetNumber;
+						 currentPresetNumber = --preselectedPresetNumber;
 						encoder_state_updated = 1;
 						encoder_state = 2;
 					}
@@ -520,49 +520,49 @@ void TENCTask::Code()
 				break;
 				case 30956:
 					fsw1_in_fl = 1;
-					if(!sys_para[fsm1])
+					if(!sys_para[FSW1_MODE])
 						foot_run(0);
 					else
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[foot_sp]*(8000.0f/127.0f)+55000);
+							tim_start(sys_para[FSW_SPEED]*(8000.0f/127.0f)+55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
 				break;    //--------------------DOWN-----------------
 				case 31084:
 					fsw2_in_fl = 1;
-					if(!sys_para[fsm2])
+					if(!sys_para[FSW2_MODE])
 						foot_run(1);
 					else
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[foot_sp]*(8000.0f/127.0f)+55000);
+							tim_start(sys_para[FSW_SPEED]*(8000.0f/127.0f)+55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
 				break;    //----------------CONFIRM----------
 				case 31208:
 					fsw3_in_fl = 1;
-					if(!sys_para[fsm3])
+					if(!sys_para[FSW3_MODE])
 						foot_run(2);
 					else
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[foot_sp]*(8000.0f/127.0f)+55000);
+							tim_start(sys_para[FSW_SPEED]*(8000.0f/127.0f)+55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
 				break;    //--------------------UP-----------------
 			}
-			tim5_fl = 1;
+			blinkFlag_fl = 1;
 		}
 		if(key_reg==31212)
 		{
-			if(sys_para[fsm1])
+			if(sys_para[FSW1_MODE])
 			{
 				if(fsw1_in_fl)
 				{
@@ -573,7 +573,7 @@ void TENCTask::Code()
 					fsw1_in_fl = 0;
 				}
 			}
-			if(sys_para[fsm2])
+			if(sys_para[FSW2_MODE])
 			{
 				if(fsw2_in_fl)
 				{
@@ -584,7 +584,7 @@ void TENCTask::Code()
 					fsw2_in_fl = 0;
 				}
 			}
-			if(sys_para[fsm3])
+			if(sys_para[FSW3_MODE])
 			{
 				if(fsw3_in_fl)
 				{

@@ -8,7 +8,7 @@
 
 uint32_t sram_point;
 uint32_t sram_point1;
-uint8_t tim5_fl;
+uint8_t blinkFlag_fl;
 uint8_t us2_buf[2];
 uint8_t us2_buf1[2] =
 {0xaa, 0x55};
@@ -22,10 +22,10 @@ extern volatile uint16_t key_reg_in;
 extern const uint8_t dsp_cod[];
 void adc_calib(void)
 {
-	adc_low = sys_para[7];
-	adc_low |= sys_para[8]<<8;
-	adc_high = sys_para[9];
-	adc_high |= sys_para[10]<<8;
+	adc_low = sys_para[EXPR_CAL_MIN_HI];
+	adc_low |= sys_para[EXPR_CAL_MIN_LO]<<8;
+	adc_high = sys_para[EXPR_CAL_MAX_HI];
+	adc_high |= sys_para[EXPR_CAL_MAX_LO]<<8;
 	extern volatile uint8_t adc_inv_fl;
 	adc_inv_fl = 0;
 	if(adc_high<adc_low)
@@ -580,7 +580,7 @@ extern "C" void EXTI15_10_IRQHandler()
 		if(drebezg(EXTI_Line15)==1)
 		{
 			encoder_knob_pressed = 1;
-			tim5_fl = 1;
+			blinkFlag_fl = 1;
 			CSTask->Give();
 		}
 	}

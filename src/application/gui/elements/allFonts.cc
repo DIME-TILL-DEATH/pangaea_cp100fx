@@ -7,20 +7,7 @@
 #include "cs.h"
 #include "amt.h"
 
-const uint8_t syst[] = "CC";
-const uint8_t volu[] = "Vol";
-const uint8_t in[] = "In";
-const uint8_t out[] = "OUT";
 
-const uint8_t sys[] = "System";
-const uint8_t cc_of[] = "Off      ";
-
-const uint8_t footsw_menu[][12] = {"FSW-DOWN", "FSW-CONFIRM", "FSW-UP", "Speed FS"};
-const uint8_t ext_switch[][12] = {"Off        ", "Expression ", "Foot switch"};
-const uint8_t int_sw_list[][12] = {"True bypass", "Controllers", "Presets sw "};
-const uint8_t contr_ext_l[][12] = {"Expression ", " FSW DOWN  ", "FSW CONFIRM", "  FSW UP   "};
-const uint8_t fsw_t[][12] = {"Default    ", "Controller ", "Tuner      ", "Preset Map1", "Preset Map2", "Preset Map3", "Preset Map4"};
-const uint8_t tempo_type[][10] = {"Preset   ", "Global   ", "Glob+MIDI"};
 
 
 enum TControllerSrc
@@ -308,29 +295,29 @@ void ind_foot(uint8_t num, uint8_t val)
 		case 0:
 			if(!fsw1_in_fl1&&(sys_para[fs1]==1))
 				ind_foot_proc(0, contr_kn[0]);
-			if(sys_para[fsm1]&&(sys_para[fs11]==1))
+			if(sys_para[FSW1_MODE]&&(sys_para[fs11]==1))
 				ind_foot_proc(7, contr_kn1[0]);
 		break;
 		case 1:
 			if(!fsw2_in_fl1&&(sys_para[fs2]==1))
 			{
-				if(sys_para[fsm2])
+				if(sys_para[FSW2_MODE])
 					ind_foot_proc(57, contr_kn[1]);
 				else
 					ind_foot_proc(60, contr_kn[1]);
 			}
-			if(sys_para[fsm2]&&(sys_para[fs21]==1))
+			if(sys_para[FSW2_MODE]&&(sys_para[fs21]==1))
 				ind_foot_proc(64, contr_kn1[1]);
 		break;
 		case 2:
 			if(!fsw3_in_fl1&&(sys_para[fs3]==1))
 			{
-				if(sys_para[fsm3])
+				if(sys_para[FSW3_MODE])
 					ind_foot_proc(113, contr_kn[2]);
 				else
 					ind_foot_proc(120, contr_kn[2]);
 			}
-			if(sys_para[fsm3]&&(sys_para[fs31]==1))
+			if(sys_para[FSW3_MODE]&&(sys_para[fs31]==1))
 				ind_foot_proc(120, contr_kn1[2]);
 		break;
 	}

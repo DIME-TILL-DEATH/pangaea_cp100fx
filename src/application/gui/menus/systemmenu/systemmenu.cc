@@ -1,10 +1,10 @@
 #include "systemmenu.h"
 
-#include "../paramlistmenu/customparam.h"
+
 #include "appdefs.h"
 #include "cs.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
@@ -13,10 +13,12 @@
 
 #include "midimapmenu.h"
 #include "expressionmenu.h"
+#include "fswtypemenu.h"
 
 #include "baseparam.h"
 #include "stringlistparam.h"
 #include "submenuparam.h"
+#include "customparam.h"
 
 SystemMenu::SystemMenu(AbstractMenu* parent, gui_menu_type menuType)
 		:ParamListMenu(parent, menuType)
@@ -52,7 +54,6 @@ void SystemMenu::encoderPressed()
 	}
 
 	tim5_start(1);
-	clean_flag();
 }
 
 void SystemMenu::keyUp()
@@ -62,8 +63,6 @@ void SystemMenu::keyUp()
 		currentMenu = topLevelMenu;
 		topLevelMenu->returnFromChildMenu();
 	}
-
-	clean_flag();
 }
 
 void SystemMenu::keyDown()
@@ -126,14 +125,6 @@ bool SystemMenu::editingFinished()
 
 	return true;
 }
-
-
-//const uint8_t footsw_menu[][12] = {"FSW-DOWN", "FSW-CONFIRM", "FSW-UP", "Speed FS"};
-//const uint8_t ext_switch[][12] = {"Off        ", "Expression ", "Foot switch"};
-//const uint8_t int_sw_list[][12] = {"True bypass", "Controllers", "Presets sw "};
-//const uint8_t contr_ext_l[][12] = {"Expression ", " FSW DOWN  ", "FSW CONFIRM", "  FSW UP   "};
-//const uint8_t fsw_t[][12] = {"Default    ", "Controller ", "Tuner      ", "Preset Map1", "Preset Map2", "Preset Map3", "Preset Map4"};
-
 
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 {
@@ -203,13 +194,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 
 AbstractMenu* SystemMenu::createFootswitchMenu(AbstractMenu* parent)
 {
-	const uint8_t paramNum = 0;
-	BaseParam* params[paramNum];
-
-	ParamListMenu* menu = new ParamListMenu(parent, MENU_FSW_TYPE);
-	if(menu) menu->setParams(params, paramNum);
-
-	return menu;
+	return new FswTypeMenu(parent);
 }
 
 AbstractMenu* SystemMenu::createMidiPcMapMenu(AbstractMenu* parent)

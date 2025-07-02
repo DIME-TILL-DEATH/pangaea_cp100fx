@@ -39,7 +39,6 @@ void MasterVolumeMenu::encoderClockwise()
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
-	clean_flag();
 }
 
 void MasterVolumeMenu::encoderCounterClockwise()
@@ -64,7 +63,6 @@ void MasterVolumeMenu::encoderCounterClockwise()
 
 
 	}
-	clean_flag();
 }
 
 void MasterVolumeMenu::keyUp()

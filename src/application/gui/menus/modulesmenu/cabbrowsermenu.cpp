@@ -107,8 +107,6 @@ void CabBrowserMenu::keyUp()
 
 		topLevelMenu->returnFromChildMenu();
 	}
-
-	clean_flag();
 }
 
 void CabBrowserMenu::encoderPressed()
@@ -165,8 +163,6 @@ void CabBrowserMenu::encoderPressed()
 
 		topLevelMenu->returnFromChildMenu();
 	}
-
-	clean_flag();
 }
 
 void CabBrowserMenu::encoderCounterClockwise()

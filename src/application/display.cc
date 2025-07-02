@@ -287,6 +287,15 @@ void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs,
 	Command(&cmd);
 }
 
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , const char* string)
+{
+	StringOut(x, y, name, curs, (uint8_t*)string);
+}
+
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , const uint8_t* string)
+{
+	StringOut(x, y, name, curs, (uint8_t*)string);
+}
 
 void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , uint8_t* string)
 {

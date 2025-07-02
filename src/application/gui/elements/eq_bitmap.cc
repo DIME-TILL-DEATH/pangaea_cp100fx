@@ -46,10 +46,6 @@ const uint8_t _15[]="15";
 const uint8_t __15[]="-15";
 const uint8_t db[]="db";
 
-
-
-volatile uint8_t eq_num;
-
 volatile uint8_t ewq = 35;
 void lo_hi_par(float num , uint8_t type)
 {

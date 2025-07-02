@@ -93,14 +93,12 @@ void MasterEqMenu::task()
 	if(!m_encoderKnobSelected)
 	{
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
-								tim5_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+								blinkFlag_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 }
 
 void MasterEqMenu::encoderPressed()
 {
-	clean_flag();
-
 	if(!sys_para[MASTER_EQ_ON]) return;
 
 	if(!m_encoderKnobSelected)
@@ -121,8 +119,6 @@ void MasterEqMenu::encoderPressed()
 
 void MasterEqMenu::encoderClockwise()
 {
-	clean_flag();
-
 	if(!sys_para[MASTER_EQ_ON])
 	{
 
@@ -149,8 +145,6 @@ void MasterEqMenu::encoderClockwise()
 
 void MasterEqMenu::encoderCounterClockwise()
 {
-	clean_flag();
-
 	if(!sys_para[MASTER_EQ_ON]) return;
 
 	if(!m_encoderKnobSelected)
@@ -173,7 +167,6 @@ void MasterEqMenu::encoderCounterClockwise()
 
 void MasterEqMenu::keyUp()
 {
-	clean_flag();
 	write_sys();
 	topLevelMenu->returnFromChildMenu();
 }

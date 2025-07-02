@@ -49,13 +49,11 @@ void PresetActionsMenu::show(TShowMode showMode)
 		DisplayTask->StringOut(10, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Copy to ->");
 	else
 		DisplayTask->StringOut(10, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Save to ->");
-//
-//	clean_flag();
 }
 
 void PresetActionsMenu::task()
 {
-	if(tim5_fl==0)
+	if(blinkFlag_fl==0)
 		DisplayTask->Prog_ind(targetPresetNum);
 	else if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update)==1)
 		DisplayTask->Clear_str(87, 0, TDisplayTask::fnt33x30, 39);
@@ -71,7 +69,6 @@ void PresetActionsMenu::encoderPressed()
 	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void PresetActionsMenu::encoderClockwise()
@@ -82,8 +79,6 @@ void PresetActionsMenu::encoderClockwise()
 		targetPresetNum = 0;
 
 	updatePresetData();
-
-	clean_flag();
 }
 
 void PresetActionsMenu::encoderCounterClockwise()
@@ -94,8 +89,6 @@ void PresetActionsMenu::encoderCounterClockwise()
 		targetPresetNum = 98;
 
 	updatePresetData();
-
-	clean_flag();
 }
 
 void PresetActionsMenu::keyUp()
@@ -105,7 +98,6 @@ void PresetActionsMenu::keyUp()
 	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 
 	tim5_start(0);
-	clean_flag();
 }
 
 void PresetActionsMenu::keyDown()
@@ -131,7 +123,6 @@ void PresetActionsMenu::updatePresetData()
 	TIM_Cmd(TIM6, ENABLE);
 
 	tim5_start(0);
-//	clean_flag();
 }
 
 void PresetActionsMenu::copyPreset()
@@ -282,7 +273,6 @@ void PresetActionsMenu::savePreset()
 		send_cab_data1(0, preselectedPresetNumber+1);
 
 	preselectedPresetNumber = currentPresetNumber;
-	vol_fl = write_fl = 0;
 	prog_ch();
 
 //	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);

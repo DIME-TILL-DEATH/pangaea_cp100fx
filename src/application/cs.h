@@ -46,12 +46,7 @@ public:
 		return DispalyAccess;
 	}
 
-	inline void Restart(void)
-	{
-		current_menu_type = MENU_MAIN;
-		clean_flag();
-		//DisplayTask->Menu_init(1,0,prog_data,prog1);
-	}
+	void Restart(void);
 
 	inline void CS_del(uint32_t del)
 	{

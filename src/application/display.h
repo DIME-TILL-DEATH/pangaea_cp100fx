@@ -324,7 +324,11 @@ public:
 	void Clear();
 	void Clear_str(uint8_t x, uint8_t y, TFontName name, uint8_t count);
 	void SymbolOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, uint8_t symbol);
+
 	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, uint8_t *string);
+	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, const uint8_t *string);
+	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, const char *string);
+
 	void NumberOut(uint8_t x, uint8_t y, TFontName name, TFontState state, uint32_t val);
 	void SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
 	void VolIndicator();

@@ -8,7 +8,7 @@ extern uint8_t cab_type;
 
 
 extern uint32_t sram_point;
-extern uint8_t tim5_fl;
+extern uint8_t blinkFlag_fl;
 extern uint8_t usart_buf[4];
 
 typedef union

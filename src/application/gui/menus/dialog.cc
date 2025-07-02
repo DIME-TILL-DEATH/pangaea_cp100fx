@@ -100,7 +100,7 @@ void Dialog::show(TShowMode showMode)
 
 void Dialog::task()
 {
-	DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, TDisplayTask::fntSystem, 3*tim5_fl, (uint8_t*)m_btnNames[m_paramNum]);
+	DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, TDisplayTask::fntSystem, 3*blinkFlag_fl, (uint8_t*)m_btnNames[m_paramNum]);
 }
 
 void Dialog::encoderPressed()
@@ -147,8 +147,6 @@ void Dialog::encoderPressed()
 			topLevelMenu->show();
 		break;
 	}
-
-	clean_flag();
 }
 
 void Dialog::encoderClockwise()
@@ -157,7 +155,6 @@ void Dialog::encoderClockwise()
 		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, TDisplayTask::fntSystem, 0, (uint8_t*)m_btnNames[m_paramNum++]);
 
 	tim5_start(1);
-	clean_flag();
 }
 
 void Dialog::encoderCounterClockwise()
@@ -166,5 +163,4 @@ void Dialog::encoderCounterClockwise()
 		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, TDisplayTask::fntSystem, 0, (uint8_t*)m_btnNames[m_paramNum--]);
 
 	tim5_start(0);
-	clean_flag();
 }
