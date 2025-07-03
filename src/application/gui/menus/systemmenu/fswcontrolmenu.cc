@@ -24,7 +24,6 @@ void FswControlMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
-	current_menu_type = MENU_FSW_CONTROL;
 	DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
 
 	printPage();

@@ -109,7 +109,7 @@ void TMidiSendTask::Code()
 								mid_fl = 1;
 								if((midi_b[1]==(sys_para[TUNER_EXTERNAL]&0x7f)) && (sys_para[TUNER_EXTERNAL]&0x80))
 								{
-									if(current_menu_type==MENU_TUNER) //&&(!edit_modules_fl))
+									if(currentMenu->menuType() == MENU_TUNER)
 									{
 										k_tuner = 1;
 										CSTask->Give();
@@ -429,9 +429,11 @@ extern "C" void ADC_IRQHandler()
 void send_midi_temp(uint16_t *c)
 {
 	tap_global = *c*48;
-	delay_time = *c;
-	trem_time = *c;
-	contr_send(10, 5);
-	moog_time = *c;
-	contr_send(31, 13);
+	delay_time = trem_time = moog_time = *c;
+
+	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
+	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
+
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time);
 }

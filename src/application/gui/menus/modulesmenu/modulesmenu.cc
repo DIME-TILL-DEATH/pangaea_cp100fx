@@ -61,7 +61,6 @@ ModulesMenu::ModulesMenu(AbstractMenu* parent)
 
 void ModulesMenu::show(TShowMode showMode)
 {
-	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	if(showMode == TShowMode::FirstShow) presetEdited = false;
@@ -96,7 +95,7 @@ void ModulesMenu::task()
 		yCoord = 2;
 	}
 
-	if(blinkFlag_fl == 0 )DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
+	if(blinkFlag_fl == 0) DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
 	else DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, 2);
 }
 
@@ -105,7 +104,7 @@ void ModulesMenu::encoderPressed()
 	presetEdited = true;
 
 	*modules[m_numMenu].enablePtr = !((bool)*modules[m_numMenu].enablePtr);
-	gui_send(18, modules[m_numMenu].dspEnablePosition | (*modules[m_numMenu].enablePtr << 8));
+	DSP_gui_set_parameter(DSP_ADDRESS_MODULES_ENABLE, modules[m_numMenu].dspEnablePosition, *modules[m_numMenu].enablePtr);
 
 	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction(this);
 
@@ -202,7 +201,6 @@ void ModulesMenu::key3()
 {
 	// было своё copyMenu
 
-	current_menu_type = MENU_CONTROLLERS;
 	shownChildMenu = new ControllersMenu(this);
 	shownChildMenu->show();
 }
@@ -242,8 +240,8 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		  extern volatile uint8_t imp_dir_fl;
 		  if(imp_dir_fl)
 		  {
-			  vol_ind_level_pos = presetData[vol];
-			  gui_send(7,0);
+			  vol_ind_level_pos = presetData[IR_VOLUME1];
+			  DSP_gui_set_parameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, presetData[IR_VOLUME1]);
 			  DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
 
 			  FSTask->SendCommand( TFsBrowser::bcCurrent );

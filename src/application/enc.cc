@@ -637,7 +637,7 @@ void TENCTask::Code()
 				if(usb_connect_type==usb_connect_type_t::msc)
 				{
 					send_codec(0xa102);
-					gui_send(13, 0);
+					DSP_gui_set_parameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 				}
 				usb_flag = 1;
 				start_usb();

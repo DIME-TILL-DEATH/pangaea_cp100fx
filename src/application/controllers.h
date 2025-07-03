@@ -30,7 +30,7 @@ enum Dst
 	TremoloOnOff, TremoloIntensity, TremoloRate,
 	PresetLevel,
 	TremoloTap,
-	CompressorOnOff, CompressorThresh, CompressorVolume,
+	CompressorOnOff, CompressorThreshold, CompressorVolume,
 	RfOnOff, RfLFOrate, RfFreq,
 	EROnOff, ERVolume,
 	RfLFOTAP,
@@ -39,7 +39,7 @@ enum Dst
 	GateOnOff, GateThresh,
 	HPFfrequency, LPFfrequency, PresenceVal,
 	PreampGain, PreampVolume, PreampLow, PreampMid, PreampHigh,
-	EqBand1Lev, EqBand2Lev, EqBand3Lev ,EqBand4Lev, EqBand5Lev,
+	EqBand1Lev, EqBand2Lev, EqBand3Lev, EqBand4Lev, EqBand5Lev,
 	ReverbType
 };
 

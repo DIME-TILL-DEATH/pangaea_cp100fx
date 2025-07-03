@@ -83,7 +83,6 @@ void Dialog::setNoMenu(AbstractMenu* noMenu)
 
 void Dialog::show(TShowMode showMode)
 {
-	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	m_paramNum = m_btnCount - 1;

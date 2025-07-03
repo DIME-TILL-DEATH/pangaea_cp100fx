@@ -24,7 +24,6 @@ EqMenu::EqMenu(AbstractMenu *parent)
 
 void EqMenu::show(TShowMode showMode)
 {
-	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	encoderKnobSelected = false;

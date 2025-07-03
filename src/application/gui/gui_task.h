@@ -27,8 +27,6 @@ extern uint16_t moog_time;
 extern uint32_t tap_temp;
 extern uint32_t tap_global;
 
-extern gui_menu_type current_menu_type;
-
 extern uint8_t k_up;
 extern uint8_t k_down;
 extern uint8_t k_sys;

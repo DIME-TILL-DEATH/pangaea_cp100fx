@@ -23,6 +23,7 @@ public:
 
 	virtual void show(TShowMode showMode = FirstShow) override;
 	virtual void task() override;
+	virtual void refresh() override;
 
 	virtual void encoderPressed() override;
 	virtual void encoderClockwise() override;

@@ -32,7 +32,6 @@ PresetActionsMenu::PresetActionsMenu(AbstractMenu *parent, TActionType actionTyp
 
 void PresetActionsMenu::show(TShowMode showMode)
 {
-	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	read_prog_temp(targetPresetNum);

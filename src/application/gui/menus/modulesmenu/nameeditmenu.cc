@@ -17,7 +17,6 @@ NameEditMenu::NameEditMenu(AbstractMenu* parent)
 
 void NameEditMenu::show(TShowMode swhoMode)
 {
-	current_menu_type = MENU_PRESET_NAME_EDIT;
 	currentMenu = this;
 	// было своё copyMenu
 

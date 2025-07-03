@@ -29,8 +29,6 @@ CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 
 void CabBrowserMenu::show(TShowMode showMode)
 {
-	current_menu_type = m_menuType;
-
 	if(sd_init_fl==1)
 	{
 

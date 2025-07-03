@@ -25,7 +25,6 @@ const float tap_time_coefs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
 uint16_t midi_clk_send;
 
-gui_menu_type current_menu_type;
 
 volatile uint8_t eq_num;
 

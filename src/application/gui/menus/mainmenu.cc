@@ -39,7 +39,6 @@ MainMenu::MainMenu()
 
 void MainMenu::show(TShowMode swhoMode)
 {
-	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);

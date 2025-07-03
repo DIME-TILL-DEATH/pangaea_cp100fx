@@ -24,7 +24,6 @@ EqBandMenu::EqBandMenu(AbstractMenu *parent, uint8_t bandNum)
 
 void EqBandMenu::show(TShowMode showMode)
 {
-	current_menu_type = MENU_EQ_BAND;
 	currentMenu = this;
 
 	DisplayTask->Clear();

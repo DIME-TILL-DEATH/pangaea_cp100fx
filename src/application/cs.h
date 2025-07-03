@@ -19,10 +19,6 @@ public:
 		else
 			sem->Give();
 	}
-	void Setcurrent_menu(gui_menu_type val)
-	{
-		current_menu_type = val;
-	}
 
 	void SetKUp(uint8_t val)
 	{

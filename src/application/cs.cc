@@ -140,7 +140,6 @@ void TCSTask::Code()
 
 void TCSTask::Restart(void)
 {
-	current_menu_type = MENU_MAIN;
 	currentMenu = mainMenu;
 	clean_flag();
 	//DisplayTask->Menu_init(1,0,prog_data,prog1);

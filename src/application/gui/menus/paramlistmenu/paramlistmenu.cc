@@ -59,7 +59,6 @@ void ParamListMenu::setIcon(bool drawIcon, uint8_t iconNumber)
 
 void ParamListMenu::show(TShowMode showMode)
 {
-	current_menu_type = m_menuType;
 	currentMenu = this;
 
 	DisplayTask->Clear();
@@ -93,6 +92,11 @@ void ParamListMenu::show(TShowMode showMode)
 
 	printPage();
 	DisplayTask->SetVolIndicator(m_volIndicatorType, m_indicatorSource);
+}
+
+void ParamListMenu::refresh()
+{
+	printPage();
 }
 
 void ParamListMenu::task()

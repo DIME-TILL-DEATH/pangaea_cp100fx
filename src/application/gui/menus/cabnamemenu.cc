@@ -72,7 +72,6 @@ void CabNameMenu::keyUp()
 void CabNameMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
-	current_menu_type = MENU_CABNAME;
 
 	if((!prog_sym_cur) && presetData[cab])
 	{
