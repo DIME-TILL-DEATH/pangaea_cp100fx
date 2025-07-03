@@ -7,7 +7,7 @@
 #include "cs.h"
 #include "amt.h"
 
-
+#include "preset.h"
 
 
 enum TControllerSrc
@@ -329,12 +329,12 @@ void main_screen(void)
 {
 	oled023_1_disp_clear();
 	ind_poin = 0;
-	Arsys_clean(2, 0, (uint8_t*)presetName);
-	Arsys_clean(2, 1, (uint8_t*)presetName);
+	Arsys_clean(2, 0, (uint8_t*)currentPreset.name);
+	Arsys_clean(2, 1, (uint8_t*)currentPreset.name);
 	if(!imya_temp)
 	{
-		Arsys_line(2, 0, (uint8_t*)presetName, 0);
-		Arsys_line(2, 1, (uint8_t*)presetComment, 0);
+		Arsys_line(2, 0, (uint8_t*)currentPreset.name, 0);
+		Arsys_line(2, 1, (uint8_t*)currentPreset.comment, 0);
 	}
 	else
 	{

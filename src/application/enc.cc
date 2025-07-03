@@ -12,6 +12,7 @@
 
 #include "gui_task.h"
 
+#include "preset.h"
 #include "footswitch.h"
 
 void start_usb();
@@ -245,11 +246,11 @@ void foot_run(uint8_t num)
 			case Footswitch::Controller:
 				if(!contr_kn[num])
 				{
-					contr_kn[num] = presetData[fo1+num] = 1;
+					contr_kn[num] = currentPreset.modules.rawData[fo1+num] = 1;
 					ext_data = 127;
 				}
 				else
-					ext_data = contr_kn[num] = presetData[fo1+num] = 0;
+					ext_data = contr_kn[num] = currentPreset.modules.rawData[fo1+num] = 0;
 				if(currentMenu->menuType()==MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn[num]);
 				if(sys_para[k1_cc+num])
@@ -398,11 +399,11 @@ void foot_run1(uint8_t num)
 			case 1:
 				if(!contr_kn1[num])
 				{
-					contr_kn1[num] = presetData[fo11+num] = 1;
+					contr_kn1[num] = currentPreset.modules.rawData[fo11+num] = 1;
 					ext_data = 127;
 				}
 				else
-					ext_data = contr_kn1[num] = presetData[fo11+num] = 0;
+					ext_data = contr_kn1[num] = currentPreset.modules.rawData[fo11+num] = 0;
 
 				if(currentMenu->menuType()==MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn1[num]);
@@ -617,7 +618,7 @@ void TENCTask::Code()
 		uint8_t a = 0;
 		for(uint8_t i = 0; i<14; i++)
 			if(i!=0&&i!=1&&i!=10)
-				a += presetData[i];
+				a += currentPreset.modules.rawData[i];
 		if(a)
 			GPIO_SetBits(GPIOB, GPIO_Pin_14);
 		else

@@ -1,11 +1,14 @@
 #include "appdefs.h"
 #include "eq_bitmap.h"
 
-#include "../../filter.h"
+#include "filter.h"
 #include "allFonts.h"
 #include "eepr.h"
-#include "../gui_task.h"
+#include "gui_task.h"
 #include "icon_bit.h"
+
+#include "modules.h"
+#include "preset.h"
 
 const uint8_t eq_bit[] = {0x00,0x80,0xff,0x7f,
                           0x00,0x80,0xff,0x3f,
@@ -134,7 +137,7 @@ void eq_init(void)
           }
       }
    uint8_t curs = 27;
-   for(uint8_t i = 0 ; i < 5 ; i++)curs = eq_ind(curs , 0 , presetData[eq1 + i],0);
+   for(uint8_t i = 0 ; i < 5 ; i++)curs = eq_ind(curs , 0 , currentPreset.modules.rawData[eq1 + i],0);
    Arsys_sym_up(96,1,100,0);
    Arsys_sym_down(96,2,100,0);
    Arsys_sym_up(102,1,66,0);

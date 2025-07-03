@@ -1,3 +1,3 @@
 #include "preset.h"
 
-Preset::TPreset currentPreset; //__CCM_BSS__
+Preset::TPreset __CCM_BSS__ currentPreset; //__CCM_BSS__

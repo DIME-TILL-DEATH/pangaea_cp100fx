@@ -74,15 +74,15 @@ extern uint16_t delay_time;
 extern volatile uint8_t currentPresetNumber;
 extern volatile uint8_t preselectedPresetNumber;
 extern volatile uint32_t flash_adr;
-extern uint8_t presetData[];
+//extern uint8_t currentPreset.modules.rawData[];
 extern const uint8_t prog_data_init[];
 extern uint8_t preset_temp[];
-extern uint8_t presetName[];
-extern uint8_t presetComment[];
-extern const uint8_t imya_init[];
+//extern uint8_t presetName[];
+//extern uint8_t presetComment[];
+extern const uint8_t nameInit[];
 extern uint8_t imya_t[];
 extern uint8_t imya1_t[];
-//extern uint8_t currentPreset.controllerArray[];
+
 extern uint8_t sys_para[];
 extern uint8_t imp_buf_uint[];
 extern char cab1_name_buf[];
@@ -103,6 +103,6 @@ void eepr_read_imya(uint8_t nu);
 void write_prog_temp(uint8_t nu);
 void read_prog_temp(uint8_t nu);
 void preset_erase(uint8_t nu);
-void eepr_read_prog_data(uint8_t nu);
+//void eepr_read_prog_data(uint8_t nu);
 
 #endif

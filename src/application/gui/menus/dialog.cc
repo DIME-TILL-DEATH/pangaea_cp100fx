@@ -1,14 +1,14 @@
 #include "dialog.h"
 
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "eepr.h"
 #include "BF706_send.h"
 
-#include "modulesmenu/presetactionsmenu.h"
+#include "presetactionsmenu.h"
 
-//const uint8_t Dialog::buttonNames[][7];
+#include "preset.h"
 
 Dialog::Dialog(AbstractMenu *parent, TDialogType dialogType)
 {
@@ -127,9 +127,9 @@ void Dialog::encoderPressed()
 				case TDialogType::ErasePreset:
 				{
 					preset_erase(currentPresetNumber);
-					kgp_sdk_libc::memcpy(presetData, prog_data_init, 512);
-					presetData[delay_tim_lo] = 0xf4;
-					presetData[delay_tim_hi] = 1;
+					kgp_sdk_libc::memcpy(currentPreset.modules.rawData, prog_data_init, 512);
+					currentPreset.modules.rawData[delay_tim_lo] = 0xf4;
+					currentPreset.modules.rawData[delay_tim_hi] = 1;
 
 					cab_data_ready = false;
 					send_cab_data(1, currentPresetNumber+1, 0);

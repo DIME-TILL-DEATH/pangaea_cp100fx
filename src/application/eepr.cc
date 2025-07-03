@@ -9,6 +9,7 @@ uint16_t delay_time;
 
 volatile uint8_t currentPresetNumber;
 volatile uint8_t preselectedPresetNumber;
+
 volatile uint32_t flash_adr;
 volatile uint16_t adc_low;
 volatile uint16_t adc_high;
@@ -18,6 +19,7 @@ extern uint8_t cab_type;
 
 const uint8_t stas[] =
 {"STAS"};
+
 const uint8_t prog_data_init[512] =
 {/*switch*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 /*empty*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -54,12 +56,12 @@ const uint8_t prog_data_init[512] =
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0,
 		/*bpm del*/120};
+
+
 uint8_t __CCM_BSS__ preset_temp[38560];
 const uint32_t del_tim_init = 500;
-const uint8_t imya_init[]
-{"Preset        "};
-const uint8_t imya_init1[]
-{"Name          "};
+const uint8_t nameInit[] = {"Preset        "};
+const uint8_t commentInit[] = {"Name          "};
 
 uint8_t __CCM_BSS__ sys_para[512] =
 {/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
@@ -67,18 +69,21 @@ uint8_t __CCM_BSS__ sys_para[512] =
 
 uint8_t impulse_path[512];
 
-uint8_t __CCM_BSS__ presetData[512];
-//uint8_t __CCM_BSS__ currentPreset.controllerArray[512];
-uint8_t __CCM_BSS__ presetName[15];
-uint8_t __CCM_BSS__ presetComment[15];
+//uint8_t __CCM_BSS__ currentPreset.modules.rawData[512];
+
+//uint8_t __CCM_BSS__ presetName[15];
+//uint8_t __CCM_BSS__ presetComment[15];
 
 uint8_t __CCM_BSS__ imya_t[15];
 uint8_t __CCM_BSS__ imya1_t[15];
+
 volatile uint32_t fl_st;
 const uint8_t no_loaded[] = "No loaded";
-char __CCM_BSS__ cab1_name_buf [64];
+
+char __CCM_BSS__ cab1_name_buf[64];
 char __CCM_BSS__ cab2_name_buf[64];
 char __CCM_BSS__ name_buf_temp[64];
+
 uint8_t cab_num = 0;
 extern volatile uint8_t prog_sym_cur;
 extern uint8_t name_run_fl;
@@ -123,13 +128,15 @@ void eepr_write(uint8_t nu)
 		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
 	f_mount(&fs, "1:", 1);
 	f_open(&file, fna, FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
-	f_write(&file, presetName, 15, &f_size);
-	f_write(&file, presetComment, 15, &f_size);
-	f_write(&file, presetData, 512, &f_size);
-	f_write(&file, currentPreset.controller, controllersCount * sizeof(Controller::TController), &f_size);
-	f_lseek(&file, f_tell(&file) +  512 - controllersCount * sizeof(Controller::TController) - 2);
 
-	f_write(&file, &currentPreset.pcOut, 2, &f_size);
+	f_write(&file, &currentPreset, sizeof(Preset::TPreset), &f_size);
+//	f_write(&file, presetName, 15, &f_size);
+//	f_write(&file, presetComment, 15, &f_size);
+//	f_write(&file, currentPreset.modules.rawData, 512, &f_size);
+//	f_write(&file, currentPreset.controller, controllersCount * sizeof(Controller::TController), &f_size);
+//	f_lseek(&file, f_tell(&file) +  512 - controllersCount * sizeof(Controller::TController) - 2);
+//
+//	f_write(&file, &currentPreset.pcOut, 2, &f_size);
 
 	uint8_t del_t_b[2];
 	del_t_b[0] = delay_time;
@@ -152,29 +159,29 @@ void eepr_write(uint8_t nu)
 	f_close(&file);
 	f_mount(0, "1:", 0);
 }
-void eepr_read_prog_data(uint8_t nu)
-{
-	nu++;
-	FRESULT fs_res;
-	FATFS fs;
-	FIL file;
-	UINT f_size;
-	if(nu<10)
-		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)nu);
-	else
-		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
-	f_mount(&fs, "1:", 1);
-	fs_res = f_open(&file, fna, FA_READ);
-	if(fs_res==FR_OK)
-	{
-		f_lseek(&file, 30);
-		f_read(&file, presetData, 512, &f_size);
-	}
-	else
-		for(uint16_t i = 0; i<512; i++)
-			presetData[i] = prog_data_init[i];
-	f_close(&file);
-}
+//void eepr_read_prog_data(uint8_t nu)
+//{
+//	nu++;
+//	FRESULT fs_res;
+//	FATFS fs;
+//	FIL file;
+//	UINT f_size;
+//	if(nu<10)
+//		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)nu);
+//	else
+//		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
+//	f_mount(&fs, "1:", 1);
+//	fs_res = f_open(&file, fna, FA_READ);
+//	if(fs_res==FR_OK)
+//	{
+//		f_lseek(&file, 30);
+//		f_read(&file, currentPreset.modules.rawData, 512, &f_size);
+//	}
+//	else
+//		for(uint16_t i = 0; i<512; i++)
+//			currentPreset.modules.rawData[i] = prog_data_init[i];
+//	f_close(&file);
+//}
 
 void eepr_read_prog(uint8_t nu)
 {
@@ -192,12 +199,13 @@ void eepr_read_prog(uint8_t nu)
 	fs_res = f_open(&file, fna, FA_READ);
 	if(fs_res==FR_OK)
 	{
-		f_read(&file, presetName, 15, &f_size);
-		f_read(&file, presetComment, 15, &f_size);
-		f_lseek(&file, 542);
-		f_read(&file, currentPreset.controller, controllersCount * sizeof(Controller::TController), &f_size);
-		f_lseek(&file, f_tell(&file) + 512 - controllersCount * sizeof(Controller::TController) - 2);
-		f_read(&file, &currentPreset.pcOut, 2, &f_size);
+		f_read(&file, &currentPreset, sizeof(Preset::TPreset), &f_size);
+//		f_read(&file, presetName, 15, &f_size);
+//		f_read(&file, presetComment, 15, &f_size);
+//		f_lseek(&file, 542);
+//		f_read(&file, currentPreset.controller, controllersCount * sizeof(Controller::TController), &f_size);
+//		f_lseek(&file, f_tell(&file) + 512 - controllersCount * sizeof(Controller::TController) - 2);
+//		f_read(&file, &currentPreset.pcOut, 2, &f_size);
 
 		uint8_t del_t_b[2];
 		f_read(&file, del_t_b, 2, &f_size);
@@ -250,11 +258,12 @@ void eepr_read_prog(uint8_t nu)
 	else
 	{
 		for(uint16_t i = 0; i<512; i++)
-			presetData[i] = prog_data_init[i];
+			currentPreset.modules.rawData[i] = prog_data_init[i];
+
 		for(uint8_t i = 0; i<15; i++)
-			presetName[i] = imya_init[i];
+			currentPreset.name[i] = nameInit[i];
 		for(uint8_t i = 0; i<15; i++)
-			presetComment[i] = imya_init1[i];
+			currentPreset.comment[i] = commentInit[i];
 		kgp_sdk_libc::memset(cab1_data, 0, 12288);
 		kgp_sdk_libc::memset(cab2_data, 0, 12288);
 		kgp_sdk_libc::memset(currentPreset.controller, 0, controllersCount * sizeof(Controller::TController));
@@ -279,8 +288,8 @@ void eepr_read_prog(uint8_t nu)
 	f_write(&file, sys_para, 512, &f_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
-	presetName[14] = 0;
-	presetComment[14] = 0;
+	currentPreset.name[14] = 0;
+	currentPreset.comment[14] = 0;
 	cab1_name_buf[63] = cab2_name_buf[63] = 0;
 	FSTask->Resume();
 }
@@ -322,9 +331,9 @@ void read_prog_temp(uint8_t nu)
 	else
 	{
 		for(uint8_t i = 0; i<15; i++)
-			preset_temp[pres_po++] = imya_init[i];
+			preset_temp[pres_po++] = nameInit[i];
 		for(uint8_t i = 0; i<15; i++)
-			preset_temp[pres_po++] = imya_init1[i];
+			preset_temp[pres_po++] = commentInit[i];
 		for(uint16_t i = 0; i<512; i++)
 			preset_temp[pres_po++] = prog_data_init[i];
 		for(uint16_t i = 0; i<512; i++)
@@ -404,9 +413,9 @@ void eepr_read_imya(uint8_t nu)
 	else
 	{
 		for(uint8_t i = 0; i<15; i++)
-			imya_t[i] = imya_init[i];
+			imya_t[i] = nameInit[i];
 		for(uint8_t i = 0; i<15; i++)
-			imya1_t[i] = imya_init1[i];
+			imya1_t[i] = commentInit[i];
 		prog_sym_cur = 1;
 	}
 	f_close(&file);
@@ -509,14 +518,14 @@ void load_mass_imp(void)
 				SPI_I2S_SendData(SPI2, buf);
 			}
 			f_lseek(&file, 30);
-			f_read(&file, presetData, 512, &f_size);
+			f_read(&file, currentPreset.modules.rawData, 512, &f_size);
 			f_lseek(&file, 1054);
-			f_read(&file, presetData+147, 2, &f_size);
+			f_read(&file, currentPreset.modules.rawData+147, 2, &f_size);
 			for(uint32_t ii = 0; ii<512; ii++)
 			{
 				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 				EXTI_ClearITPendingBit(EXTI_Line9);
-				buf = presetData[ii];
+				buf = currentPreset.modules.rawData[ii];
 				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
 				{
 				}

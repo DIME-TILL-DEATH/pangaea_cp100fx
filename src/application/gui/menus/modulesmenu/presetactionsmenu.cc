@@ -4,7 +4,7 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "eepr.h"
@@ -12,6 +12,7 @@
 #include "BF706_send.h"
 
 #include "modulesmenu.h"
+#include "preset.h"
 
 
 extern uint8_t cab_type;
@@ -136,34 +137,34 @@ void PresetActionsMenu::copyPreset()
 	{
 		case 0:
 			for(uint8_t i = 0; i<11; i++)
-				preset_temp[30+mog_mix+i] = presetData[mog_mix+i];
-			preset_temp[30+moog] = presetData[moog];
-			preset_temp[30+mog_gen_t] = presetData[mog_gen_t];
+				preset_temp[30+mog_mix+i] = currentPreset.modules.rawData[mog_mix+i];
+			preset_temp[30+moog] = currentPreset.modules.rawData[moog];
+			preset_temp[30+mog_gen_t] = currentPreset.modules.rawData[mog_gen_t];
 		break;
 		case 1:
 			for(uint8_t i = 0; i<3; i++)
-				preset_temp[30+gate_thr+i] = presetData[gate_thr+i];
-			preset_temp[30+gate] = presetData[gate];
+				preset_temp[30+gate_thr+i] = currentPreset.modules.rawData[gate_thr+i];
+			preset_temp[30+gate] = currentPreset.modules.rawData[gate];
 		break;
 		case 2:
 			for(uint8_t i = 0; i<5; i++)
-				preset_temp[30+comp_thr+i] = presetData[comp_thr+i];
-			preset_temp[30+compr] = presetData[compr];
+				preset_temp[30+comp_thr+i] = currentPreset.modules.rawData[comp_thr+i];
+			preset_temp[30+compr] = currentPreset.modules.rawData[compr];
 		break;
 		case 3:
 			for(uint8_t i = 0; i<6; i++)
-				preset_temp[30+pre_gain+i] = presetData[pre_gain+i];
-			preset_temp[30+pream] = presetData[pream];
+				preset_temp[30+pre_gain+i] = currentPreset.modules.rawData[pre_gain+i];
+			preset_temp[30+pream] = currentPreset.modules.rawData[pream];
 		break;
 		case 4:
 			for(uint8_t i = 0; i<3; i++)
-				preset_temp[30+am_v+i] = presetData[am_v+i];
-			preset_temp[30+pre_v] = presetData[pre_v];
-			preset_temp[30+amp] = presetData[amp];
+				preset_temp[30+am_v+i] = currentPreset.modules.rawData[am_v+i];
+			preset_temp[30+pre_v] = currentPreset.modules.rawData[pre_v];
+			preset_temp[30+amp] = currentPreset.modules.rawData[amp];
 		break;
 		case 5:
 			for(uint8_t i = 0; i<6; i++)
-				preset_temp[30+vol+i] = presetData[vol+i];
+				preset_temp[30+vol+i] = currentPreset.modules.rawData[vol+i];
 			for(uint8_t i = 0; i<64; i++)
 				preset_temp[13344+i] = cab1_name_buf[i];
 			for(uint8_t i = 0; i<64; i++)
@@ -181,65 +182,65 @@ void PresetActionsMenu::copyPreset()
 			send_cab_data(0, targetPresetNum+1, 0);
 			if(cab_type==2)
 				send_cab_data1(0, targetPresetNum+1);
-			preset_temp[30+cab] = presetData[cab];
+			preset_temp[30+cab] = currentPreset.modules.rawData[cab];
 		break;
 		case 6:
 			for(uint8_t i = 0; i<8; i++)
-				preset_temp[30+eq1+i] = presetData[eq1+i];
+				preset_temp[30+eq1+i] = currentPreset.modules.rawData[eq1+i];
 			for(uint8_t i = 0; i<10; i++)
-				preset_temp[30+f1+i] = presetData[f1+i];
-			preset_temp[30+eq] = presetData[eq];
-			preset_temp[30+eq_pr_po] = presetData[eq_pr_po];
+				preset_temp[30+f1+i] = currentPreset.modules.rawData[f1+i];
+			preset_temp[30+eq] = currentPreset.modules.rawData[eq];
+			preset_temp[30+eq_pr_po] = currentPreset.modules.rawData[eq_pr_po];
 		break;
 		case 7:
 			for(uint8_t i = 0; i<6; i++)
-				preset_temp[30+phaser_vol+i] = presetData[phaser_vol+i];
-			preset_temp[30+phas] = presetData[phas];
-			preset_temp[30+hpf_ph] = presetData[hpf_ph];
-			preset_temp[30+phas_pos] = presetData[phas_pos];
+				preset_temp[30+phaser_vol+i] = currentPreset.modules.rawData[phaser_vol+i];
+			preset_temp[30+phas] = currentPreset.modules.rawData[phas];
+			preset_temp[30+hpf_ph] = currentPreset.modules.rawData[hpf_ph];
+			preset_temp[30+phas_pos] = currentPreset.modules.rawData[phas_pos];
 		break;
 		case 8:
 			for(uint8_t i = 0; i<6; i++)
-				preset_temp[30+fl_v+i] = presetData[fl_v+i];
-			preset_temp[30+fl] = presetData[fl];
-			preset_temp[30+hpf_fl] = presetData[hpf_fl];
-			preset_temp[30+flan_pos] = presetData[flan_pos];
+				preset_temp[30+fl_v+i] = currentPreset.modules.rawData[fl_v+i];
+			preset_temp[30+fl] = currentPreset.modules.rawData[fl];
+			preset_temp[30+hpf_fl] = currentPreset.modules.rawData[hpf_fl];
+			preset_temp[30+flan_pos] = currentPreset.modules.rawData[flan_pos];
 		break;
 		case 9:
 			for(uint8_t i = 0; i<5; i++)
-				preset_temp[30+chor_volum+i] = presetData[chor_volum+i];
-			preset_temp[30+chor] = presetData[chor];
-			preset_temp[30+hpf_ch] = presetData[hpf_ch];
+				preset_temp[30+chor_volum+i] = currentPreset.modules.rawData[chor_volum+i];
+			preset_temp[30+chor] = currentPreset.modules.rawData[chor];
+			preset_temp[30+hpf_ch] = currentPreset.modules.rawData[hpf_ch];
 		break;
 		case 10:
 			for(uint8_t i = 0; i<11; i++)
-				preset_temp[30+d_vol+i] = presetData[d_vol+i];
+				preset_temp[30+d_vol+i] = currentPreset.modules.rawData[d_vol+i];
 			preset_temp[1054] = delay_time;
 			preset_temp[1055] = delay_time>>8;
-			preset_temp[30+delay] = presetData[delay];
-			preset_temp[30+d_tap_t] = presetData[d_tap_t];
-			preset_temp[30+d_tail] = presetData[d_tail];
+			preset_temp[30+delay] = currentPreset.modules.rawData[delay];
+			preset_temp[30+d_tap_t] = currentPreset.modules.rawData[d_tap_t];
+			preset_temp[30+d_tail] = currentPreset.modules.rawData[d_tail];
 		break;
 		case 11:
 			for(uint8_t i = 0; i<2; i++)
-				preset_temp[30+early_vol+i] = presetData[early_vol+i];
-			preset_temp[30+early] = presetData[early];
+				preset_temp[30+early_vol+i] = currentPreset.modules.rawData[early_vol+i];
+			preset_temp[30+early] = currentPreset.modules.rawData[early];
 		break;
 		case 12:
 			for(uint8_t i = 0; i<7; i++)
-				preset_temp[30+r_vol+i] = presetData[r_vol+i];
-			preset_temp[30+reve] = presetData[reve];
-			preset_temp[30+rev_t] = presetData[rev_t];
-			preset_temp[30+rev_di] = presetData[rev_di];
-			preset_temp[30+r_pre] = presetData[r_pre];
-			preset_temp[30+r_tail] = presetData[r_tail];
+				preset_temp[30+r_vol+i] = currentPreset.modules.rawData[r_vol+i];
+			preset_temp[30+reve] = currentPreset.modules.rawData[reve];
+			preset_temp[30+rev_t] = currentPreset.modules.rawData[rev_t];
+			preset_temp[30+rev_di] = currentPreset.modules.rawData[rev_di];
+			preset_temp[30+r_pre] = currentPreset.modules.rawData[r_pre];
+			preset_temp[30+r_tail] = currentPreset.modules.rawData[r_tail];
 		break;
 		case 13:
 			for(uint8_t i = 0; i<4; i++)
-				preset_temp[30+tr_vol+i] = presetData[tr_vol+i];
-			preset_temp[30+trem] = presetData[trem];
-			preset_temp[30+t_tap_t] = presetData[t_tap_t];
-			preset_temp[30+tr_lfo_t] = presetData[tr_lfo_t];
+				preset_temp[30+tr_vol+i] = currentPreset.modules.rawData[tr_vol+i];
+			preset_temp[30+trem] = currentPreset.modules.rawData[trem];
+			preset_temp[30+t_tap_t] = currentPreset.modules.rawData[t_tap_t];
+			preset_temp[30+tr_lfo_t] = currentPreset.modules.rawData[tr_lfo_t];
 		break;
 	}
 
@@ -263,8 +264,8 @@ void PresetActionsMenu::savePreset()
 {
 	DisplayTask->Clear();
 	DisplayTask->StringOut(38, 2, TDisplayTask::fnt12x13, 0, (uint8_t*)" Save");
-	presetData[147] = delay_time;
-	presetData[148] = delay_time>>8;
+	currentPreset.modules.rawData[147] = delay_time;
+	currentPreset.modules.rawData[148] = delay_time>>8;
 	eepr_write(preselectedPresetNumber);
 
 	send_cab_data(0, preselectedPresetNumber+1, 0);

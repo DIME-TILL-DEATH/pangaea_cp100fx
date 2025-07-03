@@ -13,6 +13,7 @@
 #include "BF706_send.h"
 
 #include "modules.h"
+#include "preset.h"
 
 #include "paramlistmenu.h"
 #include "controllersmenu.h"
@@ -22,20 +23,20 @@
 
 GuiModules::TModule modules[ModulesMenu::modulesCount];
 
-GuiModules::TModule RF = {"RF", &presetData[ENABLE_RESONANCE_FILTER], &GuiModules::createRfMenu, nullptr, ENABLE_RESONANCE_FILTER};
-GuiModules::TModule GT = {"GT", &presetData[ENABLE_GATE], &GuiModules::createGateMenu, nullptr, ENABLE_GATE};
-GuiModules::TModule CM = {"CM", &presetData[ENABLE_COMPRESSOR], &GuiModules::createCompressorMenu, nullptr, ENABLE_COMPRESSOR};
-GuiModules::TModule PR = {"PR", &presetData[ENABLE_PREAMP], &GuiModules::createPreampMenu, nullptr, ENABLE_PREAMP};
-GuiModules::TModule PA = {"PA", &presetData[ENABLE_AMP], &GuiModules::createAmpMenu, nullptr, ENABLE_AMP};
-GuiModules::TModule IR = {"IR", &presetData[ENABLE_CAB], &GuiModules::createIrMenu, &ModulesMenu::enableCab, ENABLE_CAB};
-GuiModules::TModule EQ = {"EQ", &presetData[ENABLE_EQ], &GuiModules::createEqMenu, nullptr, ENABLE_EQ};
-GuiModules::TModule PH = {"PH", &presetData[ENABLE_PHASER], &GuiModules::createPhaserMenu, nullptr, ENABLE_PHASER};
-GuiModules::TModule FL = {"FL", &presetData[ENABLE_FLANGER], &GuiModules::createFlangerMenu, nullptr, ENABLE_FLANGER};
-GuiModules::TModule CH = {"CH", &presetData[ENABLE_CHORUS], &GuiModules::createChorusMenu, nullptr, ENABLE_CHORUS};
-GuiModules::TModule DL = {"DL", &presetData[ENABLE_DELAY], &GuiModules::createDelayMenu, nullptr, ENABLE_DELAY};
-GuiModules::TModule ER = {"ER", &presetData[ENABLE_EARLY_REFLECTIONS], &GuiModules::createEarlyMenu, nullptr, ENABLE_EARLY_REFLECTIONS};
-GuiModules::TModule RV = {"RV", &presetData[ENABLE_REVERB], &GuiModules::createReverbMenu, nullptr, ENABLE_REVERB};
-GuiModules::TModule TR = {"TR", &presetData[ENABLE_TREMOLO], &GuiModules::createTremoloMenu, nullptr, ENABLE_TREMOLO};
+GuiModules::TModule RF = {"RF", &currentPreset.modules.rawData[ENABLE_RESONANCE_FILTER], &GuiModules::createRfMenu, nullptr, ENABLE_RESONANCE_FILTER};
+GuiModules::TModule GT = {"GT", &currentPreset.modules.rawData[ENABLE_GATE], &GuiModules::createGateMenu, nullptr, ENABLE_GATE};
+GuiModules::TModule CM = {"CM", &currentPreset.modules.rawData[ENABLE_COMPRESSOR], &GuiModules::createCompressorMenu, nullptr, ENABLE_COMPRESSOR};
+GuiModules::TModule PR = {"PR", &currentPreset.modules.rawData[ENABLE_PREAMP], &GuiModules::createPreampMenu, nullptr, ENABLE_PREAMP};
+GuiModules::TModule PA = {"PA", &currentPreset.modules.rawData[ENABLE_AMP], &GuiModules::createAmpMenu, nullptr, ENABLE_AMP};
+GuiModules::TModule IR = {"IR", &currentPreset.modules.rawData[ENABLE_CAB], &GuiModules::createIrMenu, &ModulesMenu::enableCab, ENABLE_CAB};
+GuiModules::TModule EQ = {"EQ", &currentPreset.modules.rawData[ENABLE_EQ], &GuiModules::createEqMenu, nullptr, ENABLE_EQ};
+GuiModules::TModule PH = {"PH", &currentPreset.modules.rawData[ENABLE_PHASER], &GuiModules::createPhaserMenu, nullptr, ENABLE_PHASER};
+GuiModules::TModule FL = {"FL", &currentPreset.modules.rawData[ENABLE_FLANGER], &GuiModules::createFlangerMenu, nullptr, ENABLE_FLANGER};
+GuiModules::TModule CH = {"CH", &currentPreset.modules.rawData[ENABLE_CHORUS], &GuiModules::createChorusMenu, nullptr, ENABLE_CHORUS};
+GuiModules::TModule DL = {"DL", &currentPreset.modules.rawData[ENABLE_DELAY], &GuiModules::createDelayMenu, nullptr, ENABLE_DELAY};
+GuiModules::TModule ER = {"ER", &currentPreset.modules.rawData[ENABLE_EARLY_REFLECTIONS], &GuiModules::createEarlyMenu, nullptr, ENABLE_EARLY_REFLECTIONS};
+GuiModules::TModule RV = {"RV", &currentPreset.modules.rawData[ENABLE_REVERB], &GuiModules::createReverbMenu, nullptr, ENABLE_REVERB};
+GuiModules::TModule TR = {"TR", &currentPreset.modules.rawData[ENABLE_TREMOLO], &GuiModules::createTremoloMenu, nullptr, ENABLE_TREMOLO};
 
 
 ModulesMenu::ModulesMenu(AbstractMenu* parent)
@@ -179,8 +180,8 @@ void ModulesMenu::key2()
 
 	params[0] = new StringOutParam("Preset level");
 	params[0]->setDisplayPosition(40);
-	params[1] = new StringListParam("Control", &presetData[PRESET_VOLUME_CONTROL], {"On ", "Off"}, 3);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &presetData[PRESET_VOLUME]);
+	params[1] = new StringListParam("Control", &currentPreset.modules.rawData[PRESET_VOLUME_CONTROL], {"On ", "Off"}, 3);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &currentPreset.modules.rawData[PRESET_VOLUME]);
 	params[2]->setDspAddress(DSP_ADDRESS_PRESET_VOLUME, PARAM_EQUAL_POS);
 
 	ParamListMenu* menu = new ParamListMenu(this, MENU_PRESET_VOLUME);
@@ -240,8 +241,8 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		  extern volatile uint8_t imp_dir_fl;
 		  if(imp_dir_fl)
 		  {
-			  vol_ind_level_pos = presetData[IR_VOLUME1];
-			  DSP_gui_set_parameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, presetData[IR_VOLUME1]);
+			  vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME1];
+			  DSP_gui_set_parameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
 			  DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
 
 			  FSTask->SendCommand( TFsBrowser::bcCurrent );
@@ -252,7 +253,7 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 			  DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, "There is no directory");
 			  DisplayTask->StringOut(42, 3, TDisplayTask::fntSystem, 0, "IMPULSE");
 			  CSTask->CS_del(1000);
-			  presetData[cab] = 0;
+			  currentPreset.modules.rawData[cab] = 0;
 
 			  parent->refresh();
 		  }
@@ -264,7 +265,7 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 			else DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, "MicroSD is loading..");
 			CSTask->CS_del(1000);
 
-			presetData[cab] = 0;
+			currentPreset.modules.rawData[cab] = 0;
 
 			parent->refresh();
 		}

@@ -3,11 +3,13 @@
 
 #include "appdefs.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "BF706_send.h"
 #include "filter.h"
+
+#include "preset.h"
 
 const uint8_t lpf_hpf[][9] =
 {"HPF", "LPF", "Presence", "Position"};
@@ -36,9 +38,9 @@ void EqMenu::task()
 	if(bandNum<5)
 	{
 		if(!encoderKnobSelected)
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], blinkFlag_fl);
+			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], blinkFlag_fl);
 		else
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], 1);
 	}
 	else
 	{
@@ -55,7 +57,7 @@ void EqMenu::encoderPressed()
 	{
 		encoderKnobSelected = 1;
 		if(bandNum<5)
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], 1);
 		else
 			DisplayTask->StringOut(6, bandNum-5, TDisplayTask::fntSystem, 2, (uint8_t*)lpf_hpf+(bandNum-5)*9);
 	}
@@ -63,7 +65,7 @@ void EqMenu::encoderPressed()
 	{
 		encoderKnobSelected = 0;
 		if(bandNum<5)
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], 1);
 		else
 			DisplayTask->StringOut(6, bandNum-5, TDisplayTask::fntSystem, 2, (uint8_t*)lpf_hpf+(bandNum-5)*9);
 	}
@@ -87,20 +89,20 @@ void EqMenu::encoderClockwise()
 			bandNum++;
 
 			DisplayTask->StringOut(6, 0, TDisplayTask::fntSystem, 2, (uint8_t*)lpf_hpf);
-			DisplayTask->EqLH(presetData[hpf_v]*(980.0/127.0)+20.0, 0);
+			DisplayTask->EqLH(currentPreset.modules.rawData[hpf_v]*(980.0/127.0)+20.0, 0);
 			DisplayTask->StringOut(28, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"(");
 			DisplayTask->StringOut(50, 0, TDisplayTask::fntSystem, 0, (uint8_t*)")");
 
-			DisplayTask->ParamIndicNum(33, 0, presetData[hpf_v]);
-			DisplayTask->EqLH(powf(127-presetData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
+			DisplayTask->ParamIndicNum(33, 0, currentPreset.modules.rawData[hpf_v]);
+			DisplayTask->EqLH(powf(127-currentPreset.modules.rawData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 			DisplayTask->StringOut(28, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"(");
 			DisplayTask->StringOut(50, 1, TDisplayTask::fntSystem, 0, (uint8_t*)")");
 
-			DisplayTask->ParamIndicNum(33, 1, presetData[lpf_v]);
-			DisplayTask->ParamIndic(56, 2, presetData[pre_v]);
+			DisplayTask->ParamIndicNum(33, 1, currentPreset.modules.rawData[lpf_v]);
+			DisplayTask->ParamIndic(56, 2, currentPreset.modules.rawData[pre_v]);
 			DisplayTask->Icon_Strel(ICON_EQ, STRELKA_UP);
 			DisplayTask->StringOut(6, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&lpf_hpf[3]);
-			DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[presetData[eq_pr_po]]);
+			DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[currentPreset.modules.rawData[eq_pr_po]]);
 			tim5_start(0);
 		}
 		else
@@ -114,8 +116,8 @@ void EqMenu::encoderClockwise()
 		}
 		if(bandNum<4)
 		{
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum++], 0);
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum++], 0);
+			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], 1);
 			tim5_start(0);
 		}
 	}
@@ -123,40 +125,40 @@ void EqMenu::encoderClockwise()
 	{
 		if(bandNum<5)
 		{
-			if(presetData[EQ_G0+bandNum]<30)
-				DisplayTask->EqIndic(27+14*bandNum, 0, ++presetData[EQ_G0+bandNum], 1);
+			if(currentPreset.modules.rawData[EQ_G0+bandNum]<30)
+				DisplayTask->EqIndic(27+14*bandNum, 0, ++currentPreset.modules.rawData[EQ_G0+bandNum], 1);
 		}
 		else
 		{
 			switch(bandNum)
 			{
 				case 5:
-					if(presetData[EQ_HPF]<127)
+					if(currentPreset.modules.rawData[EQ_HPF]<127)
 					{
-						presetData[EQ_HPF] = enc_speed_inc(presetData[EQ_HPF], 127);
-						DisplayTask->ParamIndicNum(33, 0, presetData[EQ_HPF]);
-						DisplayTask->EqLH(presetData[EQ_HPF]*(980.0/127.0)+20.0, 0);
+						currentPreset.modules.rawData[EQ_HPF] = enc_speed_inc(currentPreset.modules.rawData[EQ_HPF], 127);
+						DisplayTask->ParamIndicNum(33, 0, currentPreset.modules.rawData[EQ_HPF]);
+						DisplayTask->EqLH(currentPreset.modules.rawData[EQ_HPF]*(980.0/127.0)+20.0, 0);
 					}
 				break;
 				case 6:
-					if(presetData[EQ_LPF]>0)
+					if(currentPreset.modules.rawData[EQ_LPF]>0)
 					{
-						presetData[EQ_LPF] = enc_speed_dec(presetData[EQ_LPF], 0);
-						DisplayTask->ParamIndicNum(33, 1, presetData[EQ_LPF]);
-						DisplayTask->EqLH(powf(127-presetData[EQ_LPF], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
+						currentPreset.modules.rawData[EQ_LPF] = enc_speed_dec(currentPreset.modules.rawData[EQ_LPF], 0);
+						DisplayTask->ParamIndicNum(33, 1, currentPreset.modules.rawData[EQ_LPF]);
+						DisplayTask->EqLH(powf(127-currentPreset.modules.rawData[EQ_LPF], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 					}
 				break;
 				case 7:
-					if(presetData[pre_v]<127)
+					if(currentPreset.modules.rawData[pre_v]<127)
 					{
-						presetData[pre_v] = enc_speed_inc(presetData[pre_v], 127);
-						DisplayTask->ParamIndic(56, bandNum-5, presetData[pre_v]);
+						currentPreset.modules.rawData[pre_v] = enc_speed_inc(currentPreset.modules.rawData[pre_v], 127);
+						DisplayTask->ParamIndic(56, bandNum-5, currentPreset.modules.rawData[pre_v]);
 					}
 				break;
 				case 8:
-					if(!presetData[EQ_PREPOST])
+					if(!currentPreset.modules.rawData[EQ_PREPOST])
 					{
-						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[++presetData[EQ_PREPOST]]);
+						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[++currentPreset.modules.rawData[EQ_PREPOST]]);
 					}
 				break;
 			}
@@ -178,15 +180,15 @@ void EqMenu::encoderCounterClockwise()
 			DisplayTask->EqInit();
 			DisplayTask->Icon_Strel(ICON_EQ, STRELKA_DOWN);
 			bandNum--;
-			DisplayTask->EqIndic(27+bandNum*14, 0, presetData[eq1+bandNum], 1);
+			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], 1);
 			tim5_start(0);
 		}
 		else
 		{
 			if((bandNum>0)&&(bandNum<5))
 			{
-				DisplayTask->EqIndic(27+bandNum*14, 0, presetData[EQ_G0+bandNum--], 0);
-				DisplayTask->EqIndic(27+bandNum*14, 0, presetData[EQ_G0+bandNum], 1);
+				DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[EQ_G0+bandNum--], 0);
+				DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[EQ_G0+bandNum], 1);
 				tim5_start(0);
 			}
 		}
@@ -201,40 +203,40 @@ void EqMenu::encoderCounterClockwise()
 	{
 		if(bandNum<5)
 		{
-			if(presetData[EQ_G0+bandNum]>0)
-				DisplayTask->EqIndic(27+14*bandNum, 0, --presetData[EQ_G0+bandNum], 1);
+			if(currentPreset.modules.rawData[EQ_G0+bandNum]>0)
+				DisplayTask->EqIndic(27+14*bandNum, 0, --currentPreset.modules.rawData[EQ_G0+bandNum], 1);
 		}
 		else
 		{
 			switch(bandNum)
 			{
 				case 5:
-					if(presetData[hpf_v]>0)
+					if(currentPreset.modules.rawData[hpf_v]>0)
 					{
-						presetData[hpf_v] = enc_speed_dec(presetData[hpf_v], 0);
-						DisplayTask->ParamIndicNum(33, 0, presetData[hpf_v]);
-						DisplayTask->EqLH(presetData[hpf_v]*(980.0/127.0)+20.0, 0);
+						currentPreset.modules.rawData[hpf_v] = enc_speed_dec(currentPreset.modules.rawData[hpf_v], 0);
+						DisplayTask->ParamIndicNum(33, 0, currentPreset.modules.rawData[hpf_v]);
+						DisplayTask->EqLH(currentPreset.modules.rawData[hpf_v]*(980.0/127.0)+20.0, 0);
 					}
 				break;
 				case 6:
-					if(presetData[lpf_v]<127)
+					if(currentPreset.modules.rawData[lpf_v]<127)
 					{
-						presetData[lpf_v] = enc_speed_inc(presetData[lpf_v], 127);
-						DisplayTask->ParamIndicNum(33, 1, presetData[lpf_v]);
-						DisplayTask->EqLH(powf(127-presetData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
+						currentPreset.modules.rawData[lpf_v] = enc_speed_inc(currentPreset.modules.rawData[lpf_v], 127);
+						DisplayTask->ParamIndicNum(33, 1, currentPreset.modules.rawData[lpf_v]);
+						DisplayTask->EqLH(powf(127-currentPreset.modules.rawData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 					}
 				break;
 				case 7:
-					if(presetData[pre_v]>0)
+					if(currentPreset.modules.rawData[pre_v]>0)
 					{
-						presetData[pre_v] = enc_speed_dec(presetData[pre_v], 0);
-						DisplayTask->ParamIndic(56, 2, presetData[pre_v]);
+						currentPreset.modules.rawData[pre_v] = enc_speed_dec(currentPreset.modules.rawData[pre_v], 0);
+						DisplayTask->ParamIndic(56, 2, currentPreset.modules.rawData[pre_v]);
 					}
 				break;
 				case 8:
-					if(presetData[EQ_PREPOST])
+					if(currentPreset.modules.rawData[EQ_PREPOST])
 					{
-						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[--presetData[EQ_PREPOST]]);
+						DisplayTask->StringOut(65, 3, TDisplayTask::fntSystem, 0, (uint8_t*)&eq_pre_post[--currentPreset.modules.rawData[EQ_PREPOST]]);
 					}
 				break;
 			}

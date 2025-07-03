@@ -3,13 +3,15 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
-#include "gui/elements/icon_bit.h"
-#include "gui/gui_task.h"
+#include "allFonts.h"
+#include "icon_bit.h"
+#include "gui_task.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
 #include "init.h"
+
+#include "preset.h"
 
 
 CabNameMenu::CabNameMenu(AbstractMenu* parent)
@@ -73,7 +75,7 @@ void CabNameMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
-	if((!prog_sym_cur) && presetData[cab])
+	if((!prog_sym_cur) && currentPreset.modules.rawData[cab])
 	{
 		DisplayTask->Clear();
 

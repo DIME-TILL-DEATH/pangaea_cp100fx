@@ -1,10 +1,11 @@
 #include "appdefs.h"
 #include "BF706_send.h"
 #include "eepr.h"
-#include "gui/gui_task.h"
+#include "gui_task.h"
+
+#include "preset.h"
 
 extern uint32_t send_buf;
-extern uint8_t presetData[];
 extern uint8_t sys_para[];
 extern uint16_t delay_time;
 extern uint8_t cab_type;
@@ -44,27 +45,27 @@ void pres_volum_cont(uint8_t val)
 
 void cab_volume(uint8_t num)
 {
-	dsp_send(DSP_ADDRESS_CAB, num | (presetData[vol + num] << 8));
+	dsp_send(DSP_ADDRESS_CAB, num | (currentPreset.modules.rawData[vol + num] << 8));
 }
 
 void chor_par(uint8_t num)
 {
 	if(num == 5)
-		dsp_send(DSP_ADDRESS_CHORUS, num | (presetData[hpf_ch] << 8));
+		dsp_send(DSP_ADDRESS_CHORUS, num | (currentPreset.modules.rawData[hpf_ch] << 8));
 	else
-		dsp_send(DSP_ADDRESS_CHORUS, num | (presetData[chor_volum + num] << 8));
+		dsp_send(DSP_ADDRESS_CHORUS, num | (currentPreset.modules.rawData[chor_volum + num] << 8));
 }
 
 void Phaser_par(uint8_t num)
 {
 	if(num == 6)
-		dsp_send(DSP_ADDRESS_PHASER, num | (presetData[hpf_ph] << 8));
+		dsp_send(DSP_ADDRESS_PHASER, num | (currentPreset.modules.rawData[hpf_ph] << 8));
 	else
 	{
 		if(num == 7)
-			dsp_send(DSP_ADDRESS_PHASER, num | (presetData[phas_pos] << 8));
+			dsp_send(DSP_ADDRESS_PHASER, num | (currentPreset.modules.rawData[phas_pos] << 8));
 		else
-			dsp_send(DSP_ADDRESS_PHASER, num | (presetData[phaser_vol + num] << 8));
+			dsp_send(DSP_ADDRESS_PHASER, num | (currentPreset.modules.rawData[phaser_vol + num] << 8));
 	}
 }
 
@@ -73,22 +74,22 @@ void DSP_reverb_param(uint8_t num)
 	switch(num)
 	{
 		case 0:
-			dsp_send(DSP_ADDRESS_REVERB, num | (presetData[r_vol] << 8));
+			dsp_send(DSP_ADDRESS_REVERB, num | (currentPreset.modules.rawData[r_vol] << 8));
 		break;
 		case 1:
-			dsp_send(DSP_ADDRESS_REVERB, num | (presetData[rev_t] << 8));
+			dsp_send(DSP_ADDRESS_REVERB, num | (currentPreset.modules.rawData[rev_t] << 8));
 		break;
 		case 8:
-			dsp_send(DSP_ADDRESS_REVERB, num | (presetData[rev_di] << 8));
+			dsp_send(DSP_ADDRESS_REVERB, num | (currentPreset.modules.rawData[rev_di] << 8));
 		break;
 		case 9:
-			dsp_send(DSP_ADDRESS_REVERB, num | (presetData[r_pre] << 8));
+			dsp_send(DSP_ADDRESS_REVERB, num | (currentPreset.modules.rawData[r_pre] << 8));
 		break;
 		case 10:
-			dsp_send(DSP_ADDRESS_REVERB, num | (presetData[r_tail] << 8));
+			dsp_send(DSP_ADDRESS_REVERB, num | (currentPreset.modules.rawData[r_tail] << 8));
 		break;
 		default:
-			dsp_send(DSP_ADDRESS_REVERB, num | (presetData[r_vol + num - 1] << 8));
+			dsp_send(DSP_ADDRESS_REVERB, num | (currentPreset.modules.rawData[r_vol + num - 1] << 8));
 		break;
 	}
 }
@@ -98,18 +99,18 @@ void del_par(uint8_t num)
 	switch(num)
 	{
 		case 0:
-			dsp_send(DSP_ADDRESS_DELAY, 0 | (presetData[d_vol] << 8));
+			dsp_send(DSP_ADDRESS_DELAY, 0 | (currentPreset.modules.rawData[d_vol] << 8));
 		break;
 		case 1:
 			dsp_send(DSP_ADDRESS_DELAY, 11 | ((delay_time >> 8) << 8));
 			dsp_send(DSP_ADDRESS_DELAY, 12 | ((delay_time) << 8));
 		break;
 		case 13:
-			dsp_send(DSP_ADDRESS_DELAY, 13 | (presetData[d_tail] << 8));
+			dsp_send(DSP_ADDRESS_DELAY, 13 | (currentPreset.modules.rawData[d_tail] << 8));
 		break;
 		default:
 			num--;
-			dsp_send(DSP_ADDRESS_DELAY, num | (presetData[d_vol + num] << 8));
+			dsp_send(DSP_ADDRESS_DELAY, num | (currentPreset.modules.rawData[d_vol + num] << 8));
 		break;
 	}
 }
@@ -117,9 +118,9 @@ void del_par(uint8_t num)
 void eq_par(uint8_t num)
 {
 	if(num != 12)
-		dsp_send(DSP_ADDRESS_EQ, num | (presetData[eq1 + num] << 8));
+		dsp_send(DSP_ADDRESS_EQ, num | (currentPreset.modules.rawData[eq1 + num] << 8));
 	else
-		dsp_send(DSP_ADDRESS_EQ, num | (presetData[eq_pr_po] << 8));
+		dsp_send(DSP_ADDRESS_EQ, num | (currentPreset.modules.rawData[eq_pr_po] << 8));
 }
 void eq_mas_par(uint8_t num)
 {
@@ -144,14 +145,14 @@ void tr_param(uint8_t num)
 		{
 			case 0:
 			case 1:
-				dsp_send(DSP_ADDRESS_TREMOLO, num | (presetData[tr_vol + num] << 8));
+				dsp_send(DSP_ADDRESS_TREMOLO, num | (currentPreset.modules.rawData[tr_vol + num] << 8));
 			break;
 			case 2:
-				dsp_send(DSP_ADDRESS_TREMOLO, 6 | (presetData[tr_lfo_t] << 8));
+				dsp_send(DSP_ADDRESS_TREMOLO, 6 | (currentPreset.modules.rawData[tr_lfo_t] << 8));
 			break;
 			default:
 				num--;
-				dsp_send(DSP_ADDRESS_TREMOLO, num | (presetData[tr_vol + num] << 8));
+				dsp_send(DSP_ADDRESS_TREMOLO, num | (currentPreset.modules.rawData[tr_vol + num] << 8));
 			break;
 		}
 	}
@@ -164,7 +165,7 @@ void tr_param(uint8_t num)
 
 void amp_volume(uint8_t num)
 {
-	dsp_send(DSP_ADDRESS_AMP, num | (presetData[am_v + num] << 8));
+	dsp_send(DSP_ADDRESS_AMP, num | (currentPreset.modules.rawData[am_v + num] << 8));
 }
 
 void program_ch(void)
@@ -175,13 +176,13 @@ void program_ch(void)
 void flanger_par(uint8_t num)
 {
 	if(num == 6)
-		dsp_send(DSP_ADDRESS_FLANGER, num | (presetData[hpf_fl] << 8));
+		dsp_send(DSP_ADDRESS_FLANGER, num | (currentPreset.modules.rawData[hpf_fl] << 8));
 	else
 	{
 		if(num == 7)
-			dsp_send(DSP_ADDRESS_FLANGER, num | (presetData[flan_pos] << 8));
+			dsp_send(DSP_ADDRESS_FLANGER, num | (currentPreset.modules.rawData[flan_pos] << 8));
 		else
-			dsp_send(DSP_ADDRESS_FLANGER, num | (presetData[fl_v + num] << 8));
+			dsp_send(DSP_ADDRESS_FLANGER, num | (currentPreset.modules.rawData[fl_v + num] << 8));
 	}
 }
 
@@ -197,7 +198,7 @@ void cab_dry_mute(void)
 
 void Early_par(uint8_t num)
 {
-	dsp_send(DSP_ADDRESS_EARLY_REFLECTIONS, num | (presetData[early_vol + num] << 8));
+	dsp_send(DSP_ADDRESS_EARLY_REFLECTIONS, num | (currentPreset.modules.rawData[early_vol + num] << 8));
 }
 
 void master_volu(uint8_t val)
@@ -212,12 +213,12 @@ void master_volum_contr(uint8_t val)
 
 void eq_band_par(uint8_t num)
 {
-	dsp_send(DSP_ADDRESS_EQ_BAND, num | (presetData[f1 + num] << 8));
+	dsp_send(DSP_ADDRESS_EQ_BAND, num | (currentPreset.modules.rawData[f1 + num] << 8));
 }
 
 void amp_imp_load(void)
 {
-	dsp_send(DSP_ADDRESS_AMP_TYPE, presetData[am_mode]);
+	dsp_send(DSP_ADDRESS_AMP_TYPE, currentPreset.modules.rawData[am_mode]);
 }
 
 void dsp_run(uint8_t val)
@@ -232,7 +233,7 @@ void spdi_t(uint8_t val)
 
 void pr_par(uint8_t num)
 {
-	dsp_send(DSP_ADDRESS_PREAMP, num | (presetData[pre_gain + num] << 8));
+	dsp_send(DSP_ADDRESS_PREAMP, num | (currentPreset.modules.rawData[pre_gain + num] << 8));
 }
 
 void cab_r_by(uint8_t val)
@@ -242,26 +243,26 @@ void cab_r_by(uint8_t val)
 
 void gate_param(uint8_t val)
 {
-	dsp_send(DSP_ADDRESS_GATE, val | (presetData[gate_thr + val] << 8));
+	dsp_send(DSP_ADDRESS_GATE, val | (currentPreset.modules.rawData[gate_thr + val] << 8));
 }
 
 void comp_par(uint8_t val)
 {
-	dsp_send(DSP_ADDRESS_COMPRESSOR, val | (presetData[comp_thr + val] << 8));
+	dsp_send(DSP_ADDRESS_COMPRESSOR, val | (currentPreset.modules.rawData[comp_thr + val] << 8));
 }
 
 void moog_par(uint8_t val)
 {
 	if(val < 11)
-		dsp_send(DSP_ADDRESS_RESONANCE_FILTER, val | (presetData[mog_mix + val] << 8));
+		dsp_send(DSP_ADDRESS_RESONANCE_FILTER, val | (currentPreset.modules.rawData[mog_mix + val] << 8));
 	else
 	{
 		if(val == 11)
-			dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 12 | (presetData[mog_gen_t] << 8));
+			dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 12 | (currentPreset.modules.rawData[mog_gen_t] << 8));
 		else
 		{
 			if(val == 12)
-				dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 11 | (presetData[mog_ext] << 8));
+				dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 11 | (currentPreset.modules.rawData[mog_ext] << 8));
 			else
 			{
 				dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 13 | ((moog_time >> 8) << 8));
@@ -386,7 +387,7 @@ void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 		SPI_I2S_SendData(SPI2, 0);
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		if(!menu_fl)
-			SPI_I2S_SendData(SPI2, presetData[i]);
+			SPI_I2S_SendData(SPI2, currentPreset.modules.rawData[i]);
 		else
 			SPI_I2S_SendData(SPI2, preset_temp[i + 30]);
 	}

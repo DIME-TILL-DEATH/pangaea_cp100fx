@@ -5,80 +5,80 @@
 
 static void rf_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[moog], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_RESONANCE_FILTER, presetData[ENABLE_RESONANCE_FILTER]);
+	default_param_handler(&currentPreset.modules.rawData[moog], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_RESONANCE_FILTER, currentPreset.modules.rawData[ENABLE_RESONANCE_FILTER]);
 }
 
 static void rf_mix_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_MIX], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_MIX_POS, presetData[RFILTER_MIX]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_MIX], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_MIX_POS, currentPreset.modules.rawData[RFILTER_MIX]);
 }
 
 static void rf_filter_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_FTYPE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_FTYPE_POS, presetData[RFILTER_FTYPE]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_FTYPE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_FTYPE_POS, currentPreset.modules.rawData[RFILTER_FTYPE]);
 }
 
 static void rf_fmod_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_FMOD], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_FMOD_POS, presetData[RFILTER_FMOD]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_FMOD], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_FMOD_POS, currentPreset.modules.rawData[RFILTER_FMOD]);
 }
 
 static void rf_rate_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_RATE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_RATE_POS, presetData[RFILTER_RATE]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_RATE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_RATE_POS, currentPreset.modules.rawData[RFILTER_RATE]);
 }
 
 static void rf_lpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_LPF], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_LPF_POS, presetData[RFILTER_LPF]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_LPF], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_LPF_POS, currentPreset.modules.rawData[RFILTER_LPF]);
 }
 
 static void rf_hpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_HPF], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_HPF_POS, presetData[RFILTER_HPF]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_HPF], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_HPF_POS, currentPreset.modules.rawData[RFILTER_HPF]);
 }
 
 static void rf_resonance_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_RESONANCE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_RESONANCE_POS, presetData[RFILTER_RESONANCE]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_RESONANCE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_RESONANCE_POS, currentPreset.modules.rawData[RFILTER_RESONANCE]);
 }
 
 static void rf_dyn_threshold_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_DYN_THRESHOLD], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_DYN_THRESHOLD_POS, presetData[RFILTER_DYN_THRESHOLD]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_DYN_THRESHOLD], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_DYN_THRESHOLD_POS, currentPreset.modules.rawData[RFILTER_DYN_THRESHOLD]);
 }
 
 static void rf_dyn_attack_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_DYN_ATTACK], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_DYN_ATTACK_POS, presetData[RFILTER_DYN_ATTACK]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_DYN_ATTACK], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_DYN_ATTACK_POS, currentPreset.modules.rawData[RFILTER_DYN_ATTACK]);
 }
 
 static void rf_dyn_release_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFLITER_DYN_RELEASE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFLITER_DYN_RELEASE_POS, presetData[RFLITER_DYN_RELEASE]);
+	default_param_handler(&currentPreset.modules.rawData[RFLITER_DYN_RELEASE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFLITER_DYN_RELEASE_POS, currentPreset.modules.rawData[RFLITER_DYN_RELEASE]);
 }
 
 static void rf_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_VOLUME], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_VOLUME_POS, presetData[RFILTER_VOLUME]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_VOLUME], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_VOLUME_POS, currentPreset.modules.rawData[RFILTER_VOLUME]);
 }
 
 static void rf_lfo_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&presetData[RFILTER_LFO_TYPE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_LFO_TYPE_POS, presetData[RFILTER_LFO_TYPE]);
+	default_param_handler(&currentPreset.modules.rawData[RFILTER_LFO_TYPE], rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_LFO_TYPE_POS, currentPreset.modules.rawData[RFILTER_LFO_TYPE]);
 }
 
 void set_resonance_filter_handlers(TReadLine *rl)

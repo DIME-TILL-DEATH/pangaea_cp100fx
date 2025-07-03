@@ -9,6 +9,8 @@
 #include <cmath>
 #include "vdt/vdt.h"
 
+#include "preset.h"
+
 float fil_lp_in[2];
 float fil_lp_out[2];
 float fil_a0;
@@ -67,20 +69,20 @@ void Filter::calcEqResponse()
 
 		switch(bandNum)
 		{
-			case 0:case 1:f = fr_l[bandNum] + presetData[EQ_F0 + bandNum];break;
-			case 2:f = fr_l[bandNum] + presetData[EQ_F0 + bandNum]*2;break;
-			case 3:f = fr_l[bandNum] + presetData[EQ_F0 + bandNum]*10;break;
-			case 4:f = fr_l[bandNum] + presetData[EQ_F0 + bandNum]*50;break;
+			case 0:case 1:f = fr_l[bandNum] + currentPreset.modules.rawData[EQ_F0 + bandNum];break;
+			case 2:f = fr_l[bandNum] + currentPreset.modules.rawData[EQ_F0 + bandNum]*2;break;
+			case 3:f = fr_l[bandNum] + currentPreset.modules.rawData[EQ_F0 + bandNum]*10;break;
+			case 4:f = fr_l[bandNum] + currentPreset.modules.rawData[EQ_F0 + bandNum]*50;break;
 		}
 
-		g = presetData[EQ_G0 + bandNum] - 15;
+		g = currentPreset.modules.rawData[EQ_G0 + bandNum] - 15;
 
-		if(presetData[EQ_Q0 + bandNum] <= 30)
+		if(currentPreset.modules.rawData[EQ_Q0 + bandNum] <= 30)
 		{
-			Q = presetData[EQ_Q0 + bandNum] * 0.01f + 0.701f;
+			Q = currentPreset.modules.rawData[EQ_Q0 + bandNum] * 0.01f + 0.701f;
 		}
 		else {
-			Q = (presetData[EQ_Q0 + bandNum] - 20) * 0.1f + 0.001f;
+			Q = (currentPreset.modules.rawData[EQ_Q0 + bandNum] - 20) * 0.1f + 0.001f;
 		}
 
 		bandCoefs = Filter::calcFilterCoefs(Filter::TFilterType::PEAKING, f, g, Q);

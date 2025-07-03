@@ -4,10 +4,12 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
+
+#include "preset.h"
 
 NameEditMenu::NameEditMenu(AbstractMenu* parent)
 {
@@ -28,8 +30,8 @@ void NameEditMenu::show(TShowMode swhoMode)
 	symbol = 32;
 	encoderKnobPressed = 0;
 
-	DisplayTask->StringOut(2, 0, TDisplayTask::fntSystem, 0, (uint8_t*)presetName);
-	DisplayTask->StringOut(2, 1, TDisplayTask::fntSystem, 0, (uint8_t*)presetComment);
+	DisplayTask->StringOut(2, 0, TDisplayTask::fntSystem, 0, (uint8_t*)currentPreset.name);
+	DisplayTask->StringOut(2, 1, TDisplayTask::fntSystem, 0, (uint8_t*)currentPreset.comment);
 	DisplayTask->SymbolOut(86, 0, TDisplayTask::fntSystem, 0, 46);
 	DisplayTask->SymbolOut(86, 1, TDisplayTask::fntSystem, 0, 46);
 	DisplayTask->StringOut(0, 2, TDisplayTask::fntSystem, 0, (uint8_t*)ascii_low);
@@ -40,11 +42,11 @@ void NameEditMenu::task()
 {
 	if(nameCursorPos < 14)
 	{
-		DisplayTask->SymbolOut(nameCursorPos*6+2, 0,TDisplayTask::fntSystem, blinkFlag_fl*2-encoderKnobPressed, presetName[nameCursorPos]);
+		DisplayTask->SymbolOut(nameCursorPos*6+2, 0,TDisplayTask::fntSystem, blinkFlag_fl*2-encoderKnobPressed, currentPreset.name[nameCursorPos]);
 	}
 	else
 	{
-		DisplayTask->SymbolOut((nameCursorPos-14)*6+2 , 1,TDisplayTask::fntSystem, blinkFlag_fl*2-encoderKnobPressed, presetComment[(nameCursorPos-14)]);
+		DisplayTask->SymbolOut((nameCursorPos-14)*6+2 , 1,TDisplayTask::fntSystem, blinkFlag_fl*2-encoderKnobPressed, currentPreset.comment[(nameCursorPos-14)]);
 	}
 
 	if(encoderKnobPressed)
@@ -63,21 +65,21 @@ void NameEditMenu::encoderPressed()
 	if(!encoderKnobPressed)
 	{
 		encoderKnobPressed = 1;
-		if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem, 1, presetName[nameCursorPos]);
-		else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, TDisplayTask::fntSystem, 1, presetComment[nameCursorPos-14]);
+		if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem, 1, currentPreset.name[nameCursorPos]);
+		else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, TDisplayTask::fntSystem, 1, currentPreset.comment[nameCursorPos-14]);
 	}
 	else
 	{
 		encoderKnobPressed = 0;
 		if(nameCursorPos < 14)
 		{
-			presetName[nameCursorPos] = symbol;
-			DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem, 0, presetName[nameCursorPos]);
+			currentPreset.name[nameCursorPos] = symbol;
+			DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem, 0, currentPreset.name[nameCursorPos]);
 		}
 		else
 		{
-			presetComment[nameCursorPos-14] = symbol;
-			DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, TDisplayTask::fntSystem, 0, presetComment[nameCursorPos-14]);
+			currentPreset.comment[nameCursorPos-14] = symbol;
+			DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, TDisplayTask::fntSystem, 0, currentPreset.comment[nameCursorPos-14]);
 		}
 
 		const uint8_t* symbolChart;
@@ -96,8 +98,8 @@ void NameEditMenu::encoderClockwise()
 	{
 		if(nameCursorPos < 27)
 		{
-			if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem, 0, presetName[nameCursorPos++]);
-			else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, TDisplayTask::fntSystem, 0, presetComment[(nameCursorPos++ -14)]);
+			if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem, 0, currentPreset.name[nameCursorPos++]);
+			else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, TDisplayTask::fntSystem, 0, currentPreset.comment[(nameCursorPos++ -14)]);
 		}
 	}
 	else
@@ -128,8 +130,8 @@ void NameEditMenu::encoderCounterClockwise()
 	{
 		if(nameCursorPos > 0)
 		{
-			if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem, 0, presetName[nameCursorPos--]);
-			else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1,TDisplayTask::fntSystem, 0, presetComment[(nameCursorPos-- -14)]);
+			if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem, 0, currentPreset.name[nameCursorPos--]);
+			else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1,TDisplayTask::fntSystem, 0, currentPreset.comment[(nameCursorPos-- -14)]);
 		}
 	}
 	else
@@ -165,13 +167,13 @@ void NameEditMenu::keyDown()
 	{
 		if(nameCursorPos < 14)
 		{
-			presetName[nameCursorPos] = 32;
-			DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem,1, presetName[nameCursorPos]);
+			currentPreset.name[nameCursorPos] = 32;
+			DisplayTask->SymbolOut(nameCursorPos*6+2, 0, TDisplayTask::fntSystem,1, currentPreset.name[nameCursorPos]);
 		}
 		else
 		{
-			presetComment[nameCursorPos-14] = 32;
-			DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, TDisplayTask::fntSystem,1, presetComment[nameCursorPos-14]);
+			currentPreset.comment[nameCursorPos-14] = 32;
+			DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, TDisplayTask::fntSystem,1, currentPreset.comment[nameCursorPos-14]);
 		}
 	}
 	else

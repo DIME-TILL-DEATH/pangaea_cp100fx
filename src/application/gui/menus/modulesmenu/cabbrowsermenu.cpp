@@ -11,6 +11,8 @@
 #include "cc.h"
 #include "BF706_send.h"
 
+#include "preset.h"
+
 extern uint8_t sd_init_fl;
 extern volatile uint8_t imp_dir_fl;
 
@@ -74,8 +76,8 @@ void CabBrowserMenu::keyUp()
 //		if(name_buf[0]==0)
 //		{
 //			gui_send(16, 0);
-//			vol_vol = presetData[pres_lev];
-//			DisplayTask->ParamIndicNum(42, 3, presetData[pres_lev]);
+//			vol_vol = currentPreset.modules.rawData[pres_lev];
+//			DisplayTask->ParamIndicNum(42, 3, currentPreset.modules.rawData[pres_lev]);
 //			//??????????? Почему в MainMenu??????
 //			//return_to_main_menu without clean flag
 //
@@ -84,13 +86,13 @@ void CabBrowserMenu::keyUp()
 //			DisplayTask->Menu_init();
 //			tim5_start(0);
 //
-//			presetData[cab] = 0;
-//			gui_send(18, 0|(presetData[cab]<<8));
+//			currentPreset.modules.rawData[cab] = 0;
+//			gui_send(18, 0|(currentPreset.modules.rawData[cab]<<8));
 //		}
 //		else
 //		{
 			gui_send(16, 0);
-			vol_ind_level_pos = presetData[IR_VOLUME1];
+			vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME1];
 			gui_send(7, 0);
 
 			topLevelMenu->returnFromChildMenu();
@@ -100,7 +102,7 @@ void CabBrowserMenu::keyUp()
 	{
 		gui_send(17, 0);
 
-		vol_ind_level_pos = presetData[IR_VOLUME2];
+		vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME2];
 		gui_send(7, 3);
 
 		topLevelMenu->returnFromChildMenu();
@@ -131,8 +133,8 @@ void CabBrowserMenu::encoderPressed()
 
 //			if(name_buf[0]==0)
 //			{
-//				vol_vol = presetData[pres_lev];
-//				DisplayTask->ParamIndicNum(42, 3, presetData[pres_lev]);
+//				vol_vol = currentPreset.modules.rawData[pres_lev];
+//				DisplayTask->ParamIndicNum(42, 3, currentPreset.modules.rawData[pres_lev]);
 //				// return to main menu without clean flag
 //				encoder_knob_selected = 0;
 //				DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
@@ -140,12 +142,12 @@ void CabBrowserMenu::encoderPressed()
 //				DisplayTask->Menu_init();
 //				tim5_start(0);
 //				//
-//				presetData[cab] = 0;
-//				gui_send(18, 0|(presetData[cab]<<8));
+//				currentPreset.modules.rawData[cab] = 0;
+//				gui_send(18, 0|(currentPreset.modules.rawData[cab]<<8));
 //
 //			}
 
-			vol_ind_level_pos = presetData[vol];
+			vol_ind_level_pos = currentPreset.modules.rawData[vol];
 			gui_send(7, 0);
 
 		}
@@ -155,7 +157,7 @@ void CabBrowserMenu::encoderPressed()
 			send_cab_data1(0, 0);
 			kgp_sdk_libc::memcpy(cab2_name_buf, name_buf_temp, 64);
 
-			vol_ind_level_pos = presetData[IR_VOLUME2];
+			vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME2];
 			gui_send(7, 3);
 		}
 

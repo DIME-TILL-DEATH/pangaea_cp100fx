@@ -61,7 +61,7 @@ extern volatile uint8_t pc_mute_fl;
 void prog_ch(void)
 {
 	gui_send(32, currentPresetNumber);
-	eepr_read_prog_data(currentPresetNumber);
+//	eepr_read_prog_data(currentPresetNumber);
 	eepr_read_prog(currentPresetNumber);
 	pc_mute_fl = 0;
 
@@ -70,8 +70,8 @@ void prog_ch(void)
 
 	for(uint8_t i = 0; i<3; i++)
 	{
-		contr_kn[i] = presetData[fo1+i];
-		contr_kn1[i] = presetData[fo11+i];
+		contr_kn[i] = currentPreset.modules.rawData[fo1+i];
+		contr_kn1[i] = currentPreset.modules.rawData[fo11+i];
 	}
 	if((sys_para[FSW1_PRESS_TYPE]==1) || ((sys_para[FSW1_HOLD_TYPE]==1) && sys_para[FSW1_MODE] == Footswitch::Double))
 		DisplayTask->IndFoot(0, contr_kn[0]);
@@ -195,10 +195,10 @@ uint8_t tap_temp_global(void)
 			gui_send(33, tap_global/3);
 			moog_time = tap_global/3.0f;
 			gui_send(31, 13);
-			delay_time = tap_global/3.0f/tap_time_coefs[presetData[d_tap_t]];
+			delay_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[d_tap_t]];
 			if(delay_time<2731)
 				gui_send(3, 1);
-			trem_time = tap_global/3.0f/tap_time_coefs[presetData[t_tap_t]];
+			trem_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[t_tap_t]];
 			if(trem_time<2731)
 				gui_send(10, 5);
 		}

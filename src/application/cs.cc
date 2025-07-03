@@ -1,16 +1,18 @@
-#include "appdefs.h"
 #include "cs.h"
+
+#include "appdefs.h"
 #include "cc.h"
 #include "init.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "fs.h"
 #include "eepr.h"
 #include "display.h"
 #include "enc.h"
 #include "BF706_send.h"
-#include "filter.h"
 
-#include "gui/menus/mainmenu.h"
+#include "mainmenu.h"
+
+#include "preset.h"
 
 float m_vol = 1.0;
 float p_vol = 1.0;
@@ -111,8 +113,8 @@ void TCSTask::Code()
 	DisplayTask->Prog_ind(preselectedPresetNumber);
     for(uint8_t i = 0 ; i < 3 ; i++)
     {
-    	contr_kn[i] = presetData[fo1 + i];
-    	contr_kn1[i] = presetData[fo11 + i];
+    	contr_kn[i] = currentPreset.modules.rawData[fo1 + i];
+    	contr_kn1[i] = currentPreset.modules.rawData[fo11 + i];
     }
 	if((sys_para[FSW1_PRESS_TYPE] == 1) || ((sys_para[FSW1_HOLD_TYPE] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
 	if((sys_para[FSW2_PRESS_TYPE] == 1) || ((sys_para[FSW2_HOLD_TYPE] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);

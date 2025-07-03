@@ -1,18 +1,11 @@
-/*
- * console_helpers.h
- *
- *  Created on: Jun 2, 2025
- *      Author: dime
- */
-
 #ifndef SRC_APPLICATION_CONSOLE_CONSOLE_HELPERS_H_
 #define SRC_APPLICATION_CONSOLE_CONSOLE_HELPERS_H_
 
 #include "appdefs.h"
 
-#include "../gui/gui_task.h"
+#include "gui_task.h"
 
-extern uint8_t presetData[];
+#include "preset.h"
 
 static const char hexes[] = "0123456789abcdef";
 
