@@ -10,16 +10,15 @@ enum
 	CAB_SIM_CONFIG,
 	EXPRESSION_TYPE,
 
-	/*type foot sw*/
-	fs1, fs2, fs3,
+	FSW1_PRESS_TYPE, FSW2_PRESS_TYPE, FSW3_PRESS_TYPE,
 
 	/*calibration*/
 	EXPR_CAL_MIN_HI, EXPR_CAL_MIN_LO, EXPR_CAL_MAX_HI, EXPR_CAL_MAX_LO,
 
-	/*preset map to foot sw*/
-	pr11, pr12, pr13, pr14,
-	pr21, pr22, pr23, pr24,
-	pr31, pr32, pr33, pr34,
+	/*preset map to foot press*/
+	FSW1_PRESS_PR1, FSW1_PRESS_PR2, FSW1_PRESS_PR3, FSW1_PRESS_PR4,
+	FSW2_PRESS_PR1, FSW2_PRESS_PR2, FSW2_PRESS_PR3, FSW2_PRESS_PR4,
+	FSW3_PRESS_PR1, FSW3_PRESS_PR2, FSW3_PRESS_PR3, FSW3_PRESS_PR4,
 
 	SPDIF_OUT_TYPE,
 
@@ -27,19 +26,19 @@ enum
 	EXP_CCN,
 	k1_cc, k2_cc, k3_cc,
 
-	/*service*/midi_pc_ind,
+	midi_pc_ind, /*service*/
 	/*31 - last num preset*/
 
 	/*FSW button mode*/
 	FSW1_MODE = 32, FSW2_MODE, FSW3_MODE,
 
-	/*type foot sw1*/
-	fs11, fs21, fs31,
+	FSW1_HOLD_TYPE, FSW2_HOLD_TYPE, FSW3_HOLD_TYPE,
 
-	/*preset map to foot sw1*/
-	pr111, pr121, pr131, pr141,
-	pr211, pr221, pr231, pr241,
-	pr311, pr321, pr331, pr341,
+	/*preset map to foot hold*/
+	FSW1_HOLD_PR1, FSW1_HOLD_PR2, FSW1_HOLD_PR3, FSW1_HOLD_PR4,
+	FSW2_HOLD_PR1, FSW2_HOLD_PR2, FSW2_HOLD_PR3, FSW2_HOLD_PR4,
+	FSW3_HOLD_PR1, FSW3_HOLD_PR2, FSW3_HOLD_PR3, FSW3_HOLD_PR4,
+
 	k11_cc, k21_cc, k31_cc,
 
 	TAP_TYPE,
@@ -83,7 +82,7 @@ extern uint8_t presetComment[];
 extern const uint8_t imya_init[];
 extern uint8_t imya_t[];
 extern uint8_t imya1_t[];
-extern uint8_t presetControllers[];
+//extern uint8_t currentPreset.controllerArray[];
 extern uint8_t sys_para[];
 extern uint8_t imp_buf_uint[];
 extern char cab1_name_buf[];

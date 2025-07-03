@@ -29,6 +29,8 @@ private:
 	TSemaphore *sem;
 };
 
+void controllerSetData(uint8_t adr, uint8_t data);
+
 extern volatile uint8_t midi_b[3];
 extern uint8_t mid_fl;
 extern uint8_t ext_fl;

@@ -8,8 +8,11 @@
 #include "display.h"
 #include "sd_test.h"
 #include "midi_send.h"
-#include "gui/elements/allFonts.h"
-#include "gui/gui_task.h"
+#include "allFonts.h"
+
+#include "gui_task.h"
+
+#include "footswitch.h"
 
 void start_usb();
 
@@ -162,15 +165,15 @@ void foot_run(uint8_t num)
 	}
 	else
 	{
-		switch(sys_para[fs1+num])
+		switch(sys_para[FSW1_PRESS_TYPE+num])
 		{
-			case 0:
+			case Footswitch::Default:
 				if(currentMenu->menuType()==MENU_MAIN)
 				{
 					switch(num)
 					{
 						case 0:
-							if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
+							if((sys_para[FSW2_PRESS_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_PRESS_TYPE]&&sys_para[SWAP_SWITCH]))
 							{
 								if(preselectedPresetNumber==0)
 									preselectedPresetNumber = 98;
@@ -194,7 +197,7 @@ void foot_run(uint8_t num)
 							}
 							else
 							{
-								if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
+								if((sys_para[FSW2_PRESS_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_PRESS_TYPE]&&sys_para[SWAP_SWITCH]))
 								{
 									if(preselectedPresetNumber==98)
 										preselectedPresetNumber = 0;
@@ -214,7 +217,7 @@ void foot_run(uint8_t num)
 						case 2:
 							if(!sys_para[SWAP_SWITCH])
 							{
-								if((sys_para[fs2]&&!sys_para[SWAP_SWITCH])||(sys_para[fs3]&&sys_para[SWAP_SWITCH]))
+								if((sys_para[FSW2_PRESS_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_PRESS_TYPE]&&sys_para[SWAP_SWITCH]))
 								{
 									if(preselectedPresetNumber==98)
 										preselectedPresetNumber = 0;
@@ -239,7 +242,7 @@ void foot_run(uint8_t num)
 					}
 				}
 			break;
-			case 1:
+			case Footswitch::Controller:
 				if(!contr_kn[num])
 				{
 					contr_kn[num] = presetData[fo1+num] = 1;
@@ -258,20 +261,21 @@ void foot_run(uint8_t num)
 				ext_fl = 1;
 				CCTask->Give();
 			break;
-			case 2:
+			case Footswitch::Tuner:
 				k_tuner = 1;
 				CSTask->Give();
 			break;
-			default:
+
+			default: // Preset maps
 				if(currentMenu->menuType()==MENU_MAIN)
 				{
 					if(num_key_prog==num)
 						contr_pr[num]++;
-					if(contr_pr[num]>(sys_para[fs1+num]-3))
+					if(contr_pr[num]>(sys_para[FSW1_PRESS_TYPE+num]-3))
 						contr_pr[num] = 0;
-					preselectedPresetNumber = sys_para[pr11+num*4+contr_pr[num]];
+					preselectedPresetNumber = sys_para[FSW1_PRESS_PR1+num*4+contr_pr[num]];
 					num_key_prog = num;
-					if(sys_para[fs2])
+					if(sys_para[FSW2_PRESS_TYPE])
 					{
 						if(!sys_para[FSW2_MODE])
 						{
@@ -280,7 +284,7 @@ void foot_run(uint8_t num)
 						}
 						else
 						{
-							if(sys_para[fs21])
+							if(sys_para[FSW2_HOLD_TYPE]) //?????????
 							{
 								currentPresetNumber = preselectedPresetNumber;
 								encoder_knob_pressed = 1;
@@ -314,7 +318,7 @@ void foot_run1(uint8_t num)
 	}
 	else
 	{
-		switch(sys_para[fs11+num])
+		switch(sys_para[FSW1_HOLD_TYPE+num])
 		{
 			case 0:
 				if(currentMenu->menuType()==MENU_MAIN)
@@ -322,14 +326,14 @@ void foot_run1(uint8_t num)
 					switch(num)
 					{
 						case 0:
-							if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
+							if((sys_para[FSW2_HOLD_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_HOLD_TYPE]&&sys_para[SWAP_SWITCH]))
 							{
 								if(preselectedPresetNumber==0)
 									preselectedPresetNumber = 98;
 								else
 									preselectedPresetNumber -= 1;
 								encoder_knob_pressed = 1;
-								 currentPresetNumber = preselectedPresetNumber;
+								currentPresetNumber = preselectedPresetNumber;
 							}
 							else
 							{
@@ -346,7 +350,7 @@ void foot_run1(uint8_t num)
 							}
 							else
 							{
-								if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
+								if((sys_para[FSW2_HOLD_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_HOLD_TYPE]&&sys_para[SWAP_SWITCH]))
 								{
 									if(preselectedPresetNumber==98)
 										preselectedPresetNumber = 0;
@@ -366,7 +370,7 @@ void foot_run1(uint8_t num)
 						case 2:
 							if(!sys_para[SWAP_SWITCH])
 							{
-								if((sys_para[fs21]&&!sys_para[SWAP_SWITCH])||(sys_para[fs31]&&sys_para[SWAP_SWITCH]))
+								if((sys_para[FSW2_HOLD_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_HOLD_TYPE]&&sys_para[SWAP_SWITCH]))
 								{
 									if(preselectedPresetNumber==98)
 										preselectedPresetNumber = 0;
@@ -399,8 +403,10 @@ void foot_run1(uint8_t num)
 				}
 				else
 					ext_data = contr_kn1[num] = presetData[fo11+num] = 0;
+
 				if(currentMenu->menuType()==MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn1[num]);
+
 				if(sys_para[k11_cc+num])
 				{
 					MidiSendTask->key_midi_start1(num, contr_kn1[num]+1);
@@ -417,10 +423,11 @@ void foot_run1(uint8_t num)
 			default:
 				if(currentMenu->menuType()==MENU_MAIN)
 				{
-					if(contr_pr[num]>(sys_para[fs11+num]-3))
+					if(contr_pr[num] > (sys_para[FSW1_HOLD_TYPE + num] - 3))
 						contr_pr[num] = 0;
-					preselectedPresetNumber = sys_para[pr111+num*4+contr_pr[num]++];
-					if(sys_para[fs21]) // && !sys_para[fsm2]
+					preselectedPresetNumber = sys_para[FSW1_HOLD_PR1+num*4+contr_pr[num]++];
+
+					if(sys_para[FSW2_HOLD_TYPE]) // && !sys_para[fsm2]
 					{
 						if(!sys_para[FSW2_MODE])
 						{
@@ -429,7 +436,7 @@ void foot_run1(uint8_t num)
 						}
 						else
 						{
-							if(sys_para[fs2])
+							if(sys_para[FSW2_PRESS_TYPE]) ////??????
 							{
 								 currentPresetNumber = preselectedPresetNumber;
 								encoder_knob_pressed = 1;
@@ -562,7 +569,7 @@ void TENCTask::Code()
 		}
 		if(key_reg==31212)
 		{
-			if(sys_para[FSW1_MODE])
+			if(sys_para[FSW1_MODE] == Footswitch::Double)
 			{
 				if(fsw1_in_fl)
 				{
@@ -573,7 +580,7 @@ void TENCTask::Code()
 					fsw1_in_fl = 0;
 				}
 			}
-			if(sys_para[FSW2_MODE])
+			if(sys_para[FSW2_MODE] == Footswitch::Double)
 			{
 				if(fsw2_in_fl)
 				{
@@ -584,7 +591,7 @@ void TENCTask::Code()
 					fsw2_in_fl = 0;
 				}
 			}
-			if(sys_para[FSW3_MODE])
+			if(sys_para[FSW3_MODE] == Footswitch::Double)
 			{
 				if(fsw3_in_fl)
 				{

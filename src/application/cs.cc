@@ -114,9 +114,9 @@ void TCSTask::Code()
     	contr_kn[i] = presetData[fo1 + i];
     	contr_kn1[i] = presetData[fo11 + i];
     }
-	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
-	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
-	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
+	if((sys_para[FSW1_PRESS_TYPE] == 1) || ((sys_para[FSW1_HOLD_TYPE] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
+	if((sys_para[FSW2_PRESS_TYPE] == 1) || ((sys_para[FSW2_HOLD_TYPE] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
+	if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
 	send_codec(0xa301);
    	ENCTask->SetEnc(1);
 

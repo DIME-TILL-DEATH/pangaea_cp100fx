@@ -16,11 +16,24 @@ public:
 	void encoderCounterClockwise() override;
 
 private:
+	enum ControllerMenuParams
+	{
+		Controller,
+		Source,
+		Destination,
+		MinValue,
+		MaxValue,
+		PcOut,
+		Set
+	};
+
 	bool m_encoderKnobSelected{false};
 	uint8_t m_parNum{0};
 
 	uint8_t m_controllerNum{0};
 	uint8_t m_controllerDst{0};
+
+	static constexpr uint8_t paramsCount = 7;
 
 	static constexpr uint8_t strControllersMenu[][7] = {"Contr", "Source", "Destin", "MinVal", "MaxVal", "PC Out", "SET"};
 	static constexpr uint8_t strOutPcList[][8] = {"MIDI IN", "  MAP  ", "  SET  "};
@@ -49,7 +62,7 @@ private:
 			/*0*/"Preamp On Off",
 			/*1*/"Amplif On Off", "Amplif Volume", "Amplif Slave ",
 			/*4*/"CabSim On Off", "Equal On Off ",
-			/*6*/"Delay On Off ", "Delay Volume ", "Delay Fedback", "Delay Tap    ",
+			/*6*/"Delay On Off ", "Delay Volume ", "Del. Feedback", "Delay TAP    ",
 			/*10*/"Phaser On Off", "Phaser Volume", "Phaser Rate  ",
 			/*13*/"Flanger OnOff", "Flang  Volume", "Flang  Rate  ",
 			/*16*/"Chorus On Off", "Chorus Volume", "Chorus Rate  ",

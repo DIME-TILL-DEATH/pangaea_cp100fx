@@ -2,6 +2,9 @@
 #include "eepr.h"
 #include "fs.h"
 
+#include "controllers.h"
+#include "preset.h"
+
 uint16_t delay_time;
 
 volatile uint8_t currentPresetNumber;
@@ -65,7 +68,7 @@ uint8_t __CCM_BSS__ sys_para[512] =
 uint8_t impulse_path[512];
 
 uint8_t __CCM_BSS__ presetData[512];
-uint8_t __CCM_BSS__ presetControllers[512];
+//uint8_t __CCM_BSS__ currentPreset.controllerArray[512];
 uint8_t __CCM_BSS__ presetName[15];
 uint8_t __CCM_BSS__ presetComment[15];
 
@@ -123,7 +126,11 @@ void eepr_write(uint8_t nu)
 	f_write(&file, presetName, 15, &f_size);
 	f_write(&file, presetComment, 15, &f_size);
 	f_write(&file, presetData, 512, &f_size);
-	f_write(&file, presetControllers, 512, &f_size);
+	f_write(&file, currentPreset.controller, controllersCount * sizeof(Controller::TController), &f_size);
+	f_lseek(&file, f_tell(&file) +  512 - controllersCount * sizeof(Controller::TController) - 2);
+
+	f_write(&file, &currentPreset.pcOut, 2, &f_size);
+
 	uint8_t del_t_b[2];
 	del_t_b[0] = delay_time;
 	del_t_b[1] = delay_time>>8;
@@ -188,7 +195,10 @@ void eepr_read_prog(uint8_t nu)
 		f_read(&file, presetName, 15, &f_size);
 		f_read(&file, presetComment, 15, &f_size);
 		f_lseek(&file, 542);
-		f_read(&file, presetControllers, 512, &f_size);
+		f_read(&file, currentPreset.controller, controllersCount * sizeof(Controller::TController), &f_size);
+		f_lseek(&file, f_tell(&file) + 512 - controllersCount * sizeof(Controller::TController) - 2);
+		f_read(&file, &currentPreset.pcOut, 2, &f_size);
+
 		uint8_t del_t_b[2];
 		f_read(&file, del_t_b, 2, &f_size);
 
@@ -247,9 +257,9 @@ void eepr_read_prog(uint8_t nu)
 			presetComment[i] = imya_init1[i];
 		kgp_sdk_libc::memset(cab1_data, 0, 12288);
 		kgp_sdk_libc::memset(cab2_data, 0, 12288);
-		kgp_sdk_libc::memset(presetControllers, 0, 512);
+		kgp_sdk_libc::memset(currentPreset.controller, 0, controllersCount * sizeof(Controller::TController));
 		for(uint8_t i = 0; i<128; i++)
-			presetControllers[i*4+3] = 127;
+			currentPreset.controller[i].maxVal = 127;
 		delay_time = del_tim_init;
 		cab1_name_buf[0] = cab2_name_buf[0] = 0;
 		cab1_data[0] = 0xff;

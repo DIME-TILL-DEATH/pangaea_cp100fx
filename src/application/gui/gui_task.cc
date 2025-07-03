@@ -13,8 +13,10 @@
 
 #include "modules.h"
 #include "footswitch.h"
+#include "controllers.h"
+#include "preset.h"
 
-#include "menus/abstractmenu.h"
+#include "abstractmenu.h"
 
 const uint8_t expr_menu[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
 
@@ -72,13 +74,13 @@ void prog_ch(void)
 		contr_kn[i] = presetData[fo1+i];
 		contr_kn1[i] = presetData[fo11+i];
 	}
-	if((sys_para[fs1]==1) || ((sys_para[fs11]==1) && sys_para[FSW1_MODE] == Footswitch::Double))
+	if((sys_para[FSW1_PRESS_TYPE]==1) || ((sys_para[FSW1_HOLD_TYPE]==1) && sys_para[FSW1_MODE] == Footswitch::Double))
 		DisplayTask->IndFoot(0, contr_kn[0]);
 
-	if((sys_para[fs2]==1) || ((sys_para[fs21]==1) && sys_para[FSW2_MODE] == Footswitch::Double))
+	if((sys_para[FSW2_PRESS_TYPE]==1) || ((sys_para[FSW2_HOLD_TYPE]==1) && sys_para[FSW2_MODE] == Footswitch::Double))
 		DisplayTask->IndFoot(1, contr_kn[1]);
 
-	if((sys_para[fs3]==1) || ((sys_para[fs31]==1) && sys_para[FSW3_MODE] == Footswitch::Double))
+	if((sys_para[FSW3_PRESS_TYPE]==1) || ((sys_para[FSW3_HOLD_TYPE]==1) && sys_para[FSW3_MODE] == Footswitch::Double))
 		DisplayTask->IndFoot(2, contr_kn[2]);
 
 	if(sys_para[STORE_EXP_LEVEL])
@@ -86,15 +88,15 @@ void prog_ch(void)
 
 	pc_mute_fl = 1;
 	tap_del_fl = tap_trem_fl = tap_moog_fl = 0;
-	for(uint8_t i = 0; i<32; i++)
+	for(uint8_t i = 0; i < controllersCount; i++)
 	{
-		if(presetControllers[i*4])
+		if(currentPreset.controller[i].src != Controller::Src::Off)
 		{
-			if(presetControllers[i*4+1]==9)
+			if(currentPreset.controller[i].dst == Controller::Dst::DelayTap)
 				tap_del_fl = 1;
-			if(presetControllers[i*4+1]==26)
+			if(currentPreset.controller[i].dst == Controller::Dst::TremoloTap)
 				tap_trem_fl = 1;
-			if(presetControllers[i*4+1]==35)
+			if(currentPreset.controller[i].dst == Controller::Dst::RfLFOTAP)
 				tap_moog_fl = 1;
 		}
 	}

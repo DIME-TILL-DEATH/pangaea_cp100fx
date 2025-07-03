@@ -293,31 +293,31 @@ void ind_foot(uint8_t num, uint8_t val)
 	switch(num)
 	{
 		case 0:
-			if(!fsw1_in_fl1&&(sys_para[fs1]==1))
+			if(!fsw1_in_fl1&&(sys_para[FSW1_PRESS_TYPE]==1))
 				ind_foot_proc(0, contr_kn[0]);
-			if(sys_para[FSW1_MODE]&&(sys_para[fs11]==1))
+			if(sys_para[FSW1_MODE]&&(sys_para[FSW1_HOLD_TYPE]==1))
 				ind_foot_proc(7, contr_kn1[0]);
 		break;
 		case 1:
-			if(!fsw2_in_fl1&&(sys_para[fs2]==1))
+			if(!fsw2_in_fl1&&(sys_para[FSW2_PRESS_TYPE]==1))
 			{
 				if(sys_para[FSW2_MODE])
 					ind_foot_proc(57, contr_kn[1]);
 				else
 					ind_foot_proc(60, contr_kn[1]);
 			}
-			if(sys_para[FSW2_MODE]&&(sys_para[fs21]==1))
+			if(sys_para[FSW2_MODE]&&(sys_para[FSW2_HOLD_TYPE]==1))
 				ind_foot_proc(64, contr_kn1[1]);
 		break;
 		case 2:
-			if(!fsw3_in_fl1&&(sys_para[fs3]==1))
+			if(!fsw3_in_fl1&&(sys_para[FSW3_PRESS_TYPE]==1))
 			{
 				if(sys_para[FSW3_MODE])
 					ind_foot_proc(113, contr_kn[2]);
 				else
 					ind_foot_proc(120, contr_kn[2]);
 			}
-			if(sys_para[FSW3_MODE]&&(sys_para[fs31]==1))
+			if(sys_para[FSW3_MODE]&&(sys_para[FSW3_HOLD_TYPE]==1))
 				ind_foot_proc(120, contr_kn1[2]);
 		break;
 	}

@@ -82,14 +82,14 @@ void FswModeMenu::encoderPressed()
 			TFswControls fswControls;
 			if(m_parNum == 1)
 			{
-				fswControls.fs = &sys_para[fs1 + m_fswNumber];
-				fswControls.pr_start = &sys_para[pr11 + m_fswNumber*4];
+				fswControls.fs = &sys_para[FSW1_PRESS_TYPE + m_fswNumber];
+				fswControls.pr_start = &sys_para[FSW1_PRESS_PR1 + m_fswNumber*4];
 				fswControls.k1_cc = &sys_para[k1_cc + m_fswNumber];
 			}
 			else if(m_parNum == 2)
 			{
-				fswControls.fs = &sys_para[fs11 + m_fswNumber];
-				fswControls.pr_start = &sys_para[pr111 + m_fswNumber*4];
+				fswControls.fs = &sys_para[FSW1_HOLD_TYPE + m_fswNumber];
+				fswControls.pr_start = &sys_para[FSW1_HOLD_PR1 + m_fswNumber*4];
 				fswControls.k1_cc = &sys_para[k11_cc + m_fswNumber];
 			}
 			shownChildMenu = new FswControlMenu(this, fswControls);

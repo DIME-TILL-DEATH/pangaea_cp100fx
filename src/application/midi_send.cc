@@ -8,6 +8,8 @@
 #include "BF706_send.h"
 #include "gui/elements/allFonts.h"
 
+#include "preset.h"
+
 TMidiSendTask *MidiSendTask;
 
 inline void uart_send(uint8_t val)
@@ -168,24 +170,29 @@ void TMidiSendTask::Code()
 				{
 					send_bank();
 				}
+
 				uart_send(0xc0|sys_para[MIDI_CHANNEL]);
-				switch(presetControllers[510])
+				switch(currentPreset.pcOut)
 				{
-					case 0:
+					case Preset::PcOutType::MidiIn:
 						if(midi_f1)
 							uart_send(pc_in);
 						else
 							uart_send(currentPresetNumber);
 					break;
-					case 1:
+
+					case Preset::PcOutType::Map:
 						uart_send(sys_para[currentPresetNumber+128]);
 					break;
-					case 2:
-						uart_send(presetControllers[511]&0x7f);
+
+					case Preset::PcOutType::Set:
+						uart_send(currentPreset.set & 0x7f);
 					break;
 				}
+
 				if((data[0]&0xf0)!=0xc0)
 					uart_send(data[0]);
+
 				program_change_midi = 0;
 				midi_f1 = 0;
 			}

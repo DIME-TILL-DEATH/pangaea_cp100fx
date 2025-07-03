@@ -47,9 +47,9 @@ void MainMenu::show(TShowMode swhoMode)
 	DisplayTask->Main_scr();
 	DisplayTask->Prog_ind(preselectedPresetNumber);
 
-	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0, contr_kn[0]);
-	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1, contr_kn[1]);
-	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2, contr_kn[2]);
+	if((sys_para[FSW1_PRESS_TYPE] == 1) || ((sys_para[FSW1_HOLD_TYPE] == 1) && sys_para[FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0, contr_kn[0]);
+	if((sys_para[FSW2_PRESS_TYPE] == 1) || ((sys_para[FSW2_HOLD_TYPE] == 1) && sys_para[FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1, contr_kn[1]);
+	if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2, contr_kn[2]);
 }
 
 void MainMenu::task()
@@ -59,7 +59,7 @@ void MainMenu::task()
 		if(blinkFlag_fl == 0)
 		{
 			DisplayTask->Prog_ind(preselectedPresetNumber);
-			if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))
+			if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))
 			{
 				DisplayTask->IndFoot(2, contr_kn[2]);
 			}
@@ -69,7 +69,7 @@ void MainMenu::task()
 			if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update) == 1)
 			{
 				DisplayTask->Clear_str(87 , 0 , TDisplayTask::fnt33x30 , 39);
-				if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))
+				if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))
 				{
 					DisplayTask->IndFoot(2,contr_kn[2]);
 				}
@@ -99,10 +99,10 @@ void MainMenu::encoderClockwise()
 	eepr_read_imya(preselectedPresetNumber);
 	imya_temp = 1;
 	DisplayTask->Main_scr();
-	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
-	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
+	if((sys_para[FSW1_PRESS_TYPE] == 1) || ((sys_para[FSW1_HOLD_TYPE] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
+	if((sys_para[FSW2_PRESS_TYPE] == 1) || ((sys_para[FSW2_HOLD_TYPE] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
 	DisplayTask->Prog_ind(preselectedPresetNumber);
-	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
+	if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
 
 	tim5_start(0);
 	TIM_SetCounter(TIM6,0x8000);
@@ -118,11 +118,11 @@ void MainMenu::encoderCounterClockwise()
 	eepr_read_imya(preselectedPresetNumber);
 	imya_temp = 1;
 	DisplayTask->Main_scr();
-	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
-	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
+	if((sys_para[FSW1_PRESS_TYPE] == 1) || ((sys_para[FSW1_HOLD_TYPE] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
+	if((sys_para[FSW2_PRESS_TYPE] == 1) || ((sys_para[FSW2_HOLD_TYPE] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
 
 	DisplayTask->Prog_ind(preselectedPresetNumber);
-	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
+	if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
 
 	TIM_SetCounter(TIM6,0xa000);
 	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
