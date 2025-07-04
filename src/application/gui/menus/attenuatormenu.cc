@@ -59,29 +59,34 @@ void AttenuatorMenu::keyUp()
 void AttenuatorMenu::key1()
 {
 	write_sys();
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	topLevelMenu->returnFromChildMenu();
 }
 
 void AttenuatorMenu::key2()
 {
 	write_sys();
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	topLevelMenu->key2();
 }
 
 void AttenuatorMenu::key3()
 {
 	write_sys();
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	topLevelMenu->key3();
 }
 
 void AttenuatorMenu::key4()
 {
 	write_sys();
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	topLevelMenu->key4();
 }
 
 void AttenuatorMenu::key5()
 {
 	write_sys();
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	topLevelMenu->key5();
 }
