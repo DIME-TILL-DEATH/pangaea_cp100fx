@@ -91,8 +91,7 @@ void MasterEqMenu::task()
 
 	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
-								blinkFlag_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem, blinkFlag_fl * 2, m_paramsList[m_currentParamNum]->name());
 	}
 }
 

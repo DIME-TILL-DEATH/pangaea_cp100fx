@@ -105,7 +105,6 @@ void write_sys(void)
 	sys_para[MASTER_EQ_FREQ_LO] = (mstEqMidFreq>>8) & 0xF;
 	sys_para[MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xF;
 
-
 	FATFS fs;
 	FIL file;
 	UINT f_size;
@@ -130,13 +129,6 @@ void eepr_write(uint8_t nu)
 	f_open(&file, fna, FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
 
 	f_write(&file, &currentPreset, sizeof(Preset::TPreset), &f_size);
-//	f_write(&file, presetName, 15, &f_size);
-//	f_write(&file, presetComment, 15, &f_size);
-//	f_write(&file, currentPreset.modules.rawData, 512, &f_size);
-//	f_write(&file, currentPreset.controller, controllersCount * sizeof(Controller::TController), &f_size);
-//	f_lseek(&file, f_tell(&file) +  512 - controllersCount * sizeof(Controller::TController) - 2);
-//
-//	f_write(&file, &currentPreset.pcOut, 2, &f_size);
 
 	uint8_t del_t_b[2];
 	del_t_b[0] = delay_time;
@@ -159,29 +151,6 @@ void eepr_write(uint8_t nu)
 	f_close(&file);
 	f_mount(0, "1:", 0);
 }
-//void eepr_read_prog_data(uint8_t nu)
-//{
-//	nu++;
-//	FRESULT fs_res;
-//	FATFS fs;
-//	FIL file;
-//	UINT f_size;
-//	if(nu<10)
-//		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)nu);
-//	else
-//		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
-//	f_mount(&fs, "1:", 1);
-//	fs_res = f_open(&file, fna, FA_READ);
-//	if(fs_res==FR_OK)
-//	{
-//		f_lseek(&file, 30);
-//		f_read(&file, currentPreset.modules.rawData, 512, &f_size);
-//	}
-//	else
-//		for(uint16_t i = 0; i<512; i++)
-//			currentPreset.modules.rawData[i] = prog_data_init[i];
-//	f_close(&file);
-//}
 
 void eepr_read_prog(uint8_t nu)
 {
@@ -199,13 +168,9 @@ void eepr_read_prog(uint8_t nu)
 	fs_res = f_open(&file, fna, FA_READ);
 	if(fs_res==FR_OK)
 	{
+		kgp_sdk_libc::memset(&currentPreset, 0, sizeof(Preset::TPreset));
+
 		f_read(&file, &currentPreset, sizeof(Preset::TPreset), &f_size);
-//		f_read(&file, presetName, 15, &f_size);
-//		f_read(&file, presetComment, 15, &f_size);
-//		f_lseek(&file, 542);
-//		f_read(&file, currentPreset.controller, controllersCount * sizeof(Controller::TController), &f_size);
-//		f_lseek(&file, f_tell(&file) + 512 - controllersCount * sizeof(Controller::TController) - 2);
-//		f_read(&file, &currentPreset.pcOut, 2, &f_size);
 
 		uint8_t del_t_b[2];
 		f_read(&file, del_t_b, 2, &f_size);

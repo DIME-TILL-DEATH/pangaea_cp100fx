@@ -3,6 +3,9 @@
 #include "appdefs.h"
 #include "gui/gui_task.h"
 
+#include "mainmenu.h"
+#include "usbmenu.h"
+
 class TCSTask: public TTask
 {
 public:
@@ -66,5 +69,8 @@ extern float m_vol;
 extern float p_vol;
 extern uint8_t midi_clk_flag;
 extern TCSTask *CSTask;
+
+extern MainMenu* mainMenu;
+extern UsbMenu* usbMenu;
 
 #endif /*__CS_H__*/

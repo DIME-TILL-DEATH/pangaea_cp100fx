@@ -24,10 +24,11 @@ enum
 
 	/*num CC to express and foot*/
 	EXP_CCN,
-	k1_cc, k2_cc, k3_cc,
+	FSW1_CTRL_PRESS_CC, FSW2_CTRL_PRESS_CC, FSW3_CTRL_PRESS_CC,
 
-	midi_pc_ind, /*service*/
-	/*31 - last num preset*/
+	MIDI_PC_IND, /*service*/
+
+	LAST_PRESET_NUM = 31,
 
 	/*FSW button mode*/
 	FSW1_MODE = 32, FSW2_MODE, FSW3_MODE,
@@ -39,7 +40,7 @@ enum
 	FSW2_HOLD_PR1, FSW2_HOLD_PR2, FSW2_HOLD_PR3, FSW2_HOLD_PR4,
 	FSW3_HOLD_PR1, FSW3_HOLD_PR2, FSW3_HOLD_PR3, FSW3_HOLD_PR4,
 
-	k11_cc, k21_cc, k31_cc,
+	FSW1_CTRL_HOLD_CC, FSW2_CTRL_HOLD_CC, FSW3_CTRL_HOLD_CC,
 
 	TAP_TYPE,
 	TUNER_EXTERNAL,

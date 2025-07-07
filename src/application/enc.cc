@@ -10,6 +10,8 @@
 #include "midi_send.h"
 #include "allFonts.h"
 
+#include "usb.h"
+
 #include "gui_task.h"
 
 #include "preset.h"
@@ -253,7 +255,7 @@ void foot_run(uint8_t num)
 					ext_data = contr_kn[num] = currentPreset.modules.rawData[fo1+num] = 0;
 				if(currentMenu->menuType()==MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn[num]);
-				if(sys_para[k1_cc+num])
+				if(sys_para[FSW1_CTRL_PRESS_CC+num])
 				{
 					MidiSendTask->key_midi_start(num, contr_kn[num]+1);
 					MidiSendTask->Give();
@@ -408,12 +410,12 @@ void foot_run1(uint8_t num)
 				if(currentMenu->menuType()==MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn1[num]);
 
-				if(sys_para[k11_cc+num])
+				if(sys_para[FSW1_CTRL_HOLD_CC+num])
 				{
 					MidiSendTask->key_midi_start1(num, contr_kn1[num]+1);
 					MidiSendTask->Give();
 				}
-				ext_sourc = sys_para[k11_cc+num]+4;
+				ext_sourc = sys_para[FSW1_CTRL_HOLD_CC+num]+4;
 				ext_fl = 1;
 				CCTask->Give();
 			break;
@@ -634,26 +636,32 @@ void TENCTask::Code()
 		{
 			if(GPIOA->IDR&GPIO_Pin_9)
 			{
-				void send_codec(uint16_t data);
-				if(usb_connect_type==usb_connect_type_t::msc)
-				{
-					send_codec(0xa102);
-					DSP_gui_set_parameter(DSP_ADDRESS_TUN_PROC, 0, 0);
-				}
 				usb_flag = 1;
-				start_usb();
+
+
+				while(currentMenu->menuType() != MENU_MAIN)
+				{
+					currentMenu->keyUp();
+				}
+
+				usbMenu->show();
 			}
 		}
 		else
 		{
 			if(!(GPIOA->IDR&GPIO_Pin_9))
 			{
-				if(usb_connect_type==usb_connect_type_t::msc)
+//				if(usb_connect_type == TUsbTask::mMSC)
+//				{
 					NVIC_SystemReset();
-				else
-					usb_flag = 2;
+//				}
+//				else
+//				{
+//					currentMenu = mainMenu;
+//					currentMenu->show();
+//					usb_flag = 2;
+//				}
 			}
-
 		}
 //--------------------------------------------------------------------------------------------
 	}

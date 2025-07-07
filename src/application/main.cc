@@ -15,7 +15,7 @@
 #include "spectrum.h"
 #include "midi_send.h"
 
-usb_connect_type_t usb_connect_type;
+#include "usb.h"
 
 extern void (*__preinit_array_start__[])(void);
 extern void (*__preinit_array_end__[])(void);
@@ -98,8 +98,6 @@ extern "C" void vApplicationIdleHook()
 
 void init(void);
 
-//usb_connect_type_t usb_connect_type ;
-
 void pin_usb_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -112,53 +110,11 @@ void pin_usb_init(void)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
-#if 0
-void start_usb()
-{
-   if(1)
-   {
-	   UsbTask =  new TUsbTask(TUsbTask::mCDC) ;
 
-	   ConsoleTask = new TConsoleTask(256) ;
-	   ConsoleTask->SetIo(&cdc_io);
-	   ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0) ;
-	   ConsoleTask->Clear();
-   }
-   else
-	   UsbTask =  new TUsbTask(TUsbTask::mMSC) ;
-
-   UsbTask->Create( "USB" ,    10*configMINIMAL_STACK_SIZE , 0 );
-}
-#endif
-
-void start_usb()
-{
-	if(usb_connect_type==usb_connect_type_t::cdc)
-	{
-		UsbTask = new TUsbTask(TUsbTask::mCDC);
-
-		ConsoleTask = new TConsoleTask(256);
-//		ConsoleTask->Echo(false);
-		ConsoleTask->SetIo(&cdc_io);
-		ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
-//		ConsoleTask->Echo(false);
-		//ConsoleTask->Clear();
-	}
-	else
-		UsbTask = new TUsbTask(TUsbTask::mMSC);
-
-	UsbTask->Create("USB", 10*configMINIMAL_STACK_SIZE, 0);
-}
 
 int main(void)
 {
-
 	pin_usb_init();
-	if(!(GPIOA->IDR&GPIO_Pin_9))
-		usb_connect_type = usb_connect_type_t::cdc;
-	else
-		usb_connect_type = usb_connect_type_t::msc;
-
 	init();
 	sysclock = GetCpuClock();
 

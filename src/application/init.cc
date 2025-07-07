@@ -538,7 +538,7 @@ void eepr_init(void)
 	f_read(&file, sys_para, 512, &file_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
-	if(!sys_para[midi_pc_ind])
+	if(!sys_para[MIDI_PC_IND])
 	{
 		for(uint8_t i = 0; i<128; i++)
 		{
@@ -547,7 +547,7 @@ void eepr_init(void)
 			else
 				sys_para[i+128] = i-99;
 		}
-		sys_para[midi_pc_ind] = 1;
+		sys_para[MIDI_PC_IND] = 1;
 		void write_sys(void);
 		write_sys();
 	}

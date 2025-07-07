@@ -10,18 +10,18 @@ class TUsbTask: public TTask
 {
 public:
 
-	typedef enum
+	enum TMode
 	{
 		mCDC,
 		mMSC
-	} mode_t;
+	};
 
 	TUsbTask();
 	virtual ~TUsbTask()
 	{
 	}
 	;
-	TUsbTask(mode_t val);
+	TUsbTask(TMode val);
 
 	void SendDataCDC(uint8_t *data, size_t len);
 

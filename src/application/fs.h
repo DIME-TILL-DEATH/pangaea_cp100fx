@@ -1,5 +1,5 @@
 #ifndef __FS_H__
-#define __USB_H__
+#define __FS_H__
 
 #include "appdefs.h"
 #include "fs_browser.h"

@@ -11,6 +11,7 @@
 #include "BF706_send.h"
 
 #include "mainmenu.h"
+#include "usbmenu.h"
 
 #include "preset.h"
 
@@ -26,7 +27,7 @@ extern uint8_t led_buf[];
 
 AbstractMenu* currentMenu;
 MainMenu* mainMenu;
-
+UsbMenu* usbMenu;
 
 TCSTask::TCSTask () : TTask()
  {
@@ -126,6 +127,8 @@ void TCSTask::Code()
 	if (DisplayAccess())
 	{
 		mainMenu = new MainMenu();
+		usbMenu = new UsbMenu();
+
 		currentMenu = mainMenu;
 		mainMenu->show();
 	}
@@ -133,7 +136,7 @@ void TCSTask::Code()
    	while(1)
    	{
 		sem->Take(portMAX_DELAY);
-		if (DisplayAccess())
+		if(DisplayAccess())
 		{
 			gui();
 		}
