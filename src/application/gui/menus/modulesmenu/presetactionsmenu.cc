@@ -166,17 +166,17 @@ void PresetActionsMenu::copyPreset()
 			for(uint8_t i = 0; i<6; i++)
 				preset_temp[30+vol+i] = currentPreset.modules.rawData[vol+i];
 			for(uint8_t i = 0; i<64; i++)
-				preset_temp[13344+i] = cab1_name_buf[i];
+				preset_temp[13344+i] = cab1.name[i];
 			for(uint8_t i = 0; i<64; i++)
-				preset_temp[25696+i] = cab2_name_buf[i];
+				preset_temp[25696+i] = cab2.name[i];
 			for(uint16_t i = 0; i<12288; i++)
-				preset_temp[1056+i] = cab1_data[i];
+				preset_temp[1056+i] = cab1.data[i];
 			if(cab_type==2)
 				for(uint16_t i = 0; i<12288; i++)
-					preset_temp[13408+i] = cab2_data[i];
+					preset_temp[13408+i] = cab2.data[i];
 			else
 				for(uint16_t i = 0; i<12288; i++)
-					preset_temp[25760+i] = cab2_data[i];
+					preset_temp[25760+i] = cab2.data[i];
 			for(uint16_t i = 0; i<512; i++)
 				preset_temp[38048+i] = impulse_path[i];
 			send_cab_data(0, targetPresetNum+1, 0);

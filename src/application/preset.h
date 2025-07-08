@@ -4,6 +4,8 @@
 #include "appdefs.h"
 #include "controllers.h"
 
+#define CAB_DATA_SIZE 12288
+
 namespace Preset
 {
 
@@ -240,6 +242,12 @@ typedef union
 
 typedef struct
 {
+	uint8_t data[12288];
+	char name[64];
+}TCabinet;
+
+typedef struct
+{
 	uint8_t name[15];
 	uint8_t comment[15];
 
@@ -257,8 +265,22 @@ typedef struct
 	//uint8_t number;
 }TPreset;
 
+typedef struct
+{
+	uint8_t name[15];
+	uint8_t comment[15];
+
+	TEnableData switches;
+
+	char cab1Name[64];
+	char cab2Name[64];
+}TPresetBrief;
+
+
 }
 
 extern Preset::TPreset currentPreset;
+extern Preset::TCabinet __CCM_BSS__ cab1;
+extern Preset::TCabinet __CCM_BSS__ cab2;
 
 #endif /* SRC_APPLICATION_PRESET_H_ */

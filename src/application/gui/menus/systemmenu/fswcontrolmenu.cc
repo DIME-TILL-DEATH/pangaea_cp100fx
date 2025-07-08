@@ -8,6 +8,8 @@
 
 #include "gui_task.h"
 
+#include "footswitch.h"
+
 const uint8_t FswControlMenu::presetNumPos[4];
 const uint8_t FswControlMenu::strFswType[][12];
 
@@ -106,9 +108,9 @@ void FswControlMenu::encoderClockwise()
 	}
 	else
 	{
-		if(!m_parNum)
+		if(m_parNum == 0)
 		{
-			if(*(m_fswControls.fs)<6) *(m_fswControls.fs) += 1;
+			if(*(m_fswControls.fs) < 6) *(m_fswControls.fs) += 1;
 
 			DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
 			DisplayTask->Clear_str(0, 2, TDisplayTask::fntSystem, 21);
@@ -117,18 +119,20 @@ void FswControlMenu::encoderClockwise()
 		}
 		else
 		{
-			if((*(m_fswControls.fs)==1) && (m_parNum==1))
+			if((*(m_fswControls.fs) == Footswitch::FswType::Controller))
 			{
 				uint8_t a = *(m_fswControls.k1_cc);
 				if(a<128)
 					a = enc_speed_inc(a, 128);
 				*(m_fswControls.k1_cc) = a;
-				if(!a)
+
+				if(a == 0)
 					DisplayTask->StringOut(76, 2, TDisplayTask::fntSystem, 0, "Off");
 				else
 					DisplayTask->ParamIndicNum(76, 2, a-1);
 			}
-			if(*(m_fswControls.fs)>2)
+
+			if(*(m_fswControls.fs) >= Footswitch::FswType::PresetMap1)
 			{
 				uint8_t a = *(m_fswControls.pr_start + m_parNum - 1);
 				a = enc_speed_inc(a, 98);
@@ -179,7 +183,7 @@ void FswControlMenu::encoderCounterClockwise()
 	}
 	else
 	{
-		if((*(m_fswControls.fs)==1) && (m_parNum==1))
+		if((*(m_fswControls.fs) == Footswitch::FswType::Controller))
 		{
 			uint8_t a = *(m_fswControls.k1_cc);
 			if(a>0)
@@ -191,7 +195,7 @@ void FswControlMenu::encoderCounterClockwise()
 			else
 				DisplayTask->ParamIndicNum(76, 2, a-1);
 		}
-		if(*(m_fswControls.fs)>2)
+		if(*(m_fswControls.fs) >= Footswitch::FswType::PresetMap1)
 		{
 
 			int8_t a = *(m_fswControls.pr_start + m_parNum - 1);
@@ -221,7 +225,7 @@ void FswControlMenu::printPage()
 {
 	kgp_sdk_libc::memset(str_temp, 0, 22);
 
-	if(*(m_fswControls.fs) > 2)
+	if(*(m_fswControls.fs) >= Footswitch::FswType::PresetMap1)
 	{
 		uint8_t a = *(m_fswControls.fs)-3;
 
@@ -245,7 +249,7 @@ void FswControlMenu::printPage()
 
 		DisplayTask->StringOut(presetNumPos[a], 2, TDisplayTask::fntSystem, 0, &str_temp[0]);
 	}
-	else if(*(m_fswControls.fs) == 1)
+	else if(*(m_fswControls.fs) == Footswitch::FswType::Controller)
 	{
 		DisplayTask->StringOut(52, 2, TDisplayTask::fntSystem, 0, "CC#");
 

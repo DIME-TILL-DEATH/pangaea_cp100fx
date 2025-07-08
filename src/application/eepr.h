@@ -3,6 +3,8 @@
 
 #include "appdefs.h"
 
+#include "preset.h"
+
 enum
 {
 	CAB_SIM_DISABLED,
@@ -86,8 +88,8 @@ extern uint8_t imya1_t[];
 
 extern uint8_t sys_para[];
 extern uint8_t imp_buf_uint[];
-extern char cab1_name_buf[];
-extern char cab2_name_buf[];
+//extern char cab1.name[];
+//extern char cab2.name[];
 extern char name_buf_temp[];
 extern const uint8_t no_loaded[];
 extern volatile uint16_t adc_low;
@@ -99,7 +101,8 @@ extern uint8_t __CCM_BSS__ preset_temp[];
 
 void write_sys(void);
 void eepr_write(uint8_t nu);
-void eepr_read_prog(uint8_t nu);
+void EEPROM_loadPreset(uint8_t presetNum);
+void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData);
 void eepr_read_imya(uint8_t nu);
 void write_prog_temp(uint8_t nu);
 void read_prog_temp(uint8_t nu);

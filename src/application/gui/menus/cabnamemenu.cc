@@ -32,27 +32,27 @@ void CabNameMenu::task()
 			tim_fl = 1;
 			if((cab_n_fl1)&&cab_type)
 			{
-				if(cab2_name_buf[0])
+				if(cab2.name[0])
 				{
 					DisplayTask->Clear();
 					DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"2 - ");
-					DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab2_name_buf+1);
+					DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab2.name+1);
 					cab_n_fl1 = 0;
 					cab_n_fl2 = 1;
 				}
 			}
 			else
 			{
-				if(cab1_name_buf[0])
+				if(cab1.name[0])
 				{
 					DisplayTask->Clear();
 					if(cab_type==2)
 					{
 						DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"1 - ");
-						DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab1_name_buf+1);
+						DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab1.name+1);
 					}
 					else
-						DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab1_name_buf+1);
+						DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab1.name+1);
 					cab_n_fl1 = 1;
 					cab_n_fl2 = 0;
 				}
@@ -79,14 +79,14 @@ void CabNameMenu::show(TShowMode showMode)
 	{
 		DisplayTask->Clear();
 
-		if(cab1_name_buf[0])
+		if(cab1.name[0])
 		{
 			if(cab_type == 2)
 			{
 				DisplayTask->StringOut(0,0,TDisplayTask::fntSystem,0,(uint8_t*)"1 - ");
-				DisplayTask->StringOut(24,0,TDisplayTask::fntSystem,0,(uint8_t*)cab1_name_buf + 1);
+				DisplayTask->StringOut(24,0,TDisplayTask::fntSystem,0,(uint8_t*)cab1.name + 1);
 			}
-			else DisplayTask->StringOut(0,0,TDisplayTask::fntSystem,0,(uint8_t*)cab1_name_buf + 1);
+			else DisplayTask->StringOut(0,0,TDisplayTask::fntSystem,0,(uint8_t*)cab1.name + 1);
 
 			cab_n_fl1 = 1;
 			cab_n_fl2 = 0;
@@ -96,7 +96,7 @@ void CabNameMenu::show(TShowMode showMode)
 			if(cab_type == 2)
 			{
 				DisplayTask->StringOut(0,0,TDisplayTask::fntSystem,0,(uint8_t*)"2 - ");
-				DisplayTask->StringOut(24,0,TDisplayTask::fntSystem,0,(uint8_t*)cab2_name_buf + 1);
+				DisplayTask->StringOut(24,0,TDisplayTask::fntSystem,0,(uint8_t*)cab2.name + 1);
 				cab_n_fl1 = 0;
 				cab_n_fl2 = 1;
 			}

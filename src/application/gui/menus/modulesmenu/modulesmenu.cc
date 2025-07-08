@@ -227,7 +227,7 @@ void ModulesMenu::iconRefresh(uint8_t num)
 
 void ModulesMenu::enableCab(ModulesMenu* parent)
 {
-	if(cab1_name_buf[0] == 0)
+	if(cab1.name[0] == 0)
 	{
 		kgp_sdk_libc::memset(preset_temp, 0, 24576);
 		kgp_sdk_libc::memset(name_buf_temp, 0, 64);

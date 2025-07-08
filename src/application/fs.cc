@@ -19,8 +19,8 @@ TFSTask::~TFSTask()
 	delete queue;
 }
 
-uint8_t __CCM_BSS__ cab1_data[12288];
-uint8_t __CCM_BSS__ cab2_data[12288];
+//uint8_t __CCM_BSS__ cab1.data[12288];
+//uint8_t __CCM_BSS__ cab2.data[12288];
 uint8_t sd_buf[512];
 bool cab_data_ready;
 //-----------------------------------------------------------------------------------------------------

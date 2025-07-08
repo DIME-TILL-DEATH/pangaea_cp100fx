@@ -282,9 +282,6 @@ void global_temp(uint8_t val)
 	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE] | (sys_para[TAP_HIGH] << 8));
 }
 
-extern uint8_t cab1_data[];
-extern uint8_t cab2_data[];
-
 void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 {
 	uint32_t a;
@@ -353,16 +350,16 @@ void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 		{
 			if(i < 4096)
 			{
-				send_buf = cab1_data[i * 3] << 8;
-				send_buf |= cab1_data[i * 3 + 1] << 16;
-				send_buf |= cab1_data[i * 3 + 2] << 24;
+				send_buf = cab1.data[i * 3] << 8;
+				send_buf |= cab1.data[i * 3 + 1] << 16;
+				send_buf |= cab1.data[i * 3 + 2] << 24;
 			}
 			else
 			{
 				a = i - 4096;
-				send_buf = cab2_data[a * 3] << 8;
-				send_buf |= cab2_data[a * 3 + 1] << 16;
-				send_buf |= cab2_data[a * 3 + 2] << 24;
+				send_buf = cab2.data[a * 3] << 8;
+				send_buf |= cab2.data[a * 3 + 1] << 16;
+				send_buf |= cab2.data[a * 3 + 2] << 24;
 			}
 		}
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
@@ -428,9 +425,9 @@ void send_cab_data1(uint8_t val, uint8_t num)
 		}
 		else
 		{
-			send_buf = cab2_data[i * 3] << 8;
-			send_buf |= cab2_data[i * 3 + 1] << 16;
-			send_buf |= cab2_data[i * 3 + 2] << 24;
+			send_buf = cab2.data[i * 3] << 8;
+			send_buf |= cab2.data[i * 3 + 1] << 16;
+			send_buf |= cab2.data[i * 3 + 2] << 24;
 		}
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
 		{

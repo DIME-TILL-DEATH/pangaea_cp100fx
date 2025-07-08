@@ -71,6 +71,7 @@ void UsbMenu::encoderClockwise()
 	if(m_parNum < 1) m_parNum++;
 
 	DisplayTask->StringOut(20, 1, TDisplayTask::fntSystem, 0, &strUsbMenu[0][0]);
+	tim5_start(0);
 }
 
 void UsbMenu::encoderCounterClockwise()
@@ -80,6 +81,7 @@ void UsbMenu::encoderCounterClockwise()
 	if(m_parNum > 0) m_parNum--;
 
 	DisplayTask->StringOut(20, 2, TDisplayTask::fntSystem, 0, &strUsbMenu[1][0]);
+	tim5_start(0);
 }
 
 void UsbMenu::start_usb()

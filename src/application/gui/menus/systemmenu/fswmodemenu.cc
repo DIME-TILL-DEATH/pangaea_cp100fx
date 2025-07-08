@@ -84,13 +84,13 @@ void FswModeMenu::encoderPressed()
 			{
 				fswControls.fs = &sys_para[FSW1_PRESS_TYPE + m_fswNumber];
 				fswControls.pr_start = &sys_para[FSW1_PRESS_PR1 + m_fswNumber*4];
-				fswControls.k1_cc = &sys_para[k1_cc + m_fswNumber];
+				fswControls.k1_cc = &sys_para[FSW1_CTRL_PRESS_CC + m_fswNumber];
 			}
 			else if(m_parNum == 2)
 			{
 				fswControls.fs = &sys_para[FSW1_HOLD_TYPE + m_fswNumber];
 				fswControls.pr_start = &sys_para[FSW1_HOLD_PR1 + m_fswNumber*4];
-				fswControls.k1_cc = &sys_para[k11_cc + m_fswNumber];
+				fswControls.k1_cc = &sys_para[FSW1_CTRL_HOLD_CC + m_fswNumber];
 			}
 			shownChildMenu = new FswControlMenu(this, fswControls);
 			shownChildMenu->show();
@@ -182,7 +182,7 @@ void FswModeMenu::encoderCounterClockwise()
 		{
 			sys_para[FSW1_MODE + m_fswNumber]--;
 			DisplayTask->Clear_str(10, 2, TDisplayTask::fntSystem, 35);
-			DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, &strModeType[sys_para[FSW1_MODE+m_fswNumber]][0]);
+			DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, &strModeType[sys_para[FSW1_MODE + m_fswNumber]][0]);
 		}
 	}
 

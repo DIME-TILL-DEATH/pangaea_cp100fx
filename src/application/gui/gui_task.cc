@@ -62,7 +62,7 @@ void prog_ch(void)
 {
 	gui_send(32, currentPresetNumber);
 //	eepr_read_prog_data(currentPresetNumber);
-	eepr_read_prog(currentPresetNumber);
+	EEPROM_loadPreset(currentPresetNumber);
 	pc_mute_fl = 0;
 
 	MidiSendTask->prog_ch_midi_start();

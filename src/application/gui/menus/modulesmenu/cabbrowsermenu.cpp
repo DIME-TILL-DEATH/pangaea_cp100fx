@@ -123,13 +123,13 @@ void CabBrowserMenu::encoderPressed()
 
 		if(m_cabNumber==0)
 		{
-			kgp_sdk_libc::memcpy(cab1_data, preset_temp, 12288);
+			kgp_sdk_libc::memcpy(cab1.data, preset_temp, 12288);
 
-			if(cab_type!=2) kgp_sdk_libc::memcpy(cab2_data, preset_temp+12288, 12288);
+			if(cab_type!=2) kgp_sdk_libc::memcpy(cab2.data, preset_temp+12288, 12288);
 
 			send_cab_data(0, 0, 0);
 
-			kgp_sdk_libc::memcpy(cab1_name_buf, name_buf_temp, 64);
+			kgp_sdk_libc::memcpy(cab1.name, name_buf_temp, 64);
 
 //			if(name_buf[0]==0)
 //			{
@@ -153,9 +153,9 @@ void CabBrowserMenu::encoderPressed()
 		}
 		else
 		{
-			kgp_sdk_libc::memcpy(cab2_data, preset_temp, 12288);
+			kgp_sdk_libc::memcpy(cab2.data, preset_temp, 12288);
 			send_cab_data1(0, 0);
-			kgp_sdk_libc::memcpy(cab2_name_buf, name_buf_temp, 64);
+			kgp_sdk_libc::memcpy(cab2.name, name_buf_temp, 64);
 
 			vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME2];
 			gui_send(7, 3);

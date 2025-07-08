@@ -82,11 +82,10 @@ void MainMenu::encoderPressed()
 	currentPresetNumber = preselectedPresetNumber;
 	eepr_read_imya(preselectedPresetNumber);
 	imya_temp = 1;
-	DisplayTask->Main_scr();
-	DisplayTask->Prog_ind(preselectedPresetNumber);
 	sys_para[31] = currentPresetNumber;
 	prog_ch();
 
+	show();
 	tim5_start(1);
 }
 
