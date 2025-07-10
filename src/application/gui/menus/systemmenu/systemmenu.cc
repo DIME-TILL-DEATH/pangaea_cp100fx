@@ -137,7 +137,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 
 	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "MIDI ch", &sys_para[MIDI_CHANNEL]);
 	params[1]->setDisplayPosition(60);
-	params[1]->setBounds(0, 16);
+	params[1]->setBounds(0, 15);
 	params[1]->setScaling(1, 1);
 
 	params[2] = new StringListParam("Cab num", &sys_para[CAB_SIM_CONFIG],
@@ -145,7 +145,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[2]->setDspAddress(DSP_ADDRESS_CAB_CONFIG, PARAM_EQUAL_POS);
 	params[2]->setDisplayPosition(60);
 
-	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Expression", &sys_para[EXPRESSION_TYPE]);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Expression", &sys_para[EXPR_TYPE]);
 	customParam->decreaseCallback = expressionDescrease;
 	customParam->increaseCallback = expressionIncrease;
 	customParam->printCallback = expressionPrint;
@@ -238,7 +238,7 @@ void SystemMenu::tunerExtPrint(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	if(*valuePtr&0x80) DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"On >");
-	else DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"Off" );
+	else DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"Off " );
 }
 
 void SystemMenu::tunerExtDescrease(void* parameter)

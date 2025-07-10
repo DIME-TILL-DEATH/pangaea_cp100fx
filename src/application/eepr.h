@@ -10,7 +10,7 @@ enum
 	CAB_SIM_DISABLED,
 	MIDI_CHANNEL,
 	CAB_SIM_CONFIG,
-	EXPRESSION_TYPE,
+	EXPR_TYPE,
 
 	FSW1_PRESS_TYPE, FSW2_PRESS_TYPE, FSW3_PRESS_TYPE,
 
@@ -25,7 +25,7 @@ enum
 	SPDIF_OUT_TYPE,
 
 	/*num CC to express and foot*/
-	EXP_CCN,
+	EXPR_CCN,
 	FSW1_CTRL_PRESS_CC, FSW2_CTRL_PRESS_CC, FSW3_CTRL_PRESS_CC,
 
 	MIDI_PC_IND, /*service*/
@@ -49,7 +49,7 @@ enum
 	/*speed foot*/FSW_SPEED,
 	TIME_FORMAT,	// Sec, BPM
 	TAP_HIGH, /*global temp hi*/
-	STORE_EXP_LEVEL, /*save expression level*/
+	EXPR_STORE_LEVEL, /*save expression level*/
 	SWAP_SWITCH,
 	TUNER_SPEED,
 

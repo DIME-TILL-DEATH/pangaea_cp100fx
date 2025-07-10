@@ -82,7 +82,7 @@ void prog_ch(void)
 	if((sys_para[FSW3_PRESS_TYPE]==1) || ((sys_para[FSW3_HOLD_TYPE]==1) && sys_para[FSW3_MODE] == Footswitch::Double))
 		DisplayTask->IndFoot(2, contr_kn[2]);
 
-	if(sys_para[STORE_EXP_LEVEL])
+	if(sys_para[EXPR_STORE_LEVEL])
 		adc_proc();
 
 	pc_mute_fl = 1;

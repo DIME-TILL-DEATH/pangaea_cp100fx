@@ -9,6 +9,7 @@
 #include "BF706_send.h"
 
 const uint8_t UsbMenu::strUsbMenu[][12];
+const uint8_t UsbMenu::strPositions[2];
 
 UsbMenu::UsbMenu()
 {
@@ -20,15 +21,15 @@ void UsbMenu::show(TShowMode showMode)
 	currentMenu = this;
 
 	DisplayTask->Clear();
-	DisplayTask->StringOut(20, 1, TDisplayTask::fntSystem, 0, &strUsbMenu[0][0]);
-	DisplayTask->StringOut(20, 2, TDisplayTask::fntSystem, 0, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[0], 1, TDisplayTask::fntSystem, 0, &strUsbMenu[0][0]);
+	DisplayTask->StringOut(strPositions[1], 2, TDisplayTask::fntSystem, 0, &strUsbMenu[1][0]);
 }
 
 void UsbMenu::task()
 {
 	if(usbConnected) return;
 
-	DisplayTask->StringOut(20, m_parNum + 1, TDisplayTask::fntSystem, 2 * blinkFlag_fl, &strUsbMenu[m_parNum][0]);
+	DisplayTask->StringOut(strPositions[m_parNum], m_parNum + 1, TDisplayTask::fntSystem, 2 * blinkFlag_fl, &strUsbMenu[m_parNum][0]);
 }
 
 void UsbMenu::encoderPressed()
@@ -70,7 +71,7 @@ void UsbMenu::encoderClockwise()
 
 	if(m_parNum < 1) m_parNum++;
 
-	DisplayTask->StringOut(20, 1, TDisplayTask::fntSystem, 0, &strUsbMenu[0][0]);
+	DisplayTask->StringOut(strPositions[0], 1, TDisplayTask::fntSystem, 0, &strUsbMenu[0][0]);
 	tim5_start(0);
 }
 
@@ -80,7 +81,7 @@ void UsbMenu::encoderCounterClockwise()
 
 	if(m_parNum > 0) m_parNum--;
 
-	DisplayTask->StringOut(20, 2, TDisplayTask::fntSystem, 0, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[1], 2, TDisplayTask::fntSystem, 0, &strUsbMenu[1][0]);
 	tim5_start(0);
 }
 
@@ -91,10 +92,10 @@ void UsbMenu::start_usb()
 		UsbTask = new TUsbTask(TUsbTask::mCDC);
 
 		ConsoleTask = new TConsoleTask(256);
-//		ConsoleTask->Echo(false);
+		ConsoleTask->Echo(false);
 		ConsoleTask->SetIo(&cdc_io);
 		ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
-//		ConsoleTask->Echo(false);
+
 		//ConsoleTask->Clear();
 	}
 	else

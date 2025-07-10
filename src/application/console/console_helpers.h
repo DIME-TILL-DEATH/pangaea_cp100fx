@@ -29,7 +29,7 @@ inline void default_param_handler(uint8_t *param_ptr, TReadLine *rl, TReadLine::
 		}
 
 		i2hex(*param_ptr, hex);
-		msg_console("%s\n", hex);
+		msg_console("%s\r%s\n", args[0], hex);
 	}
 }
 

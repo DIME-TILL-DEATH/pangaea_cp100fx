@@ -20,7 +20,7 @@ StringListParam::StringListParam(const char* name, uint8_t* paramValuePtr,
 		strCounter++;
 	}
 
-	m_maxValue = m_stringCount;
+	m_maxValue = m_stringCount - 1;
 }
 
 StringListParam::~StringListParam()

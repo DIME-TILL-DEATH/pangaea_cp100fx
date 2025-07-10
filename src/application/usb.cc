@@ -45,18 +45,9 @@ void TUsbTask::Code()
 
 		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status==USB_OTG_CONFIGURED&&configured==false)
 		{
-
-//			if(usb_connect_type == TMode::mMSC)
-//			{
-//				CSTask->DisplayAccess(false);
-//				ind_en = 0;
-//				DisplayTask->Clear();
-//				DisplayTask->StringOut(30, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"cp100fx as");
-//				DisplayTask->StringOut(22, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"mass storage");
-//			}
-
 			configured = true;
 		}
+
 		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status!=USB_OTG_CONFIGURED&&configured==true)
 		{
 #if 0

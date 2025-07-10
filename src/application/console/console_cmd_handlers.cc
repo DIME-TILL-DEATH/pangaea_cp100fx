@@ -50,12 +50,12 @@ static void amtdev_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	char hex[3] =
 	{0, 0, 0};
 	i2hex(5, hex);
-	msg_console("%s\n", hex);
+	msg_console("%s\r%s\n", args[0], hex);
 }
 
 static void amtver_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	msg_console("%s\n", amt_ver);
+	msg_console("%s\r%s\n", args[0], amt_ver);
 }
 
 static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -71,7 +71,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	preselectedPresetNumber = currentPresetNumber;
 	prog_ch();
 
-	msg_console("\n");
+	msg_console("%s\r\n", args[0]);
 }
 
 static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -86,7 +86,7 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 
 		prog_ch();
 	}
-	msg_console("\n");
+	msg_console("%s\r\n", args[0]);
 }
 
 //static void current_cabinet_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -193,11 +193,12 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 {
 //	msg_console("plist");
 
+	msg_console("%s\r", args[0]);
 	for (int p = 0; p < 99; p++)
 	{
 		Preset::TPresetBrief presetData;
 		EEPROM_loadBriefPreset(p, &presetData);
-		msg_console("\r%d|%s|%s|%s|%s", p+1, presetData.name, presetData.comment, presetData.cab1Name, presetData.cab2Name);
+		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, presetData.cab1Name, presetData.cab2Name);
 
 		uint8_t enabled[14];
 		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);
@@ -208,6 +209,7 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
+	msg_console("%s\r", args[0]);
 	for(size_t i = 0; i < 512; i++)
 	{
 		char hex[3] =
@@ -220,7 +222,7 @@ static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 static void pnum_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-//	msg_console("%s\r", args[0]);
+	msg_console("%s\r", args[0]);
 
 	char hex[3] =
 	{0, 0, 0};
@@ -232,6 +234,7 @@ static void pnum_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr
 
 static void pname_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
+	msg_console("%s\r", args[0]);
 	if(count > 1)
 	{
 		std::emb_string command = args[1];
@@ -248,6 +251,7 @@ static void pname_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 static void pcomment_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
+	msg_console("%s\r", args[0]);
 	if(count > 1)
 	{
 		std::emb_string command = args[1];

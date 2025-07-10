@@ -55,7 +55,7 @@ static void delay_time_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 		hex[2] = delay_time >> 4;
 		hex[3] = delay_time & 0xF;
 
-		msg_console("%s %s\n", args[0], hex);
+		msg_console("%s\r%s\n", args[0], hex);
 	}
 
 	DSP_contr_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.modules.rawData[DELAY_TIME_LO]);

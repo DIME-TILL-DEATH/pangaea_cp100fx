@@ -32,7 +32,8 @@ private:
 	TUsbTask::TMode usb_connect_type;
 	bool usbConnected{false};
 
-	static constexpr uint8_t strUsbMenu[][12] = {"Serial port", "Usb drive  "};
+	static constexpr uint8_t strUsbMenu[][12] = {"Serial port", "Usb drive"};
+	static constexpr uint8_t strPositions[2] = {30, 36};
 
 	void start_usb();
 };

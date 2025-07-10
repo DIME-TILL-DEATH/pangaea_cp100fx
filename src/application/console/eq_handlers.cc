@@ -13,6 +13,7 @@ static void eq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_pt
 
 static void eq_gain_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
+	msg_console("%s\r", args[0]);
 	 uint8_t pos_in_data_array = args[1][0] - 48 + eq1;
 
 	 if (count == 2)
@@ -38,6 +39,7 @@ static void eq_gain_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 
 static void eq_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
+	msg_console("%s\r", args[0]);
 	 uint8_t pos_in_data_array = args[1][0] - 48 + f1;
 
 	 if (count == 2)
@@ -64,6 +66,7 @@ static void eq_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 
 static void eq_q_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
+	msg_console("%s\r", args[0]);
 	 uint8_t pos_in_data_array = args[1][0] - 48 + q1;
 
 	 if (count == 2)

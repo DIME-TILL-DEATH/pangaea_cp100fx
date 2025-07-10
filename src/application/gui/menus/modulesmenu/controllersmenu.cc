@@ -155,7 +155,7 @@ void ControllersMenu::encoderClockwise()
 
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::Expression)
 					{
-						if(sys_para[EXPRESSION_TYPE] < 3)
+						if(sys_para[EXPR_TYPE] < 3)
 							currentPreset.controller[m_controllerNum].src++;
 
 					}
@@ -358,7 +358,7 @@ void ControllersMenu::encoderCounterClockwise()
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::Expression)
 					{
-						if(sys_para[EXPRESSION_TYPE] < 3)
+						if(sys_para[EXPR_TYPE] < 3)
 							currentPreset.controller[m_controllerNum].src--;
 					}
 

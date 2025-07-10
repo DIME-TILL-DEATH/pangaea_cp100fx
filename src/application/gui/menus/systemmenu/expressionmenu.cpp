@@ -35,14 +35,14 @@ void ExpressionMenu::show(TShowMode swhoMode)
 		DisplayTask->StringOut(3, i, TDisplayTask::fntSystem, 0, (uint8_t*)&expr_menu[i]);
 	}
 
-	DisplayTask->StringOut(60, 0, TDisplayTask::fntSystem, 0, (uint8_t*)&strExprType[sys_para[EXPRESSION_TYPE] & 0x7f]);
+	DisplayTask->StringOut(60, 0, TDisplayTask::fntSystem, 0, (uint8_t*)&strExprType[sys_para[EXPR_TYPE] & 0x7f]);
 
-	if(!sys_para[EXP_CCN])
+	if(!sys_para[EXPR_CCN])
 		DisplayTask->StringOut(84, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"Off");
 	else
-		DisplayTask->ParamIndicNum(84, 2, sys_para[EXP_CCN]-1);
+		DisplayTask->ParamIndicNum(84, 2, sys_para[EXPR_CCN]-1);
 
-	if(!sys_para[STORE_EXP_LEVEL])
+	if(!sys_para[EXPR_STORE_LEVEL])
 		DisplayTask->StringOut(84, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Off");
 	else
 		DisplayTask->StringOut(84, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"On ");
@@ -133,29 +133,29 @@ void ExpressionMenu::encoderClockwise()
 			switch(m_parNum)
 			{
 				case 0:
-					if((sys_para[EXPRESSION_TYPE]&0x7f)<4)
+					if((sys_para[EXPR_TYPE]&0x7f)<4)
 					{
 						DisplayTask->StringOut(60, 0, TDisplayTask::fntSystem, 0,
-								(uint8_t*)strExprType[++sys_para[EXPRESSION_TYPE] & 0x7f]);
+								(uint8_t*)strExprType[++sys_para[EXPR_TYPE] & 0x7f]);
 						adc_pin_init();
-						if(sys_para[EXPRESSION_TYPE] > 2)
+						if((sys_para[EXPR_TYPE] & 0x7f) > 2)
 							ext_send(127);
 					}
 				break;
 				case 2:
-					if(sys_para[EXP_CCN] < 128)
+					if(sys_para[EXPR_CCN] < 128)
 					{
-						sys_para[EXP_CCN] = enc_speed_inc(sys_para[EXP_CCN], 100);
-						if(!sys_para[EXP_CCN])
+						sys_para[EXPR_CCN] = enc_speed_inc(sys_para[EXPR_CCN], 100);
+						if(!sys_para[EXPR_CCN])
 							DisplayTask->StringOut(84, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"Off");
 						else
-							DisplayTask->ParamIndicNum(84, 2, sys_para[EXP_CCN]-1);
+							DisplayTask->ParamIndicNum(84, 2, sys_para[EXPR_CCN]-1);
 					}
 				break;
 				case 3:
-					if(!sys_para[STORE_EXP_LEVEL])
+					if(!sys_para[EXPR_STORE_LEVEL])
 					{
-						sys_para[STORE_EXP_LEVEL]++;
+						sys_para[EXPR_STORE_LEVEL]++;
 						DisplayTask->StringOut(84, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"On ");
 					}
 				break;
@@ -186,29 +186,29 @@ void ExpressionMenu::encoderCounterClockwise()
 			switch(m_parNum)
 			{
 				case 0:
-					if((sys_para[EXPRESSION_TYPE]&0x7f)>1)
+					if((sys_para[EXPR_TYPE]&0x7f)>1)
 					{
 						DisplayTask->StringOut(60, 0, TDisplayTask::fntSystem, 0,
-								(uint8_t*)&strExprType[--sys_para[EXPRESSION_TYPE] & 0x7f]);
+								(uint8_t*)&strExprType[--sys_para[EXPR_TYPE] & 0x7f]);
 						adc_pin_init();
-						if(sys_para[EXPRESSION_TYPE]>2)
+						if((sys_para[EXPR_TYPE] & 0x7f) > 2)
 							ext_send(127);
 					}
 				break;
 				case 2:
-					if(sys_para[EXP_CCN]>0)
+					if(sys_para[EXPR_CCN]>0)
 					{
-						sys_para[EXP_CCN] = enc_speed_dec(sys_para[EXP_CCN], 0);
-						if(!sys_para[EXP_CCN])
+						sys_para[EXPR_CCN] = enc_speed_dec(sys_para[EXPR_CCN], 0);
+						if(!sys_para[EXPR_CCN])
 							DisplayTask->StringOut(84, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"Off");
 						else
-							DisplayTask->ParamIndicNum(84, 2, sys_para[EXP_CCN]-1);
+							DisplayTask->ParamIndicNum(84, 2, sys_para[EXPR_CCN]-1);
 					}
 				break;
 				case 3:
-					if(sys_para[STORE_EXP_LEVEL])
+					if(sys_para[EXPR_STORE_LEVEL])
 					{
-						sys_para[STORE_EXP_LEVEL]--;
+						sys_para[EXPR_STORE_LEVEL]--;
 						DisplayTask->StringOut(84, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Off");
 					}
 				break;
