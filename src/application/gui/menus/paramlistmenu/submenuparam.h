@@ -1,0 +1,28 @@
+#ifndef SUBMENUPARAM_H_
+#define SUBMENUPARAM_H_
+
+#include "../abstractmenu.h"
+#include "../paramlistmenu/baseparam.h"
+
+class SubmenuParam : public BaseParam
+{
+public:
+	SubmenuParam(gui_param_type paramType, const char* name, AbstractMenu* menu, void* param = nullptr);
+	SubmenuParam(gui_param_type paramType, const char* name,
+			AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), void* param = nullptr);
+	//	~SubmenuParam();
+
+	void printParam(uint8_t yDisplayPosition) override;
+	uint32_t value() const override {return 0;};
+
+	void showSubmenu();
+	void showSubmenu(AbstractMenu* parent);
+
+private:
+	AbstractMenu* m_menu;
+
+	AbstractMenu* (*m_submenuCreationFunction)(AbstractMenu* parent) = nullptr;
+};
+
+
+#endif /* SUBMENUPARAM_H_ */

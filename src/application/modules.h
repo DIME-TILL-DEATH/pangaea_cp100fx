@@ -1,0 +1,358 @@
+#ifndef MODULES_H_
+#define MODULES_H_
+
+enum {
+	amp = 0, cab, eq, delay, phas, fl, chor, early, reve, trem, pream, gate, compr, moog,
+	cab_m = 41,
+	vol,cab1_pan,cab1_del,cab2_vol,cab2_pan,cab2_del,
+	eq1,eq2,eq3,eq4,eq5,
+	hpf_v,lpf_v,pre_v,
+	phaser_vol,phaser_rate,phaser_wdt,phaser_cnt,phaser_feedback,phaser_type,
+	chor_volum,chor_rat,chor_width,chor_del,chor_typ,
+	d_vol,d_fed,d_lp,d_hp,d_pan,dp_vol,dp_pan,dp_d,d_mod,d_ra,d_dir,
+	fl_v,fl_lfo,fl_r,fl_w,fl_d,fl_f,
+	r_vol,r_time,r_size,r_dump,r_lp,r_hp,r_det,
+	/*tremolo*/tr_vol,tr_rate,tr_lfo,tr_m_s,
+	pres_lev,
+	/*amp_sim*/am_v,am_mode,am_out,
+	/*early refl*/early_vol,early_type,
+	/*eq_b_f*/f1,f2,f3,f4,f5,
+	/*eq_b_q*/q1,q2,q3,q4,q5,
+	/*preamp*/pre_gain,pre_volume,pre_0,pre_low,pre_mid,pre_high,
+	/*gate*/gate_thr,gate_att,gate_dec,
+	/*compressor*/comp_thr,comp_ra,comp_v,comp_at,comp_kn,
+	/*HPF_mod*/hpf_ph,hpf_fl,hpf_ch,
+	/*del_tap*/d_tap_t,
+	/*tremolo_tap*/t_tap_t,
+	/*moog*/mog_mix,mog_ftype,mog_fmod,mog_rate,mog_lo,mog_hi,mog_res,mog_th,mog_at,mog_re,mog_vo,mog_ext,
+	/*rever type*/rev_t, rev_di,
+	/*moog gen type*/mog_gen_t,
+	vol_contr,
+	eq_pr_po,
+	delay_tim_lo, delay_tim_hi,
+	phas_pos,
+	flan_pos,
+	r_pre,
+	/*+++foot ind*/fo1,fo2,fo3,fo11,fo12,fo13,
+	/*+++trem lfo type*/tr_lfo_t,
+	d_tail,
+	r_tail,
+	bpm_del = 511
+};
+
+enum dsp_module_address_t
+{
+	DSP_ADDRESS_PRESET_VOLUME = 1,
+	DSP_ADDRESS_CAB = 3,
+	DSP_ADDRESS_MODULES_ENABLE,
+	DSP_ADDRESS_CHORUS,
+	DSP_ADDRESS_PHASER,
+	DSP_ADDRESS_REVERB,
+	DSP_ADDRESS_DELAY,
+	DSP_ADDRESS_EQ,
+	DSP_ADDRESS_TREMOLO,
+	DSP_ADDRESS_AMP,
+	DSP_ADDRESS_PROGRAMM_CHANGE,
+	DSP_ADDRESS_FLANGER,
+	DSP_ADDRESS_TUN_PROC,
+	DSP_ADDRESS_IND_SRC,
+	DSP_ADDRESS_CAB_DRY_MUTE,
+	DSP_ADDRESS_EARLY_REFLECTIONS,
+	DSP_ADDRESS_MASTER = 19,
+	DSP_ADDRESS_EQ_BAND = 22,
+	DSP_ADDRESS_AMP_TYPE,
+	DSP_ADDRESS_DSP_RUN,
+	DSP_ADDRESS_SPDIF,
+	DSP_ADDRESS_PREAMP,
+	DSP_ADDRESS_CAB_CONFIG,
+	DSP_ADDRESS_GATE,
+	DSP_ADDRESS_COMPRESSOR,
+	DSP_ADDRESS_RESONANCE_FILTER,
+	DSP_ADDRESS_MUTE,
+	DSP_ADDRESS_GLOBAL_TEMPO
+};
+
+enum dsp_indicator_source_t
+{
+	DSP_INDICATOR_OUT = 0,
+	DSP_INDICATOR_CAB1,
+	DSP_INDICATOR_AMP,
+	DSP_INDICATOR_CAB2,
+	DSP_INDICATOR_FLANGER,
+	DSP_INDICATOR_CHORUS,
+	DSP_INDICATOR_TREMOLO,
+	DSP_INDICATOR_PHASER,
+	DSP_INDICATOR_PREAMP,
+	DSP_INDICATOR_IN
+};
+
+enum dsp_enable_pos_t
+{
+	ENABLE_AMP = 0, ENABLE_CAB, ENABLE_EQ, ENABLE_DELAY, ENABLE_PHASER, ENABLE_FLANGER, ENABLE_CHORUS, ENABLE_EARLY_REFLECTIONS,
+	ENABLE_REVERB, ENABLE_TREMOLO, ENABLE_PREAMP, ENABLE_GATE, ENABLE_COMPRESSOR, ENABLE_RESONANCE_FILTER, ENABLE_MASTER_EQ
+};
+
+enum
+{
+	CAB_MONO = 41,
+	PRESET_VOLUME = 95,
+	PRESET_VOLUME_CONTROL = 145,
+	FO_01 = 125, FO_02, FO_03, FO_11, FO_12, FO_13,
+	BPM_GLOBAL = 511
+};
+
+enum
+{
+	PARAM_EQUAL_POS = 128,
+	NOT_SEND_POS = 255
+};
+
+enum resonance_filter_parameters_t
+{
+	RFILTER_MIX = 130,
+	RFILTER_FTYPE,
+	RFILTER_FMOD,
+	RFILTER_RATE,
+	RFILTER_LPF,
+	RFILTER_HPF,
+	RFILTER_RESONANCE,
+	RFILTER_DYN_THRESHOLD,
+	RFILTER_DYN_ATTACK,
+	RFLITER_DYN_RELEASE,
+	RFILTER_VOLUME,
+	RFILTER_EXT,
+	RFILTER_LFO_TYPE = 144
+};
+
+enum
+{
+	RFILTER_MIX_POS = 0, RFILTER_FTYPE_POS, RFILTER_FMOD_POS, RFILTER_RATE_POS,	RFILTER_LPF_POS, RFILTER_HPF_POS,
+	RFILTER_RESONANCE_POS, RFILTER_DYN_THRESHOLD_POS, RFILTER_DYN_ATTACK_POS, RFLITER_DYN_RELEASE_POS,
+	RFILTER_VOLUME_POS, RFILTER_LFO_TYPE_POS, RFILTER_EXT_POS,
+	RFILTER_TIME_LO_POS, RFILTER_TIME_HI_POS
+};
+
+enum gate_parameters_t
+{
+	GATE_THRESHOLD = 117,
+	GATE_ATTACK,
+	GATE_DECAY
+};
+
+enum
+{
+	GATE_THRESHOLD_POS, GATE_ATTACK_POS, GATE_DECAY_POS
+};
+
+enum compressor_parameters_t
+{
+	COMPRESSOR_THRESHOLD = 120,
+	COMPRESSOR_RATIO,
+	COMPRESSOR_VOLUME,
+	COMPRESSOR_ATTACK,
+	COMPRESSOR_RELEASE
+};
+
+enum
+{
+	COMPRESSOR_THRESHOLD_POS, COMPRESSOR_RATIO_POS, COMPRESSOR_VOLUME_POS, COMPRESSOR_ATTACK_POS, COMPRESSOR_RELEASE_POS
+};
+
+enum preamp_parameters_t
+{
+	PREAMP_GAIN = 111,
+	PREAMP_VOLUME,
+	PREAMP_0,
+	PREAMP_LOW,
+	PREAMP_MID,
+	PREAMP_HIGH
+};
+
+enum
+{
+	PREAMP_GAIN_POS = 0, PREAMP_VOLUME_POS, PREAMP_0_POS, PREAMP_LOW_POS, PREAMP_MID_POS, PREAMP_HIGH_POS
+};
+
+
+enum amp_parameters_t
+{
+	AMP_PRESENCE = 55,
+	AMP_MASTER = 96,
+	AMP_TYPE,
+	AMP_LEVEL
+};
+
+enum
+{
+	AMP_MASTER_POS = 0, AMP_TYPE_POS = PARAM_EQUAL_POS, AMP_LEVEL_POS = 2
+};
+
+enum eq_parameters_t
+{
+	EQ_G0 = 48, EQ_G1, EQ_G2, EQ_G3, EQ_G4,
+	EQ_HPF,
+	EQ_LPF,
+	EQ_PRESENCE,
+	EQ_F0 = 101, EQ_F1, EQ_F2, EQ_F3, EQ_F4,
+	EQ_Q0, EQ_Q1, EQ_Q2, EQ_Q3, EQ_Q4,
+	EQ_PREPOST = 146
+};
+
+enum
+{
+	EQ_G0_POS = 0, EQ_G1_POS, EQ_G2_POS, EQ_G3_POS, EQ_G4_POS,
+	EQ_HPF_POS, EQ_LPF_POS, EQ_PRESENCE_POS,
+	EQ_MASTER_LOW_GAIN_POS, EQ_MASTER_MID_GAIN_POS, EQ_MASTER_MID_FREQ_POS, EQ_MASTER_HIGH_GAIN_POS
+};
+
+enum ir_parameters_t
+{
+	IR_VOLUME1 = 42,
+	IR_PAN1,
+	IR_DELAY1,
+	IR_VOLUME2,
+	IR_PAN2,
+	IR_DELAY2
+};
+
+enum
+{
+	IR_VOLUME1_POS, IR_PAN1_POS, IR_DELAY1_POS, IR_VOLUME2_POS, IR_PAN2_POS, IR_DELAY2_POS
+};
+
+enum chorus_parameters_t
+{
+	CHORUS_MIX = 62,
+	CHORUS_RATE,
+	CHORUS_WIDTH,
+	CHORUS_DELAY,
+	CHORUS_TYPE,
+	CHORUS_HPF = 127
+};
+
+enum
+{
+	CHORUS_MIX_POS = 0, CHORUS_RATE_POS, CHORUS_WIDTH_POS, CHORUS_DELAY_POS, CHORUS_TYPE_POS, CHORUS_HPF_POS
+};
+
+enum flanger_parameters_t
+{
+	FLANGER_MIX = 78,
+	FLANGER_LFO,
+	FLANGER_RATE,
+	FLANGER_WIDTH,
+	FLANGER_DELAY,
+	FLANGER_FEEDBACK,
+	FLANGER_HPF = 126,
+	FLANGER_PREPOST = 150
+};
+
+enum
+{
+	FLANGER_MIX_POS, FLANGER_LFO_POS, FLANGER_RATE_POS, FLANGER_WIDTH_POS, FLANGER_DELAY_POS,
+	FLANGER_FEEDBACK_POS, FLANGER_HPF_POS, FLANGER_PREPOST_POS
+};
+
+
+enum phaser_parameters_t
+{
+	PHASER_MIX = 56,
+	PHASER_RATE,
+	PHASER_WIDTH,
+	PHASER_CENTER,
+	PHASER_FEEDBACK,
+	PHASER_TYPE,
+	PHASER_HPF = 125,
+	PHASER_PREPOST = 149
+};
+
+enum
+{
+	PHASER_MIX_POS = 0, PHASER_RATE_POS, PHASER_CENTER_POS, PHASER_WIDTH_POS, PHASER_FEEDBACK_POS, PHASER_TYPE_POS,
+	PHASER_HPF_POS, PHASER_PREPOST_POS
+};
+
+enum early_reflections_parameters_t
+{
+	EARLY_MIX = 99,
+	EARLY_SIZE
+};
+
+enum
+{
+	EARLY_MIX_POS = 0, EARLY_SIZE_POS
+};
+
+//d_vol,d_fed,d_lp,d_hp,d_pan,dp_vol,dp_pan,dp_d,d_mod,d_ra,d_dir
+
+enum delay_parameters_t
+{
+	DELAY_MIX = 67,
+	DELAY_FEEDBACK,
+	DELAY_LPF,
+	DELAY_HPF,
+	DELAY_PAN1,
+	DELAY_VOLUME2,
+	DELAY_PAN2,
+	DELAY_OFFSET,
+	DELAY_MODULATION,
+	DELAY_MODULATION_RATE,
+	DELAY_DIRECTION,
+	DELAY_TAP = 128,
+	DELAY_TIME_LO = 147,
+	DELAY_TIME_HI,
+	DELAY_TAIL = 159
+};
+
+enum delay_parameters_pos_t
+{
+	DELAY_MIX_POS = 0, DELAY_FEEDBACK_POS, DELAY_LPF_POS, DELAY_HPF_POS, DELAY_PAN1_POS, DELAY_VOLUME2_POS, DELAY_PAN2_POS,
+	DELAY_OFFSET_POS, DELAY_MODULATION_POS, DELAY_MODULATION_RATE_POS, DELAY_DIRECTION_POS, DELAY_TIME_LO_POS, DELAY_TIME_HI_POS,
+	DELAY_TAIL_POS,
+};
+
+enum reverb_parameters_t
+{
+	REVERB_MIX = 84,
+	REVERB_TIME,
+	REVERB_SIZE,
+	REVERB_DAMPING,
+	REVERB_LPF,
+	REVERB_HPF,
+	REVERB_DETUNE,
+	REVERB_TYPE = 142,
+	REVERB_DIFFUSION,
+	REVERB_PREDELAY = 151,
+	REVERB_TAIL = 160
+};
+
+enum
+{
+	REVERB_MIX_POS = 0, REVERB_TYPE_POS, REVERB_TIME_POS, REVERB_SIZE_POS, REVERB_DAMPING_POS,
+	REVERB_LPF_POS, REVERB_HPF_POS, REVERB_DETUNE_POS, REVERB_DIFFUSION_POS, REVERB_PREDELAY_POS, REVERB_TAIL_POS
+};
+
+enum tremolo_parameters_t
+{
+	TREMOLO_INTENSITY = 91,
+	TREMOLO_RATE,
+	TREMOLO_LFO_MOD,
+	TREMOLO_MS,
+	TREMOLO_TAP = 129,
+	TREMOLO_LFO_TYPE = 158
+};
+
+// Порядок отсылки не как в меню
+enum
+{
+	TREMOLO_INTENSITY_POS, TREMOLO_RATE_POS, TREMOLO_LFO_MOD_POS,
+	TREMOLO_MS_POS,
+	TREMOLO_TIME_LO_POS,
+	TREMOLO_TIME_HI_POS,
+	TREMOLO_LFO_TYPE_POS = 6
+};
+
+
+
+
+#endif /* MODULES_H_ */

@@ -2,37 +2,36 @@
 
 #include "appdefs.h"
 
-    extern uint32_t tap_temp;
-    extern uint32_t tap_temp1;
-    extern uint32_t tap_temp2;
-    extern uint32_t tap_global;
+extern uint32_t tap_temp;
+extern uint32_t tap_temp1;
+extern uint32_t tap_temp2;
+extern uint32_t tap_global;
 
-class TCCTask : public TTask
+class TCCTask: public TTask
 {
-  public:
-    TCCTask () ;
+public:
+	TCCTask();
 
-    inline void Give()
-     {
-   	 if ( cortex_isr_num())
-   	 {
-   		 BaseType_t HigherPriorityTaskWoken ;
-   		 sem-> GiveFromISR ( &HigherPriorityTaskWoken) ;
-            if ( HigherPriorityTaskWoken )
-         	   TScheduler::Yeld();
-   	 }
-   	 else sem-> Give () ;
-     }
-  private:
-     void Code() ;
-     TSemaphore* sem ;
+	inline void Give()
+	{
+		if(cortex_isr_num())
+		{
+			BaseType_t HigherPriorityTaskWoken;
+			sem->GiveFromISR(&HigherPriorityTaskWoken);
+			if(HigherPriorityTaskWoken)
+				TScheduler::Yeld();
+		}
+		else
+			sem->Give();
+	}
+private:
+	void Code();
+	TSemaphore *sem;
 };
 
-extern const uint8_t midi_dect_list[][14];
-extern const uint8_t dest_tabl[];
-extern const uint8_t dest_tabl_start[];
+void controllerSetData(uint8_t adr, uint8_t data);
+
 extern volatile uint8_t midi_b[3];
-extern uint8_t contrs;
 extern uint8_t mid_fl;
 extern uint8_t ext_fl;
 extern uint8_t ext_f_fl;
@@ -44,6 +43,6 @@ extern volatile uint16_t adc_bu;
 extern volatile uint8_t tap_del_fl;
 extern volatile uint8_t tap_trem_fl;
 extern volatile uint8_t tap_moog_fl;
-extern TCCTask* CCTask ;
+extern TCCTask *CCTask;
 
 #endif /* CC_H_ */

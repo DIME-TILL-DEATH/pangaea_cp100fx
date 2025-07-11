@@ -2,6 +2,6 @@
 #define __APPDEFS_H__
 
 #include "sdk.h"
-#include "apptypes.h"
+#include "errno.h"
 
 #endif /*__APPDEFS_H__*/

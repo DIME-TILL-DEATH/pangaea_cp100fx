@@ -1,15 +1,19 @@
-#include "appdefs.h"
 #include "cs.h"
+
+#include "appdefs.h"
 #include "cc.h"
 #include "init.h"
-#include "filt.h"
-#include "fonts/allFonts.h"
+#include "allFonts.h"
 #include "fs.h"
 #include "eepr.h"
 #include "display.h"
-#include "gu.h"
 #include "enc.h"
 #include "BF706_send.h"
+
+#include "mainmenu.h"
+#include "usbmenu.h"
+
+#include "preset.h"
 
 float m_vol = 1.0;
 float p_vol = 1.0;
@@ -19,10 +23,11 @@ TCSTask* CSTask ;
 void oled023_1_disp_init(void);
 void led_disp_write(void);
 extern uint8_t led_buf[];
-volatile uint16_t mas_eq_fr;
+//volatile uint16_t mas_eq_fr;
 
-
-
+AbstractMenu* currentMenu;
+MainMenu* mainMenu;
+UsbMenu* usbMenu;
 
 TCSTask::TCSTask () : TTask()
  {
@@ -49,9 +54,9 @@ void TCSTask::Code()
 
 	CSTask->DisplayAccess(false);
 
-    prog = prog1 = sys_para[31];
+    currentPresetNumber = preselectedPresetNumber = sys_para[31];
 
-    DisplayTask->Start_screen(1);
+    DisplayTask->StartScreen(1);
 
 	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);
 	TIM_Cmd(TIM4,ENABLE);
@@ -68,54 +73,83 @@ void TCSTask::Code()
    	CSTask->DisplayAccess(true);
 
   	gui_send(14,0); // global cab on off
-  	gui_send(15,0); // indicator source
-  	gui_send(26,sys_para[spdif_t]);
-  	gui_send(33,sys_para[tap_typ] | (sys_para[tap_hi] << 8)); //global temp
+  	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+  	gui_send(26,sys_para[SPDIF_OUT_TYPE]);
+  	gui_send(33,sys_para[TAP_TYPE] | (sys_para[TAP_HIGH] << 8)); //global temp
 	tempo_fl = 1;
 	gui_send(28,sys_para[2]); // left cab bypass
 	if(!sys_para[125])sys_para[125] = 127;
   	DisplayTask->Pot_Write();
 	gui_send(1,sys_para[126]); //master volum
-	if(!sys_para[508] && !sys_para[509])
+
+//	if(!sys_para[508] && !sys_para[509])
+//	{
+//		sys_para[508] = 2;
+//		sys_para[509] = 0x6a;
+//	}
+//	mas_eq_fr = sys_para[508] << 8;
+//	mas_eq_fr |= sys_para[509];
+
+
+//	mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
+
+
+	if(!sys_para[MASTER_EQ_FREQ_LO] && !sys_para[MASTER_EQ_FREQ_HI])
 	{
-		sys_para[508] = 2;
-		sys_para[509] = 0x6a;
+		mstEqMidFreq = 1000;
 	}
-	mas_eq_fr = sys_para[508] << 8;
-	mas_eq_fr |= sys_para[509];
-	uint16_t f = mas_eq_fr;
-	f *= mas_eq_fr * (20.0f/20000.0f) + 1;
-	sys_para[510] = f >> 8;
-	sys_para[511] = f;
+	else
+	{
+		mstEqMidFreq = sys_para[MASTER_EQ_FREQ_LO] << 8;
+		mstEqMidFreq |= sys_para[MASTER_EQ_FREQ_HI];
+	}
+
 	for(uint8_t i = 0 ; i < 4 ; i++)gui_send(25,i);
 	gui_send(18, 14 | (sys_para[120] << 8)); // master eq
-	tun_del_val = (127 - sys_para[speed_tun]) * (90.0f/127.0f) + 10.0f;
+	tun_del_val = (127 - sys_para[TUNER_SPEED]) * (90.0f/127.0f) + 10.0f;
 	Delay(500);
 	prog_ch();
-	eepr_read_imya(prog1);
+	eepr_read_imya(preselectedPresetNumber);
 	DisplayTask->Main_scr();
-	DisplayTask->Prog_ind(prog1);
+	DisplayTask->Prog_ind(preselectedPresetNumber);
     for(uint8_t i = 0 ; i < 3 ; i++)
     {
-    	contr_kn[i] = prog_data[fo1 + i];
-    	contr_kn1[i] = prog_data[fo11 + i];
+    	contr_kn[i] = currentPreset.modules.rawData[fo1 + i];
+    	contr_kn1[i] = currentPreset.modules.rawData[fo11 + i];
     }
-	if((sys_para[fs1] == 1) || ((sys_para[fs11] == 1) && sys_para[fsm1]))DisplayTask->IndFoot(0,contr_kn[0]);
-	if((sys_para[fs2] == 1) || ((sys_para[fs21] == 1) && sys_para[fsm2]))DisplayTask->IndFoot(1,contr_kn[1]);
-	if((sys_para[fs3] == 1) || ((sys_para[fs31] == 1) && sys_para[fsm3]))DisplayTask->IndFoot(2,contr_kn[2]);
+	if((sys_para[FSW1_PRESS_TYPE] == 1) || ((sys_para[FSW1_HOLD_TYPE] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
+	if((sys_para[FSW2_PRESS_TYPE] == 1) || ((sys_para[FSW2_HOLD_TYPE] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
+	if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
 	send_codec(0xa301);
    	ENCTask->SetEnc(1);
 
-  while(1)
-     {
-	  sem->Take(portMAX_DELAY);
-	  if (DisplayAccess())
-	  {
-		  gui();
-	  }
+   	sem->Take(portMAX_DELAY);
+	if (DisplayAccess())
+	{
+		mainMenu = new MainMenu();
+		usbMenu = new UsbMenu();
 
-     }
+		currentMenu = mainMenu;
+		mainMenu->show();
+	}
+
+   	while(1)
+   	{
+		sem->Take(portMAX_DELAY);
+		if(DisplayAccess())
+		{
+			gui();
+		}
+   	}
 }
+
+void TCSTask::Restart(void)
+{
+	currentMenu = mainMenu;
+	clean_flag();
+	//DisplayTask->Menu_init(1,0,prog_data,prog1);
+}
+
 //------------------------------------------------------------------------------------
 extern ad_data_t adc_data[];
 extern da_data_t dac_data[];
@@ -170,12 +204,15 @@ extern "C" void DMA1_Stream2_IRQHandler()
   ind_out_l[0] = abs(ccl);
   if(ind_out_l[0] > ind_out_l[1])ind_out_l[1] = ind_out_l[0];
 
-  if((ind_poin++ == 4000) && ((condish == volume) || (condish == cabinet_sim)  ||
-     (condish == power_amplif) || (condish == pre_menu) || (condish == att_menu)) && (!tuner_use))
-    {
-      DisplayTask->Indicator();
-      ind_poin = 0;
-    }
+	if((ind_poin++ == 4000) && (!tuner_use)
+//			&& ((current_menu == MENU_VOLUME) || (current_menu == MENU_CABSIM)
+//			|| (current_menu == MENU_PA) || (current_menu == MENU_PREAMP)
+//			|| (current_menu == MENU_ATTENUATOR))
+			)
+	{
+	  DisplayTask->VolIndicator();
+	  ind_poin = 0;
+	}
 
   dac_data[dma_ht_fl].left.sample  = ror16(cr);
   dac_data[dma_ht_fl].right.sample = ror16(cr);
