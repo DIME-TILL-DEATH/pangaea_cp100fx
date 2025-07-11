@@ -5,6 +5,9 @@
 
 #include "amt.h"
 
+#include "BF706_send.h"
+
+#include "controllers.h"
 #include "gui_task.h"
 
 #include "console_helpers.h"
@@ -220,6 +223,26 @@ static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	msg_console("\n");
 }
 
+static void cntrls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	msg_console("%s\r", args[0]);
+	for(size_t i = 0; i < controllersCount; i++)
+	{
+		char hex[3] =
+		{0, 0, 0};
+
+		i2hex(currentPreset.controller[i].src, hex);
+		msg_console("%s", hex);
+		i2hex(currentPreset.controller[i].dst, hex);
+		msg_console("%s", hex);
+		i2hex(currentPreset.controller[i].minVal, hex);
+		msg_console("%s", hex);
+		i2hex(currentPreset.controller[i].maxVal, hex);
+		msg_console("%s", hex);
+	}
+	msg_console("\n");
+}
+
 static void pnum_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
@@ -265,6 +288,79 @@ static void pcomment_command_handler(TReadLine *rl, TReadLine::const_symbol_type
 	}
 	msg_console("%s\n", currentPreset.comment);
 }
+
+static void controller_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+{
+	msg_console("%s\r", args[0]);
+	if (count > 3)
+	{
+		char *end;
+		uint8_t cntrlNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+		std::emb_string command = args[2];
+		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
+
+		msg_console("%d\r%s\r%d", cntrlNum, args[2], value);
+
+		if(command == "dst")
+		{
+			currentPreset.controller[cntrlNum].dst = value;
+			goto ending;
+		}
+
+		if(command == "src")
+		{
+			currentPreset.controller[cntrlNum].src = value;
+			goto ending;
+		}
+
+		if(command == "min")
+		{
+			currentPreset.controller[cntrlNum].minVal = value;
+			goto ending;
+		}
+
+		if(command == "max")
+		{
+			currentPreset.controller[cntrlNum].maxVal = value;
+			goto ending;
+		}
+
+
+		msg_console("\rundefined type");
+	}
+	else
+	{
+		msg_console("incorrect args");
+	}
+
+ending:
+	write_sys();
+	msg_console("\n");
+}
+
+static void controller_pc_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+{
+	default_param_handler(&currentPreset.pcOut, rl, args, count);
+}
+
+static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+{
+	uint8_t val;
+	default_param_handler(&val, rl, args, count);
+
+	currentPreset.set = val | 0x80;
+}
+
+static void preset_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+{
+	default_param_handler(&currentPreset.modules.paramData.preset_volume, rl, args, count);
+	DSP_contr_set_parameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.modules.paramData.preset_volume, 0);
+}
+
+static void preset_volume_control_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+{
+	default_param_handler(&currentPreset.modules.paramData.volume_control, rl, args, count);
+}
 //------------------------------------------------------------------------------
 void ConsoleSetCmdHandlers(TReadLine *rl)
 {
@@ -281,12 +377,20 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("psave", psave_command_handler);
 
 	rl->AddCommandHandler("state", state_command_handler);
+	rl->AddCommandHandler("cntrls", cntrls_command_handler);
 
 	rl->AddCommandHandler("plist", plist_command_handler);
 
 	rl->AddCommandHandler("pnum", pnum_command_handler);
 	rl->AddCommandHandler("pname", pname_command_handler);
 	rl->AddCommandHandler("pcomment", pcomment_command_handler);
+
+	rl->AddCommandHandler("cntrl", controller_command_handler);
+	rl->AddCommandHandler("cntrl_pc", controller_pc_command_handler);
+	rl->AddCommandHandler("cntrl_set", controller_set_command_handler);
+
+	rl->AddCommandHandler("vl_pr", preset_volume_command_handler);
+	rl->AddCommandHandler("vl_pr_cntrl", preset_volume_control_command_handler);
 
 	set_syssettings_handlers(rl);
 

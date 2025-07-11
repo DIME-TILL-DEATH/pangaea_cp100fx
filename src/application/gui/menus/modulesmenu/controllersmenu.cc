@@ -121,7 +121,7 @@ void ControllersMenu::encoderClockwise()
 		switch(m_parNum)
 		{
 			case ControllerMenuParams::Controller:
-				if(m_controllerNum < controllersCount)
+				if(m_controllerNum < controllersCount-1)
 				{
 					DisplayTask->ParamIndicNum(45, 0, ++m_controllerNum + 1);
 

@@ -56,8 +56,8 @@ void UsbMenu::encoderPressed()
 			DisplayTask->StringOut(6, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"cp100fx connected as");
 			DisplayTask->StringOut(34, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"serial port");
 
-			currentMenu = mainMenu;
-			mainMenu->show();
+//			currentMenu = mainMenu;
+//			mainMenu->show();
 			break;
 		}
 	}
