@@ -9,61 +9,25 @@
 
 #include "preset.h"
 
-
-enum TControllerSrc
+uint8_t Font::symbolWidth(Font::TFontName fontName)
 {
-	OFF,
-	EXPRESSION,
-	FSW_DOWN, FSW_CONFIRM, FSW_UP,
-	CC1, CC2, CC3, CC4
-};
-
-enum TControllerDst
-{
-	Preamp_On_Off,
-	Amp_On_Off, Amp_Volume, Amp_Slave,
-	CabSim_On_Off, Eq_On_Off,
-	Delay_On_Off, Delay_Volume, Delay_Fedback, Delay_Tap,
-//	/*10*/"Phaser On Off", "Phaser Volume", "Phaser Rate  ",
-//	/*13*/"Flanger OnOff", "Flang  Volume", "Flang  Rate  ",
-//	/*16*/"Chorus On Off", "Chorus Volume", "Chorus Rate  ",
-//	/*19*/"Reverb On Off", "Reverb Volume", "Reverb Time  ",
-//	/*22*/"Tremolo OnOff", "Tremolo Inten", "Tremolo Rate ",
-//	/*25*/"Preset Level ",
-//	/*26*/"Tremolo TAP  ",
-//	/*27*/"Compr On Off ", "Compr Thresh ", "Compr Volume ",
-//	/*30*/"Filt  On Off ", "Filt LFOrate ", "Filt freq    ",
-//	/*33*/"ER On Off    ", "ER Volume    ",
-//	/*35*/"Filt LFO TAP ",
-//	/*36*/"Vol Ct On Off",
-//	/*37*/"Cab1 Volume  ", "Cab2 Volume  ",
-//	/*39*/"Gate On Off  ", "Gate Thresh  ",
-//	/*41*/"HPF frequency", "LPF frequency", "Presence val ",
-//	/*44*/"Preamp Gain  ", "Preamp Volume", "Preamp Low   ", "Preamp Mid   ", "Preamp High  ",
-//	/*49*/"Eq Band1 Lev ", "Eq Band2 Lev ", "Eq Band3 Lev ", "Eq Band4 Lev ", "Eq Band5 Lev ",
-//	/*54*/"Reverb Type
-};
-
-typedef struct
-{
-	TControllerSrc controllerSrc;
-	TControllerDst controllerDst;
-	uint8_t minValue;
-	uint8_t maxValue;
-}TControllerData;
+	switch(fontName)
+	{
+		case Font::fntSystem: return 6;
+		default: return 6;
+	}
+}
 
 uint32_t ind_in_p[2];
 uint32_t ind_out_l[2];
 uint16_t ind_poin;
 uint8_t vol_fl;
 uint8_t vol_ind_level_pos;
-//uint8_t edit_modules_fl = 0;
 uint8_t imya_temp;
 
 uint8_t t_po;
 uint8_t t_po1;
 volatile uint8_t t_no;
-//volatile uint32_t p_no1 = 0x1ffff;
 
 void disp_start(uint8_t num)
 {
@@ -176,6 +140,7 @@ void vol_ind(uint8_t xPos, uint8_t indLength)
 //  	  }
 //	GPIO_SetBits(GPIOB,CS);
 }
+
 void tap_ind(uint8_t cur)
 {
 	Set_Page_Address(3);

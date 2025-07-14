@@ -1,4 +1,4 @@
-#include "../paramlistmenu/baseparam.h"
+#include "baseparam.h"
 
 #include "BF706_send.h"
 #include "enc.h"
@@ -150,7 +150,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 			else
 			{
 				DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, 60000/delay_time);
-				DisplayTask->StringOut(m_xDisplayPosition + 45, yDisplayPosition, TDisplayTask::fntSystem, 0, (uint8_t*)"BPM");
+				DisplayTask->StringOut(m_xDisplayPosition + 24, yDisplayPosition, Font::fntSystem, 0, (uint8_t*)"BPM");
 			}
 			break;
 		}

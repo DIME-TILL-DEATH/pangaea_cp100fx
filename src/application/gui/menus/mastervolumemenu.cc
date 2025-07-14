@@ -16,7 +16,7 @@ MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 	params[1]->setDisplayPosition(85);
 
 	setParams(params, paramCount);
-	setIcon(false, 0);
+	setIcon(false, ICON_NONE);
 }
 
 void MasterVolumeMenu::encoderClockwise()

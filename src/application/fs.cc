@@ -1,7 +1,7 @@
 #include "fs.h"
 #include "cs.h"
 #include "format.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "display.h"
 uint8_t print_flag;
 
@@ -41,9 +41,9 @@ void TFSTask::Code()
 		{
 			Delay(10);
 			DisplayTask->Clear();
-			DisplayTask->StringOut(4, 0, TDisplayTask::fntSystem, TDisplayTask::fnsBlack,
+			DisplayTask->StringOut(4, 0, Font::fntSystem, Font::fnsBlack,
 					(uint8_t*)FSTask->Object().dir.c_str());
-			DisplayTask->StringOut(4, 1, TDisplayTask::fntSystem, TDisplayTask::fnsBlack,
+			DisplayTask->StringOut(4, 1, Font::fntSystem, Font::fnsBlack,
 					(uint8_t*)FSTask->Object().name.c_str());
 		}
 	}

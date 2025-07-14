@@ -43,8 +43,8 @@ void CabBrowserMenu::show(TShowMode showMode)
 		}
 		else
 		{
-			DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"There is no directory"); //imp_dir_n
-			DisplayTask->StringOut(42, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"IMPULSE");	//imp_dir_no
+			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"There is no directory"); //imp_dir_n
+			DisplayTask->StringOut(42, 3, Font::fntSystem, 0, (uint8_t*)"IMPULSE");	//imp_dir_no
 			CSTask->CS_del(1000);
 			DisplayTask->Clear();
 
@@ -56,9 +56,9 @@ void CabBrowserMenu::show(TShowMode showMode)
 		DisplayTask->Clear();
 
 		if(!sd_init_fl)
-			DisplayTask->StringOut(6, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"MicroSD is not ready"); //sd_nr
+			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is not ready"); //sd_nr
 		else
-			DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"MicroSD is loading..");  //sd_lo
+			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is loading..");  //sd_lo
 
 		CSTask->CS_del(1000);
 		DisplayTask->Clear();

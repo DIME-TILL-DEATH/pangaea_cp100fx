@@ -1,7 +1,7 @@
 #ifndef SRC_APPLICATION_GUI_MENUS_PARAMLISTMENU_STRINGOUTPARAM_H_
 #define SRC_APPLICATION_GUI_MENUS_PARAMLISTMENU_STRINGOUTPARAM_H_
 
-#include "../paramlistmenu/baseparam.h"
+#include "baseparam.h"
 
 //#include "../abstractmenu.h"
 

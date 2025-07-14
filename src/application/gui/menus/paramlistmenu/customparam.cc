@@ -76,7 +76,7 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 		case TDisplayType::String:
 		{
 			if(*m_valuePtr < m_stringCount)
-				DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, TDisplayTask::fntSystem , 0, (uint8_t*)m_strings[*m_valuePtr]);
+				DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, Font::fntSystem , 0, (uint8_t*)m_strings[*m_valuePtr]);
 			break;
 		}
 

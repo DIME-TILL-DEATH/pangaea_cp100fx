@@ -1,6 +1,5 @@
-
 #ifndef ALLFONTS_H_
-#define ALLFONTS_H
+#define ALLFONTS_H_
 
 #include "appdefs.h"
 #include "ER_OLEDM023-1B.h"
@@ -15,6 +14,32 @@
 
 #define disp_orient 0
 
+namespace Font
+{
+	typedef enum
+	{
+		fnsBlack = 0,
+		fnsWhite,
+		fnsBlackUnderline,
+		fnsCount
+	}TFontState;
+
+	typedef enum
+	{
+		fnt12x13 = 0,
+		fnt33x30,
+		fntSystem,
+		fntCount
+	}TFontName;
+
+	typedef struct
+	{
+		TFontName name;
+		uint8_t curs;
+	}TFontStruct;
+
+	uint8_t symbolWidth(TFontName fontName);
+};
 
 extern const uint8_t syst[];
 extern const uint8_t equ[];

@@ -4,7 +4,8 @@
 #include "appdefs.h"
 #include "modules.h"
 
-#include "gui/elements/icon_bit.h"
+#include "allFonts.h"
+#include "icon_bit.h"
 
 #define FILE_NAME_LENGTH 64
 
@@ -19,28 +20,6 @@ public:
 		wrdData,
 		wrdCount
 	}TWriteRegDest;
-
-	typedef enum
-	{
-		fnt12x13 = 0,
-		fnt33x30,
-		fntSystem,
-		fntCount
-	}TFontName;
-
-	typedef enum
-	{
-		fnsBlack = 0,
-		fnsWhite,
-		fnsBlackUnderline,
-		fnsCount
-	}TFontState;
-
-	typedef struct
-	{
-		TFontName name;
-		uint8_t curs;
-	}TFont;
 
 	typedef struct
 	{
@@ -151,28 +130,28 @@ public:
 	typedef struct
 	{
 		TPos pos;
-		TFont font;
+		Font::TFontStruct font;
 		uint8_t count;
 	}TClear_strParams;
 
 	typedef struct
 	{
 		TPos pos;
-		TFont font;
+		Font::TFontStruct font;
 		uint8_t symbol;
 	}TSymbolOutParams;
 
 	typedef struct
 	{
 		TPos pos;
-		TFont font;
+		Font::TFontStruct font;
 		uint8_t string[FILE_NAME_LENGTH];
 	}TStringOutParams;
 
 	typedef struct
 	{
 		TPos pos;
-		TFont font;
+		Font::TFontStruct font;
 		uint32_t val;
 	} TNumberOutParams;
 
@@ -322,14 +301,14 @@ public:
 
 	void WriteReg(TWriteRegDest dest, uint32_t data);
 	void Clear();
-	void Clear_str(uint8_t x, uint8_t y, TFontName name, uint8_t count);
-	void SymbolOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, uint8_t symbol);
+	void Clear_str(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count);
+	void SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol);
 
-	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, uint8_t *string);
-	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, const uint8_t *string);
-	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, const char *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const uint8_t *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
 
-	void NumberOut(uint8_t x, uint8_t y, TFontName name, TFontState state, uint32_t val);
+	void NumberOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState state, uint32_t val);
 	void SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
 	void VolIndicator();
 //	void Menu_init(void);

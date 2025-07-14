@@ -18,7 +18,7 @@ void MidiMapMenu::show(TShowMode swhoMode)
 
 	DisplayTask->Clear();
 	DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
-	DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"->");
+	DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)"->");
 	DisplayTask->ParamIndicNum(36, 0, sys_para[MIDI_MAP_START + m_pcNum] + 1);
 }
 
@@ -27,14 +27,14 @@ void MidiMapMenu::task()
 	if(!m_encoderKnobSelected)
 	{
 		if(blinkFlag_fl)
-			DisplayTask->Clear_str(3, 0, TDisplayTask::fntSystem, 3);
+			DisplayTask->Clear_str(3, 0, Font::fntSystem, 3);
 		else
 			DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
 	}
 	else
 	{
 		if(blinkFlag_fl)
-			DisplayTask->Clear_str(36, 0, TDisplayTask::fntSystem, 3);
+			DisplayTask->Clear_str(36, 0, Font::fntSystem, 3);
 		else
 			DisplayTask->ParamIndicNum(36, 0, sys_para[MIDI_MAP_START + m_pcNum] + 1);
 	}

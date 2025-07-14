@@ -63,7 +63,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 
 
 	setParams(params, paramNum);
-	setIcon(false, 0);
+	setIcon(false, ICON_NONE);
 
 }
 
@@ -76,8 +76,8 @@ void MasterEqMenu::show(TShowMode showMode)
 	DisplayTask->Clear();
 	if(!sys_para[MASTER_EQ_ON])
 	{
-		DisplayTask->StringOut(12, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"Master EQ Bypass");
-		DisplayTask->StringOut(1, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"EQ on/off press EDIT");
+		DisplayTask->StringOut(12, 1, Font::fntSystem, 0, (uint8_t*)"Master EQ Bypass");
+		DisplayTask->StringOut(1, 3, Font::fntSystem, 0, (uint8_t*)"EQ on/off press EDIT");
 	}
 	else
 	{
@@ -91,7 +91,7 @@ void MasterEqMenu::task()
 
 	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem, blinkFlag_fl * 2, m_paramsList[m_currentParamNum]->name());
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem, blinkFlag_fl * 2, m_paramsList[m_currentParamNum]->name());
 	}
 }
 
@@ -102,13 +102,13 @@ void MasterEqMenu::encoderPressed()
 	if(!m_encoderKnobSelected)
 	{
 		m_encoderKnobSelected = true;
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
 								2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 	else
 	{
 		m_encoderKnobSelected = false;
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
 								0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 

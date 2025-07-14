@@ -3,7 +3,8 @@
 
 #include "abstractmenu.h"
 
-#include "../../display.h"
+#include "display.h"
+#include "icon_bit.h"
 
 #include "BF706_send.h"
 #include "modules.h"
@@ -33,7 +34,7 @@ public:
 
 	static constexpr uint8_t maxParamCount = 16;
 
-	void setIcon(bool drawIcon, uint8_t iconNumber);
+	void setIcon(bool drawIcon, icon_t icon);
 
 	static constexpr uint8_t paramsOnPage = 4;
 	static constexpr uint8_t leftPad = 3;
@@ -59,6 +60,8 @@ protected:
 	int8_t m_currentPageNumber{-1};
 
 	uint8_t m_pagesCount;
+
+	icon_t m_icon;
 
 	bool m_encoderKnobSelected;
 

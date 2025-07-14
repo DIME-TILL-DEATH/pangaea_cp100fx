@@ -40,6 +40,7 @@ MainMenu::MainMenu()
 void MainMenu::show(TShowMode swhoMode)
 {
 	currentMenu = this;
+	shownChildMenu = nullptr;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
@@ -67,7 +68,7 @@ void MainMenu::task()
 		{
 			if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update) == 1)
 			{
-				DisplayTask->Clear_str(87 , 0 , TDisplayTask::fnt33x30 , 39);
+				DisplayTask->Clear_str(87 , 0 , Font::fnt33x30 , 39);
 				if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))
 				{
 					DisplayTask->IndFoot(2,contr_kn[2]);

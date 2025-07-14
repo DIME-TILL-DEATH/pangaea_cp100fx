@@ -158,7 +158,7 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 
 		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
 		paramsMenu->setParams(params, paramNum);
-		paramsMenu->setIcon(false, 0);
+		paramsMenu->setIcon(false, ICON_NONE);
 
 		menu = paramsMenu;
 	}
@@ -197,7 +197,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	{
 		menu->setParams(params, paramNum);
 		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1);
-		menu->setIcon(false, 0);
+		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
 		runningString->setRunning(true, menu);
@@ -233,7 +233,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	{
 		menu->setParams(params, paramNum);
 		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2);
-		menu->setIcon(false, 0);
+		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
 		menu->setRunningString(runningString);
@@ -402,7 +402,7 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 //	temp = enc_speed_inc(temp , 240);
 //	delay_time = 60000 / temp;
 //	DisplayTask->ParamIndicNum(53,0,temp);
-//	DisplayTask->StringOut(90,0,TDisplayTask::fntSystem , 0 , (uint8_t*)"BPM");
+//	DisplayTask->StringOut(90,0,Font::fntSystem , 0 , (uint8_t*)"BPM");
 //}
 //else {
 //	temp = 240;
@@ -431,7 +431,11 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 	params[2]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TAIL_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_TAP_DELAY);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setIcon(true, ICON_DL);
+	}
 
 	return menu;
 }

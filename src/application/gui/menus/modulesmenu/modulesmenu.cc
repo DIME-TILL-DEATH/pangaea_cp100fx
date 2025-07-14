@@ -188,7 +188,7 @@ void ModulesMenu::key2()
 	if(menu)
 	{
 		menu->setParams(params, paramCount);
-		menu->setIcon(false, 0);
+		menu->setIcon(false, ICON_NONE);
 		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
 	}
 
@@ -250,8 +250,8 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		  }
 		  else
 		  {
-			  DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, "There is no directory");
-			  DisplayTask->StringOut(42, 3, TDisplayTask::fntSystem, 0, "IMPULSE");
+			  DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "There is no directory");
+			  DisplayTask->StringOut(42, 3, Font::fntSystem, 0, "IMPULSE");
 			  CSTask->CS_del(1000);
 			  currentPreset.modules.rawData[cab] = 0;
 
@@ -261,8 +261,8 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		else
 		{
 			DisplayTask->Clear();
-			if(!sd_init_fl)DisplayTask->StringOut(6, 1, TDisplayTask::fntSystem, 0, "MicroSD is not ready");
-			else DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, "MicroSD is loading..");
+			if(!sd_init_fl)DisplayTask->StringOut(6, 1, Font::fntSystem, 0, "MicroSD is not ready");
+			else DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "MicroSD is loading..");
 			CSTask->CS_del(1000);
 
 			currentPreset.modules.rawData[cab] = 0;

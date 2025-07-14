@@ -46,9 +46,9 @@ void PresetActionsMenu::show(TShowMode showMode)
 	DisplayTask->Prog_ind(targetPresetNum);
 
 	if(m_actionType==TActionType::Copy)
-		DisplayTask->StringOut(10, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Copy to ->");
+		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Copy to ->");
 	else
-		DisplayTask->StringOut(10, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Save to ->");
+		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Save to ->");
 }
 
 void PresetActionsMenu::task()
@@ -56,7 +56,7 @@ void PresetActionsMenu::task()
 	if(blinkFlag_fl==0)
 		DisplayTask->Prog_ind(targetPresetNum);
 	else if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update)==1)
-		DisplayTask->Clear_str(87, 0, TDisplayTask::fnt33x30, 39);
+		DisplayTask->Clear_str(87, 0, Font::fnt33x30, 39);
 }
 
 void PresetActionsMenu::encoderPressed()
@@ -115,7 +115,7 @@ void PresetActionsMenu::updatePresetData()
 		imya1_t[i] = preset_temp[15+i];
 	imya_temp = 1;
 	DisplayTask->Main_scr();
-	DisplayTask->StringOut(10, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Copy to ->");
+	DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Copy to ->");
 	DisplayTask->Prog_ind(targetPresetNum);
 
 	TIM_SetCounter(TIM6, 0x8000);
@@ -128,7 +128,7 @@ void PresetActionsMenu::updatePresetData()
 void PresetActionsMenu::copyPreset()
 {
 	DisplayTask->Clear();
-	DisplayTask->StringOut(38, 2, TDisplayTask::fnt12x13, 0, (uint8_t*)"Copy OK!");
+	DisplayTask->StringOut(38, 2, Font::fnt12x13, 0, (uint8_t*)"Copy OK!");
 
 	// parameter to copy in class?
 	ModulesMenu *modulesMenu = static_cast<ModulesMenu*>(topLevelMenu);
@@ -263,7 +263,7 @@ void PresetActionsMenu::copyPreset()
 void PresetActionsMenu::savePreset()
 {
 	DisplayTask->Clear();
-	DisplayTask->StringOut(38, 2, TDisplayTask::fnt12x13, 0, (uint8_t*)" Save");
+	DisplayTask->StringOut(38, 2, Font::fnt12x13, 0, (uint8_t*)" Save");
 	currentPreset.modules.rawData[147] = delay_time;
 	currentPreset.modules.rawData[148] = delay_time>>8;
 	eepr_write(preselectedPresetNumber);

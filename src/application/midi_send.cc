@@ -122,7 +122,7 @@ void TMidiSendTask::Code()
 //									if((current_menu_type==MENU_CONTROLLERS&&(par_num<3))||(current_menu_type==MENU_TUNER_EXT))
 //									{
 //										uint8_t midi_in_cc[] = "midi in CC#->";
-//										DisplayTask->StringOut(20, 3, TDisplayTask::fntSystem, 0, (uint8_t*)midi_in_cc);
+//										DisplayTask->StringOut(20, 3, Font::fntSystem, 0, (uint8_t*)midi_in_cc);
 //										DisplayTask->ParamIndicNum(100, 3, midi_b[1]);
 //									}
 								}

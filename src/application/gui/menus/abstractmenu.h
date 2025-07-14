@@ -3,7 +3,7 @@
 
 #include "appdefs.h"
 
-#include "paramlistmenu/stringoutparam.h"
+#include "stringoutparam.h"
 
 enum gui_menu_type
 {

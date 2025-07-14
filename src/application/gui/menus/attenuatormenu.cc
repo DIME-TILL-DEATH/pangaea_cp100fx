@@ -1,9 +1,9 @@
 #include "attenuatormenu.h"
 
 #include "eepr.h"
-#include "../gui_task.h"
+#include "gui_task.h"
 
-#include "paramlistmenu/stringlistparam.h"
+#include "stringlistparam.h"
 
 AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	: ParamListMenu(parentMenu, MENU_ATTENUATOR)
@@ -25,7 +25,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	setVolumeIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
 
 	setParams(params, paramCount);
-	setIcon(false, 0);
+	setIcon(false, ICON_NONE);
 
 	DisplayTask->Pot_Write();
 }

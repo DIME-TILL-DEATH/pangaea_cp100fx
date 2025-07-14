@@ -103,5 +103,5 @@ void StringListParam::printParam(uint8_t yDisplayPosition)
 	if(m_disabled) return;
 
 	if(*m_valuePtr < m_stringCount)
-		DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, TDisplayTask::fntSystem , 0, getString(*m_valuePtr));
+		DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, Font::fntSystem , 0, getString(*m_valuePtr));
 }

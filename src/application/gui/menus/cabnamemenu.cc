@@ -35,8 +35,8 @@ void CabNameMenu::task()
 				if(cab2.name[0])
 				{
 					DisplayTask->Clear();
-					DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"2 - ");
-					DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab2.name+1);
+					DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)"2 - ");
+					DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)cab2.name+1);
 					cab_n_fl1 = 0;
 					cab_n_fl2 = 1;
 				}
@@ -48,11 +48,11 @@ void CabNameMenu::task()
 					DisplayTask->Clear();
 					if(cab_type==2)
 					{
-						DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"1 - ");
-						DisplayTask->StringOut(24, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab1.name+1);
+						DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)"1 - ");
+						DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)cab1.name+1);
 					}
 					else
-						DisplayTask->StringOut(0, 0, TDisplayTask::fntSystem, 0, (uint8_t*)cab1.name+1);
+						DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)cab1.name+1);
 					cab_n_fl1 = 1;
 					cab_n_fl2 = 0;
 				}
@@ -83,10 +83,10 @@ void CabNameMenu::show(TShowMode showMode)
 		{
 			if(cab_type == 2)
 			{
-				DisplayTask->StringOut(0,0,TDisplayTask::fntSystem,0,(uint8_t*)"1 - ");
-				DisplayTask->StringOut(24,0,TDisplayTask::fntSystem,0,(uint8_t*)cab1.name + 1);
+				DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)"1 - ");
+				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab1.name + 1);
 			}
-			else DisplayTask->StringOut(0,0,TDisplayTask::fntSystem,0,(uint8_t*)cab1.name + 1);
+			else DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)cab1.name + 1);
 
 			cab_n_fl1 = 1;
 			cab_n_fl2 = 0;
@@ -95,8 +95,8 @@ void CabNameMenu::show(TShowMode showMode)
 		{
 			if(cab_type == 2)
 			{
-				DisplayTask->StringOut(0,0,TDisplayTask::fntSystem,0,(uint8_t*)"2 - ");
-				DisplayTask->StringOut(24,0,TDisplayTask::fntSystem,0,(uint8_t*)cab2.name + 1);
+				DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)"2 - ");
+				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab2.name + 1);
 				cab_n_fl1 = 0;
 				cab_n_fl2 = 1;
 			}

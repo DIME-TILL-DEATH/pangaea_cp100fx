@@ -42,13 +42,13 @@ void SystemMenu::encoderPressed()
 		if(!m_encoderKnobSelected)
 		{
 			m_encoderKnobSelected = true;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
 									2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 		else
 		{
 			m_encoderKnobSelected = false;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
 									0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 	}
@@ -205,8 +205,8 @@ AbstractMenu* SystemMenu::createMidiPcMapMenu(AbstractMenu* parent)
 void SystemMenu::expressionPrint(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr&0x80) DisplayTask->StringOut(78, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"On >");
-	else DisplayTask->StringOut(78, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Off ");
+	if(*valuePtr&0x80) DisplayTask->StringOut(78, 3, Font::fntSystem, 0, (uint8_t*)"On >");
+	else DisplayTask->StringOut(78, 3, Font::fntSystem, 0, (uint8_t*)"Off ");
 }
 
 void SystemMenu::expressionDescrease(void* parameter)
@@ -237,8 +237,8 @@ void SystemMenu::expressionKeyDown(void* parameter)
 void SystemMenu::tunerExtPrint(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr&0x80) DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"On >");
-	else DisplayTask->StringOut(78, 0, TDisplayTask::fntSystem, 0, (uint8_t*)"Off " );
+	if(*valuePtr&0x80) DisplayTask->StringOut(78, 0, Font::fntSystem, 0, (uint8_t*)"On >");
+	else DisplayTask->StringOut(78, 0, Font::fntSystem, 0, (uint8_t*)"Off " );
 }
 
 void SystemMenu::tunerExtDescrease(void* parameter)
@@ -268,7 +268,7 @@ void SystemMenu::tunerExtKeyDown(void* parameter)
 		{
 			ccMenu->setParams(&ccParam, 1);
 
-			ccMenu->setIcon(false, 0);
+			ccMenu->setIcon(false, ICON_NONE);
 			currentMenu = ccMenu;
 			currentMenu->show();
 		}

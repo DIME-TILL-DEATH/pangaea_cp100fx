@@ -1,4 +1,4 @@
-#include "../paramlistmenu/submenuparam.h"
+#include "submenuparam.h"
 
 #include "BF706_send.h"
 #include "enc.h"
@@ -32,19 +32,17 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 			break;
 		case BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME:
 		{
-			// переделать в CustomParam
-			DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, delay_time);
-
+			// переделать в CustomParam?
 			if(!sys_para[TIME_FORMAT])
 			{
 				DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, delay_time);
-				DisplayTask->StringOut(m_xDisplayPosition + 35, yDisplayPosition,TDisplayTask::fntSystem , 0 , (uint8_t*)" >");
+				DisplayTask->StringOut(m_xDisplayPosition + 35, yDisplayPosition, Font::fntSystem , 0 , (uint8_t*)" >");
 			}
 			else
 			{
 				DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, 60000/delay_time);
-				DisplayTask->StringOut(m_xDisplayPosition + 34, yDisplayPosition, TDisplayTask::fntSystem, 0, (uint8_t*)"BPM");
-				DisplayTask->StringOut(m_xDisplayPosition + 70, yDisplayPosition,TDisplayTask::fntSystem , 0 , (uint8_t*)" >");
+				DisplayTask->StringOut(m_xDisplayPosition + Font::symbolWidth(Font::fntSystem) * 4,
+										yDisplayPosition, Font::fntSystem, 0, (uint8_t*)"BPM>");
 			}
 			break;
 		}

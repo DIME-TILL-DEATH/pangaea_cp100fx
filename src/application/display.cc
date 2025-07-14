@@ -43,15 +43,15 @@ void TDisplayTask::Code()
 			case dcSymbolOut:
 				switch(cmd.SymbolOutParams.font.name)
 				{
-					case fnt12x13 :
+					case Font::fnt12x13 :
 						t12x13_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
 								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
 					break;
-					case fnt33x30:
+					case Font::fnt33x30:
 						t33x30_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
 								cmd.SymbolOutParams.symbol);
 					break;
-					case fntSystem:
+					case Font::fntSystem:
 						Arsys_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
 								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
 					break;
@@ -62,14 +62,14 @@ void TDisplayTask::Code()
 			case dcStringOut:
 				switch(cmd.StringOutParams.font.name)
 				{
-					case fnt12x13:
+					case Font::fnt12x13:
 						t12x13_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y,
 								cmd.StringOutParams.string , cmd.StringOutParams.font.curs);
 					break;
-					case fnt33x30:
+					case Font::fnt33x30:
 
 					break;
-					case fntSystem:
+					case Font::fntSystem:
 						Arsys_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y ,
 								cmd.StringOutParams.string,cmd.StringOutParams.font.curs);
 					break;
@@ -80,13 +80,13 @@ void TDisplayTask::Code()
 			case dcNumberOut:
 				switch(cmd.StringOutParams.font.name)
 				{
-					case fnt12x13:
+					case Font::fnt12x13:
 						//t12x13_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y, cmd.StringOutParams.string );
 					break;
-					case fnt33x30:
+					case Font::fnt33x30:
 						//t33x30_line(cmd.NumberOutParams.pos.x , cmd.NumberOutParams.pos.y , cmd.NumberOutParams.val);
 					break;
-					case fntSystem:
+					case Font::fntSystem:
 						//Arsys_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y , cmd.StringOutParams.string,cmd.StringOutParams.font.state);
 					break;
 					default: break;
@@ -276,7 +276,7 @@ void TDisplayTask::Tap_ind(uint8_t cur)
 	cmd.Tap_indParam.data = cur;
 	Command( &cmd );
 }
-void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, uint8_t symbol)
+void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcSymbolOut;
@@ -287,17 +287,17 @@ void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs,
 	Command(&cmd);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , const char* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , const char* string)
 {
 	StringOut(x, y, name, curs, (uint8_t*)string);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , const uint8_t* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , const uint8_t* string)
 {
 	StringOut(x, y, name, curs, (uint8_t*)string);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , uint8_t* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , uint8_t* string)
 {
 	TDisplayCmd cmd ;
 	cmd.cmd=dcStringOut;
@@ -337,8 +337,8 @@ void TDisplayTask::VolIndicator()
 	switch(m_volIndicatorType)
 	{
 		case VOL_INDICATOR_OFF: return;
-		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Input"); break;
-		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Output"); break;
+		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Input"); break;
+		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Output"); break;
 	}
 
 	TDisplayCmd cmd;
@@ -360,7 +360,7 @@ void TDisplayTask::Prog_ind(uint8_t pro)
 	cmd.Prog_indParam.pro = pro;
 	Command(&cmd);
 }
-void TDisplayTask::Clear_str(uint8_t x, uint8_t y, TFontName name, uint8_t count)
+void TDisplayTask::Clear_str(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcClear_str;

@@ -1,5 +1,6 @@
-#include "../paramlistmenu/stringoutparam.h"
+#include "stringoutparam.h"
 
+#include "abstractmenu.h"
 #include "display.h"
 
 StringOutParam::StringOutParam(const char* stringPtr)
@@ -16,6 +17,8 @@ StringOutParam::StringOutParam(const char* stringPtr)
 
 void StringOutParam::setRunning(bool enable, AbstractMenu* owner)
 {
+//	AbstractMenu* ownerMenu = static_cast<AbstractMenu*>(owner);
+
 	if(enable)
 	{
 		m_running = true;
@@ -32,7 +35,7 @@ void StringOutParam::printParam(uint8_t yDisplayPosition)
 {
 	m_yDisplayPosition = yDisplayPosition;
 
-	if(!m_running) DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, TDisplayTask::fntSystem, 0, (uint8_t*)m_stringPtr);
+	if(!m_running) DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, Font::fntSystem, 0, (uint8_t*)m_stringPtr);
 }
 
 void StringOutParam::task()
@@ -57,7 +60,7 @@ void StringOutParam::task()
 			}
 		}
 
-		DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, TDisplayTask::fntSystem, 0, (uint8_t*)m_nameBuffer);
+		DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, Font::fntSystem, 0, (uint8_t*)m_nameBuffer);
 
 		m_timeCounter = 0;
 	}
