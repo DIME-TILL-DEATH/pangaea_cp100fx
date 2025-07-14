@@ -6,6 +6,7 @@
 #include "amt.h"
 
 #include "BF706_send.h"
+#include "init.h"
 
 #include "controllers.h"
 #include "gui_task.h"
@@ -63,15 +64,31 @@ static void amtver_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
+//	currentPreset.modules.rawData[147] = delay_time;
+//	currentPreset.modules.rawData[148] = delay_time>>8;
+//
+//	send_cab_data(0, currentPresetNumber+1, 0);
+//	if(cab_type == 2)
+//		send_cab_data1(0, currentPresetNumber+1);
+//
+//	preselectedPresetNumber = currentPresetNumber;
+//	sys_para[LAST_PRESET_NUM] = currentPresetNumber;
+//
+//	eepr_write(currentPresetNumber);
+//	prog_ch();
+
 	currentPreset.modules.rawData[147] = delay_time;
 	currentPreset.modules.rawData[148] = delay_time>>8;
-	eepr_write(currentPresetNumber);
-
-//	send_cab_data(0, currentPresetNumber+1, 0);
-//	if(cab_type==2)
-//		send_cab_data1(0, currentPresetNumber+1);
 
 	preselectedPresetNumber = currentPresetNumber;
+	eepr_write(preselectedPresetNumber);
+
+	// Not onle cab data, but preset too
+	send_cab_data(0, preselectedPresetNumber+1, 0);
+	if(cab_type==2)
+		send_cab_data1(0, preselectedPresetNumber+1);
+
+
 	prog_ch();
 
 	msg_console("%s\r\n", args[0]);
@@ -84,9 +101,9 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 		char *end;
 		currentPresetNumber = kgp_sdk_libc::strtol(args[1], &end, 16);
 
-		sys_para[LAST_PRESET_NUM] = currentPresetNumber;
 		preselectedPresetNumber = currentPresetNumber;
 
+		sys_para[LAST_PRESET_NUM] = currentPresetNumber;
 		prog_ch();
 	}
 	msg_console("%s\r\n", args[0]);

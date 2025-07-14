@@ -123,7 +123,7 @@ void FswControlMenu::encoderClockwise()
 			{
 				uint8_t a = *(m_fswControls.k1_cc);
 				if(a<128)
-					a = enc_speed_inc(a, 128);
+					a = BaseParam::encSpeedInc(a, 128);
 				*(m_fswControls.k1_cc) = a;
 
 				if(a == 0)
@@ -135,7 +135,7 @@ void FswControlMenu::encoderClockwise()
 			if(*(m_fswControls.fs) >= Footswitch::FswType::PresetMap1)
 			{
 				uint8_t a = *(m_fswControls.pr_start + m_parNum - 1);
-				a = enc_speed_inc(a, 98);
+				a = BaseParam::encSpeedInc(a, 98);
 				if(a>98) a = 0;
 				*(m_fswControls.pr_start + m_parNum - 1) = a++;
 
@@ -187,7 +187,7 @@ void FswControlMenu::encoderCounterClockwise()
 		{
 			uint8_t a = *(m_fswControls.k1_cc);
 			if(a>0)
-				a = enc_speed_dec(a, 0);
+				a = BaseParam::encSpeedDec(a, 0);
 			*(m_fswControls.k1_cc) = a;
 
 			if(!a)
@@ -199,7 +199,7 @@ void FswControlMenu::encoderCounterClockwise()
 		{
 
 			int8_t a = *(m_fswControls.pr_start + m_parNum - 1);
-			a = enc_speed_dec(a, -1);
+			a = BaseParam::encSpeedDec(a, -1);
 			if(a<0) a = 98;
 
 			*(m_fswControls.pr_start + m_parNum - 1) = a++;

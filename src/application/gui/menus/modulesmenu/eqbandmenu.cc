@@ -81,7 +81,7 @@ void EqBandMenu::encoderClockwise()
 		{
 			if(a<120)
 			{
-				a = enc_speed_inc(a, 120);
+				a = BaseParam::encSpeedInc(a, 120);
 				currentPreset.modules.rawData[f1+m_bandNum+m_paramNum*5] = a;
 				DisplayTask->EqPar(40, 1, a, m_paramNum, m_bandNum);
 				gui_send(22, m_bandNum+m_paramNum*5);
@@ -91,7 +91,7 @@ void EqBandMenu::encoderClockwise()
 		{
 			if(a<100)
 			{
-				a = enc_speed_inc(a, 100);
+				a = BaseParam::encSpeedInc(a, 100);
 				currentPreset.modules.rawData[f1+m_bandNum+m_paramNum*5] = a;
 				DisplayTask->EqPar(40, 0, a, m_paramNum, m_bandNum);
 				DisplayTask->StringOut(80, m_paramNum, Font::fntSystem, 0, (uint8_t*)gerz);
@@ -119,7 +119,7 @@ void EqBandMenu::encoderCounterClockwise()
 		{
 			if(a>-60)
 			{
-				a = enc_speed_dec(a, -60);
+				a = BaseParam::encSpeedDec(a, -60);
 				currentPreset.modules.rawData[f1+m_bandNum+m_paramNum*5] = a;
 				DisplayTask->EqPar(40, 1, a, m_paramNum, m_bandNum);
 				gui_send(22, m_bandNum+m_paramNum*5);
@@ -129,7 +129,7 @@ void EqBandMenu::encoderCounterClockwise()
 		{
 			if(a>-100)
 			{
-				a = enc_speed_dec(a, -100);
+				a = BaseParam::encSpeedDec(a, -100);
 				currentPreset.modules.rawData[f1+m_bandNum+m_paramNum*5] = a;
 				DisplayTask->EqPar(40, 0, a, m_paramNum, m_bandNum);
 				DisplayTask->StringOut(80, m_paramNum, Font::fntSystem, 0, (uint8_t*)gerz);

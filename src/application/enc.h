@@ -35,9 +35,6 @@ private:
 
 };
 
-int16_t enc_speed_inc(int16_t data, int16_t max);
-uint16_t enc_speed_dec(int16_t data, int16_t min);
-
 extern volatile uint8_t encoder_state;
 extern volatile uint8_t encoder_state_updated;
 extern volatile uint8_t encoder_knob_pressed;

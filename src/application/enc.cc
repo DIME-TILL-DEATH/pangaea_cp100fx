@@ -35,116 +35,9 @@ uint8_t k_sys = 0;
 uint8_t k_master = 0;
 uint8_t k_master_eq = 0;
 volatile uint16_t key_reg_in;
-volatile uint8_t key_reg_out[2] =
-{0, 0};
+volatile uint8_t key_reg_out[2] = {0, 0};
 volatile uint16_t key_reg;
 volatile uint8_t num_key_prog;
-
-int16_t enc_speed_inc(int16_t data, int16_t max)
-{
-	TIM_Cmd(TIM6, DISABLE);
-	if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update))
-		data = data+1;
-	else
-	{
-		if(TIM_GetCounter(TIM6)>0x3fff)
-			data += 1;
-		else
-		{
-			if(TIM_GetCounter(TIM6)>0x1fff)
-			{
-				if(data<(max-1))
-					data += 2;
-				else
-					data += 1;
-			}
-			else
-			{
-				if(TIM_GetCounter(TIM6)>0xfff)
-				{
-					if(data<(max-3))
-						data += 4;
-					else
-						data += 1;
-				}
-				else
-				{
-					if(TIM_GetCounter(TIM6)>0x7ff)
-					{
-						if(data<(max-7))
-							data += 8;
-						else
-							data += 1;
-					}
-					else
-					{
-						if(data<(max-49))
-							data += 50;
-						else
-							data += 1;
-					}
-				}
-			}
-		}
-	}
-	TIM_SetCounter(TIM6, 0);
-	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
-	TIM_Cmd(TIM6, ENABLE);
-	return data;
-}
-
-uint16_t enc_speed_dec(int16_t data, int16_t min)
-{
-	TIM_Cmd(TIM6, DISABLE);
-	if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update))
-		data -= 1;
-	else
-	{
-		if(TIM_GetCounter(TIM6)>0x3fff)
-			data -= 1;
-		else
-		{
-			if(TIM_GetCounter(TIM6)>0x1fff)
-			{
-				if(data>(min+1))
-					data -= 2;
-				else
-					data -= 1;
-			}
-			else
-			{
-				if(TIM_GetCounter(TIM6)>0xfff)
-				{
-					if(data>(min+3))
-						data -= 4;
-					else
-						data -= 1;
-				}
-				else
-				{
-					if(TIM_GetCounter(TIM6)>0x7ff)
-					{
-						if(data>(min+7))
-							data -= 8;
-						else
-							data -= 1;
-					}
-					else
-					{
-						if(data>(min+49))
-							data -= 50;
-						else
-							data -= 1;
-					}
-				}
-			}
-		}
-	}
-	TIM_SetCounter(TIM6, 0);
-	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
-	TIM_Cmd(TIM6, ENABLE);
-	return data;
-}
 
 TENCTask *ENCTask;
 //------------------------------------------------------------------------------
@@ -153,12 +46,14 @@ TENCTask::TENCTask() :
 {
 
 }
+
 void tim_start(uint16_t del)
 {
 	TIM_ClearFlag(TIM3, TIM_FLAG_Update);
 	TIM_SetCounter(TIM3, del);
 	TIM_Cmd(TIM3, ENABLE);
 }
+
 void foot_run(uint8_t num)
 {
 	if(tuner_use)
@@ -168,17 +63,18 @@ void foot_run(uint8_t num)
 	}
 	else
 	{
-		switch(sys_para[FSW1_PRESS_TYPE+num])
+		switch(sys_para[FSW1_PRESS_TYPE + num])
 		{
 			case Footswitch::Default:
-				if(currentMenu->menuType()==MENU_MAIN)
+				if(currentMenu->menuType() == MENU_MAIN)
 				{
 					switch(num)
 					{
 						case 0:
-							if((sys_para[FSW2_PRESS_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_PRESS_TYPE]&&sys_para[SWAP_SWITCH]))
+							if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
+									|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
 							{
-								if(preselectedPresetNumber==0)
+								if(preselectedPresetNumber == 0)
 									preselectedPresetNumber = 98;
 								else
 									preselectedPresetNumber -= 1;
@@ -200,9 +96,10 @@ void foot_run(uint8_t num)
 							}
 							else
 							{
-								if((sys_para[FSW2_PRESS_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_PRESS_TYPE]&&sys_para[SWAP_SWITCH]))
+								if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
+										|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
 								{
-									if(preselectedPresetNumber==98)
+									if(preselectedPresetNumber == 98)
 										preselectedPresetNumber = 0;
 									else
 										preselectedPresetNumber += 1;
@@ -220,9 +117,10 @@ void foot_run(uint8_t num)
 						case 2:
 							if(!sys_para[SWAP_SWITCH])
 							{
-								if((sys_para[FSW2_PRESS_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_PRESS_TYPE]&&sys_para[SWAP_SWITCH]))
+								if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
+										|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
 								{
-									if(preselectedPresetNumber==98)
+									if(preselectedPresetNumber == 98)
 										preselectedPresetNumber = 0;
 									else
 										preselectedPresetNumber += 1;
@@ -248,19 +146,19 @@ void foot_run(uint8_t num)
 			case Footswitch::Controller:
 				if(!contr_kn[num])
 				{
-					contr_kn[num] = currentPreset.modules.rawData[fo1+num] = 1;
+					contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 1;
 					ext_data = 127;
 				}
 				else
-					ext_data = contr_kn[num] = currentPreset.modules.rawData[fo1+num] = 0;
-				if(currentMenu->menuType()==MENU_MAIN)
+					ext_data = contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 0;
+				if(currentMenu->menuType() == MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn[num]);
-				if(sys_para[FSW1_CTRL_PRESS_CC+num])
+				if(sys_para[FSW1_CTRL_PRESS_CC + num])
 				{
-					MidiSendTask->key_midi_start(num, contr_kn[num]+1);
+					MidiSendTask->key_midi_start(num, contr_kn[num] + 1);
 					MidiSendTask->Give();
 				}
-				ext_sourc = num+2;
+				ext_sourc = num + 2;
 				ext_fl = 1;
 				CCTask->Give();
 			break;
@@ -270,13 +168,13 @@ void foot_run(uint8_t num)
 			break;
 
 			default: // Preset maps
-				if(currentMenu->menuType()==MENU_MAIN)
+				if(currentMenu->menuType() == MENU_MAIN)
 				{
-					if(num_key_prog==num)
+					if(num_key_prog == num)
 						contr_pr[num]++;
-					if(contr_pr[num]>(sys_para[FSW1_PRESS_TYPE+num]-3))
+					if(contr_pr[num] > (sys_para[FSW1_PRESS_TYPE + num] - 3))
 						contr_pr[num] = 0;
-					preselectedPresetNumber = sys_para[FSW1_PRESS_PR1+num*4+contr_pr[num]];
+					preselectedPresetNumber = sys_para[FSW1_PRESS_PR1 + num * 4 + contr_pr[num]];
 					num_key_prog = num;
 					if(sys_para[FSW2_PRESS_TYPE])
 					{
@@ -321,17 +219,18 @@ void foot_run1(uint8_t num)
 	}
 	else
 	{
-		switch(sys_para[FSW1_HOLD_TYPE+num])
+		switch(sys_para[FSW1_HOLD_TYPE + num])
 		{
 			case 0:
-				if(currentMenu->menuType()==MENU_MAIN)
+				if(currentMenu->menuType() == MENU_MAIN)
 				{
 					switch(num)
 					{
 						case 0:
-							if((sys_para[FSW2_HOLD_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_HOLD_TYPE]&&sys_para[SWAP_SWITCH]))
+							if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
+									|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
 							{
-								if(preselectedPresetNumber==0)
+								if(preselectedPresetNumber == 0)
 									preselectedPresetNumber = 98;
 								else
 									preselectedPresetNumber -= 1;
@@ -353,14 +252,15 @@ void foot_run1(uint8_t num)
 							}
 							else
 							{
-								if((sys_para[FSW2_HOLD_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_HOLD_TYPE]&&sys_para[SWAP_SWITCH]))
+								if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
+										|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
 								{
-									if(preselectedPresetNumber==98)
+									if(preselectedPresetNumber == 98)
 										preselectedPresetNumber = 0;
 									else
 										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									 currentPresetNumber = preselectedPresetNumber;
+									currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -373,14 +273,15 @@ void foot_run1(uint8_t num)
 						case 2:
 							if(!sys_para[SWAP_SWITCH])
 							{
-								if((sys_para[FSW2_HOLD_TYPE]&&!sys_para[SWAP_SWITCH])||(sys_para[FSW3_HOLD_TYPE]&&sys_para[SWAP_SWITCH]))
+								if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
+										|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
 								{
-									if(preselectedPresetNumber==98)
+									if(preselectedPresetNumber == 98)
 										preselectedPresetNumber = 0;
 									else
 										preselectedPresetNumber += 1;
 									encoder_knob_pressed = 1;
-									 currentPresetNumber = preselectedPresetNumber;
+									currentPresetNumber = preselectedPresetNumber;
 								}
 								else
 								{
@@ -401,21 +302,21 @@ void foot_run1(uint8_t num)
 			case 1:
 				if(!contr_kn1[num])
 				{
-					contr_kn1[num] = currentPreset.modules.rawData[fo11+num] = 1;
+					contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 1;
 					ext_data = 127;
 				}
 				else
-					ext_data = contr_kn1[num] = currentPreset.modules.rawData[fo11+num] = 0;
+					ext_data = contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 0;
 
-				if(currentMenu->menuType()==MENU_MAIN)
+				if(currentMenu->menuType() == MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn1[num]);
 
-				if(sys_para[FSW1_CTRL_HOLD_CC+num])
+				if(sys_para[FSW1_CTRL_HOLD_CC + num])
 				{
-					MidiSendTask->key_midi_start1(num, contr_kn1[num]+1);
+					MidiSendTask->key_midi_start1(num, contr_kn1[num] + 1);
 					MidiSendTask->Give();
 				}
-				ext_sourc = sys_para[FSW1_CTRL_HOLD_CC+num]+4;
+				ext_sourc = sys_para[FSW1_CTRL_HOLD_CC + num] + 4;
 				ext_fl = 1;
 				CCTask->Give();
 			break;
@@ -424,29 +325,29 @@ void foot_run1(uint8_t num)
 				CSTask->Give();
 			break;
 			default:
-				if(currentMenu->menuType()==MENU_MAIN)
+				if(currentMenu->menuType() == MENU_MAIN)
 				{
 					if(contr_pr[num] > (sys_para[FSW1_HOLD_TYPE + num] - 3))
 						contr_pr[num] = 0;
-					preselectedPresetNumber = sys_para[FSW1_HOLD_PR1+num*4+contr_pr[num]++];
+					preselectedPresetNumber = sys_para[FSW1_HOLD_PR1 + num * 4 + contr_pr[num]++];
 
 					if(sys_para[FSW2_HOLD_TYPE]) // && !sys_para[fsm2]
 					{
 						if(!sys_para[FSW2_MODE])
 						{
-							 currentPresetNumber = preselectedPresetNumber;
+							currentPresetNumber = preselectedPresetNumber;
 							encoder_knob_pressed = 1;
 						}
 						else
 						{
 							if(sys_para[FSW2_PRESS_TYPE]) ////??????
 							{
-								 currentPresetNumber = preselectedPresetNumber;
+								currentPresetNumber = preselectedPresetNumber;
 								encoder_knob_pressed = 1;
 							}
 							else
 							{
-								 currentPresetNumber = --preselectedPresetNumber;
+								currentPresetNumber = --preselectedPresetNumber;
 								encoder_state_updated = 1;
 								encoder_state = 2;
 							}
@@ -454,7 +355,7 @@ void foot_run1(uint8_t num)
 					}
 					else
 					{
-						 currentPresetNumber = --preselectedPresetNumber;
+						currentPresetNumber = --preselectedPresetNumber;
 						encoder_state_updated = 1;
 						encoder_state = 2;
 					}
@@ -464,18 +365,23 @@ void foot_run1(uint8_t num)
 		}
 	}
 }
-uint8_t kn2_in_fl;
-uint8_t fsw1_in_fl;
-uint8_t fsw2_in_fl;
-uint8_t fsw3_in_fl;
-uint8_t fsw1_in_fl1;
-uint8_t fsw2_in_fl1;
-uint8_t fsw3_in_fl1;
+
+uint8_t kn2_in_fl = 0;
+
+uint8_t fsw1_in_fl = 0;
+uint8_t fsw2_in_fl = 0;
+uint8_t fsw3_in_fl = 0;
+uint8_t fsw1_in_fl1 = 0;
+uint8_t fsw2_in_fl1 = 0;
+uint8_t fsw3_in_fl1 = 0;
+
 uint8_t tim3_end_fl = 0;
+
 uint8_t name_temp_buf[22];
 uint8_t name_temp_po = 0;
 uint32_t name_temp_po_time = 0;
 uint8_t name_run_fl = 0;
+
 volatile uint8_t enc_run = 0;
 volatile uint32_t reset_disp_count = 0;
 
@@ -488,7 +394,7 @@ void TENCTask::Code()
 	TIM_Cmd(TIM3, ENABLE);
 	while(1)
 	{
-		if((key_reg!=31212)&&(!kn2_in_fl)&&(!fsw1_in_fl)&&(!fsw2_in_fl)&&(!fsw3_in_fl))
+		if((key_reg != 31212) && (!kn2_in_fl) && (!fsw1_in_fl) && (!fsw2_in_fl) && (!fsw3_in_fl))
 		{
 			tim_start(0xf700);
 			switch(key_reg)
@@ -536,7 +442,7 @@ void TENCTask::Code()
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[FSW_SPEED]*(8000.0f/127.0f)+55000);
+							tim_start(sys_para[FSW_SPEED] * (8000.0f / 127.0f) + 55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
@@ -549,7 +455,7 @@ void TENCTask::Code()
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[FSW_SPEED]*(8000.0f/127.0f)+55000);
+							tim_start(sys_para[FSW_SPEED] * (8000.0f / 127.0f) + 55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
@@ -562,7 +468,7 @@ void TENCTask::Code()
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[FSW_SPEED]*(8000.0f/127.0f)+55000);
+							tim_start(sys_para[FSW_SPEED] * (8000.0f / 127.0f) + 55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
@@ -570,7 +476,7 @@ void TENCTask::Code()
 			}
 			blinkFlag_fl = 1;
 		}
-		if(key_reg==31212)
+		if(key_reg == 31212)
 		{
 			if(sys_para[FSW1_MODE] == Footswitch::Double)
 			{
@@ -609,17 +515,18 @@ void TENCTask::Code()
 		if(TIM_GetFlagStatus(TIM3, TIM_FLAG_Update))
 		{
 			//TIM_ClearFlag(TIM3,TIM_FLAG_Update);
-			if(key_reg==31212)
+			if(key_reg == 31212)
 				kn2_in_fl = fsw1_in_fl = fsw2_in_fl = fsw3_in_fl = tim3_end_fl = 0;
 		}
 //---------------------------------------------Run string-------------------------------------
-		StringOutParam* runningString = currentMenu->getRunningString();
-		if(runningString) runningString->task();
+		StringOutParam *runningString = currentMenu->getRunningString();
+		if(runningString)
+			runningString->task();
 
 //----------------------------------------------------LED FX-----------------------------------------------
 		uint8_t a = 0;
-		for(uint8_t i = 0; i<14; i++)
-			if(i!=0&&i!=1&&i!=10)
+		for(uint8_t i = 0; i < 14; i++)
+			if(i != 0 && i != 1 && i != 10)
 				a += currentPreset.modules.rawData[i];
 		if(a)
 			GPIO_SetBits(GPIOB, GPIO_Pin_14);
@@ -632,12 +539,11 @@ void TENCTask::Code()
 			SD_TESTTask->Give();
 		}
 //----------------------------------------------------Test USB-----------------------------------
-		if(usb_flag==0)
+		if(usb_flag == 0)
 		{
-			if(GPIOA->IDR&GPIO_Pin_9)
+			if(GPIOA->IDR & GPIO_Pin_9)
 			{
 				usb_flag = 1;
-
 
 				while(currentMenu->menuType() != MENU_MAIN)
 				{
@@ -649,11 +555,11 @@ void TENCTask::Code()
 		}
 		else
 		{
-			if(!(GPIOA->IDR&GPIO_Pin_9))
+			if(!(GPIOA->IDR & GPIO_Pin_9))
 			{
 //				if(usb_connect_type == TUsbTask::mMSC)
 //				{
-					NVIC_SystemReset();
+				NVIC_SystemReset();
 //				}
 //				else
 //				{
@@ -671,7 +577,7 @@ extern "C" void DMA1_Stream5_IRQHandler()
 	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
 	DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
 	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TCIF6);
-	key_reg = key_reg_in&0x7fff;
+	key_reg = key_reg_in & 0x7fff;
 	DMA_Cmd(DMA1_Stream6, DISABLE);
 	DMA1_Stream6->NDTR = 2;
 	GPIO_SetBits(GPIOC, GPIO_Pin_4);
@@ -683,7 +589,7 @@ extern "C" void TIM3_IRQHandler()
 	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 	tim3_end_fl = 1;
-	if(fsw1_in_fl||fsw2_in_fl||fsw3_in_fl)
+	if(fsw1_in_fl || fsw2_in_fl || fsw3_in_fl)
 	{
 		if(fsw1_in_fl)
 		{
@@ -710,21 +616,21 @@ extern "C" void TIM3_IRQHandler()
 }
 uint16_t mediann_tap(uint16_t *array, int length)  // массив и его длина
 {
-	uint16_t slit = length/2;
-	for(uint16_t i = 0; i<length; i++)
+	uint16_t slit = length / 2;
+	for(uint16_t i = 0; i < length; i++)
 	{
 		uint16_t s1 = 0, s2 = 0;
 		uint16_t val = array[i];
-		for(int j = 0; j<length; j++)
+		for(int j = 0; j < length; j++)
 		{
-			if(array[j]<val)
+			if(array[j] < val)
 			{
-				if(++s1>slit)
+				if(++s1 > slit)
 					goto aaa;
 			}
-			else if(array[j]>val)
+			else if(array[j] > val)
 			{
-				if(++s2>slit)
+				if(++s2 > slit)
 					goto aaa;
 			}
 		}

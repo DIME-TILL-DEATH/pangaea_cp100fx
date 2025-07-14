@@ -60,8 +60,9 @@ void clean_flag(void)
 extern volatile uint8_t pc_mute_fl;
 void prog_ch(void)
 {
-	gui_send(32, currentPresetNumber);
-//	eepr_read_prog_data(currentPresetNumber);
+//	gui_send(32, currentPresetNumber);
+	DSP_gui_set_parameter(DSP_ADDRESS_LOAD_PRESET, currentPresetNumber, 0);
+
 	EEPROM_loadPreset(currentPresetNumber);
 	pc_mute_fl = 0;
 

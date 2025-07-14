@@ -145,7 +145,7 @@ void ExpressionMenu::encoderClockwise()
 				case 2:
 					if(sys_para[EXPR_CCN] < 128)
 					{
-						sys_para[EXPR_CCN] = enc_speed_inc(sys_para[EXPR_CCN], 100);
+						sys_para[EXPR_CCN] = BaseParam::encSpeedInc(sys_para[EXPR_CCN], 100);
 						if(!sys_para[EXPR_CCN])
 							DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
 						else
@@ -198,7 +198,7 @@ void ExpressionMenu::encoderCounterClockwise()
 				case 2:
 					if(sys_para[EXPR_CCN]>0)
 					{
-						sys_para[EXPR_CCN] = enc_speed_dec(sys_para[EXPR_CCN], 0);
+						sys_para[EXPR_CCN] = BaseParam::encSpeedDec(sys_para[EXPR_CCN], 0);
 						if(!sys_para[EXPR_CCN])
 							DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
 						else

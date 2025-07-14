@@ -71,6 +71,12 @@ enum
 	MASTER_EQ_FREQ_HI
 };
 
+enum
+{
+	TIME_FORMAT_SEC,
+	TIME_FORMAT_BPM
+};
+
 extern int16_t mstEqMidFreq;
 
 extern uint16_t delay_time;

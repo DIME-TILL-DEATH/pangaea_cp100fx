@@ -151,7 +151,7 @@ void ControllersMenu::encoderClockwise()
 				if(currentPreset.controller[m_controllerNum].src < 132)
 				{
 					DisplayTask->Clear_str(45, 1, Font::fntSystem, 13);
-					currentPreset.controller[m_controllerNum].src = enc_speed_inc(currentPreset.controller[m_controllerNum].src, 132);
+					currentPreset.controller[m_controllerNum].src = BaseParam::encSpeedInc(currentPreset.controller[m_controllerNum].src, 132);
 
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::Expression)
 					{
@@ -200,7 +200,7 @@ void ControllersMenu::encoderClockwise()
 			case ControllerMenuParams::MinValue:
 				if(currentPreset.controller[m_controllerNum].minVal < 127)
 				{
-					currentPreset.controller[m_controllerNum].minVal = enc_speed_inc(currentPreset.controller[m_controllerNum].minVal, 127);
+					currentPreset.controller[m_controllerNum].minVal = BaseParam::encSpeedInc(currentPreset.controller[m_controllerNum].minVal, 127);
 					DisplayTask->ParamIndic(45, 0, currentPreset.controller[m_controllerNum].minVal);
 				}
 			break;
@@ -208,7 +208,7 @@ void ControllersMenu::encoderClockwise()
 			case ControllerMenuParams::MaxValue:
 				if(currentPreset.controller[m_controllerNum].maxVal < 127)
 				{
-					currentPreset.controller[m_controllerNum].maxVal = enc_speed_inc(currentPreset.controller[m_controllerNum].maxVal, 127);
+					currentPreset.controller[m_controllerNum].maxVal = BaseParam::encSpeedInc(currentPreset.controller[m_controllerNum].maxVal, 127);
 					DisplayTask->ParamIndic(45, 1, currentPreset.controller[m_controllerNum].maxVal);
 				}
 			break;
@@ -230,7 +230,7 @@ void ControllersMenu::encoderClockwise()
 
 				if(a < 127)
 				{
-					a = enc_speed_inc(a, 127);
+					a = BaseParam::encSpeedInc(a, 127);
 					DisplayTask->ParamIndicNum(45, 3, a + 1);
 					currentPreset.set = a | 0x80;
 				}
@@ -339,7 +339,7 @@ void ControllersMenu::encoderCounterClockwise()
 				if(currentPreset.controller[m_controllerNum].src > 0)
 				{
 					DisplayTask->Clear_str(45, 1, Font::fntSystem, 13);
-					currentPreset.controller[m_controllerNum].src = enc_speed_dec(currentPreset.controller[m_controllerNum].src, 0);
+					currentPreset.controller[m_controllerNum].src = BaseParam::encSpeedDec(currentPreset.controller[m_controllerNum].src, 0);
 
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswUp)
 					{
@@ -389,14 +389,14 @@ void ControllersMenu::encoderCounterClockwise()
 			case ControllerMenuParams::MinValue:
 				if(currentPreset.controller[m_controllerNum].minVal > 0)
 				{
-					currentPreset.controller[m_controllerNum].minVal = enc_speed_dec(currentPreset.controller[m_controllerNum].minVal, 0);
+					currentPreset.controller[m_controllerNum].minVal = BaseParam::encSpeedDec(currentPreset.controller[m_controllerNum].minVal, 0);
 					DisplayTask->ParamIndic(45, 0, currentPreset.controller[m_controllerNum].minVal);
 				}
 			break;
 			case ControllerMenuParams::MaxValue:
 				if(currentPreset.controller[m_controllerNum].maxVal > 0)
 				{
-					currentPreset.controller[m_controllerNum].maxVal = enc_speed_dec(currentPreset.controller[m_controllerNum].maxVal, 0);
+					currentPreset.controller[m_controllerNum].maxVal = BaseParam::encSpeedDec(currentPreset.controller[m_controllerNum].maxVal, 0);
 					DisplayTask->ParamIndic(45, 1, currentPreset.controller[m_controllerNum].maxVal);
 				}
 			break;
@@ -416,7 +416,7 @@ void ControllersMenu::encoderCounterClockwise()
 
 				if(a > 0)
 				{
-					a = enc_speed_dec(a, 0);
+					a = BaseParam::encSpeedDec(a, 0);
 					DisplayTask->ParamIndicNum(45, 3, a + 1);
 					currentPreset.set = a | 0x80;
 				}

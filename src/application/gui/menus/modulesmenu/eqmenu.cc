@@ -135,7 +135,7 @@ void EqMenu::encoderClockwise()
 				case 5:
 					if(currentPreset.modules.rawData[EQ_HPF]<127)
 					{
-						currentPreset.modules.rawData[EQ_HPF] = enc_speed_inc(currentPreset.modules.rawData[EQ_HPF], 127);
+						currentPreset.modules.rawData[EQ_HPF] = BaseParam::encSpeedInc(currentPreset.modules.rawData[EQ_HPF], 127);
 						DisplayTask->ParamIndicNum(33, 0, currentPreset.modules.rawData[EQ_HPF]);
 						DisplayTask->EqLH(currentPreset.modules.rawData[EQ_HPF]*(980.0/127.0)+20.0, 0);
 					}
@@ -143,7 +143,7 @@ void EqMenu::encoderClockwise()
 				case 6:
 					if(currentPreset.modules.rawData[EQ_LPF]>0)
 					{
-						currentPreset.modules.rawData[EQ_LPF] = enc_speed_dec(currentPreset.modules.rawData[EQ_LPF], 0);
+						currentPreset.modules.rawData[EQ_LPF] = BaseParam::encSpeedDec(currentPreset.modules.rawData[EQ_LPF], 0);
 						DisplayTask->ParamIndicNum(33, 1, currentPreset.modules.rawData[EQ_LPF]);
 						DisplayTask->EqLH(powf(127-currentPreset.modules.rawData[EQ_LPF], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 					}
@@ -151,7 +151,7 @@ void EqMenu::encoderClockwise()
 				case 7:
 					if(currentPreset.modules.rawData[pre_v]<127)
 					{
-						currentPreset.modules.rawData[pre_v] = enc_speed_inc(currentPreset.modules.rawData[pre_v], 127);
+						currentPreset.modules.rawData[pre_v] = BaseParam::encSpeedInc(currentPreset.modules.rawData[pre_v], 127);
 						DisplayTask->ParamIndic(56, bandNum-5, currentPreset.modules.rawData[pre_v]);
 					}
 				break;
@@ -213,7 +213,7 @@ void EqMenu::encoderCounterClockwise()
 				case 5:
 					if(currentPreset.modules.rawData[hpf_v]>0)
 					{
-						currentPreset.modules.rawData[hpf_v] = enc_speed_dec(currentPreset.modules.rawData[hpf_v], 0);
+						currentPreset.modules.rawData[hpf_v] = BaseParam::encSpeedDec(currentPreset.modules.rawData[hpf_v], 0);
 						DisplayTask->ParamIndicNum(33, 0, currentPreset.modules.rawData[hpf_v]);
 						DisplayTask->EqLH(currentPreset.modules.rawData[hpf_v]*(980.0/127.0)+20.0, 0);
 					}
@@ -221,7 +221,7 @@ void EqMenu::encoderCounterClockwise()
 				case 6:
 					if(currentPreset.modules.rawData[lpf_v]<127)
 					{
-						currentPreset.modules.rawData[lpf_v] = enc_speed_inc(currentPreset.modules.rawData[lpf_v], 127);
+						currentPreset.modules.rawData[lpf_v] = BaseParam::encSpeedInc(currentPreset.modules.rawData[lpf_v], 127);
 						DisplayTask->ParamIndicNum(33, 1, currentPreset.modules.rawData[lpf_v]);
 						DisplayTask->EqLH(powf(127-currentPreset.modules.rawData[lpf_v], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0, 1);
 					}
@@ -229,7 +229,7 @@ void EqMenu::encoderCounterClockwise()
 				case 7:
 					if(currentPreset.modules.rawData[pre_v]>0)
 					{
-						currentPreset.modules.rawData[pre_v] = enc_speed_dec(currentPreset.modules.rawData[pre_v], 0);
+						currentPreset.modules.rawData[pre_v] = BaseParam::encSpeedDec(currentPreset.modules.rawData[pre_v], 0);
 						DisplayTask->ParamIndic(56, 2, currentPreset.modules.rawData[pre_v]);
 					}
 				break;

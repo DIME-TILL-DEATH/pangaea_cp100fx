@@ -48,7 +48,7 @@ void TCSTask::Code()
 	sem = new TSemaphore (TSemaphore::fstCounting, 4 , 0 ) ;
 	saa = GetCpuClock();
 
-	Gate_Change_Preset ();
+	Gate_Change_Preset();
 	Compressor_init();
 	Compressor_Change_Preset(0,0);
 
@@ -104,7 +104,8 @@ void TCSTask::Code()
 		mstEqMidFreq |= sys_para[MASTER_EQ_FREQ_HI];
 	}
 
-	for(uint8_t i = 0 ; i < 4 ; i++)gui_send(25,i);
+	for(uint8_t i = 0 ; i < 4 ; i++) gui_send(25,i);
+
 	gui_send(18, 14 | (sys_para[120] << 8)); // master eq
 	tun_del_val = (127 - sys_para[TUNER_SPEED]) * (90.0f/127.0f) + 10.0f;
 	Delay(500);

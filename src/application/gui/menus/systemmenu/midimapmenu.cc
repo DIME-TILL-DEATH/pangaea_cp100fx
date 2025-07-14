@@ -61,7 +61,7 @@ void MidiMapMenu::encoderClockwise()
 	{
 		if(m_pcNum < 127)
 		{
-			m_pcNum = enc_speed_inc(m_pcNum, 127);
+			m_pcNum = BaseParam::encSpeedInc(m_pcNum, 127);
 			DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
 			DisplayTask->ParamIndicNum(36, 0, sys_para[MIDI_MAP_START + m_pcNum] + 1);
 		}
@@ -70,7 +70,7 @@ void MidiMapMenu::encoderClockwise()
 	{
 		if(sys_para[MIDI_MAP_START + m_pcNum] < 98)
 		{
-			sys_para[MIDI_MAP_START + m_pcNum] = enc_speed_inc(sys_para[MIDI_MAP_START + m_pcNum], 98);
+			sys_para[MIDI_MAP_START + m_pcNum] = BaseParam::encSpeedInc(sys_para[MIDI_MAP_START + m_pcNum], 98);
 			DisplayTask->ParamIndicNum(36, 0, sys_para[MIDI_MAP_START + m_pcNum] + 1);
 		}
 	}
@@ -84,7 +84,7 @@ void MidiMapMenu::encoderCounterClockwise()
 	{
 		if(m_pcNum > 0)
 		{
-			m_pcNum = enc_speed_dec(m_pcNum, 0);
+			m_pcNum = BaseParam::encSpeedDec(m_pcNum, 0);
 			DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
 			DisplayTask->ParamIndicNum(36, 0, sys_para[MIDI_MAP_START + m_pcNum] + 1);
 		}
@@ -93,7 +93,7 @@ void MidiMapMenu::encoderCounterClockwise()
 	{
 		if(sys_para[MIDI_MAP_START + m_pcNum] > 0)
 		{
-			sys_para[MIDI_MAP_START + m_pcNum] = enc_speed_dec(sys_para[MIDI_MAP_START + m_pcNum], 0);
+			sys_para[MIDI_MAP_START + m_pcNum] = BaseParam::encSpeedDec(sys_para[MIDI_MAP_START + m_pcNum], 0);
 			DisplayTask->ParamIndicNum(36, 0, sys_para[MIDI_MAP_START + m_pcNum] + 1);
 		}
 	}

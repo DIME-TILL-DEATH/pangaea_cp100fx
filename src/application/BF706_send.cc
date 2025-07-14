@@ -274,7 +274,7 @@ void moog_par(uint8_t val)
 
 void dsp_mute(uint8_t val)
 {
-	dsp_send(DSP_ADDRESS_MUTE, val);
+	dsp_send(DSP_ADDRESS_LOAD_PRESET, val);
 }
 
 void global_temp(uint8_t val)
@@ -302,12 +302,14 @@ void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 	;
 	SPI_I2S_SendData(SPI2, num);
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 	SPI_I2S_SendData(SPI2, 2);
 	uint32_t cab_count;
 	if(cab_type != 2)
 		cab_count = 8192;
 	else
 		cab_count = 4096;
+
 	for(uint32_t i = 0; i < cab_count; i++)
 	{
 		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
@@ -373,22 +375,27 @@ void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl)
 		;
 		SPI_I2S_SendData(SPI2, send_buf);
 	}
+
 	for(uint32_t i = 0; i < 512; i++)
 	{
 		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
 		EXTI_ClearITPendingBit(EXTI_Line9);
+
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
 		{
 		}
-		;
+//		;
 		SPI_I2S_SendData(SPI2, 0);
+
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 		if(!menu_fl)
 			SPI_I2S_SendData(SPI2, currentPreset.modules.rawData[i]);
 		else
 			SPI_I2S_SendData(SPI2, preset_temp[i + 30]);
 	}
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }

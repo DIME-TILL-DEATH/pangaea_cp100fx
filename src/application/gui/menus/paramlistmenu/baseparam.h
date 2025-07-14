@@ -16,7 +16,7 @@ public:
 		GUI_PARAMETER_MIX,
 		GUI_PARAMETER_PAN,
 		GUI_PARAMETER_LIST,
-		GUI_PARAMETER_DELAY_TIME,
+//		GUI_PARAMETER_DELAY_TIME,
 		GUI_PARAMETER_SUBMENU_DELAY_TIME,
 		GUI_PARAMETER_SUBMENU,
 		GUI_PARAMETER_CUSTOM,
@@ -73,6 +73,9 @@ public:
 	void setIndicatorType(TIndicatorType indicatorType);
 
 	void setToDsp();
+
+	static int16_t encSpeedInc(int16_t data, int16_t max, uint8_t stepSize = 1);
+	static int16_t encSpeedDec(int16_t data, int16_t min, uint8_t stepSize = 1);
 
 protected:
 	const char* m_name;

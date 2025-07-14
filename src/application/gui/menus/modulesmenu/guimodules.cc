@@ -9,6 +9,7 @@
 
 #include "submenuparam.h"
 #include "stringoutparam.h"
+#include "customparam.h"
 
 #include "preset.h"
 
@@ -391,23 +392,60 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 	return menu;
 }
 
+void delayTimeDecrease(void* parameter)
+{
+	if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+	{
+		if(delay_time > 10) delay_time = BaseParam::encSpeedDec(delay_time, 10);
+	}
+	else
+	{
+		uint16_t tempo = 60000 / delay_time;
+		if(tempo > 25) tempo = BaseParam::encSpeedDec(tempo, 25);
+		else tempo = 25;
+		delay_time = 60000 / tempo;
+	}
 
-//constexpr static uint8_t tap_tim       [][6] ={"1/1  ","1/1.5","1/2  ","1/3  ","1/4  ","2/1  "};
-//constexpr static float   tap_tim_v     [6]   ={1.0f,1.5f,2.0f,3.0f,4.0f,0.5f};
+	currentPreset.modules.rawData[DELAY_TIME_LO] = delay_time & 0xFF;
+	currentPreset.modules.rawData[DELAY_TIME_HI] = delay_time >> 8;
 
-// Отображение в BPM
-//uint16_t temp = 60000 / delay_time;
-//if(temp < 240)
-//{
-//	temp = enc_speed_inc(temp , 240);
-//	delay_time = 60000 / temp;
-//	DisplayTask->ParamIndicNum(53,0,temp);
-//	DisplayTask->StringOut(90,0,Font::fntSystem , 0 , (uint8_t*)"BPM");
-//}
-//else {
-//	temp = 240;
-//	delay_time = 60000 / temp;
-//}
+	DSP_gui_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
+	DSP_gui_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time & 0xFF);
+}
+
+void delayTimeIncrease(void* parameter)
+{
+	if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+	{
+		if(delay_time < 2730) delay_time = BaseParam::encSpeedInc(delay_time, 2730);
+	}
+	else
+	{
+		uint16_t tempo = 60000 / delay_time;
+		if(tempo < 240) tempo = BaseParam::encSpeedInc(tempo, 240);
+		else tempo = 240;
+		delay_time = 60000 / tempo;
+	}
+
+	currentPreset.modules.rawData[DELAY_TIME_LO] = delay_time & 0xFF;
+	currentPreset.modules.rawData[DELAY_TIME_HI] = delay_time >> 8;
+
+	DSP_gui_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
+	DSP_gui_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time & 0xFF);
+}
+
+void delayTimePrint(void* parameter)
+{
+	if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+	{
+		DisplayTask->DelayTimeInd(58, 0, delay_time);
+	}
+	else
+	{
+		DisplayTask->ParamIndicNum(58, 0, 60000/delay_time);
+		DisplayTask->StringOut(58 + 24, 0, Font::fntSystem, 0, (uint8_t*)"BPM");
+	}
+}
 
 AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 {
@@ -416,18 +454,24 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 
 	ParamListMenu* menu;
 
-	// Отдельный класс для delay time
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_DELAY_TIME, "Time", &delay_time);
-	params[0]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS);
-	params[0]->setByteSize(2);
-	params[0]->setBounds(10, 2730);
-	params[0]->setScaling(10, 0);
+//	// Отдельный класс для delay time
+//	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_DELAY_TIME, "Time", &delay_time);
+//	params[0]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS);
+//	params[0]->setByteSize(2);
+//	params[0]->setBounds(10, 2730);
+//	params[0]->setScaling(10, 0);
 
-	params[1] = new StringListParam("TAP", &currentPreset.modules.rawData[TREMOLO_TAP],
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Time", &delay_time);
+	customParam->decreaseCallback = delayTimeDecrease;
+	customParam->increaseCallback = delayTimeIncrease;
+	customParam->printCallback = delayTimePrint;
+	params[0] = customParam;
+
+	params[1] = new StringListParam("TAP", &currentPreset.modules.rawData[DELAY_TAP],
 			{"1/1  ", "1/1.5" ,"1/2  " ,"1/3  " ,"1/4  " ,"2/1  "}, 6);
 	params[1]->setDspAddress(DSP_ADDRESS_DELAY, NOT_SEND_POS);
 
-	params[2] = new StringListParam("Tail", &currentPreset.modules.rawData[REVERB_TAIL], {"On ", "Off"}, 3);
+	params[2] = new StringListParam("Tail", &currentPreset.modules.rawData[DELAY_TAIL], {"On ", "Off"}, 3);
 	params[2]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TAIL_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_TAP_DELAY);
@@ -439,6 +483,8 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 
 	return menu;
 }
+
+
 
 AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 {

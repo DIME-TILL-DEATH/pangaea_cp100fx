@@ -76,7 +76,7 @@ void FswTypeMenu::encoderClockwise()
 	{
 		if(sys_para[FSW_SPEED]<127)
 		{
-			sys_para[FSW_SPEED] = enc_speed_inc(sys_para[FSW_SPEED], 127);
+			sys_para[FSW_SPEED] = BaseParam::encSpeedInc(sys_para[FSW_SPEED], 127);
 			DisplayTask->ParamIndic(58, 3, sys_para[FSW_SPEED]);
 		}
 	}
@@ -97,7 +97,7 @@ void FswTypeMenu::encoderCounterClockwise()
 	{
 		if(sys_para[FSW_SPEED])
 		{
-			sys_para[FSW_SPEED] = enc_speed_dec(sys_para[FSW_SPEED], 0);
+			sys_para[FSW_SPEED] = BaseParam::encSpeedDec(sys_para[FSW_SPEED], 0);
 			DisplayTask->ParamIndic(58, 3, sys_para[FSW_SPEED]);
 		}
 	}
