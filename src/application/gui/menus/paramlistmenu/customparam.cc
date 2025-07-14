@@ -48,11 +48,19 @@ void CustomParam::setStrings(std::initializer_list<const char*> stringList, uint
 void CustomParam::increaseParam()
 {
 	if(increaseCallback) increaseCallback(m_valuePtr);
+	else BaseParam::increaseParam();
 }
 
 void CustomParam::decreaseParam()
 {
 	if(decreaseCallback) decreaseCallback(m_valuePtr);
+	else BaseParam::decreaseParam();
+}
+
+const char* CustomParam::name()
+{
+	if(nameCallback) return nameCallback(m_valuePtr);
+	else return BaseParam::name();
 }
 
 uint32_t CustomParam::value() const
@@ -77,6 +85,24 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 		{
 			if(*m_valuePtr < m_stringCount)
 				DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, Font::fntSystem , 0, (uint8_t*)m_strings[*m_valuePtr]);
+			break;
+		}
+
+		case TDisplayType::Level:
+		{
+			DisplayTask->ParamIndic(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			break;
+		}
+
+		case TDisplayType::Mix:
+		{
+			DisplayTask->ParamIndicMix(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			break;
+		}
+
+		case TDisplayType::Pan:
+		{
+			DisplayTask->ParamIndicPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		}
 

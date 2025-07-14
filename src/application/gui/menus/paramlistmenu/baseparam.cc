@@ -120,6 +120,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 {
 	if(m_disabled)
 	{
+		DisplayTask->Clear_str(m_xDisplayPosition, yDisplayPosition, Font::fntSystem, 8);
 		return;
 	}
 

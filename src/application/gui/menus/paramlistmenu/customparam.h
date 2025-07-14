@@ -9,7 +9,11 @@ public:
 
 	enum TDisplayType
 	{
+		Default,
 		Number,
+		Level,
+		Mix,
+		Pan,
 		String,
 		Custom
 	};
@@ -17,6 +21,7 @@ public:
 	CustomParam(TDisplayType displayType, const char* name, void* paramValuePtr);
 	~CustomParam();
 
+	const char* name() override;
 	uint32_t value() const override;
 	void increaseParam() override;
 	void decreaseParam() override;
@@ -30,6 +35,7 @@ public:
 
 	void (*encoderPressCallback)(void* parameter){nullptr};
 	void (*keyDownCallback)(void* parameter){nullptr};
+	const char* (*nameCallback)(void* parameter){nullptr};
 	void (*printCallback)(void* parameter){nullptr};
 
 private:

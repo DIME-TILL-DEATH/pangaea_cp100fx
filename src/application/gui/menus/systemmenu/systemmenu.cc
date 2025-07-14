@@ -163,7 +163,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	customParam = new CustomParam(CustomParam::TDisplayType::String, "Tempo", &sys_para[TAP_TYPE]);
 	customParam->setStrings({"Preset   ", "Global   ", "Glob+MIDI"}, 10);
 	customParam->setDisplayPosition(38);
-	customParam->decreaseCallback = tempoDescrease;
+	customParam->decreaseCallback = tempoDecrease;
 	customParam->increaseCallback = tempoIncrease;
 	params[7] = customParam;
 
@@ -275,7 +275,7 @@ void SystemMenu::tunerExtKeyDown(void* parameter)
 	}
 }
 
-void SystemMenu::tempoDescrease(void* parameter)
+void SystemMenu::tempoDecrease(void* parameter)
 {
 	sys_para[TAP_HIGH] = 0;
 	if(sys_para[TAP_TYPE] > 0) sys_para[TAP_TYPE]--;

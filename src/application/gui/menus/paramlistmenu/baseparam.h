@@ -37,7 +37,7 @@ public:
 	virtual ~BaseParam() {};
 
 	gui_param_type type() const {return m_type;};
-	const char* name();
+	virtual const char* name();
 	uint8_t* valuePtr() const {return m_valuePtr;};
 
 	virtual uint32_t value() const;

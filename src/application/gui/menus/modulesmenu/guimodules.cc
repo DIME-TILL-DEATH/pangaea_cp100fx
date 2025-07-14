@@ -306,13 +306,22 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	return menu;
 }
 
+const char* rateChorusPrint(void* parameter)
+{
+	if(currentPreset.modules.rawData[CHORUS_TYPE] == 4) return "Detune";
+	else return "Rate  ";
+}
+
 AbstractMenu* GuiModules::createChorusMenu(AbstractMenu* parentMenu)
 {
 	const uint8_t paramNum = 6;
 	BaseParam* params[paramNum];
 
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modules.rawData[CHORUS_MIX]);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &currentPreset.modules.rawData[CHORUS_RATE]);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Level, "Rate", &currentPreset.modules.rawData[CHORUS_RATE]);
+	customParam->nameCallback = rateChorusPrint;
+	params[1] = customParam;
+
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &currentPreset.modules.rawData[CHORUS_WIDTH]);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &currentPreset.modules.rawData[CHORUS_DELAY]);
 	StringListParam* typeSelect = new StringListParam("Type", &currentPreset.modules.rawData[CHORUS_TYPE],
@@ -453,13 +462,6 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 	BaseParam* params[paramNum];
 
 	ParamListMenu* menu;
-
-//	// Отдельный класс для delay time
-//	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_DELAY_TIME, "Time", &delay_time);
-//	params[0]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS);
-//	params[0]->setByteSize(2);
-//	params[0]->setBounds(10, 2730);
-//	params[0]->setScaling(10, 0);
 
 	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Time", &delay_time);
 	customParam->decreaseCallback = delayTimeDecrease;
