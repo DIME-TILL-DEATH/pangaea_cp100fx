@@ -1,10 +1,3 @@
-/*
- * fs_browser.cc
- *
- *  Created on: 31 марта 2014 г.
- *      Author: klen
- */
-
 #include "fs_browser.h"
 #include "fs.h"
 #include "BF706_send.h"
@@ -233,7 +226,7 @@ void TFsBrowser::Load_cab(fs_object_t &object)
 		gui_send(17, 1);
 	//send_codec(0xa301);
 	while(object.name[name_point]&&(name_point<62))
-		name_buf_temp[name_point+1] = object.name[name_point++];
+		name_buf_temp[name_point] = object.name[name_point++]; //name_buf_temp[name_point+1] = object.name[name_point++];
 
 	name_buf_temp[++name_point] = 0;
 	name_buf_temp[0] = name_point;

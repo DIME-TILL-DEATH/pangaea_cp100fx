@@ -218,7 +218,7 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	{
 		Preset::TPresetBrief presetData;
 		EEPROM_loadBriefPreset(p, &presetData);
-		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, presetData.cab1Name, presetData.cab2Name);
+		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, presetData.cab1Name + 1, presetData.cab2Name + 1);
 
 		uint8_t enabled[14];
 		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);
