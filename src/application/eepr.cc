@@ -129,18 +129,18 @@ void eepr_write(uint8_t nu)
 	del_t_b[0] = delay_time;
 	del_t_b[1] = delay_time>>8;
 	f_write(&file, del_t_b, 2, &f_size);
-	f_write(&file, cab1.data, 12288, &f_size);
+	f_write(&file, cab1.data, CAB_DATA_SIZE, &f_size);
 	f_write(&file, cab1.name, 64, &f_size);
 	if(cab_type==2)
 	{
-		f_write(&file, cab2.data, 12288, &f_size);
+		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
 		f_write(&file, cab2.name, 64, &f_size);
 		f_lseek(&file, 38048);
 	}
 	else
 	{
 		f_lseek(&file, 25760);
-		f_write(&file, cab2.data, 12288, &f_size);
+		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
 	}
 	f_write(&file, impulse_path, 512, &f_size);
 	f_close(&file);

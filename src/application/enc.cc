@@ -78,8 +78,9 @@ void foot_run(uint8_t num)
 									preselectedPresetNumber = 98;
 								else
 									preselectedPresetNumber -= 1;
-								encoder_knob_pressed = 1;
+
 								currentPresetNumber = preselectedPresetNumber;
+								encoder_knob_pressed = 1;
 							}
 							else
 							{
@@ -103,8 +104,9 @@ void foot_run(uint8_t num)
 										preselectedPresetNumber = 0;
 									else
 										preselectedPresetNumber += 1;
-									encoder_knob_pressed = 1;
+
 									currentPresetNumber = preselectedPresetNumber;
+									encoder_knob_pressed = 1;
 								}
 								else
 								{
@@ -124,8 +126,9 @@ void foot_run(uint8_t num)
 										preselectedPresetNumber = 0;
 									else
 										preselectedPresetNumber += 1;
-									encoder_knob_pressed = 1;
+
 									currentPresetNumber = preselectedPresetNumber;
+									encoder_knob_pressed = 1;
 								}
 								else
 								{
@@ -174,18 +177,20 @@ void foot_run(uint8_t num)
 						contr_pr[num]++;
 					if(contr_pr[num] > (sys_para[FSW1_PRESS_TYPE + num] - 3))
 						contr_pr[num] = 0;
+
 					preselectedPresetNumber = sys_para[FSW1_PRESS_PR1 + num * 4 + contr_pr[num]];
 					num_key_prog = num;
+
 					if(sys_para[FSW2_PRESS_TYPE])
 					{
-						if(!sys_para[FSW2_MODE])
+						if(sys_para[FSW2_MODE] == Footswitch::FswMode::Single)
 						{
 							currentPresetNumber = preselectedPresetNumber;
 							encoder_knob_pressed = 1;
 						}
 						else
 						{
-							if(sys_para[FSW2_HOLD_TYPE]) //?????????
+							if(sys_para[FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
 							{
 								currentPresetNumber = preselectedPresetNumber;
 								encoder_knob_pressed = 1;
@@ -210,7 +215,7 @@ void foot_run(uint8_t num)
 		}
 	}
 }
-void foot_run1(uint8_t num)
+void foot_hold_run(uint8_t num)
 {
 	if(tuner_use)
 	{
@@ -436,8 +441,10 @@ void TENCTask::Code()
 				break;
 				case 30956:
 					fsw1_in_fl = 1;
-					if(!sys_para[FSW1_MODE])
+					if(sys_para[FSW1_MODE] == Footswitch::FswMode::Single)
+					{
 						foot_run(0);
+					}
 					else
 					{
 						if(!tim3_end_fl)
@@ -449,8 +456,10 @@ void TENCTask::Code()
 				break;    //--------------------DOWN-----------------
 				case 31084:
 					fsw2_in_fl = 1;
-					if(!sys_para[FSW2_MODE])
+					if(sys_para[FSW2_MODE] == Footswitch::FswMode::Single)
+					{
 						foot_run(1);
+					}
 					else
 					{
 						if(!tim3_end_fl)
@@ -463,7 +472,9 @@ void TENCTask::Code()
 				case 31208:
 					fsw3_in_fl = 1;
 					if(!sys_para[FSW3_MODE])
+					{
 						foot_run(2);
+					}
 					else
 					{
 						if(!tim3_end_fl)
@@ -595,21 +606,21 @@ extern "C" void TIM3_IRQHandler()
 		{
 			fsw1_in_fl1 = 1;
 			fsw1_in_fl = 0;
-			foot_run1(0);
+			foot_hold_run(0);
 			fsw1_in_fl1 = 0;
 		}
 		if(fsw2_in_fl)
 		{
 			fsw2_in_fl1 = 1;
 			fsw2_in_fl = 0;
-			foot_run1(1);
+			foot_hold_run(1);
 			fsw2_in_fl1 = 0;
 		}
 		if(fsw3_in_fl)
 		{
 			fsw3_in_fl1 = 1;
 			fsw3_in_fl = 0;
-			foot_run1(2);
+			foot_hold_run(2);
 			fsw3_in_fl1 = 0;
 		}
 	}

@@ -234,6 +234,7 @@ void TFsBrowser::Load_cab(fs_object_t &object)
 	//send_codec(0xa301);
 	while(object.name[name_point]&&(name_point<62))
 		name_buf_temp[name_point+1] = object.name[name_point++];
+
 	name_buf_temp[++name_point] = 0;
 	name_buf_temp[0] = name_point;
 }
