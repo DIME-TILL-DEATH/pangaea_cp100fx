@@ -36,7 +36,7 @@ static void attenuator_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 static void master_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[MASTER_VOLUME], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MASTER, sys_para[MASTER_VOLUME], 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[MASTER_VOLUME], 0);
 	write_sys();
 }
 
@@ -50,28 +50,28 @@ static void phones_volume_command_handler(TReadLine* rl, TReadLine::const_symbol
 static void meq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[MASTER_EQ_ON], rl, args, count);
-	DSP_gui_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[MASTER_EQ_ON]);
+	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[MASTER_EQ_ON]);
 	write_sys();
 }
 
 static void meq_low_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[MASTER_EQ_LOW], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[MASTER_EQ_LOW]);
+	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[MASTER_EQ_LOW]);
 	write_sys();
 }
 
 static void meq_mid_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[MASTER_EQ_MID], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[MASTER_EQ_MID]);
+	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[MASTER_EQ_MID]);
 	write_sys();
 }
 
 static void meq_high_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[MASTER_EQ_HIGH], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[MASTER_EQ_HIGH]);
+	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[MASTER_EQ_HIGH]);
 	write_sys();
 }
 
@@ -91,22 +91,22 @@ static void meq_mid_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_
 	sys_para[MASTER_EQ_FREQ_LO] = mstEqMidFreq >> 8;
 	sys_para[MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xFF;
 
-	DSP_contr_set_parameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[MASTER_EQ_FREQ_LO]);
-	DSP_contr_set_parameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[MASTER_EQ_FREQ_HI]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[MASTER_EQ_FREQ_LO]);
+	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[MASTER_EQ_FREQ_HI]);
 	write_sys();
 }
 
 static void cab_mode_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[CAB_SIM_DISABLED], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[CAB_SIM_DISABLED], 0);
+	DSP_ContrSendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[CAB_SIM_DISABLED], 0);
 	write_sys();
 }
 
 static void cab_num_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[CAB_SIM_CONFIG], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_CAB_CONFIG, sys_para[CAB_SIM_CONFIG], 0);
+	DSP_ContrSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[CAB_SIM_CONFIG], 0);
 	write_sys();
 	//Reset?????
 }
@@ -165,14 +165,14 @@ static void expr_slev_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 static void spdif_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[SPDIF_OUT_TYPE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_SPDIF, sys_para[SPDIF_OUT_TYPE], 0);
+	DSP_ContrSendParameter(DSP_ADDRESS_SPDIF, sys_para[SPDIF_OUT_TYPE], 0);
 	write_sys();
 }
 
 static void tempo_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[TAP_TYPE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
+	DSP_ContrSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
 	write_sys();
 }
 

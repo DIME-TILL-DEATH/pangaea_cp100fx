@@ -327,7 +327,7 @@ void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indic
 	if(volIndicatorType == VOL_INDICATOR_VOLUME) vol_fl = 1;
 	else vol_fl = 0;
 
-	DSP_gui_set_parameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
 
 	ind_poin = 500;
 }

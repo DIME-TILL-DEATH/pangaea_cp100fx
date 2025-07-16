@@ -4,6 +4,7 @@
 
 #include "controllers.h"
 #include "preset.h"
+#include "modules.h"
 
 uint16_t delay_time;
 
@@ -67,19 +68,13 @@ uint8_t __CCM_BSS__ sys_para[512] =
 {/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
 /*foot3*/0,/*calibrate*/0, 0, 0xff, 0xf};
 
-uint8_t impulse_path[512];
-
 uint8_t __CCM_BSS__ imya_t[15];
 uint8_t __CCM_BSS__ imya1_t[15];
 
 volatile uint32_t fl_st;
 const uint8_t no_loaded[] = "No loaded";
 
-//char __CCM_BSS__ cab1.name[64];
-//char __CCM_BSS__ cab2.name[64];
-char __CCM_BSS__ name_buf_temp[64];
-
-uint8_t cab_num = 0;
+//uint8_t cab_num = 0;
 extern volatile uint8_t prog_sym_cur;
 extern uint8_t name_run_fl;
 extern emb_string full_curr_dir_path;
@@ -131,7 +126,7 @@ void eepr_write(uint8_t nu)
 	f_write(&file, del_t_b, 2, &f_size);
 	f_write(&file, cab1.data, CAB_DATA_SIZE, &f_size);
 	f_write(&file, cab1.name, 64, &f_size);
-	if(cab_type==2)
+	if(cab_type == CAB_CONFIG_STEREO)
 	{
 		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
 		f_write(&file, cab2.name, 64, &f_size);
@@ -142,7 +137,7 @@ void eepr_write(uint8_t nu)
 		f_lseek(&file, 25760);
 		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
 	}
-	f_write(&file, impulse_path, 512, &f_size);
+	f_write(&file, Preset::impulsePath, 512, &f_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
 }
@@ -195,17 +190,17 @@ void EEPROM_loadPreset(uint8_t nu)
 		}
 
 		f_lseek(&file, 38048);
-		kgp_sdk_libc::memset(impulse_path, 0, 512);
+		kgp_sdk_libc::memset(Preset::impulsePath, 0, 512);
 		char *tmp = new char[_MAX_LFN];
 		if(!tmp)
 			throw_exeption_catcher("not enough memory");
 		f_read(&file, tmp, _MAX_LFN, &f_size);
 		if(f_size)
 		{
-			kgp_sdk_libc::memcpy(impulse_path, tmp, _MAX_LFN);
+			kgp_sdk_libc::memcpy(Preset::impulsePath, tmp, _MAX_LFN);
 			FSTask->Object().name = emb_string(tmp);
 			f_read(&file, tmp, _MAX_LFN, &f_size);
-			kgp_sdk_libc::memcpy(impulse_path+255, tmp, _MAX_LFN);
+			kgp_sdk_libc::memcpy(Preset::impulsePath+255, tmp, _MAX_LFN);
 			FSTask->Object().startup = emb_string(tmp);
 
 			emb_string startup = FSTask->Object().name+emb_string("/")+FSTask->Object().startup;

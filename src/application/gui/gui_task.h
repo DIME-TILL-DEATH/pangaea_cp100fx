@@ -36,7 +36,6 @@ extern uint8_t tuner_use;
 extern const float tap_time_coefs[];
 extern uint8_t tempo_fl;
 extern const float tap_moog[];
-extern uint8_t impulse_path[];
 extern bool cab_data_ready;
 extern uint8_t tun_del_val;
 extern float tun_base_old;

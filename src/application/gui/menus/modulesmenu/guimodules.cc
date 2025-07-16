@@ -418,8 +418,8 @@ void delayTimeDecrease(void* parameter)
 	currentPreset.modules.rawData[DELAY_TIME_LO] = delay_time & 0xFF;
 	currentPreset.modules.rawData[DELAY_TIME_HI] = delay_time >> 8;
 
-	DSP_gui_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
-	DSP_gui_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time & 0xFF);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time & 0xFF);
 }
 
 void delayTimeIncrease(void* parameter)
@@ -439,8 +439,8 @@ void delayTimeIncrease(void* parameter)
 	currentPreset.modules.rawData[DELAY_TIME_LO] = delay_time & 0xFF;
 	currentPreset.modules.rawData[DELAY_TIME_HI] = delay_time >> 8;
 
-	DSP_gui_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
-	DSP_gui_set_parameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time & 0xFF);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time & 0xFF);
 }
 
 void delayTimePrint(void* parameter)

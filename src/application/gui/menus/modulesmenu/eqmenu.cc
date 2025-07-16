@@ -166,9 +166,9 @@ void EqMenu::encoderClockwise()
 	}
 
 	if(bandNum!=8)
-		gui_send(4, bandNum);
+		DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modules.rawData[eq1 + bandNum]); //gui_send(4, bandNum);
 	else
-		gui_send(4, 12);
+		DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, currentPreset.modules.rawData[eq_pr_po]); //gui_send(4, 12);
 }
 
 void EqMenu::encoderCounterClockwise()
@@ -241,10 +241,11 @@ void EqMenu::encoderCounterClockwise()
 				break;
 			}
 		}
+
 		if(bandNum!=8)
-			gui_send(4, bandNum);
+			DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modules.rawData[eq1 + bandNum]); //gui_send(4, bandNum);
 		else
-			gui_send(4, 12);
+			DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, currentPreset.modules.rawData[eq_pr_po]); //gui_send(4, 12);
 	}
 }
 

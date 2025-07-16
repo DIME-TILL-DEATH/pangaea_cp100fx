@@ -19,9 +19,6 @@ TFSTask::~TFSTask()
 	delete queue;
 }
 
-//uint8_t __CCM_BSS__ cab1.data[12288];
-//uint8_t __CCM_BSS__ cab2.data[12288];
-uint8_t sd_buf[512];
 bool cab_data_ready;
 //-----------------------------------------------------------------------------------------------------
 void TFSTask::Code()
@@ -34,18 +31,6 @@ void TFSTask::Code()
 		queue->Receive((void*)&browse_command, portMAX_DELAY);
 
 		fb->Browse(browse_command, object, object_list);
-		extern volatile uint8_t file_fl;
-		if(browse_command==TFsBrowser::bcFsMount||browse_command==TFsBrowser::bcFsUmount||file_fl)
-			continue;
-		if(browse_command!=TFsBrowser::bcStartup)
-		{
-			Delay(10);
-			DisplayTask->Clear();
-			DisplayTask->StringOut(4, 0, Font::fntSystem, Font::fnsBlack,
-					(uint8_t*)FSTask->Object().dir.c_str());
-			DisplayTask->StringOut(4, 1, Font::fntSystem, Font::fnsBlack,
-					(uint8_t*)FSTask->Object().name.c_str());
-		}
 	}
 }
 //------------------------------------------------------------------------------

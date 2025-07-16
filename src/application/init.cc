@@ -173,7 +173,9 @@ void init(void)
 	for(uint32_t d = 0; d<0xfffff; d++)
 		NOP();
 	eepr_init();
-	cab_type = sys_para[2];
+
+	cab_type = sys_para[CAB_SIM_CONFIG];
+
 //-------------------------------------------------GPIO_init-----------------------------------------------
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
@@ -459,10 +461,15 @@ void init(void)
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, 0);
 	}
-	if(cab_type!=2)
+
+	if(cab_type != CAB_CONFIG_STEREO)
 	{
+		cab1.data = &ccmBuffer[0];
+		cab2.data = nullptr;
+
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_end;
+
 		size_t _binary_Pangaea_CP100FX_1_ldr_size = (size_t)(
 				&_binary_Pangaea_CP100FX_1_ldr_end-&_binary_Pangaea_CP100FX_1_ldr_start);
 		for(size_t i = 0; i<_binary_Pangaea_CP100FX_1_ldr_size; i++)
@@ -473,8 +480,12 @@ void init(void)
 	}
 	else
 	{
+		cab1.data = &ccmBuffer[0];
+		cab2.data = &ccmBuffer[4096 * 3];
+
 		extern uint8_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_end;
+
 		size_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_size = (size_t)(
 				&_binary_Pangaea_CP100FX_1_duble_fir_ldr_end-&_binary_Pangaea_CP100FX_1_duble_fir_ldr_start);
 		for(size_t i = 0; i<_binary_Pangaea_CP100FX_1_duble_fir_ldr_size; i++)

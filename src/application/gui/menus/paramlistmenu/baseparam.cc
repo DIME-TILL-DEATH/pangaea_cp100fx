@@ -109,9 +109,9 @@ void BaseParam::setToDsp()
 	for(uint8_t i=0; i<m_byteSize; i++)
 	{
 		if(m_bytePosition == PARAM_EQUAL_POS)
-			DSP_gui_set_parameter(m_moduleAddress, *(m_valuePtr+i) + m_offset, 0);
+			DSP_GuiSendParameter(m_moduleAddress, *(m_valuePtr+i) + m_offset, 0);
 		else
-			DSP_gui_set_parameter(m_moduleAddress,	m_bytePosition + i,
+			DSP_GuiSendParameter(m_moduleAddress,	m_bytePosition + i,
 					*(m_valuePtr + m_byteSize - 1 - i) + m_offset);
 	}
 }

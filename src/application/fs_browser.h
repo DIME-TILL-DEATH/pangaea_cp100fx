@@ -58,7 +58,7 @@ public:
 	~TFsBrowser();
 
 	void Browse(browse_command_t browse_command, fs_object_t &object, fs_object_list_t &object_list);
-	bool GetCabConfig(uint8_t *cab_data, emb_string &err_msg);
+	bool GetDataFromFile(uint8_t *cab_data, emb_string &err_msg);
 	inline const fs_object_list_t::iterator CurrentObject() const
 	{
 		return curr_fs_object;
@@ -73,7 +73,7 @@ public:
 	{
 		return curr_dir_level+curr_dir_name;
 	}
-	void Load_cab(fs_object_t &object);
+	void LoadCab(fs_object_t &object);
 
 protected:
 
@@ -94,8 +94,10 @@ private:
 
 	fs_object_list_t fs_object_list;
 	fs_object_list_t::iterator curr_fs_object;
+
 	emb_string curr_dir_name;
 	emb_string curr_dir_level;
+	emb_string global_path;
 
 	bool sd_initialized;
 	FATFS fs;

@@ -1,20 +1,21 @@
 #include "fs_browser.h"
+
 #include "fs.h"
+#include "cs.h"
+
 #include "BF706_send.h"
 #include "eepr.h"
 #include "storage.h"
 #include "AT45DB321.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 
-const char *fs_object_type_strings[] =
-{"File", "Dir", "Unknown"};
-uint8_t name_point = 0;
 volatile uint8_t file_fl = 0;
-volatile uint8_t action_fl = 0;
+//volatile uint8_t action_fl = 0;
 volatile uint8_t imp_dir_fl = 0;
 extern uint8_t cab_type;
-extern uint8_t sd_buf[];
-extern uint8_t impulse_path[];
+
+
+uint8_t sd_buf[512];
 
 //----------------------------------------------------------------------
 char buf[512];
@@ -119,10 +120,8 @@ void out_str(const emb_string &string)
 	////rmsg( "%s\n", string.c_str()) ;
 }
 //----------------------------------------------------------------
-emb_string global_path;
-bool TFsBrowser::GetCabConfig(uint8_t *buff, emb_string &err_msg)
+bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 {
-
 	FIL f;
 	FRESULT fs_res = f_open(&f, curr_fs_object->name.c_str(), FA_READ);
 	if(fs_res!=FR_OK)
@@ -139,8 +138,7 @@ bool TFsBrowser::GetCabConfig(uint8_t *buff, emb_string &err_msg)
 
 	f_lseek(&f, 0);
 	//  read header and check as RIFF
-	char header[5] =
-	{0, 0, 0, 0, 0};
+	char header[5] = {0, 0, 0, 0, 0};
 	UINT br;
 	fs_res = f_read(&f, header, 4, &br);
 	if(kgp_sdk_libc::strcmp(header, "RIFF"))
@@ -155,7 +153,7 @@ bool TFsBrowser::GetCabConfig(uint8_t *buff, emb_string &err_msg)
 	fs_res = f_read(&f, (void*)&chanal_count, 2, &br);
 	if(chanal_count!=1)
 	{
-		err_msg = "unsupported format  (no MONO chanal sets)";
+		err_msg = "unsupported format  (no MONO channel sets)";
 		////rmsg(err_msg.c_str());
 		return false;
 	}
@@ -174,23 +172,24 @@ bool TFsBrowser::GetCabConfig(uint8_t *buff, emb_string &err_msg)
 	fs_res = f_lseek(&f, 40);
 	uint32_t file_size;
 	fs_res = f_read(&f, (void*)&file_size, 4, &br);
-	if(cab_type!=2)
+
+	if(cab_type != CAB_CONFIG_STEREO)
 	{
-		if(file_size>24576)
-			file_size = 24576;
+		if(file_size > 8192 * 3)
+			file_size = 8192 * 3;
 	}
 	else
 	{
-		if(file_size>12288)
-			file_size = 12288;
+		if(file_size > 4096 * 3)
+			file_size = 4096 * 3;
 	}
 
 	// read cabinet data
-	kgp_sdk_libc::memset(buff, 0, 24576);
+	kgp_sdk_libc::memset(buff, 0, 8192 * 3);
 	fs_res = f_lseek(&f, 44);
 	while(1)
 	{
-		if(file_size>512)
+		if(file_size > 512)
 		{
 			f_read(&f, (void*)sd_buf, 512, &br);
 			for(uint16_t i = 0; i<512; i++)
@@ -212,24 +211,46 @@ bool TFsBrowser::GetCabConfig(uint8_t *buff, emb_string &err_msg)
 	return true;
 }
 //----------------------------------------------------------------
-void TFsBrowser::Load_cab(fs_object_t &object)
+void TFsBrowser::LoadCab(fs_object_t &object)
 {
-	object = *curr_fs_object;
-	emb_string err;
-	extern bool cab_data_ready;
-	name_point = 0;
-	//send_codec(0xa381);//Codec mute
-	cab_data_ready = GetCabConfig(preset_temp, err);
-	if(!cab_num)
-		gui_send(16, 1);
-	else
-		gui_send(17, 1);
-	//send_codec(0xa301);
-	while(object.name[name_point]&&(name_point<62))
-		name_buf_temp[name_point] = object.name[name_point++]; //name_buf_temp[name_point+1] = object.name[name_point++];
+	TCSTask::TResponse response;
 
-	name_buf_temp[++name_point] = 0;
-	name_buf_temp[0] = name_point;
+	if(object.type == fotFile)
+	{
+		object = *curr_fs_object;
+		response.file.type = object.type;
+
+		emb_string err;
+		if(GetDataFromFile(preset_temp, err))
+		{
+			response.responseType = TCSTask::rpFileLoaded;
+			response.file.buffer = &preset_temp[0];
+
+			char nameBuffer[64];
+			uint8_t name_point = 0;
+
+			while(object.name[name_point] && (name_point<62))
+				nameBuffer[name_point] = object.name[name_point++]; //name_buf_temp[name_point+1] = object.name[name_point++];
+
+			nameBuffer[++name_point] = 0;
+			nameBuffer[0] = name_point;
+
+			kgp_sdk_libc::memcpy(response.file.name,nameBuffer, 64);
+
+			extern bool cab_data_ready;
+			cab_data_ready = true;
+		}
+		else
+		{
+			response.responseType = TCSTask::rpFileInvalid;
+		}
+	}
+	else
+	{
+		response.responseType = TCSTask::rpDirSelected;
+	}
+	CSTask->SendResponse(response);
+
 }
 void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t &object, fs_object_list_t &object_list)
 {
@@ -249,48 +270,48 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t &obje
 		break;
 		case bcUp:
 			PrevObject(object);
-			if(curr_fs_object->type==fotFile)
-			{
-				Load_cab(object);
-			}
+			LoadCab(object);
 		break;
 		case bcDown:
 			NextObject(object);
-			if(curr_fs_object->type==fotFile)
-			{
-				Load_cab(object);
-			}
+			LoadCab(object);
 		break;
 		case bcLoadImp:
-			if(curr_fs_object->type==fotFile)
-			{
-				Load_cab(object);
-			}
+			LoadCab(object);
 		break;
 		case bcAction:
-			if(curr_fs_object->type==fotDir)
+			if(curr_fs_object->type == fotDir)
 			{
-				action_fl = 1;
 				// up to /IMPULSE imposible... oops...
-				if((curr_fs_object->dir=="0:IMPULSE")&&(curr_fs_object->name==".."))
+				if((curr_fs_object->dir=="0:IMPULSE") && (curr_fs_object->name==".."))
 				{
 					object.name = "..";
 					object.type = fotDir;
-					break;
 				}
-				SelectDir(*curr_fs_object);
-				object = *curr_fs_object;
+				else
+				{
+					SelectDir(*curr_fs_object);
+					object = *curr_fs_object;
+				}
+
+				TCSTask::TResponse response;
+				response.responseType = TCSTask::rpDirSelected;
+				CSTask->SendResponse(response);
 			}
+
 			if(curr_fs_object->type==fotFile)
 			{
-				file_fl = 1;
-				action_fl = 1;
 				emb_string tmp = global_path;
 				tmp.resize(_MAX_LFN);
-				kgp_sdk_libc::memcpy(impulse_path, tmp.c_str(), _MAX_LFN);
+				kgp_sdk_libc::memcpy(Preset::impulsePath, tmp.c_str(), _MAX_LFN);
+
 				tmp = FSTask->Object().name;
 				tmp.resize(_MAX_LFN);
-				kgp_sdk_libc::memcpy(impulse_path+256, tmp.c_str(), _MAX_LFN);
+				kgp_sdk_libc::memcpy(Preset::impulsePath+256, tmp.c_str(), _MAX_LFN);
+
+				TCSTask::TResponse response;
+				response.responseType = TCSTask::rpFileSelected;
+				CSTask->SendResponse(response);
 			}
 		break;
 

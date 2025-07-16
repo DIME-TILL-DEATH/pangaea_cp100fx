@@ -185,7 +185,7 @@ void MasterEqMenu::keyDown()
 
 	write_sys();
 
-	DSP_gui_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[MASTER_EQ_ON]);
+	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[MASTER_EQ_ON]);
 }
 
 void MasterEqMenu::key1()

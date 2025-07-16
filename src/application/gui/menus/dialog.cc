@@ -133,7 +133,8 @@ void Dialog::encoderPressed()
 
 					cab_data_ready = false;
 					send_cab_data(1, currentPresetNumber+1, 0);
-					if(cab_num==2)
+
+//					if(cab_num==2) // Можно ли всегда затирать?
 						send_cab_data1(1, currentPresetNumber+1);
 
 					prog_ch();

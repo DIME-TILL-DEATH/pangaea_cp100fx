@@ -60,8 +60,7 @@ void clean_flag(void)
 extern volatile uint8_t pc_mute_fl;
 void prog_ch(void)
 {
-//	gui_send(32, currentPresetNumber);
-	DSP_gui_set_parameter(DSP_ADDRESS_LOAD_PRESET, currentPresetNumber, 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
 
 	EEPROM_loadPreset(currentPresetNumber);
 	pc_mute_fl = 0;
@@ -193,7 +192,9 @@ uint8_t tap_temp_global(void)
 		if(sys_para[TAP_TYPE]) // global temp On
 		{
 			sys_para[TAP_HIGH] = (tap_global/3)>>8;
-			gui_send(33, tap_global/3);
+
+			DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]); //	gui_send(33, tap_global/3);
+
 			moog_time = tap_global/3.0f;
 			gui_send(31, 13);
 			delay_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[d_tap_t]];

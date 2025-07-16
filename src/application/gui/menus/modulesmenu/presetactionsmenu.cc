@@ -138,12 +138,14 @@ void PresetActionsMenu::copyPreset()
 		case 0:
 			for(uint8_t i = 0; i<11; i++)
 				preset_temp[30+mog_mix+i] = currentPreset.modules.rawData[mog_mix+i];
+
 			preset_temp[30+moog] = currentPreset.modules.rawData[moog];
 			preset_temp[30+mog_gen_t] = currentPreset.modules.rawData[mog_gen_t];
 		break;
 		case 1:
 			for(uint8_t i = 0; i<3; i++)
 				preset_temp[30+gate_thr+i] = currentPreset.modules.rawData[gate_thr+i];
+
 			preset_temp[30+gate] = currentPreset.modules.rawData[gate];
 		break;
 		case 2:
@@ -171,14 +173,14 @@ void PresetActionsMenu::copyPreset()
 				preset_temp[25696+i] = cab2.name[i];
 			for(uint16_t i = 0; i<12288; i++)
 				preset_temp[1056+i] = cab1.data[i];
-			if(cab_type==2)
+			if(cab_type==CAB_CONFIG_STEREO)
 				for(uint16_t i = 0; i<12288; i++)
 					preset_temp[13408+i] = cab2.data[i];
 			else
-				for(uint16_t i = 0; i<12288; i++)
-					preset_temp[25760+i] = cab2.data[i];
+				for(uint16_t i = 0; i < 4096 * 3; i++)
+					preset_temp[25760+i] = cab1.data[i + 4096 * 3];
 			for(uint16_t i = 0; i<512; i++)
-				preset_temp[38048+i] = impulse_path[i];
+				preset_temp[38048+i] = Preset::impulsePath[i];
 			send_cab_data(0, targetPresetNum+1, 0);
 			if(cab_type==2)
 				send_cab_data1(0, targetPresetNum+1);

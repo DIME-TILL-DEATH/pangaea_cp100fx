@@ -6,43 +6,43 @@
 static void ir_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[cab], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CAB, currentPreset.modules.rawData[ENABLE_CAB]);
+	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CAB, currentPreset.modules.rawData[ENABLE_CAB]);
 }
 
 static void ir_volume1_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[IR_VOLUME1], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+	DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
 }
 
 static void ir_pan1_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[IR_PAN1], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_CAB, IR_PAN1_POS, currentPreset.modules.rawData[IR_PAN1]);
+	DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_PAN1_POS, currentPreset.modules.rawData[IR_PAN1]);
 }
 
 static void ir_delay1_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[IR_DELAY1], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_CAB, IR_DELAY1_POS, currentPreset.modules.rawData[IR_DELAY1]);
+	DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_DELAY1_POS, currentPreset.modules.rawData[IR_DELAY1]);
 }
 
 static void ir_volume2_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[IR_VOLUME2], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+	DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
 }
 
 static void ir_pan2_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[IR_PAN2], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_CAB, IR_PAN2_POS, currentPreset.modules.rawData[IR_PAN2]);
+	DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_PAN2_POS, currentPreset.modules.rawData[IR_PAN2]);
 }
 
 static void ir_delay2_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[IR_DELAY2], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_CAB, IR_DELAY2_POS, currentPreset.modules.rawData[IR_DELAY2]);
+	DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_DELAY2_POS, currentPreset.modules.rawData[IR_DELAY2]);
 }
 
 void set_ir_handlers(TReadLine *rl)

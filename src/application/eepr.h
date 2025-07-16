@@ -83,26 +83,22 @@ extern uint16_t delay_time;
 extern volatile uint8_t currentPresetNumber;
 extern volatile uint8_t preselectedPresetNumber;
 extern volatile uint32_t flash_adr;
-//extern uint8_t currentPreset.modules.rawData[];
+
 extern const uint8_t prog_data_init[];
 extern uint8_t preset_temp[];
-//extern uint8_t presetName[];
-//extern uint8_t presetComment[];
+
 extern const uint8_t nameInit[];
 extern uint8_t imya_t[];
 extern uint8_t imya1_t[];
 
 extern uint8_t sys_para[];
 extern uint8_t imp_buf_uint[];
-//extern char cab1.name[];
-//extern char cab2.name[];
-extern char name_buf_temp[];
+
 extern const uint8_t no_loaded[];
 extern volatile uint16_t adc_low;
 extern volatile uint16_t adc_high;
 extern volatile uint16_t adc_val;
 extern volatile float adc_val1;
-extern uint8_t cab_num;
 extern uint8_t __CCM_BSS__ preset_temp[];
 
 void write_sys(void);

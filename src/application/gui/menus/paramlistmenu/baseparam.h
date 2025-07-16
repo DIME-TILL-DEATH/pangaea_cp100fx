@@ -3,6 +3,7 @@
 
 #include "appdefs.h"
 #include "modules.h"
+#include "BF706_send.h"
 
 class BaseParam
 {

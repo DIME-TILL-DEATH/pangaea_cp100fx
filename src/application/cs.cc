@@ -29,10 +29,15 @@ AbstractMenu* currentMenu;
 MainMenu* mainMenu;
 UsbMenu* usbMenu;
 
-TCSTask::TCSTask () : TTask()
- {
-             //DispalyAccess = true ;
- }
+TCSTask::TCSTask() : TTask()
+{
+	queue = new TQueue(4, sizeof(TResponse));
+}
+
+TCSTask::~TCSTask()
+{
+	delete queue;
+}
 
 volatile uint32_t saa;
 volatile FRESULT res;
@@ -74,13 +79,18 @@ void TCSTask::Code()
 
   	gui_send(14,0); // global cab on off
   	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-  	gui_send(26,sys_para[SPDIF_OUT_TYPE]);
-  	gui_send(33,sys_para[TAP_TYPE] | (sys_para[TAP_HIGH] << 8)); //global temp
+
+  	DSP_GuiSendParameter(DSP_ADDRESS_SPDIF, sys_para[SPDIF_OUT_TYPE], 0);
+  	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
 	tempo_fl = 1;
-	gui_send(28,sys_para[2]); // left cab bypass
-	if(!sys_para[125])sys_para[125] = 127;
+	DSP_GuiSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[CAB_SIM_CONFIG], 0); // left cab bypass
+
+	if(!sys_para[PHONES_VOLUME]) sys_para[PHONES_VOLUME] = 127;
   	DisplayTask->Pot_Write();
-	gui_send(1,sys_para[126]); //master volum
+
+//	gui_send(1, sys_para[126]); //master volum
+
+  	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[MASTER_VOLUME], 0);
 
 //	if(!sys_para[508] && !sys_para[509])
 //	{

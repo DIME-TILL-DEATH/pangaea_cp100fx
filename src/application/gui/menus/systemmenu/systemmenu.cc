@@ -279,14 +279,14 @@ void SystemMenu::tempoDecrease(void* parameter)
 {
 	sys_para[TAP_HIGH] = 0;
 	if(sys_para[TAP_TYPE] > 0) sys_para[TAP_TYPE]--;
-	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE]|(sys_para[TAP_HIGH]<<8));
+	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
 }
 
 void SystemMenu::tempoIncrease(void* parameter)
 {
 //	sys_para[tap_hi] = 0; //???
 	if(sys_para[TAP_TYPE] < 2) sys_para[TAP_TYPE]++;
-	dsp_send(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE]|(sys_para[TAP_HIGH]<<8));
+	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
 }
 
 void SystemMenu::tunerSpeedDescrease(void* parameter)

@@ -64,30 +64,16 @@ static void amtver_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-//	currentPreset.modules.rawData[147] = delay_time;
-//	currentPreset.modules.rawData[148] = delay_time>>8;
-//
-//	send_cab_data(0, currentPresetNumber+1, 0);
-//	if(cab_type == 2)
-//		send_cab_data1(0, currentPresetNumber+1);
-//
-//	preselectedPresetNumber = currentPresetNumber;
-//	sys_para[LAST_PRESET_NUM] = currentPresetNumber;
-//
-//	eepr_write(currentPresetNumber);
-//	prog_ch();
-
 	currentPreset.modules.rawData[147] = delay_time;
 	currentPreset.modules.rawData[148] = delay_time>>8;
 
 	preselectedPresetNumber = currentPresetNumber;
-	eepr_write(preselectedPresetNumber);
+	eepr_write(currentPresetNumber);
 
-	// Not onle cab data, but preset too
-	send_cab_data(0, preselectedPresetNumber+1, 0);
-	if(cab_type==2)
-		send_cab_data1(0, preselectedPresetNumber+1);
+	DSP_SendPresetData(currentPreset.modules.rawData);
 
+	DSP_SendPrimaryCabData(cab1.data, currentPresetNumber+1);
+	if(cab_type == CAB_CONFIG_STEREO) DSP_SendSecondaryCabData(cab2.data, currentPresetNumber+1);
 
 	prog_ch();
 
@@ -371,7 +357,7 @@ static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbo
 static void preset_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.paramData.preset_volume, rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.modules.paramData.preset_volume, 0);
+	DSP_ContrSendParameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.modules.paramData.preset_volume, 0);
 }
 
 static void preset_volume_control_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)

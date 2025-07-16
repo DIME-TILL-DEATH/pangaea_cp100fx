@@ -431,9 +431,9 @@ void send_midi_temp(uint16_t *c)
 	tap_global = *c*48;
 	delay_time = trem_time = moog_time = *c;
 
-	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
-	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
 
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
-	DSP_contr_set_parameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time);
+	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
+	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time);
 }
