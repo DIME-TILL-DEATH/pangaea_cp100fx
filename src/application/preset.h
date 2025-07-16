@@ -280,5 +280,11 @@ extern Preset::TCabinet cab1;
 extern Preset::TCabinet cab2;
 
 extern uint8_t ccmBuffer[];
+extern uint8_t __CCM_BSS__ preset_temp[];
+
+
+extern uint16_t delay_time;
+extern volatile uint8_t currentPresetNumber;
+extern volatile uint8_t preselectedPresetNumber;
 
 #endif /* SRC_APPLICATION_PRESET_H_ */

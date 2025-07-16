@@ -5,20 +5,12 @@
 
 #include "BF706_send.h"
 #include "eepr.h"
+#include "init.h"
 #include "storage.h"
 #include "AT45DB321.h"
 #include "allFonts.h"
 
-volatile uint8_t file_fl = 0;
-//volatile uint8_t action_fl = 0;
-volatile uint8_t imp_dir_fl = 0;
-extern uint8_t cab_type;
 
-
-uint8_t sd_buf[512];
-
-//----------------------------------------------------------------------
-char buf[512];
 void out_file_strings(const char *file_name)
 {
 	// открытие файла на томе №0 , путь data/data.txt
@@ -30,6 +22,7 @@ void out_file_strings(const char *file_name)
 	if(fs_res==FR_OK)
 	{
 		// чтение строк файла до тех пор пока они не кончатся
+		char buf[512];
 		do
 		{
 			// чтение строки из текстового файла
@@ -56,6 +49,8 @@ void out_file_strings(const char *file_name)
 	}
 }
 //------------------------------------------------------------------------
+
+uint8_t TFsBrowser::impulseDirExist = 0;
 
 TFsBrowser::TFsBrowser()
 {
@@ -93,7 +88,7 @@ FRESULT TFsBrowser::FsMount(const emb_string &init_dir)
 	fs_object_list.push_back(object);
 	curr_fs_object = fs_object_list.begin();
 
-	imp_dir_fl = 1;
+	impulseDirExist = 1;
 	SelectDir(object);
 	PrevObject(object);
 
@@ -191,20 +186,17 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 	{
 		if(file_size > 512)
 		{
-			f_read(&f, (void*)sd_buf, 512, &br);
-			for(uint16_t i = 0; i<512; i++)
-				*buff++ = sd_buf[i];
+			f_read(&f, (void*)buff, 512, &br);
+			buff += 512;
 			file_size -= 512;
 		}
 		else
 		{
-			f_read(&f, (void*)sd_buf, file_size, &br);
-			for(uint16_t i = 0; i<file_size; i++)
-				*buff++ = sd_buf[i];
+			f_read(&f, (void*)buff, file_size, &br);
 			break;
 		}
 	}
-	// закрытие файла
+
 	fs_res = f_close(&f);
 	err_msg = "read cab data OK";
 
@@ -404,7 +396,7 @@ void TFsBrowser::SelectDir(fs_object_t select_object)
 
 	if(res!=FR_OK)
 	{
-		imp_dir_fl = 0;
+		impulseDirExist = 0;
 		//rmsg("walk_dir: FatFS error %s,  path=%s\n",f_err2str(res), select_object.name.c_str());
 		return;
 	}

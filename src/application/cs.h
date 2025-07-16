@@ -92,15 +92,6 @@ private:
 	bool DispalyAccess;
 };
 
-float compr_out(float efxout);
-void Gate_Change_Preset(void);
-void Compressor_init(void);
-void Compressor_Change_Preset(int dgui, int npreset);
-float gate_out(float efxout);
-
-extern float m_vol;
-extern float p_vol;
-extern uint8_t midi_clk_flag;
 extern TCSTask *CSTask;
 
 extern MainMenu* mainMenu;

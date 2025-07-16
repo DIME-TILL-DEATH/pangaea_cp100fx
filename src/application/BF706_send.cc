@@ -3,13 +3,9 @@
 #include "eepr.h"
 #include "gui_task.h"
 
-#include "preset.h"
+#include "init.h"
 
-extern uint32_t send_buf;
-extern uint8_t sys_para[];
-extern uint16_t delay_time;
-extern uint8_t cab_type;
-uint8_t spi_stat = 0;
+#include "preset.h"
 
 volatile uint8_t gui_fl;
 volatile uint8_t contr_fl;

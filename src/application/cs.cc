@@ -15,15 +15,14 @@
 
 #include "preset.h"
 
-float m_vol = 1.0;
-float p_vol = 1.0;
+#include "compressor.h"
+
 uint8_t tempo_fl = 0;
 TCSTask* CSTask ;
 
 void oled023_1_disp_init(void);
 void led_disp_write(void);
 extern uint8_t led_buf[];
-//volatile uint16_t mas_eq_fr;
 
 AbstractMenu* currentMenu;
 MainMenu* mainMenu;
@@ -39,27 +38,19 @@ TCSTask::~TCSTask()
 	delete queue;
 }
 
-volatile uint32_t saa;
-volatile FRESULT res;
-char mes[512]="";
-UINT d ;
-
-#include "diskio.h"
-#include "sdcard_diskio.h"
-
 void TCSTask::Code()
 {
 	Delay(100);
 	sem = new TSemaphore (TSemaphore::fstCounting, 4 , 0 ) ;
-	saa = GetCpuClock();
+	GetCpuClock();
 
-	Gate_Change_Preset();
-	Compressor_init();
-	Compressor_Change_Preset(0,0);
+	GATE_ChangePreset();
+	COMPR_Init();
+	COMPR_ChangePreset(0,0);
 
 	CSTask->DisplayAccess(false);
 
-    currentPresetNumber = preselectedPresetNumber = sys_para[31];
+    currentPresetNumber = preselectedPresetNumber = sys_para[LAST_PRESET_NUM];
 
     DisplayTask->StartScreen(1);
 
@@ -88,21 +79,7 @@ void TCSTask::Code()
 	if(!sys_para[PHONES_VOLUME]) sys_para[PHONES_VOLUME] = 127;
   	DisplayTask->Pot_Write();
 
-//	gui_send(1, sys_para[126]); //master volum
-
   	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[MASTER_VOLUME], 0);
-
-//	if(!sys_para[508] && !sys_para[509])
-//	{
-//		sys_para[508] = 2;
-//		sys_para[509] = 0x6a;
-//	}
-//	mas_eq_fr = sys_para[508] << 8;
-//	mas_eq_fr |= sys_para[509];
-
-
-//	mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
-
 
 	if(!sys_para[MASTER_EQ_FREQ_LO] && !sys_para[MASTER_EQ_FREQ_HI])
 	{
@@ -199,7 +176,7 @@ extern "C" void DMA1_Stream2_IRQHandler()
 //--------------------Tuner------------------------------
   if(tuner_use)
   {
-	  SpectrumBuffsUpdate( compr_out(in) );
+	  SpectrumBuffsUpdate( COMPR_Out(in) );
 	  if(tun_del > tun_del_val)
 	  {
 	    tun_del = 0;

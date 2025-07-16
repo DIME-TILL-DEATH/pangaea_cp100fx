@@ -77,29 +77,26 @@ enum
 	TIME_FORMAT_BPM
 };
 
-extern int16_t mstEqMidFreq;
 
-extern uint16_t delay_time;
-extern volatile uint8_t currentPresetNumber;
-extern volatile uint8_t preselectedPresetNumber;
-extern volatile uint32_t flash_adr;
+//extern volatile uint32_t flash_adr;
 
 extern const uint8_t prog_data_init[];
-extern uint8_t preset_temp[];
+//extern uint8_t preset_temp[];
 
-extern const uint8_t nameInit[];
+//extern const uint8_t nameInit[];
 extern uint8_t imya_t[];
 extern uint8_t imya1_t[];
 
 extern uint8_t sys_para[];
 extern uint8_t imp_buf_uint[];
 
-extern const uint8_t no_loaded[];
+//extern const uint8_t no_loaded[];
 extern volatile uint16_t adc_low;
 extern volatile uint16_t adc_high;
 extern volatile uint16_t adc_val;
 extern volatile float adc_val1;
-extern uint8_t __CCM_BSS__ preset_temp[];
+
+extern int16_t mstEqMidFreq;
 
 void write_sys(void);
 void eepr_write(uint8_t nu);

@@ -1,10 +1,3 @@
-/*
- * fs_browser.h
- *
- *  Created on: 31 марта 2014 г.
- *      Author: klen
- */
-
 #ifndef __FS_BROWSER_H__
 #define __FS_BROWSER_H__
 
@@ -74,6 +67,8 @@ public:
 		return curr_dir_level+curr_dir_name;
 	}
 	void LoadCab(fs_object_t &object);
+
+	static uint8_t impulseDirExist;
 
 protected:
 

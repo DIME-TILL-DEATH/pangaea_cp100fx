@@ -1,6 +1,4 @@
-#include "appdefs.h"
-//#include "log.h"
-//#include "exp.h"
+#include "compressor.h"
 
 #include "vdt/vdt.h"
 
@@ -60,7 +58,7 @@ inline float rap2dB(float rap)
   int clipping;
 
 void comp_para(uint32_t val);
-void Compressor_init (void)
+void COMPR_Init (void)
 {
   lvolume = 0.0f;
   lvolume_db = 0.0f;
@@ -115,7 +113,7 @@ void Compressor_Change (int np, int value)
       outlevel = dB2rap((float)toutput) * makeuplin * 0.05f;
 }
 float bu[512];
-void Compressor_Change_Preset (int dgui, int npreset)
+void COMPR_ChangePreset (int dgui, int npreset)
 {
 	for(int i = 0 ; i < 512 ; i++)bu[i] = 0.0f;
 	//thres,ratio,out,attak,relise,aout,knee,stereo,peak
@@ -129,7 +127,7 @@ void Compressor_Change_Preset (int dgui, int npreset)
 uint16_t bu_po;
 volatile float bu_add = 0.0f;
 //---------------------------------------------Compressor---------------------------------------------------------
-float compr_out (float efxout)
+float COMPR_Out (float efxout)
 {
 	bu_add -= bu[bu_po];
 	bu[bu_po] = efxout * efxout;
@@ -230,7 +228,7 @@ void Gate_Change (int np, int value)
     case 2:Pdecay = value;d_rate = 1000.0f / ((float)Pdecay * fs);break;
     }
 }
-void Gate_Change_Preset (void)
+void GATE_ChangePreset (void)
 {
 	  env = 0.0f;
 	  gate = 0.0f;
@@ -240,7 +238,7 @@ void Gate_Change_Preset (void)
     int presets[3] = {-50, 1, 100};
     for (int n = 0; n < 3; n++) Gate_Change (n, presets[n]);
 }
-float gate_out (float efxout)
+float Gate_out (float efxout)
 {
   float sum;
       sum = fabsf (efxout);

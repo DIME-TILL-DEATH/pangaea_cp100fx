@@ -1,25 +1,20 @@
 #include "cabbrowsermenu.h"
 
 #include "appdefs.h"
+#include "init.h"
+
 #include "cs.h"
 #include "fs.h"
-#include "eepr.h"
+
 #include "allFonts.h"
-#include "icon_bit.h"
 #include "display.h"
-#include "enc.h"
-#include "cc.h"
+
 #include "BF706_send.h"
 
 #include "preset.h"
 
-extern uint8_t sd_init_fl;
-extern volatile uint8_t imp_dir_fl;
-
-extern volatile uint8_t file_fl;
-//extern volatile uint8_t action_fl;
-
-extern uint8_t cab_type;
+#include "fs_browser.h"
+#include "sd_test.h"
 
 CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 {
@@ -31,14 +26,12 @@ CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 
 void CabBrowserMenu::show(TShowMode showMode)
 {
-//	FSTask->setActiveCabinet(m_cabNumber);
-
-	if(sd_init_fl==1)
+	if(TSD_TESTTask::sdInitState == 1)
 	{
 
 		DisplayTask->Clear();
 
-		if(imp_dir_fl)
+		if(TFsBrowser::impulseDirExist)
 		{
 			FSTask->SendCommand(TFsBrowser::bcCurrent);
 			FSTask->SendCommand(TFsBrowser::bcLoadImp);
@@ -61,7 +54,7 @@ void CabBrowserMenu::show(TShowMode showMode)
 	{
 		DisplayTask->Clear();
 
-		if(!sd_init_fl)
+		if(!TSD_TESTTask::sdInitState)
 			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is not ready"); //sd_nr
 		else
 			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is loading..");  //sd_lo

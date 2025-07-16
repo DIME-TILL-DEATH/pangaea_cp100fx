@@ -3,10 +3,9 @@
 #include "format.h"
 #include "allFonts.h"
 #include "display.h"
-uint8_t print_flag;
+
 
 TFSTask *FSTask;
-
 //------------------------------------------------------------------------------
 TFSTask::TFSTask() :
 		TTask()
@@ -34,4 +33,3 @@ void TFSTask::Code()
 	}
 }
 //------------------------------------------------------------------------------
-

@@ -2,24 +2,17 @@
 #include "eepr.h"
 #include "fs.h"
 
+#include "init.h"
+
 #include "controllers.h"
 #include "preset.h"
 #include "modules.h"
-
-uint16_t delay_time;
-
-volatile uint8_t currentPresetNumber;
-volatile uint8_t preselectedPresetNumber;
 
 volatile uint32_t flash_adr;
 volatile uint16_t adc_low;
 volatile uint16_t adc_high;
 volatile uint16_t adc_val;
 volatile float adc_val1;
-extern uint8_t cab_type;
-
-const uint8_t stas[] =
-{"STAS"};
 
 const uint8_t prog_data_init[512] =
 {/*switch*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -59,7 +52,7 @@ const uint8_t prog_data_init[512] =
 		/*bpm del*/120};
 
 
-uint8_t __CCM_BSS__ preset_temp[38560];
+
 const uint32_t del_tim_init = 500;
 const uint8_t nameInit[] = {"Preset        "};
 const uint8_t commentInit[] = {"Name          "};
@@ -72,14 +65,10 @@ uint8_t __CCM_BSS__ imya_t[15];
 uint8_t __CCM_BSS__ imya1_t[15];
 
 volatile uint32_t fl_st;
-const uint8_t no_loaded[] = "No loaded";
 
-//uint8_t cab_num = 0;
 extern volatile uint8_t prog_sym_cur;
 extern uint8_t name_run_fl;
 extern emb_string full_curr_dir_path;
-
-char fna[_MAX_LFN];
 
 int16_t mstEqMidFreq;
 
@@ -108,6 +97,8 @@ void write_sys(void)
 void eepr_write(uint8_t nu)
 {
 	nu++;
+
+	char fna[_MAX_LFN];
 	FATFS fs;
 	FIL file;
 	UINT f_size;
@@ -145,7 +136,10 @@ void eepr_write(uint8_t nu)
 void EEPROM_loadPreset(uint8_t nu)
 {
 	FSTask->Suspend();
+
 	nu++;
+
+	char fna[_MAX_LFN];
 	FRESULT fs_res;
 	FATFS fs;
 	FIL file;
@@ -260,6 +254,8 @@ void EEPROM_loadPreset(uint8_t nu)
 void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 {
 	FSTask->Suspend();
+
+	char fna[_MAX_LFN];
 	FRESULT fs_res;
 	FATFS fs;
 	FIL file;
@@ -302,6 +298,8 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 void read_prog_temp(uint8_t nu)
 {
 	nu++;
+
+	char fna[_MAX_LFN];
 	FRESULT fs_res;
 	FATFS fs;
 	FIL file;
@@ -372,6 +370,8 @@ void read_prog_temp(uint8_t nu)
 void write_prog_temp(uint8_t nu)
 {
 	nu++;
+
+	char fna[_MAX_LFN];
 	FATFS fs;
 	FIL file;
 	UINT f_size;
@@ -390,6 +390,8 @@ void write_prog_temp(uint8_t nu)
 void eepr_read_imya(uint8_t nu)
 {
 	nu++;
+
+	char fna[_MAX_LFN];
 	FRESULT fs_res;
 	FATFS fs;
 	FIL file;
@@ -443,6 +445,7 @@ void preset_erase(uint8_t nu)
 void load_mass_imp(void)
 {
 	uint32_t buf;
+	char fna[_MAX_LFN];
 	FATFS fs;
 	FIL file;
 	UINT f_size;

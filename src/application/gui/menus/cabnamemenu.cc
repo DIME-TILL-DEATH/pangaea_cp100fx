@@ -1,18 +1,9 @@
 #include "cabnamemenu.h"
 
-#include "cs.h"
-#include "fs.h"
-#include "eepr.h"
 #include "allFonts.h"
-#include "icon_bit.h"
-#include "gui_task.h"
 #include "display.h"
-#include "enc.h"
-#include "cc.h"
-#include "init.h"
 
 #include "preset.h"
-
 
 CabNameMenu::CabNameMenu(AbstractMenu* parent)
 	:AbstractMenu()

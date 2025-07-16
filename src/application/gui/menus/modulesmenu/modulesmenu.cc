@@ -12,6 +12,9 @@
 #include "cc.h"
 #include "BF706_send.h"
 
+#include "sd_test.h"
+#include "fs_browser.h"
+
 #include "modules.h"
 #include "preset.h"
 
@@ -232,14 +235,13 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		kgp_sdk_libc::memset(preset_temp, 0, 24576);
 //		kgp_sdk_libc::memset(name_buf_temp, 0, 64);
 //		cab_num = 0;
-		extern uint8_t sd_init_fl;
 
-		if(sd_init_fl == 1)
+		if(TSD_TESTTask::sdInitState == 1)
 		{
 		 // current_menu = MENU_CABBROWSER;
 		  DisplayTask->Clear();
-		  extern volatile uint8_t imp_dir_fl;
-		  if(imp_dir_fl)
+
+		  if(TFsBrowser::impulseDirExist)
 		  {
 			  vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME1];
 			  DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
@@ -262,7 +264,7 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		else
 		{
 			DisplayTask->Clear();
-			if(!sd_init_fl)DisplayTask->StringOut(6, 1, Font::fntSystem, 0, "MicroSD is not ready");
+			if(!TSD_TESTTask::sdInitState) DisplayTask->StringOut(6, 1, Font::fntSystem, 0, "MicroSD is not ready");
 			else DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "MicroSD is loading..");
 			CSTask->CS_del(1000);
 
