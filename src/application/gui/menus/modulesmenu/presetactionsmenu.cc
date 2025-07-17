@@ -21,34 +21,24 @@ PresetActionsMenu::PresetActionsMenu(AbstractMenu *parent, TActionType actionTyp
 {
 	m_actionType = actionType;
 
-	if(actionType==TActionType::Copy)
+	if(m_actionType == TActionType::Copy)
 		m_menuType = MENU_COPY;
 	else
 		m_menuType = MENU_PRESET_WRITE;
 
 	topLevelMenu = parent;
 
-	targetPresetNum = currentPresetNumber;
+//	targetPresetNum = currentPresetNumber;
 }
 
 void PresetActionsMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
-	read_prog_temp(targetPresetNum);
-	imya_temp = 1;
-	for(uint8_t i = 0; i<15; i++)
-		imya_t[i] = preset_temp[i];
-	for(uint8_t i = 0; i<15; i++)
-		imya1_t[i] = preset_temp[15+i];
+	if(m_actionType == TActionType::Save) targetPresetNum = currentPresetNumber;
 
-	DisplayTask->Main_scr();
-	DisplayTask->Prog_ind(targetPresetNum);
-
-	if(m_actionType==TActionType::Copy)
-		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Copy to ->");
-	else
-		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Save to ->");
+	DisplayTask -> Clear();
+	updatePresetData();
 }
 
 void PresetActionsMenu::task()
@@ -61,14 +51,18 @@ void PresetActionsMenu::task()
 
 void PresetActionsMenu::encoderPressed()
 {
-	if(m_actionType==TActionType::Copy)
-		copyPreset();
-	else
-		savePreset();
-
-	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
-
 	tim5_start(0);
+
+	if(m_actionType==TActionType::Copy)
+	{
+		copyPreset();
+		topLevelMenu->returnFromChildMenu(TReturnMode::DeleteChild);
+	}
+	else
+	{
+		savePreset();
+		topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+	}
 }
 
 void PresetActionsMenu::encoderClockwise()
@@ -95,7 +89,7 @@ void PresetActionsMenu::keyUp()
 {
 	if(m_actionType==TActionType::Save) return;
 
-	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+	topLevelMenu->returnFromChildMenu();
 
 	tim5_start(0);
 }
@@ -107,16 +101,25 @@ void PresetActionsMenu::keyDown()
 
 void PresetActionsMenu::updatePresetData()
 {
-	eepr_read_imya(targetPresetNum);
 	read_prog_temp(targetPresetNum);
-	for(uint8_t i = 0; i<15; i++)
-		imya_t[i] = preset_temp[i];
-	for(uint8_t i = 0; i<15; i++)
-		imya1_t[i] = preset_temp[15+i];
-	imya_temp = 1;
-	DisplayTask->Main_scr();
-	DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Copy to ->");
-	DisplayTask->Prog_ind(targetPresetNum);
+
+	Preset::TPresetBrief selectedPresetBrief;
+	EEPROM_loadBriefPreset(targetPresetNum, &selectedPresetBrief);
+
+	DisplayTask->Clear_str(2, 0, Font::fntSystem, 14);
+	DisplayTask->Clear_str(2, 1, Font::fntSystem, 14);
+
+	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)selectedPresetBrief.name);
+	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)selectedPresetBrief.comment);
+
+	if(m_actionType==TActionType::Copy)
+		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Copy to ->");
+	else
+		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Save to ->");
+
+	bool filled = selectedPresetBrief.cab1Name[0] || selectedPresetBrief.cab2Name[0];
+
+	DisplayTask->Prog_ind(targetPresetNum, filled);
 
 	TIM_SetCounter(TIM6, 0x8000);
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
@@ -168,9 +171,9 @@ void PresetActionsMenu::copyPreset()
 			for(uint8_t i = 0; i<6; i++)
 				preset_temp[30+vol+i] = currentPreset.modules.rawData[vol+i];
 			for(uint8_t i = 0; i<64; i++)
-				preset_temp[13344+i] = cab1.name[i];
+				preset_temp[13344+i] = cab1.name.string[i];
 			for(uint8_t i = 0; i<64; i++)
-				preset_temp[25696+i] = cab2.name[i];
+				preset_temp[25696+i] = cab2.name.string[i];
 			for(uint16_t i = 0; i<12288; i++)
 				preset_temp[1056+i] = cab1.data[i];
 			if(cab_type==CAB_CONFIG_STEREO)
@@ -269,13 +272,13 @@ void PresetActionsMenu::savePreset()
 
 	currentPreset.modules.rawData[147] = delay_time;
 	currentPreset.modules.rawData[148] = delay_time>>8;
-	eepr_write(preselectedPresetNumber);
+	eepr_write(targetPresetNum);
 
-	send_cab_data(0, preselectedPresetNumber+1, 0);
+	send_cab_data(0, targetPresetNum+1, 0);
 	if(cab_type==2)
-		send_cab_data1(0, preselectedPresetNumber+1);
+		send_cab_data1(0, targetPresetNum+1);
 
-	preselectedPresetNumber = currentPresetNumber;
+	targetPresetNum = currentPresetNumber;
 	prog_ch();
 
 //	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);

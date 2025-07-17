@@ -20,6 +20,7 @@
 
 #include "paramlistmenu.h"
 #include "controllersmenu.h"
+#include "cabbrowsermenu.h"
 
 #include "stringlistparam.h"
 #include "stringoutparam.h"
@@ -153,14 +154,11 @@ void ModulesMenu::keyUp()
 
 void ModulesMenu::keyDown()
 {
-	if(preselectedPresetNumber == currentPresetNumber)
+	if(*modules[m_numMenu].enablePtr)
 	{
-		if(*modules[m_numMenu].enablePtr)
-		{
-			presetEdited = true;
-			shownChildMenu = modules[m_numMenu].createMenu(this);
-			shownChildMenu->show();
-		}
+		presetEdited = true;
+		shownChildMenu = modules[m_numMenu].createMenu(this);
+		shownChildMenu->show();
 	}
 
 	tim5_start(0);
@@ -168,7 +166,9 @@ void ModulesMenu::keyDown()
 
 void ModulesMenu::key1()
 {
-	shownChildMenu = &erasePresetDialog;
+	if(shownChildMenu) delete shownChildMenu;
+
+	shownChildMenu = new Dialog(this, Dialog::ErasePreset);
 	shownChildMenu->show();
 
 	tim5_start(0);
@@ -177,6 +177,7 @@ void ModulesMenu::key1()
 void ModulesMenu::key2()
 {
 	// было своё copyMenu
+	if(shownChildMenu) delete shownChildMenu;
 
 	const uint8_t paramCount = 3;
 	BaseParam* params[paramCount];
@@ -204,7 +205,9 @@ void ModulesMenu::key2()
 void ModulesMenu::key3()
 {
 	// было своё copyMenu
+	if(shownChildMenu) delete shownChildMenu;
 
+	presetEdited = true;
 	shownChildMenu = new ControllersMenu(this);
 	shownChildMenu->show();
 }
@@ -212,14 +215,17 @@ void ModulesMenu::key3()
 void ModulesMenu::key4()
 {
 	// было своё copyMenu
+	if(shownChildMenu) delete shownChildMenu;
 
-	shownChildMenu = &nameEditMenu;
+	shownChildMenu = new NameEditMenu(this);
 	shownChildMenu->show();
 }
 
 void ModulesMenu::key5()
 {
-	shownChildMenu = &copyMenu;
+	if(shownChildMenu) delete shownChildMenu;
+
+	shownChildMenu = new PresetActionsMenu(this, PresetActionsMenu::Copy);
 	shownChildMenu->show();
 }
 
@@ -230,15 +236,13 @@ void ModulesMenu::iconRefresh(uint8_t num)
 
 void ModulesMenu::enableCab(ModulesMenu* parent)
 {
-	if(cab1.name[0] == 0)
+	if(cab1.name.size == 0)
 	{
 		if(TSD_TESTTask::sdInitState == 1)
 		{
-
-
 		  if(TFsBrowser::impulseDirExist)
 		  {
-			  // open cab browser
+			  parent->showChild(new CabBrowserMenu(parent, 1));
 		  }
 		  else
 		  {

@@ -14,4 +14,3 @@ uint8_t __CCM_BSS__ preset_temp[38560];
 uint16_t __CCM_BSS__ delay_time;
 
 volatile uint8_t __CCM_BSS__ currentPresetNumber;
-volatile uint8_t __CCM_BSS__ preselectedPresetNumber;

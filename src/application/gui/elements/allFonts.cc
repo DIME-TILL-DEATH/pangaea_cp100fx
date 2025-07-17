@@ -235,26 +235,26 @@ void ind_foot(uint8_t num, uint8_t val)
 
 const uint8_t inpp[] = "In";
 const uint8_t outt[] = "Out";
-void main_screen(void)
-{
-	oled023_1_disp_clear();
-//	ind_poin = 0;
-	Arsys_clean(2, 0, (uint8_t*)currentPreset.name);
-	Arsys_clean(2, 1, (uint8_t*)currentPreset.name);
-	if(!imya_temp)
-	{
-		Arsys_line(2, 0, (uint8_t*)currentPreset.name, 0);
-		Arsys_line(2, 1, (uint8_t*)currentPreset.comment, 0);
-	}
-	else
-	{
-		Arsys_line(2, 0, (uint8_t*)imya_t, 0);
-		Arsys_line(2, 1, (uint8_t*)imya1_t, 0);
-		imya_temp = 0;
-	}
-}
+//void main_screen(void)
+//{
+//	oled023_1_disp_clear();
+////	ind_poin = 0;
+//	Arsys_clean(2, 0, (uint8_t*)currentPreset.name);
+//	Arsys_clean(2, 1, (uint8_t*)currentPreset.name);
+//	if(!imya_temp)
+//	{
+//		Arsys_line(2, 0, (uint8_t*)currentPreset.name, 0);
+//		Arsys_line(2, 1, (uint8_t*)currentPreset.comment, 0);
+//	}
+//	else
+//	{
+//		Arsys_line(2, 0, (uint8_t*)imya_t, 0);
+//		Arsys_line(2, 1, (uint8_t*)imya1_t, 0);
+//		imya_temp = 0;
+//	}
+//}
 
-void prog_ind(uint32_t val)
+void prog_ind(uint32_t val, bool filled)
 {
 	val++;
 	uint8_t col = 87;
@@ -264,8 +264,9 @@ void prog_ind(uint32_t val)
 	prog_num[0] = val / 10;
 	prog_num[1] = val % 10;
 	for(uint8_t i = 0; i < 2; i++)
-		col += t33x30_sym(col, 0, prog_num[i]);
+		col += t33x30_sym(col, 0, prog_num[i], filled);
 }
+
 void clear_str(uint8_t col, uint8_t pag, uint8_t font, uint8_t count)
 {
 	switch(font)

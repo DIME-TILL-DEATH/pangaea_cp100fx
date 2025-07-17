@@ -26,7 +26,6 @@ volatile uint8_t contr_kn1[3];
 volatile uint8_t contr_pr[3];
 volatile uint8_t usb_flag = 0;
 extern uint8_t blinkFlag_fl;
-extern volatile uint8_t prog_sym_cur;
 
 uint8_t k_up = 0;
 uint8_t k_down = 0;
@@ -68,79 +67,57 @@ void foot_run(uint8_t num)
 			case Footswitch::Default:
 				if(currentMenu->menuType() == MENU_MAIN)
 				{
+					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
+
 					switch(num)
 					{
 						case 0:
+						{
+							mainMenu->presetDown();
+
 							if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
 									|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
 							{
-								if(preselectedPresetNumber == 0)
-									preselectedPresetNumber = 98;
-								else
-									preselectedPresetNumber -= 1;
-
-								currentPresetNumber = preselectedPresetNumber;
-								encoder_knob_pressed = 1;
-							}
-							else
-							{
-								encoder_state_updated = 1;
-								encoder_state = 1;
+								mainMenu->presetConfirm();
 							}
 							CSTask->Give();
-						break;
+							break;
+						}
 						case 1:
+						{
 							if(!sys_para[SWAP_SWITCH])
 							{
-								encoder_knob_pressed = 1;
+								mainMenu->presetConfirm();
 								CSTask->Give();
 							}
 							else
 							{
+								mainMenu->presetUp();
+
 								if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
 										|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
 								{
-									if(preselectedPresetNumber == 98)
-										preselectedPresetNumber = 0;
-									else
-										preselectedPresetNumber += 1;
-
-									currentPresetNumber = preselectedPresetNumber;
-									encoder_knob_pressed = 1;
-								}
-								else
-								{
-									encoder_state_updated = 1;
-									encoder_state = 2;
+									mainMenu->presetConfirm();
 								}
 								CSTask->Give();
 							}
+						}
 						break;
 						case 2:
 							if(!sys_para[SWAP_SWITCH])
 							{
+								mainMenu->presetUp();
+
 								if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
 										|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
 								{
-									if(preselectedPresetNumber == 98)
-										preselectedPresetNumber = 0;
-									else
-										preselectedPresetNumber += 1;
-
-									currentPresetNumber = preselectedPresetNumber;
-									encoder_knob_pressed = 1;
-								}
-								else
-								{
-									encoder_state_updated = 1;
-									encoder_state = 2;
+									mainMenu->presetConfirm();
 								}
 								CSTask->Give();
 							}
 							else
 							{
-								encoder_knob_pressed = 1;
-								CSTask->Give();
+								mainMenu->presetConfirm();
 							}
 						break;
 					}
@@ -153,9 +130,13 @@ void foot_run(uint8_t num)
 					ext_data = 127;
 				}
 				else
+				{
 					ext_data = contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 0;
+				}
+
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num, contr_kn[num]);
+					DisplayTask->IndFoot(num, contr_kn[num]); // refresh в конце
+
 				if(sys_para[FSW1_CTRL_PRESS_CC + num])
 				{
 					MidiSendTask->key_midi_start(num, contr_kn[num] + 1);
@@ -165,6 +146,7 @@ void foot_run(uint8_t num)
 				ext_fl = 1;
 				CCTask->Give();
 			break;
+
 			case Footswitch::Tuner:
 				k_tuner = 1;
 				CSTask->Give();
@@ -178,36 +160,25 @@ void foot_run(uint8_t num)
 					if(contr_pr[num] > (sys_para[FSW1_PRESS_TYPE + num] - 3))
 						contr_pr[num] = 0;
 
-					preselectedPresetNumber = sys_para[FSW1_PRESS_PR1 + num * 4 + contr_pr[num]];
+					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
+					mainMenu->presetChoose(sys_para[FSW1_PRESS_PR1 + num * 4 + contr_pr[num]]);
 					num_key_prog = num;
 
-					if(sys_para[FSW2_PRESS_TYPE])
+					if(sys_para[FSW2_PRESS_TYPE] != Footswitch::FswType::Default)
 					{
 						if(sys_para[FSW2_MODE] == Footswitch::FswMode::Single)
 						{
-							currentPresetNumber = preselectedPresetNumber;
-							encoder_knob_pressed = 1;
+							mainMenu->presetConfirm();
 						}
 						else
 						{
-							if(sys_para[FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
-							{
-								currentPresetNumber = preselectedPresetNumber;
-								encoder_knob_pressed = 1;
-							}
-							else
-							{
-								currentPresetNumber = --preselectedPresetNumber;
-								encoder_state_updated = 1;
-								encoder_state = 2;
-							}
+							if(sys_para[FSW2_HOLD_TYPE] != Footswitch::FswType::Default) mainMenu->presetConfirm();
+							else mainMenu->refresh();
 						}
 					}
 					else
 					{
-						currentPresetNumber = --preselectedPresetNumber;
-						encoder_state_updated = 1;
-						encoder_state = 2;
+						mainMenu->refresh();
 					}
 					CSTask->Give();
 				}
@@ -227,91 +198,80 @@ void foot_hold_run(uint8_t num)
 		switch(sys_para[FSW1_HOLD_TYPE + num])
 		{
 			case 0:
+			{
 				if(currentMenu->menuType() == MENU_MAIN)
 				{
 					switch(num)
 					{
-						case 0:
-							if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
-									|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
+						MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
+
+						switch(num)
+						{
+							case 0:
 							{
-								if(preselectedPresetNumber == 0)
-									preselectedPresetNumber = 98;
-								else
-									preselectedPresetNumber -= 1;
-								encoder_knob_pressed = 1;
-								currentPresetNumber = preselectedPresetNumber;
-							}
-							else
-							{
-								encoder_state_updated = 1;
-								encoder_state = 1;
-							}
-							CSTask->Give();
-						break;
-						case 1:
-							if(!sys_para[SWAP_SWITCH])
-							{
-								encoder_knob_pressed = 1;
-								CSTask->Give();
-							}
-							else
-							{
+								mainMenu->presetDown();
+
 								if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
 										|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
 								{
-									if(preselectedPresetNumber == 98)
-										preselectedPresetNumber = 0;
-									else
-										preselectedPresetNumber += 1;
-									encoder_knob_pressed = 1;
-									currentPresetNumber = preselectedPresetNumber;
+									mainMenu->presetConfirm();
+								}
+								CSTask->Give();
+								break;
+							}
+							case 1:
+							{
+								if(!sys_para[SWAP_SWITCH])
+								{
+									mainMenu->presetConfirm();
+									CSTask->Give();
 								}
 								else
 								{
-									encoder_state_updated = 1;
-									encoder_state = 2;
+									mainMenu->presetUp();
+
+									if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
+											|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
+									{
+										mainMenu->presetConfirm();
+									}
+									CSTask->Give();
 								}
-								CSTask->Give();
 							}
-						break;
-						case 2:
-							if(!sys_para[SWAP_SWITCH])
-							{
-								if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
-										|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
+							break;
+							case 2:
+								if(!sys_para[SWAP_SWITCH])
 								{
-									if(preselectedPresetNumber == 98)
-										preselectedPresetNumber = 0;
-									else
-										preselectedPresetNumber += 1;
-									encoder_knob_pressed = 1;
-									currentPresetNumber = preselectedPresetNumber;
+									mainMenu->presetUp();
+
+									if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
+											|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
+									{
+										mainMenu->presetConfirm();
+									}
+									CSTask->Give();
 								}
 								else
 								{
-									encoder_state_updated = 1;
-									encoder_state = 2;
+									mainMenu->presetConfirm();
 								}
-								CSTask->Give();
-							}
-							else
-							{
-								encoder_knob_pressed = 1;
-								CSTask->Give();
-							}
-						break;
+							break;
+						}
 					}
 				}
-			break;
+				break;
+			}
 			case 1:
+			{
 				if(!contr_kn1[num])
 				{
 					contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 1;
 					ext_data = 127;
 				}
 				else
+				{
 					ext_data = contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 0;
+				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn1[num]);
@@ -325,44 +285,37 @@ void foot_hold_run(uint8_t num)
 				ext_fl = 1;
 				CCTask->Give();
 			break;
+			}
+
 			case 2:
 				k_tuner = 1;
 				CSTask->Give();
 			break;
+
 			default:
 				if(currentMenu->menuType() == MENU_MAIN)
 				{
 					if(contr_pr[num] > (sys_para[FSW1_HOLD_TYPE + num] - 3))
 						contr_pr[num] = 0;
-					preselectedPresetNumber = sys_para[FSW1_HOLD_PR1 + num * 4 + contr_pr[num]++];
 
-					if(sys_para[FSW2_HOLD_TYPE]) // && !sys_para[fsm2]
+					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
+					mainMenu->presetChoose(sys_para[FSW1_HOLD_PR1 + num * 4 + contr_pr[num]++]);
+
+					if(sys_para[FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
 					{
-						if(!sys_para[FSW2_MODE])
+						if(sys_para[FSW2_MODE] == Footswitch::Single)
 						{
-							currentPresetNumber = preselectedPresetNumber;
-							encoder_knob_pressed = 1;
+							mainMenu->presetConfirm();
 						}
 						else
 						{
-							if(sys_para[FSW2_PRESS_TYPE]) ////??????
-							{
-								currentPresetNumber = preselectedPresetNumber;
-								encoder_knob_pressed = 1;
-							}
-							else
-							{
-								currentPresetNumber = --preselectedPresetNumber;
-								encoder_state_updated = 1;
-								encoder_state = 2;
-							}
+							if(sys_para[FSW2_PRESS_TYPE] != Footswitch::FswType::Default) mainMenu->presetConfirm();
+							else mainMenu->refresh();
 						}
 					}
 					else
 					{
-						currentPresetNumber = --preselectedPresetNumber;
-						encoder_state_updated = 1;
-						encoder_state = 2;
+						mainMenu->refresh();
 					}
 					CSTask->Give();
 				}
@@ -382,15 +335,9 @@ uint8_t fsw3_in_fl1 = 0;
 
 uint8_t tim3_end_fl = 0;
 
-uint8_t name_temp_buf[22];
-uint8_t name_temp_po = 0;
-uint32_t name_temp_po_time = 0;
-uint8_t name_run_fl = 0;
-
 volatile uint8_t enc_run = 0;
 volatile uint32_t reset_disp_count = 0;
 
-//volatile uint32_t name_temp_po_time1 = 150000;
 void ADC_process();
 
 void TENCTask::Code()

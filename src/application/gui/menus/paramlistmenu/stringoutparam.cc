@@ -42,7 +42,7 @@ void StringOutParam::task()
 {
 	if(m_timeCounter++ >= m_timeThreshold)
 	{
-		uint8_t a = m_stringPtr[0];
+		uint8_t strLength = m_stringPtr[0];
 
 		m_timeThreshold = 150000;
 		m_symbolOffset++;
@@ -50,11 +50,19 @@ void StringOutParam::task()
 		uint8_t nameBuffer[32];
 		kgp_sdk_libc::memset(nameBuffer, 0, 32);
 
+		const char* fullString = m_stringPtr;
+		if(strLength == 0)
+		{
+			fullString = " No IR loaded";
+			strLength = 13;
+		}
+
+
 		for(uint8_t i = 0; i<20; i++)
 		{
-			nameBuffer[i] = m_stringPtr[m_symbolOffset+i];
+			nameBuffer[i] = fullString[m_symbolOffset+i];
 
-			if((m_symbolOffset+i+1)==a)
+			if((m_symbolOffset+i+1) == strLength)
 			{
 				m_symbolOffset = 0;
 				nameBuffer[i+1] = 0;

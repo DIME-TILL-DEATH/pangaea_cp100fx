@@ -8,21 +8,21 @@ class NameEditMenu: public AbstractMenu
 public:
 	NameEditMenu(AbstractMenu* parent);
 
-	void show(TShowMode swhoMode = FirstShow);
-	void task();
+	void show(TShowMode swhoMode = FirstShow) override;
+	void task() override;
 
-	void encoderPressed();
-	void encoderClockwise();
-	void encoderCounterClockwise();
+	void encoderPressed() override;
+	void encoderClockwise() override;
+	void encoderCounterClockwise() override;
 
-	void keyUp();
-	void keyDown();
+	void keyUp() override;
+	void keyDown() override;
 
-	void key1();
-	void key2();
-	void key3();
-	void key4();
-	void key5();
+	void key1() override;
+	void key2() override;
+	void key3() override;
+	void key4() override;
+	void key5() override;
 
 private:
 	uint8_t keyShift;

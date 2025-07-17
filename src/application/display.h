@@ -59,8 +59,8 @@ public:
 		dcSys_Menu,
 		dcLed_Write,
 		dcPot_Write,
-		dcMain_scr,
-		dcPresetPreview,
+//		dcMain_scr,
+//		dcPresetPreview,
 		dcIcStrel,
 		dcTunIni,
 		dcTunNote,
@@ -158,7 +158,8 @@ public:
 
 	typedef struct
 	{
-		uint8_t pro;
+		uint8_t prog;
+		uint8_t filled;
 	}TProg_indParam;
 
 	typedef struct
@@ -314,7 +315,7 @@ public:
 	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 	void VolIndicatorTask();
 
-	void Prog_ind(uint8_t pro);
+	void Prog_ind(uint8_t prog, bool filled = true);
 	void EfIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
 	void SetColumn(uint8_t x);
 	void SetPagAdr(uint8_t x);
@@ -335,7 +336,7 @@ public:
 	void Sys_Menu(void);
 	void Led_Write(void);
 	void Pot_Write(void);
-	void Main_scr();
+//	void Main_scr();
 	void Icon_Strel(icon_t num, strelka_t strel);
 	void TunIni(void);
 	void TunNote(void);

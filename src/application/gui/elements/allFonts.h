@@ -67,7 +67,7 @@ void disp_start(uint8_t num);
 void vol_ind(uint8_t xPos, uint8_t indLength);
 void menu_init(void);
 void main_screen(void);
-void prog_ind(uint32_t val);
+void prog_ind(uint32_t val, bool filled = true);
 void clear_str(uint8_t col, uint8_t pag, uint8_t font, uint8_t count);
 void Arsys_ef(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs);
 void disp_contr(uint8_t val);

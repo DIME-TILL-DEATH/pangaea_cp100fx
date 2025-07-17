@@ -176,7 +176,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 4;
 	BaseParam* params[paramNum];
 
-	params[0] = new StringOutParam(cab1.name);
+	params[0] = new StringOutParam(cab1.name.string);
 	params[0]->setDisplayPosition(ParamListMenu::leftPad);
 
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab1BrowserMenu);
@@ -212,7 +212,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 4;
 	BaseParam* params[paramNum];
 
-	params[0] = new StringOutParam(cab2.name);
+	params[0] = new StringOutParam(cab2.name.string);
 	params[0]->setDisplayPosition(ParamListMenu::leftPad);
 
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab2BrowserMenu);

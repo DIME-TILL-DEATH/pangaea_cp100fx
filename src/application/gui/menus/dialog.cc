@@ -4,6 +4,7 @@
 #include "display.h"
 #include "enc.h"
 #include "eepr.h"
+#include "init.h"
 #include "BF706_send.h"
 
 #include "presetactionsmenu.h"
@@ -107,7 +108,6 @@ void Dialog::encoderPressed()
 	switch(m_paramNum)
 	{
 		case 2:
-			eepr_read_imya(preselectedPresetNumber);
 
 			currentMenu = m_yesMenu;
 			m_yesMenu->show();
@@ -115,7 +115,6 @@ void Dialog::encoderPressed()
 		break;
 		case 0:
 			prog_ch();
-			eepr_read_imya(preselectedPresetNumber);
 
 			currentMenu = m_noMenu;
 			m_noMenu->show();
@@ -131,11 +130,10 @@ void Dialog::encoderPressed()
 					currentPreset.modules.rawData[delay_tim_lo] = 0xf4;
 					currentPreset.modules.rawData[delay_tim_hi] = 1;
 
-					cab_data_ready = false;
-					send_cab_data(1, currentPresetNumber+1, 0);
+					DSP_ErasePrimaryCab(currentPresetNumber+1);
 
-//					if(cab_num==2) // Можно ли всегда затирать?
-						send_cab_data1(1, currentPresetNumber+1);
+					if(cab_type == CAB_CONFIG_STEREO)
+						DSP_EraseSecondaryCab(currentPresetNumber+1);
 
 					prog_ch();
 					break;

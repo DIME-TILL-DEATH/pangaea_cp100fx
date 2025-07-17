@@ -49,9 +49,11 @@ void TDisplayTask::Code()
 								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
 					break;
 					case Font::fnt33x30:
+					{
 						t33x30_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
-								cmd.SymbolOutParams.symbol);
+								cmd.SymbolOutParams.symbol, true);
 					break;
+					}
 					case Font::fntSystem:
 						Arsys_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
 								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
@@ -103,14 +105,15 @@ void TDisplayTask::Code()
 //				menu_init();
 //        	break;
 
-			case dcMain_scr:
-				main_screen();
-        	break;
+//			case dcMain_scr:
+//				main_screen();
+//        	break;
 
 			case dcProg_ind:
-				prog_ind(cmd.Prog_indParam.pro);
-			break;
-
+			{
+				prog_ind(cmd.Prog_indParam.prog, cmd.Prog_indParam.filled);
+				break;
+			}
 			case dcClear_str:
 				clear_str(cmd.Clear_strParams.pos.x, cmd.Clear_strParams.pos.y,
 						cmd.Clear_strParams.font.name, cmd.Clear_strParams.count);
@@ -219,10 +222,6 @@ void TDisplayTask::Code()
 			case dcTunStrel:
 				strel_tun();
 			break;
-
-			case dcPresetPreview:
-				eepr_read_imya(cmd.PresetPreviewParam.index);
-			break ;
 
 			case dcInd_foot:
 				ind_foot(cmd.Ind_footParam.num , cmd.Ind_footParam.val);
@@ -355,11 +354,12 @@ void TDisplayTask::VolIndicatorTask()
 	Command(&cmd);
 }
 
-void TDisplayTask::Prog_ind(uint8_t pro)
+void TDisplayTask::Prog_ind(uint8_t prog, bool filled)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcProg_ind;
-	cmd.Prog_indParam.pro = pro;
+	cmd.Prog_indParam.prog = prog;
+	cmd.Prog_indParam.filled = filled;
 	Command(&cmd);
 }
 void TDisplayTask::Clear_str(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count)
@@ -502,20 +502,6 @@ void TDisplayTask::Pot_Write()
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcPot_Write;
-	Command(&cmd);
-}
-void TDisplayTask::Main_scr()
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcMain_scr;
-	Command(&cmd);
-}
-
-void TDisplayTask::PresetPreview(uint8_t val)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcPresetPreview;
-	cmd.PresetPreviewParam.index = val ;
 	Command(&cmd);
 }
 

@@ -439,3 +439,28 @@ void ControllersMenu::encoderCounterClockwise()
 		}
 	}
 }
+
+void ControllersMenu::key1()
+{
+	topLevelMenu->key1();
+}
+
+void ControllersMenu::key2()
+{
+	topLevelMenu->key2();
+}
+
+void ControllersMenu::key3()
+{
+	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+}
+
+void ControllersMenu::key4()
+{
+	topLevelMenu->key4();
+}
+
+void ControllersMenu::key5()
+{
+	topLevelMenu->key5();
+}

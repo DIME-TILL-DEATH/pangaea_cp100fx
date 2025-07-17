@@ -64,6 +64,9 @@ void DSP_SendPresetData(uint8_t* data);
 void DSP_SendPrimaryCabData(uint8_t* data, uint8_t presetNum = 0);
 void DSP_SendSecondaryCabData(uint8_t* data, uint8_t presetNum = 0); // 0 - currentPreset
 
+void DSP_ErasePrimaryCab(uint8_t presetNum);
+void DSP_EraseSecondaryCab(uint8_t presetNum);
+
 void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl);
 void send_cab_data1(uint8_t val, uint8_t num);
 void gui_send(uint8_t num, uint16_t val);

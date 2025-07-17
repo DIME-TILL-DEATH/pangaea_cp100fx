@@ -51,7 +51,7 @@ void TCSTask::Code()
 
 	CSTask->DisplayAccess(false);
 
-	currentPresetNumber = preselectedPresetNumber = sys_para[LAST_PRESET_NUM];
+	currentPresetNumber = sys_para[LAST_PRESET_NUM];
 
 	DisplayTask->StartScreen(1);
 
@@ -100,9 +100,8 @@ void TCSTask::Code()
 	tun_del_val = (127 - sys_para[TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
 	Delay(500);
 	prog_ch();
-	eepr_read_imya(preselectedPresetNumber);
-	DisplayTask->Main_scr();
-	DisplayTask->Prog_ind(preselectedPresetNumber);
+//	eepr_read_imya(preselectedPresetNumber);
+
 	for(uint8_t i = 0; i < 3; i++)
 	{
 		contr_kn[i] = currentPreset.modules.rawData[fo1 + i];

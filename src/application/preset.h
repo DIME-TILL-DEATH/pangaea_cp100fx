@@ -240,10 +240,17 @@ typedef union
 	uint8_t rawData[512];
 }UModulesData;
 
+typedef union
+{
+	char string[64];
+	uint8_t size;
+}UCabName;
+
 typedef struct
 {
 	uint8_t* data;
-	char name[64];
+//	char name[64];
+	UCabName name;
 }TCabinet;
 
 typedef struct
@@ -284,6 +291,5 @@ extern uint8_t __CCM_BSS__ preset_temp[];
 
 extern uint16_t delay_time;
 extern volatile uint8_t currentPresetNumber;
-extern volatile uint8_t preselectedPresetNumber;
 
 #endif /* SRC_APPLICATION_PRESET_H_ */

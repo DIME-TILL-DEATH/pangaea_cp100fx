@@ -67,7 +67,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	currentPreset.modules.rawData[147] = delay_time;
 	currentPreset.modules.rawData[148] = delay_time>>8;
 
-	preselectedPresetNumber = currentPresetNumber;
+	currentPresetNumber;
 	eepr_write(currentPresetNumber);
 
 	DSP_SendPresetData(currentPreset.modules.rawData);
@@ -86,8 +86,6 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 	{
 		char *end;
 		currentPresetNumber = kgp_sdk_libc::strtol(args[1], &end, 16);
-
-		preselectedPresetNumber = currentPresetNumber;
 
 		sys_para[LAST_PRESET_NUM] = currentPresetNumber;
 		prog_ch();

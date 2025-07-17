@@ -102,7 +102,7 @@ void write_sys(void);
 void eepr_write(uint8_t nu);
 void EEPROM_loadPreset(uint8_t presetNum);
 void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData);
-void eepr_read_imya(uint8_t nu);
+//void eepr_read_imya(uint8_t nu);
 void write_prog_temp(uint8_t nu);
 void read_prog_temp(uint8_t nu);
 void preset_erase(uint8_t nu);

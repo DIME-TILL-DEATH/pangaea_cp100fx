@@ -51,8 +51,6 @@ const uint8_t prog_data_init[512] =
 		0,
 		/*bpm del*/120};
 
-
-
 const uint32_t del_tim_init = 500;
 const uint8_t nameInit[] = {"Preset        "};
 const uint8_t commentInit[] = {"Name          "};
@@ -61,14 +59,7 @@ uint8_t __CCM_BSS__ sys_para[512] =
 {/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
 /*foot3*/0,/*calibrate*/0, 0, 0xff, 0xf};
 
-uint8_t __CCM_BSS__ imya_t[15];
-uint8_t __CCM_BSS__ imya1_t[15];
-
 volatile uint32_t fl_st;
-
-extern volatile uint8_t prog_sym_cur;
-extern uint8_t name_run_fl;
-extern emb_string full_curr_dir_path;
 
 int16_t mstEqMidFreq;
 
@@ -116,11 +107,11 @@ void eepr_write(uint8_t nu)
 	del_t_b[1] = delay_time>>8;
 	f_write(&file, del_t_b, 2, &f_size);
 	f_write(&file, cab1.data, CAB_DATA_SIZE, &f_size);
-	f_write(&file, cab1.name, 64, &f_size);
+	f_write(&file, cab1.name.string, 64, &f_size);
 	if(cab_type == CAB_CONFIG_STEREO)
 	{
 		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
-		f_write(&file, cab2.name, 64, &f_size);
+		f_write(&file, cab2.name.string, 64, &f_size);
 		f_lseek(&file, 38048);
 	}
 	else
@@ -168,11 +159,11 @@ void EEPROM_loadPreset(uint8_t nu)
 //	    }
 
 		f_read(&file, cab1.data, CAB_DATA_SIZE, &f_size);
-		f_read(&file, cab1.name, 64, &f_size);
+		f_read(&file, cab1.name.string, 64, &f_size);
 		if(cab_type==2)
 		{
 			f_read(&file, cab2.data, CAB_DATA_SIZE, &f_size);
-			f_read(&file, cab2.name, 64, &f_size);
+			f_read(&file, cab2.name.string, 64, &f_size);
 		}
 		else
 		{
@@ -205,7 +196,7 @@ void EEPROM_loadPreset(uint8_t nu)
 			}
 		}
 		delete tmp;
-		prog_sym_cur = 0;
+//		prog_sym_cur = 0;
 	}
 	else
 	{
@@ -224,7 +215,7 @@ void EEPROM_loadPreset(uint8_t nu)
 			currentPreset.controller[i].maxVal = 127;
 		delay_time = del_tim_init;
 
-		cab1.name[0] = cab2.name[0] = 0;
+		cab1.name.size = cab2.name.size = 0;
 		cab1.data[0] = 0xff;
 		cab1.data[1] = 0xff;
 		cab1.data[2] = 0x7f;
@@ -235,7 +226,7 @@ void EEPROM_loadPreset(uint8_t nu)
 			cab2.data[1] = 0xff;
 			cab2.data[2] = 0x7f;
 		}
-		prog_sym_cur = 1;
+//		prog_sym_cur = 1;
 	}
 	f_close(&file);
 
@@ -246,7 +237,7 @@ void EEPROM_loadPreset(uint8_t nu)
 
 	currentPreset.name[14] = 0;
 	currentPreset.comment[14] = 0;
-	cab1.name[63] = cab2.name[63] = 0;
+	cab1.name.string[63] = cab2.name.string[63] = 0;
 
 	FSTask->Resume();
 }
@@ -260,6 +251,8 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 	FATFS fs;
 	FIL file;
 	UINT f_size;
+
+//	kgp_sdk_libc::memset(presetData, 0, sizeof(Preset::TPresetBrief));
 
 	presetNum++;
 	if(presetNum<10)
@@ -293,6 +286,8 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 	presetData->comment[14] = 0;
 	presetData->cab1Name[63] = 0;
 	presetData->cab2Name[63] = 0;
+
+	FSTask->Resume();
 }
 
 void read_prog_temp(uint8_t nu)
@@ -330,7 +325,7 @@ void read_prog_temp(uint8_t nu)
 			else
 				f_read(&file, preset_temp, 38560, &f_size);
 		}
-		prog_sym_cur = 0;
+//		prog_sym_cur = 0;
 	}
 	else
 	{
@@ -362,7 +357,7 @@ void read_prog_temp(uint8_t nu)
 			preset_temp[pres_po++] = 0;
 		for(uint16_t i = 0; i<512; i++)
 			preset_temp[pres_po++] = 0;
-		prog_sym_cur = 1;
+//		prog_sym_cur = 1;
 	}
 	f_close(&file);
 	f_mount(0, "1:", 0);
@@ -386,49 +381,7 @@ void write_prog_temp(uint8_t nu)
 	f_close(&file);
 	f_mount(0, "1:", 0);
 }
-// read a  header
-void eepr_read_imya(uint8_t nu)
-{
-	nu++;
 
-	char fna[_MAX_LFN];
-	FRESULT fs_res;
-	FATFS fs;
-	FIL file;
-	UINT f_size;
-	f_mount(&fs, "1:", 1);
-	if(nu<10)
-		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)nu);
-	else
-		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
-	fs_res = f_open(&file, fna, FA_READ);
-	//name_run_fl = 0;
-	if(fs_res==FR_OK)
-	{
-		f_lseek(&file, 13344);
-		f_read(&file, imya_t, 1, &f_size);
-		f_lseek(&file, 25696);
-		f_read(&file, imya1_t, 1, &f_size);
-		if((imya_t[0])||(imya1_t[0]))
-			prog_sym_cur = 0;
-		else
-			prog_sym_cur = 1;
-		f_lseek(&file, 0);
-		f_read(&file, imya_t, 15, &f_size);
-		f_read(&file, imya1_t, 15, &f_size);
-		prog_sym_cur = 0;
-	}
-	else
-	{
-		for(uint8_t i = 0; i<15; i++)
-			imya_t[i] = nameInit[i];
-		for(uint8_t i = 0; i<15; i++)
-			imya1_t[i] = commentInit[i];
-		prog_sym_cur = 1;
-	}
-	f_close(&file);
-	f_mount(0, "1:", 0);
-}
 void preset_erase(uint8_t nu)
 {
 	nu++;
@@ -442,6 +395,7 @@ void preset_erase(uint8_t nu)
 	f_unlink(fna);
 	f_mount(0, "1:", 0);
 }
+
 void load_mass_imp(void)
 {
 	uint32_t buf;
