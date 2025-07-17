@@ -4,6 +4,8 @@
 
 #include "init.h"
 
+#include "system.h"
+
 #include "controllers.h"
 #include "preset.h"
 #include "modules.h"
@@ -69,11 +71,11 @@ void write_sys(void)
 	// mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
 	//	mas_eq_fr = sys_para[508] << 8;
 	//	mas_eq_fr |= sys_para[509];
-	sys_para[MASTER_EQ_FREQ_VAL_LO] = 2;
-	sys_para[MASTER_EQ_FREQ_VAL_HI] = 0x6a;
+	sys_para[System::MASTER_EQ_FREQ_VAL_LO] = 2;
+	sys_para[System::MASTER_EQ_FREQ_VAL_HI] = 0x6a;
 
-	sys_para[MASTER_EQ_FREQ_LO] = (mstEqMidFreq>>8) & 0xF;
-	sys_para[MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xF;
+	sys_para[System::MASTER_EQ_FREQ_LO] = (mstEqMidFreq>>8) & 0xF;
+	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xF;
 
 	FATFS fs;
 	FIL file;

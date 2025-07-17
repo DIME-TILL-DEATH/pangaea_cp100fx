@@ -11,6 +11,8 @@
 #include "controllers.h"
 #include "preset.h"
 
+#include "system.h"
+
 const uint8_t ControllersMenu::strControllersMenu[][7];
 const uint8_t ControllersMenu::strOutPcList[][8];
 const uint8_t ControllersMenu::strControllerExt[][12];
@@ -155,25 +157,25 @@ void ControllersMenu::encoderClockwise()
 
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::Expression)
 					{
-						if(sys_para[EXPR_TYPE] < 3)
+						if(sys_para[System::EXPR_TYPE] < 3)
 							currentPreset.controller[m_controllerNum].src++;
 
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswDown)
 					{
-						if(sys_para[FSW1_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW1_PRESS_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src++;
 
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswConfirm)
 					{
-						if(sys_para[FSW2_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src++;
 
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswDown)
 					{
-						if(sys_para[FSW3_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW3_PRESS_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src++;
 
 					}
@@ -343,22 +345,22 @@ void ControllersMenu::encoderCounterClockwise()
 
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswUp)
 					{
-						if(sys_para[FSW3_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW3_PRESS_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src--;
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswConfirm)
 					{
-						if(sys_para[FSW2_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src--;
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswDown)
 					{
-						if(sys_para[FSW1_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW1_PRESS_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src--;
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::Expression)
 					{
-						if(sys_para[EXPR_TYPE] < 3)
+						if(sys_para[System::EXPR_TYPE] < 3)
 							currentPreset.controller[m_controllerNum].src--;
 					}
 

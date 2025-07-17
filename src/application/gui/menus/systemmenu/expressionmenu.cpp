@@ -7,6 +7,8 @@
 #include "enc.h"
 #include "eepr.h"
 
+#include "system.h"
+
 #include "BF706_send.h"
 
 #include "midi_send.h"
@@ -35,14 +37,14 @@ void ExpressionMenu::show(TShowMode swhoMode)
 		DisplayTask->StringOut(3, i, Font::fntSystem, 0, (uint8_t*)&expr_menu[i]);
 	}
 
-	DisplayTask->StringOut(60, 0, Font::fntSystem, 0, (uint8_t*)&strExprType[sys_para[EXPR_TYPE] & 0x7f]);
+	DisplayTask->StringOut(60, 0, Font::fntSystem, 0, (uint8_t*)&strExprType[sys_para[System::EXPR_TYPE] & 0x7f]);
 
-	if(!sys_para[EXPR_CCN])
+	if(!sys_para[System::EXPR_CCN])
 		DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
 	else
-		DisplayTask->ParamIndicNum(84, 2, sys_para[EXPR_CCN]-1);
+		DisplayTask->ParamIndicNum(84, 2, sys_para[System::EXPR_CCN]-1);
 
-	if(!sys_para[EXPR_STORE_LEVEL])
+	if(!sys_para[System::EXPR_STORE_LEVEL])
 		DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"Off");
 	else
 		DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"On ");
@@ -89,8 +91,8 @@ void ExpressionMenu::encoderPressed()
 		break;
 
 		case CalMin:
-			sys_para[EXPR_CAL_MIN_HI] = adc_bu;
-			sys_para[EXPR_CAL_MIN_LO] = adc_bu>>8;
+			sys_para[System::EXPR_CAL_MIN_HI] = adc_bu;
+			sys_para[System::EXPR_CAL_MIN_LO] = adc_bu>>8;
 
 			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
@@ -102,8 +104,8 @@ void ExpressionMenu::encoderPressed()
 		break;
 
 		case CalMax:
-			sys_para[EXPR_CAL_MAX_HI] = adc_bu;
-			sys_para[EXPR_CAL_MAX_LO] = adc_bu>>8;
+			sys_para[System::EXPR_CAL_MAX_HI] = adc_bu;
+			sys_para[System::EXPR_CAL_MAX_LO] = adc_bu>>8;
 
 			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
@@ -133,29 +135,29 @@ void ExpressionMenu::encoderClockwise()
 			switch(m_parNum)
 			{
 				case 0:
-					if((sys_para[EXPR_TYPE]&0x7f)<4)
+					if((sys_para[System::EXPR_TYPE]&0x7f)<4)
 					{
 						DisplayTask->StringOut(60, 0, Font::fntSystem, 0,
-								(uint8_t*)strExprType[++sys_para[EXPR_TYPE] & 0x7f]);
+								(uint8_t*)strExprType[++sys_para[System::EXPR_TYPE] & 0x7f]);
 						adc_pin_init();
-						if((sys_para[EXPR_TYPE] & 0x7f) > 2)
+						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
 							ext_send(127);
 					}
 				break;
 				case 2:
-					if(sys_para[EXPR_CCN] < 128)
+					if(sys_para[System::EXPR_CCN] < 128)
 					{
-						sys_para[EXPR_CCN] = BaseParam::encSpeedInc(sys_para[EXPR_CCN], 100);
-						if(!sys_para[EXPR_CCN])
+						sys_para[System::EXPR_CCN] = BaseParam::encSpeedInc(sys_para[System::EXPR_CCN], 100);
+						if(!sys_para[System::EXPR_CCN])
 							DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
 						else
-							DisplayTask->ParamIndicNum(84, 2, sys_para[EXPR_CCN]-1);
+							DisplayTask->ParamIndicNum(84, 2, sys_para[System::EXPR_CCN]-1);
 					}
 				break;
 				case 3:
-					if(!sys_para[EXPR_STORE_LEVEL])
+					if(!sys_para[System::EXPR_STORE_LEVEL])
 					{
-						sys_para[EXPR_STORE_LEVEL]++;
+						sys_para[System::EXPR_STORE_LEVEL]++;
 						DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"On ");
 					}
 				break;
@@ -186,29 +188,29 @@ void ExpressionMenu::encoderCounterClockwise()
 			switch(m_parNum)
 			{
 				case 0:
-					if((sys_para[EXPR_TYPE]&0x7f)>1)
+					if((sys_para[System::EXPR_TYPE]&0x7f)>1)
 					{
 						DisplayTask->StringOut(60, 0, Font::fntSystem, 0,
-								(uint8_t*)&strExprType[--sys_para[EXPR_TYPE] & 0x7f]);
+								(uint8_t*)&strExprType[--sys_para[System::EXPR_TYPE] & 0x7f]);
 						adc_pin_init();
-						if((sys_para[EXPR_TYPE] & 0x7f) > 2)
+						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
 							ext_send(127);
 					}
 				break;
 				case 2:
-					if(sys_para[EXPR_CCN]>0)
+					if(sys_para[System::EXPR_CCN]>0)
 					{
-						sys_para[EXPR_CCN] = BaseParam::encSpeedDec(sys_para[EXPR_CCN], 0);
-						if(!sys_para[EXPR_CCN])
+						sys_para[System::EXPR_CCN] = BaseParam::encSpeedDec(sys_para[System::EXPR_CCN], 0);
+						if(!sys_para[System::EXPR_CCN])
 							DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
 						else
-							DisplayTask->ParamIndicNum(84, 2, sys_para[EXPR_CCN]-1);
+							DisplayTask->ParamIndicNum(84, 2, sys_para[System::EXPR_CCN]-1);
 					}
 				break;
 				case 3:
-					if(sys_para[EXPR_STORE_LEVEL])
+					if(sys_para[System::EXPR_STORE_LEVEL])
 					{
-						sys_para[EXPR_STORE_LEVEL]--;
+						sys_para[System::EXPR_STORE_LEVEL]--;
 						DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"Off");
 					}
 				break;

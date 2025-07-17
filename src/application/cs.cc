@@ -52,7 +52,7 @@ void TCSTask::Code()
 
 	CSTask->DisplayAccess(false);
 
-	currentPresetNumber = sys_para[LAST_PRESET_NUM];
+	currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
 
 	DisplayTask->StartScreen(1);
 
@@ -73,31 +73,31 @@ void TCSTask::Code()
 	gui_send(14, 0); // global cab on off
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
-	DSP_GuiSendParameter(DSP_ADDRESS_SPDIF, sys_para[SPDIF_OUT_TYPE], 0);
-	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
-	DSP_GuiSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[CAB_SIM_CONFIG], 0); // left cab bypass
+	DSP_GuiSendParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	DSP_GuiSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0); // left cab bypass
 
-	if(!sys_para[PHONES_VOLUME])
-		sys_para[PHONES_VOLUME] = 127;
+	if(!sys_para[System::PHONES_VOLUME])
+		sys_para[System::PHONES_VOLUME] = 127;
 	DisplayTask->Pot_Write();
 
-	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[MASTER_VOLUME], 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
 
-	if(!sys_para[MASTER_EQ_FREQ_LO] && !sys_para[MASTER_EQ_FREQ_HI])
+	if(!sys_para[System::MASTER_EQ_FREQ_LO] && !sys_para[System::MASTER_EQ_FREQ_HI])
 	{
 		mstEqMidFreq = 1000;
 	}
 	else
 	{
-		mstEqMidFreq = sys_para[MASTER_EQ_FREQ_LO] << 8;
-		mstEqMidFreq |= sys_para[MASTER_EQ_FREQ_HI];
+		mstEqMidFreq = sys_para[System::MASTER_EQ_FREQ_LO] << 8;
+		mstEqMidFreq |= sys_para[System::MASTER_EQ_FREQ_HI];
 	}
 
 	for(uint8_t i = 0; i < 4; i++)
 		gui_send(25, i);
 
 	gui_send(18, 14 | (sys_para[120] << 8)); // master eq
-	tun_del_val = (127 - sys_para[TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
+	tun_del_val = (127 - sys_para[System::TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
 	Delay(500);
 	prog_ch();
 //	eepr_read_imya(preselectedPresetNumber);
@@ -107,12 +107,6 @@ void TCSTask::Code()
 		contr_kn[i] = currentPreset.modules.rawData[fo1 + i];
 		contr_kn1[i] = currentPreset.modules.rawData[fo11 + i];
 	}
-	if((sys_para[FSW1_PRESS_TYPE] == 1) || ((sys_para[FSW1_HOLD_TYPE] == 1) && sys_para[FSW1_MODE]))
-		DisplayTask->IndFoot(0, contr_kn[0]);
-	if((sys_para[FSW2_PRESS_TYPE] == 1) || ((sys_para[FSW2_HOLD_TYPE] == 1) && sys_para[FSW2_MODE]))
-		DisplayTask->IndFoot(1, contr_kn[1]);
-	if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))
-		DisplayTask->IndFoot(2, contr_kn[2]);
 
 	send_codec(0xa301);
 	ENCTask->SetEnc(1);

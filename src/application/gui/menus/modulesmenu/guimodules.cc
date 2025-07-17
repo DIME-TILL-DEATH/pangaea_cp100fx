@@ -413,7 +413,7 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 
 void delayTimeDecrease(void* parameter)
 {
-	if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
 	{
 		if(delay_time > 10) delay_time = BaseParam::encSpeedDec(delay_time, 10);
 	}
@@ -434,7 +434,7 @@ void delayTimeDecrease(void* parameter)
 
 void delayTimeIncrease(void* parameter)
 {
-	if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
 	{
 		if(delay_time < 2730) delay_time = BaseParam::encSpeedInc(delay_time, 2730);
 	}
@@ -455,7 +455,7 @@ void delayTimeIncrease(void* parameter)
 
 void delayTimePrint(void* parameter)
 {
-	if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
 	{
 		DisplayTask->DelayTimeInd(58, 0, delay_time);
 	}

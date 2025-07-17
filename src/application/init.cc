@@ -1,10 +1,12 @@
 #include "appdefs.h"
 #include "init.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "fs.h"
 #include "cs.h"
 #include "AT45DB321.h"
+
+#include "system.h"
 
 uint32_t sram_point;
 uint32_t sram_point1;
@@ -22,10 +24,10 @@ extern volatile uint16_t key_reg_in;
 extern const uint8_t dsp_cod[];
 void adc_calib(void)
 {
-	adc_low = sys_para[EXPR_CAL_MIN_HI];
-	adc_low |= sys_para[EXPR_CAL_MIN_LO]<<8;
-	adc_high = sys_para[EXPR_CAL_MAX_HI];
-	adc_high |= sys_para[EXPR_CAL_MAX_LO]<<8;
+	adc_low = sys_para[System::EXPR_CAL_MIN_HI];
+	adc_low |= sys_para[System::EXPR_CAL_MIN_LO]<<8;
+	adc_high = sys_para[System::EXPR_CAL_MAX_HI];
+	adc_high |= sys_para[System::EXPR_CAL_MAX_LO]<<8;
 	extern volatile uint8_t adc_inv_fl;
 	adc_inv_fl = 0;
 	if(adc_high<adc_low)
@@ -174,7 +176,7 @@ void init(void)
 		NOP();
 	eepr_init();
 
-	cab_type = sys_para[CAB_SIM_CONFIG];
+	cab_type = sys_para[System::CAB_SIM_CONFIG];
 
 //-------------------------------------------------GPIO_init-----------------------------------------------
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
@@ -549,7 +551,7 @@ void eepr_init(void)
 	f_read(&file, sys_para, 512, &file_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
-	if(!sys_para[MIDI_PC_IND])
+	if(!sys_para[System::MIDI_PC_IND])
 	{
 		for(uint8_t i = 0; i<128; i++)
 		{
@@ -558,7 +560,7 @@ void eepr_init(void)
 			else
 				sys_para[i+128] = i-99;
 		}
-		sys_para[MIDI_PC_IND] = 1;
+		sys_para[System::MIDI_PC_IND] = 1;
 		void write_sys(void);
 		write_sys();
 	}

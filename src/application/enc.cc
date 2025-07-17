@@ -10,12 +10,16 @@
 #include "midi_send.h"
 #include "allFonts.h"
 
+#include "system.h"
+
 #include "usb.h"
 
 #include "gui_task.h"
 
 #include "preset.h"
 #include "footswitch.h"
+
+#include "system.h"
 
 void start_usb();
 
@@ -62,7 +66,7 @@ void foot_run(uint8_t num)
 	}
 	else
 	{
-		switch(sys_para[FSW1_PRESS_TYPE + num])
+		switch(sys_para[System::FSW1_PRESS_TYPE + num])
 		{
 			case Footswitch::Default:
 				if(currentMenu->menuType() == MENU_MAIN)
@@ -75,8 +79,8 @@ void foot_run(uint8_t num)
 						{
 							mainMenu->presetDown();
 
-							if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
-									|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
+							if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
+									|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 							{
 								mainMenu->presetConfirm();
 							}
@@ -85,7 +89,7 @@ void foot_run(uint8_t num)
 						}
 						case 1:
 						{
-							if(!sys_para[SWAP_SWITCH])
+							if(!sys_para[System::SWAP_SWITCH])
 							{
 								mainMenu->presetConfirm();
 								CSTask->Give();
@@ -94,8 +98,8 @@ void foot_run(uint8_t num)
 							{
 								mainMenu->presetUp();
 
-								if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
-										|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
+								if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
+										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
 									mainMenu->presetConfirm();
 								}
@@ -104,12 +108,12 @@ void foot_run(uint8_t num)
 						}
 						break;
 						case 2:
-							if(!sys_para[SWAP_SWITCH])
+							if(!sys_para[System::SWAP_SWITCH])
 							{
 								mainMenu->presetUp();
 
-								if((sys_para[FSW2_PRESS_TYPE] && !sys_para[SWAP_SWITCH])
-										|| (sys_para[FSW3_PRESS_TYPE] && sys_para[SWAP_SWITCH]))
+								if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
+										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
 									mainMenu->presetConfirm();
 								}
@@ -137,7 +141,7 @@ void foot_run(uint8_t num)
 				if(currentMenu->menuType() == MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn[num]); // refresh в конце
 
-				if(sys_para[FSW1_CTRL_PRESS_CC + num])
+				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
 				{
 					MidiSendTask->key_midi_start(num, contr_kn[num] + 1);
 					MidiSendTask->Give();
@@ -157,22 +161,22 @@ void foot_run(uint8_t num)
 				{
 					if(num_key_prog == num)
 						contr_pr[num]++;
-					if(contr_pr[num] > (sys_para[FSW1_PRESS_TYPE + num] - 3))
+					if(contr_pr[num] > (sys_para[System::FSW1_PRESS_TYPE + num] - 3))
 						contr_pr[num] = 0;
 
 					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
-					mainMenu->presetChoose(sys_para[FSW1_PRESS_PR1 + num * 4 + contr_pr[num]]);
+					mainMenu->presetChoose(sys_para[System::FSW1_PRESS_PR1 + num * 4 + contr_pr[num]]);
 					num_key_prog = num;
 
-					if(sys_para[FSW2_PRESS_TYPE] != Footswitch::FswType::Default)
+					if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default)
 					{
-						if(sys_para[FSW2_MODE] == Footswitch::FswMode::Single)
+						if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
 						{
 							mainMenu->presetConfirm();
 						}
 						else
 						{
-							if(sys_para[FSW2_HOLD_TYPE] != Footswitch::FswType::Default) mainMenu->presetConfirm();
+							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default) mainMenu->presetConfirm();
 							else mainMenu->refresh();
 						}
 					}
@@ -195,7 +199,7 @@ void foot_hold_run(uint8_t num)
 	}
 	else
 	{
-		switch(sys_para[FSW1_HOLD_TYPE + num])
+		switch(sys_para[System::FSW1_HOLD_TYPE + num])
 		{
 			case 0:
 			{
@@ -211,8 +215,8 @@ void foot_hold_run(uint8_t num)
 							{
 								mainMenu->presetDown();
 
-								if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
-										|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
+								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
+										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
 									mainMenu->presetConfirm();
 								}
@@ -221,7 +225,7 @@ void foot_hold_run(uint8_t num)
 							}
 							case 1:
 							{
-								if(!sys_para[SWAP_SWITCH])
+								if(!sys_para[System::SWAP_SWITCH])
 								{
 									mainMenu->presetConfirm();
 									CSTask->Give();
@@ -230,8 +234,8 @@ void foot_hold_run(uint8_t num)
 								{
 									mainMenu->presetUp();
 
-									if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
-											|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
+									if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
+											|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 									{
 										mainMenu->presetConfirm();
 									}
@@ -240,12 +244,12 @@ void foot_hold_run(uint8_t num)
 							}
 							break;
 							case 2:
-								if(!sys_para[SWAP_SWITCH])
+								if(!sys_para[System::SWAP_SWITCH])
 								{
 									mainMenu->presetUp();
 
-									if((sys_para[FSW2_HOLD_TYPE] && !sys_para[SWAP_SWITCH])
-											|| (sys_para[FSW3_HOLD_TYPE] && sys_para[SWAP_SWITCH]))
+									if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
+											|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 									{
 										mainMenu->presetConfirm();
 									}
@@ -276,12 +280,12 @@ void foot_hold_run(uint8_t num)
 				if(currentMenu->menuType() == MENU_MAIN)
 					DisplayTask->IndFoot(num, contr_kn1[num]);
 
-				if(sys_para[FSW1_CTRL_HOLD_CC + num])
+				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
 				{
 					MidiSendTask->key_midi_start1(num, contr_kn1[num] + 1);
 					MidiSendTask->Give();
 				}
-				ext_sourc = sys_para[FSW1_CTRL_HOLD_CC + num] + 4;
+				ext_sourc = sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4;
 				ext_fl = 1;
 				CCTask->Give();
 			break;
@@ -295,21 +299,21 @@ void foot_hold_run(uint8_t num)
 			default:
 				if(currentMenu->menuType() == MENU_MAIN)
 				{
-					if(contr_pr[num] > (sys_para[FSW1_HOLD_TYPE + num] - 3))
+					if(contr_pr[num] > (sys_para[System::FSW1_HOLD_TYPE + num] - 3))
 						contr_pr[num] = 0;
 
 					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
-					mainMenu->presetChoose(sys_para[FSW1_HOLD_PR1 + num * 4 + contr_pr[num]++]);
+					mainMenu->presetChoose(sys_para[System::FSW1_HOLD_PR1 + num * 4 + contr_pr[num]++]);
 
-					if(sys_para[FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
+					if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
 					{
-						if(sys_para[FSW2_MODE] == Footswitch::Single)
+						if(sys_para[System::FSW2_MODE] == Footswitch::Single)
 						{
 							mainMenu->presetConfirm();
 						}
 						else
 						{
-							if(sys_para[FSW2_PRESS_TYPE] != Footswitch::FswType::Default) mainMenu->presetConfirm();
+							if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default) mainMenu->presetConfirm();
 							else mainMenu->refresh();
 						}
 					}
@@ -388,7 +392,7 @@ void TENCTask::Code()
 				break;
 				case 30956:
 					fsw1_in_fl = 1;
-					if(sys_para[FSW1_MODE] == Footswitch::FswMode::Single)
+					if(sys_para[System::FSW1_MODE] == Footswitch::FswMode::Single)
 					{
 						foot_run(0);
 					}
@@ -396,14 +400,14 @@ void TENCTask::Code()
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[FSW_SPEED] * (8000.0f / 127.0f) + 55000);
+							tim_start(sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
 				break;    //--------------------DOWN-----------------
 				case 31084:
 					fsw2_in_fl = 1;
-					if(sys_para[FSW2_MODE] == Footswitch::FswMode::Single)
+					if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
 					{
 						foot_run(1);
 					}
@@ -411,14 +415,14 @@ void TENCTask::Code()
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[FSW_SPEED] * (8000.0f / 127.0f) + 55000);
+							tim_start(sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
 				break;    //----------------CONFIRM----------
 				case 31208:
 					fsw3_in_fl = 1;
-					if(!sys_para[FSW3_MODE])
+					if(!sys_para[System::FSW3_MODE])
 					{
 						foot_run(2);
 					}
@@ -426,7 +430,7 @@ void TENCTask::Code()
 					{
 						if(!tim3_end_fl)
 						{
-							tim_start(sys_para[FSW_SPEED] * (8000.0f / 127.0f) + 55000);
+							tim_start(sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
 							TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 						}
 					}
@@ -436,7 +440,7 @@ void TENCTask::Code()
 		}
 		if(key_reg == 31212)
 		{
-			if(sys_para[FSW1_MODE] == Footswitch::Double)
+			if(sys_para[System::FSW1_MODE] == Footswitch::Double)
 			{
 				if(fsw1_in_fl)
 				{
@@ -447,7 +451,7 @@ void TENCTask::Code()
 					fsw1_in_fl = 0;
 				}
 			}
-			if(sys_para[FSW2_MODE] == Footswitch::Double)
+			if(sys_para[System::FSW2_MODE] == Footswitch::Double)
 			{
 				if(fsw2_in_fl)
 				{
@@ -458,7 +462,7 @@ void TENCTask::Code()
 					fsw2_in_fl = 0;
 				}
 			}
-			if(sys_para[FSW3_MODE] == Footswitch::Double)
+			if(sys_para[System::FSW3_MODE] == Footswitch::Double)
 			{
 				if(fsw3_in_fl)
 				{

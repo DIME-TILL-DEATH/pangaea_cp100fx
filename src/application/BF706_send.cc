@@ -3,6 +3,8 @@
 #include "eepr.h"
 #include "gui_task.h"
 
+#include "system.h"
+
 #include "init.h"
 
 #include "preset.h"
@@ -476,8 +478,8 @@ void gui_send(uint8_t num, uint16_t val)
 			}
 			else
 			{
-				dsp_send(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS | (sys_para[MASTER_EQ_FREQ_LO] << 8));
-				dsp_send(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS | (sys_para[MASTER_EQ_FREQ_HI] << 8));
+				dsp_send(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS | (sys_para[System::MASTER_EQ_FREQ_LO] << 8));
+				dsp_send(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS | (sys_para[System::MASTER_EQ_FREQ_HI] << 8));
 			}
 			break;
 		}

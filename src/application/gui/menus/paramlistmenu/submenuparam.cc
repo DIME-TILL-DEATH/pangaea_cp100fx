@@ -6,6 +6,8 @@
 
 #include "display.h"
 
+#include "system.h"
+
 SubmenuParam::SubmenuParam(gui_param_type paramType, const char* name, AbstractMenu* menu, void* param)
 				:BaseParam(paramType, name, param)
 {
@@ -33,7 +35,7 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 		case BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME:
 		{
 			// переделать в CustomParam?
-			if(!sys_para[TIME_FORMAT])
+			if(!sys_para[System::TIME_FORMAT])
 			{
 				DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, delay_time);
 				DisplayTask->StringOut(m_xDisplayPosition + 35, yDisplayPosition, Font::fntSystem , 0 , (uint8_t*)" >");

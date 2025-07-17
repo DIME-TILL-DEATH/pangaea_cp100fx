@@ -7,6 +7,8 @@
 #include "eepr.h"
 #include "fswcontrolmenu.h"
 
+#include "system.h"
+
 #include "gui_task.h"
 
 const uint8_t FswModeMenu::strMode[];
@@ -28,9 +30,9 @@ void FswModeMenu::show(TShowMode showMode)
 	DisplayTask->Clear();
 
 	DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &strMode[0]);
-	DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[FSW1_MODE + m_fswNumber]][0]);
+	DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
 
-	if(sys_para[FSW1_MODE+m_fswNumber])
+	if(sys_para[System::FSW1_MODE+m_fswNumber])
 	{
 		DisplayTask->StringOut(10, 2, Font::fntSystem, 0, &strReleaseHold[0][0]);
 		DisplayTask->StringOut(80, 2, Font::fntSystem, 0, &strReleaseHold[1][0]);
@@ -49,7 +51,7 @@ void FswModeMenu::task()
 		}
 		else
 		{
-			if(sys_para[FSW1_MODE + m_fswNumber] == Footswitch::Double)
+			if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Double)
 				DisplayTask->StringOut(10+(m_parNum-1)*70, 2 , Font::fntSystem, 2 * blinkFlag_fl, &strReleaseHold[m_parNum-1][0]);
 			else
 				DisplayTask->StringOut(40, 0, Font::fntSystem, 2 * blinkFlag_fl, &strModeType[0][0]);
@@ -82,15 +84,15 @@ void FswModeMenu::encoderPressed()
 			TFswControls fswControls;
 			if(m_parNum == 1)
 			{
-				fswControls.fs = &sys_para[FSW1_PRESS_TYPE + m_fswNumber];
-				fswControls.pr_start = &sys_para[FSW1_PRESS_PR1 + m_fswNumber*4];
-				fswControls.k1_cc = &sys_para[FSW1_CTRL_PRESS_CC + m_fswNumber];
+				fswControls.fs = &sys_para[System::FSW1_PRESS_TYPE + m_fswNumber];
+				fswControls.pr_start = &sys_para[System::FSW1_PRESS_PR1 + m_fswNumber*4];
+				fswControls.k1_cc = &sys_para[System::FSW1_CTRL_PRESS_CC + m_fswNumber];
 			}
 			else if(m_parNum == 2)
 			{
-				fswControls.fs = &sys_para[FSW1_HOLD_TYPE + m_fswNumber];
-				fswControls.pr_start = &sys_para[FSW1_HOLD_PR1 + m_fswNumber*4];
-				fswControls.k1_cc = &sys_para[FSW1_CTRL_HOLD_CC + m_fswNumber];
+				fswControls.fs = &sys_para[System::FSW1_HOLD_TYPE + m_fswNumber];
+				fswControls.pr_start = &sys_para[System::FSW1_HOLD_PR1 + m_fswNumber*4];
+				fswControls.k1_cc = &sys_para[System::FSW1_CTRL_HOLD_CC + m_fswNumber];
 			}
 			shownChildMenu = new FswControlMenu(this, fswControls);
 			shownChildMenu->show();
@@ -104,7 +106,7 @@ void FswModeMenu::encoderClockwise()
 {
 	if(!m_encoderKnobSelected)
 	{
-		if(sys_para[FSW1_MODE + m_fswNumber] == Footswitch::Double)
+		if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Double)
 		{
 			if(m_parNum<2)
 			{
@@ -141,10 +143,10 @@ void FswModeMenu::encoderClockwise()
 	}
 	else
 	{
-		if(sys_para[FSW1_MODE + m_fswNumber] == Footswitch::Single)
+		if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Single)
 		{
-			sys_para[FSW1_MODE + m_fswNumber]++;
-			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[FSW1_MODE+m_fswNumber]][0]);
+			sys_para[System::FSW1_MODE + m_fswNumber]++;
+			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[System::FSW1_MODE+m_fswNumber]][0]);
 			DisplayTask->StringOut(10, 2, Font::fntSystem, 0, &strReleaseHold[0][0]);
 			DisplayTask->StringOut(80, 2, Font::fntSystem, 0, &strReleaseHold[1][0]);
 		}
@@ -157,7 +159,7 @@ void FswModeMenu::encoderCounterClockwise()
 {
 	if(!m_encoderKnobSelected)
 	{
-		if(sys_para[FSW1_MODE + m_fswNumber] == Footswitch::Double)
+		if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Double)
 		{
 			if(m_parNum > 0)
 			{
@@ -178,11 +180,11 @@ void FswModeMenu::encoderCounterClockwise()
 	}
 	else
 	{
-		if(sys_para[FSW1_MODE + m_fswNumber] == Footswitch::Double)
+		if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Double)
 		{
-			sys_para[FSW1_MODE + m_fswNumber]--;
+			sys_para[System::FSW1_MODE + m_fswNumber]--;
 			DisplayTask->Clear_str(10, 2, Font::fntSystem, 35);
-			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[FSW1_MODE + m_fswNumber]][0]);
+			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
 		}
 	}
 
