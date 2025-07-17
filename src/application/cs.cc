@@ -17,7 +17,8 @@
 
 #include "compressor.h"
 
-uint8_t tempo_fl = 0;
+#include "system.h"
+
 TCSTask *CSTask;
 
 void oled023_1_disp_init(void);
@@ -74,7 +75,6 @@ void TCSTask::Code()
 
 	DSP_GuiSendParameter(DSP_ADDRESS_SPDIF, sys_para[SPDIF_OUT_TYPE], 0);
 	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
-	tempo_fl = 1;
 	DSP_GuiSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[CAB_SIM_CONFIG], 0); // left cab bypass
 
 	if(!sys_para[PHONES_VOLUME])
@@ -159,8 +159,8 @@ uint8_t tun_del_val;
 
 extern "C" void DMA1_Stream2_IRQHandler()
 {
-	if(tap_temp < 131071)
-		tap_temp += 1;
+	if(tap_temp < 131071) tap_temp += 1;
+
 	if(DMA_GetITStatus(DMA1_Stream2, DMA_IT_HTIF2))
 	{
 		DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_HTIF2);

@@ -11,6 +11,9 @@
 
 #include "preset.h"
 
+const uint8_t NameEditMenu::ascii_low[];
+const uint8_t NameEditMenu::ascii_high[];
+
 NameEditMenu::NameEditMenu(AbstractMenu* parent)
 {
 	m_menuType = MENU_PRESET_NAME_EDIT;

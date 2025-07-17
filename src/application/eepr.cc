@@ -151,12 +151,9 @@ void EEPROM_loadPreset(uint8_t nu)
 
 		uint8_t del_t_buf[2];
 		f_read(&file, del_t_buf, 2, &f_size);
-//		extern uint8_t tempo_fl;
-//		if(!tempo_fl || !sys_para[tap_typ])
-//	    {
+
 		delay_time = del_t_buf[0];
 		delay_time |= del_t_buf[1]<<8;
-//	    }
 
 		f_read(&file, cab1.data, CAB_DATA_SIZE, &f_size);
 		f_read(&file, cab1.name.string, 64, &f_size);

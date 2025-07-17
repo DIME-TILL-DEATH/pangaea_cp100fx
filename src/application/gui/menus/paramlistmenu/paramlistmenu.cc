@@ -3,17 +3,15 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
-#include "gui/elements/icon_bit.h"
+#include "allFonts.h"
+#include "icon_bit.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
 
-#include "paramlistmenu/stringoutparam.h"
+#include "stringoutparam.h"
 
-extern volatile int8_t temp;
-extern const uint16_t bpm_time[];
-extern uint16_t trem_time;
+#include "system.h"
 
 ParamListMenu::ParamListMenu(AbstractMenu* parent, gui_menu_type menuType)
 {
@@ -207,88 +205,8 @@ void ParamListMenu::encoderCounterClockwise()
 
 void ParamListMenu::keyDown()
 {
-//	if(m_canTap)
-//	{
-//		// Tremolo tap
-//		if(tap_temp_global() && !sys_para[tap_typ])
-//		{
-//			trem_time = tap_global / 48.0f / tap_tim_v[prog_data[t_tap_t]];
-//			if(trem_time < 2731)
-//			{
-//				if(!sys_para[tim_type])
-//				{
-//					gui_send(10,5);
-//				}
-//				else
-//				{
-//					if(trem_time < 2728 && trem_time > 249)
-//					{
-//						while(trem_time < bpm_time[temp++]);
-//						trem_time = bpm_time[temp];
-//						gui_send(10,5);
-//					}
-//				}
-//			}
-//
-//		}
-//	}
-
-	// moog tap
-//	if(prog_data[mog_gen_t])
-//	{
-//		moog_time = tap_global / 48.0f;
-//		gui_send(31,13);
-//	}
-
-	// delay tap
-//	  if(tap_temp_global() && !sys_para[tap_typ])
-//	  {
-//		  delay_time = tap_global / 3.0f / tap_tim_v[prog_data[d_tap_t]];
-//		  if(delay_time < 2731)
-//		  {
-//			  uint8_t temp = 0;
-//			  if(!sys_para[tim_type])
-//			  {
-//				  if(par_num < 4)DisplayTask->DelayTimeInd(53,1,delay_time);
-//    			  gui_send(3,1);
-//			  }
-//			  else {
-//				  if(delay_time < 2728 && delay_time > 249)
-//				  {
-//					  while(delay_time < bpm_time[temp++]);
-//					  delay_time = bpm_time[temp];
-//					  prog_data[bpm_del] = 60000 / delay_time;
-//					  DisplayTask->ParamIndicNum(53,1,prog_data[bpm_del]);
-//					  DisplayTask->StringOut(90,1,Font::fntSystem , 0 , (uint8_t*)"BPM");
-//	      			  gui_send(3,1);
-//				  }
-//			  }
-//		  }
-
-//	  if(tap_temp_global() && !sys_para[tap_typ])
-//	  {
-//		  delay_time = tap_global / 3.0f / tap_tim_v[prog_data[d_tap_t]];
-//  		  if(delay_time < 2731)
-//  		  {
-//  			  uint8_t temp = 0;
-//  			  if(!sys_para[tim_type])
-//  			  {
-//  				  if(par_num < 4)DisplayTask->DelayTimeInd(53,0,delay_time);
-//      			  gui_send(3,1);
-//  			  }
-//  			  else {
-//  				  if(delay_time < 2728 && delay_time > 249)
-//  				  {
-//  					  while(delay_time < bpm_time[temp++]);
-//  					  delay_time = bpm_time[temp];
-//  					  prog_data[bpm_del] = 60000 / delay_time;
-//  					  DisplayTask->ParamIndicNum(53,0,prog_data[bpm_del]);
-//  					  DisplayTask->StringOut(90,0,Font::fntSystem , 0 , (uint8_t*)"BPM");
-//  	      			  gui_send(3,1);
-//  				  }
-//  			  }
-//  		  }
-//	  }
+	System::TapTempo(m_tapDst);
+	refresh();
 }
 
 void ParamListMenu::printPage(bool forceDrawIcon)

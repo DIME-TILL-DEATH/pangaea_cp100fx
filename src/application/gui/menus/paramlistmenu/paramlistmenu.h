@@ -3,6 +3,8 @@
 
 #include "abstractmenu.h"
 
+#include "system.h"
+
 #include "display.h"
 #include "icon_bit.h"
 
@@ -36,6 +38,7 @@ public:
 	static constexpr uint8_t maxParamCount = 16;
 
 	void setIcon(bool drawIcon, icon_t icon);
+	void setTapDestination(System::TapDestination tapDst) { m_tapDst = tapDst; }
 
 	static constexpr uint8_t paramsOnPage = 4;
 	static constexpr uint8_t leftPad = 3;
@@ -55,7 +58,7 @@ protected:
 	uint8_t m_firstSelectableParam;
 	uint8_t m_lastSelectableParam;
 
-	bool m_canTap{false};
+	System::TapDestination m_tapDst{System::TapDestination::TAP_OFF};
 	bool m_drawIcon{true};
 
 	int8_t m_currentPageNumber{-1};

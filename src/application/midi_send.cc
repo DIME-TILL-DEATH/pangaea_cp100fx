@@ -2,11 +2,13 @@
 #include "cc.h"
 #include "display.h"
 #include "enc.h"
-#include "gui/gui_task.h"
+#include "gui_task.h"
 #include "cs.h"
 #include "eepr.h"
 #include "BF706_send.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
+
+#include "system.h"
 
 #include "preset.h"
 
@@ -433,11 +435,11 @@ extern "C" void ADC_IRQHandler()
 void send_midi_temp(uint16_t *c)
 {
 	tap_global = *c * 48;
-	delay_time = trem_time = moog_time = *c;
+	delay_time = *c;
 
-	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
-	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, *c >> 8);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, *c);
 
-	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
-	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time);
+	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, *c >> 8);
+	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, *c);
 }

@@ -11,6 +11,8 @@
 #include "stringoutparam.h"
 #include "customparam.h"
 
+#include "system.h"
+
 #include "preset.h"
 
 extern uint8_t cab_type;
@@ -43,7 +45,11 @@ AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_RESONANCE_FILTER, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_RESONANCE_FILTER);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setTapDestination(System::TapDestination::TAP_RFILTER);
+	}
 
 	typeSelect->setAffectedParamsList(params, paramNum);
 
@@ -396,7 +402,11 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 	params[11]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_DIRECTION_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_DELAY);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setTapDestination(System::TapDestination::TAP_DELAY);
+	}
 
 	return menu;
 }
@@ -481,6 +491,7 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 	{
 		menu->setParams(params, paramNum);
 		menu->setIcon(true, ICON_DL);
+		menu->setTapDestination(System::TapDestination::TAP_DELAY);
 	}
 
 	return menu;
@@ -548,8 +559,11 @@ AbstractMenu* GuiModules::createTremoloMenu(AbstractMenu* parentMenu)
 	params[5]->setDspAddress(DSP_ADDRESS_TREMOLO, NOT_SEND_POS);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_TREMOLO);
-	if(menu) menu->setParams(params, paramNum);
-
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setTapDestination(System::TapDestination::TAP_TREMOLO);
+	}
 	return menu;
 }
 

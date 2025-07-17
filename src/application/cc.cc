@@ -9,6 +9,8 @@
 #include "BF706_send.h"
 #include "midi_send.h"
 
+#include "system.h"
+
 #include "allFonts.h"
 #include "gui_task.h"
 #include "modulesmenu.h"
@@ -81,42 +83,8 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		break;
 
 		case Controller::Dst::DelayTap:
-			if(tap_temp_global() && !sys_para[TAP_TYPE])
-			{
-				delay_time = tap_global / 3.0f / tap_time_coefs[currentPreset.modules.rawData[d_tap_t]];
-				if(delay_time < 2731)
-				{
-					// Через RefreshMenu
-					if(sys_para[TIME_FORMAT])
-					{
-						uint8_t temp = 0;
-						if(delay_time < 2728 && delay_time > 249)
-						{
-							while(delay_time < bpm_time[temp++]);
-
-							delay_time = bpm_time[temp];
-						}
-					}
-					DSP_ContrSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
-					DSP_ContrSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time);
-
-				}
-				if(tap_trem_fl)
-				{
-					trem_time = tap_global / 3.0f / tap_time_coefs[currentPreset.modules.rawData[TREMOLO_TAP]];
-					if(trem_time > 2730)
-						trem_time = 2730;
-
-					DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
-					DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
-				}
-				if(tap_moog_fl)
-				{
-					moog_time = tap_global / 3.0f;
-					DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
-					DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time);
-				}
-			}
+			System::TapTempo(System::TAP_DELAY);
+			currentMenu->refresh();
 		break;
 //-------------------------------------------------Phaser---------------------------------------------
 		case Controller::Dst::PhaserOnOff:
@@ -195,25 +163,8 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		break;
 
 		case Controller::Dst::TremoloTap:
-			if(!tap_del_fl)
-			{
-				if(tap_temp_global() && !sys_para[TAP_TYPE])
-				{
-					trem_time = tap_global / 3.0f / tap_time_coefs[currentPreset.modules.rawData[TREMOLO_TAP]];
-					if(trem_time < 2731)
-					{
-						DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
-						DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
-					}
-
-					if(tap_moog_fl)
-					{
-						moog_time = tap_global / 3.0f;
-						DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
-						DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time);
-					}
-				}
-			}
+			System::TapTempo(System::TAP_TREMOLO);
+			currentMenu->refresh();
 		break;
 //---------------------------------------------------------------------------------------------------
 		case Controller::Dst::PresetLevel:
@@ -262,15 +213,8 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		break;
 //---------------------------------------------------Moog Tap--------------------------------------------------------
 		case Controller::Dst::RfLFOTAP:
-			if(!tap_del_fl && !tap_trem_fl)
-			{
-				if(tap_temp_global() && !sys_para[TAP_TYPE])
-				{
-					moog_time = tap_global / 3.0f;
-					DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
-					DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time);
-				}
-			}
+			System::TapTempo(System::TAP_RFILTER);
+			currentMenu->refresh();
 		break;
 
 		case Controller::Dst::VolCtrlOnOff:

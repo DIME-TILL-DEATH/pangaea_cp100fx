@@ -445,57 +445,10 @@ void gui_send(uint8_t num, uint16_t val)
 	gui_fl = 1;
 	switch(num)
 	{
-		case 3:
-		{
-			switch(num)
-			{
-				case 0:
-					dsp_send(DSP_ADDRESS_DELAY, 0 | (currentPreset.modules.rawData[d_vol] << 8));
-				break;
-				case 1:
-					dsp_send(DSP_ADDRESS_DELAY, 11 | ((delay_time >> 8) << 8));
-					dsp_send(DSP_ADDRESS_DELAY, 12 | ((delay_time) << 8));
-				break;
-				case 13:
-					dsp_send(DSP_ADDRESS_DELAY, 13 | (currentPreset.modules.rawData[d_tail] << 8));
-				break;
-				default:
-					num--;
-					dsp_send(DSP_ADDRESS_DELAY, num | (currentPreset.modules.rawData[d_vol + num] << 8));
-				break;
-			}
-		}
-		break;
-
 		case 7:
 			dsp_send(DSP_ADDRESS_CAB, num | (currentPreset.modules.rawData[vol + num] << 8));
 		break;
 
-		case 10:
-		{
-			if(num < 5)
-			{
-				switch(num)
-				{
-					case 0:
-					case 1:
-						dsp_send(DSP_ADDRESS_TREMOLO, num | (currentPreset.modules.rawData[tr_vol + num] << 8));
-					break;
-					case 2:
-						dsp_send(DSP_ADDRESS_TREMOLO, 6 | (currentPreset.modules.rawData[tr_lfo_t] << 8));
-					break;
-					default:
-						num--;
-						dsp_send(DSP_ADDRESS_TREMOLO, num | (currentPreset.modules.rawData[tr_vol + num] << 8));
-					break;
-				}
-			}
-			else
-			{
-				dsp_send(DSP_ADDRESS_TREMOLO, 4 | ((trem_time >> 8) << 8));
-				dsp_send(DSP_ADDRESS_TREMOLO, 5 | (trem_time << 8));
-			}
-		}
 		break;
 
 		case 14:
@@ -528,28 +481,7 @@ void gui_send(uint8_t num, uint16_t val)
 			}
 			break;
 		}
-		case 31:
-		{
-			if(val < 11)
-				dsp_send(DSP_ADDRESS_RESONANCE_FILTER, val | (currentPreset.modules.rawData[mog_mix + val] << 8));
-			else
-			{
-				if(val == 11)
-					dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 12 | (currentPreset.modules.rawData[mog_gen_t] << 8));
-				else
-				{
-					if(val == 12)
-						dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 11 | (currentPreset.modules.rawData[mog_ext] << 8));
-					else
-					{
-						dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 13 | ((moog_time >> 8) << 8));
-						dsp_send(DSP_ADDRESS_RESONANCE_FILTER, 14 | (moog_time << 8));
-					}
-				}
-			}
 
-		break;
-		}
 	}
 	gui_fl = 0;
 }

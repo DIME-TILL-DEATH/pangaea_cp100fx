@@ -33,6 +33,9 @@ private:
 
 	bool encoderKnobPressed;
 
+	constexpr static uint8_t ascii_low[] = " abcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+	constexpr static uint8_t ascii_high[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{}()-+_=<>?*.,/&";
+
 	static constexpr uint8_t chartStringLength = 21;
 };
 

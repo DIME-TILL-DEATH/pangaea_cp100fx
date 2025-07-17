@@ -37,11 +37,7 @@ extern uint8_t k_master_eq;
 volatile uint8_t write_fl = 0;
 
 uint32_t send_buf;
-uint32_t del_time = 48000;
-uint16_t trem_time;
-uint16_t moog_time;
-uint32_t tap_temp;
-uint32_t tap_global;
+
 uint8_t tuner_use;
 
 void tim5_start(uint8_t val)
@@ -181,33 +177,6 @@ void gui(void)
 			send_midi_temp(&c);
 		}
 	}
-}
-
-uint8_t tap_temp_global(void)
-{
-	uint8_t a = 0;
-	if(tap_temp<=131070)
-	{
-		tap_global = tap_temp>>4;
-		if(sys_para[TAP_TYPE]) // global temp On
-		{
-			sys_para[TAP_HIGH] = (tap_global/3)>>8;
-
-			DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]); //	gui_send(33, tap_global/3);
-
-			moog_time = tap_global/3.0f;
-			gui_send(31, 13);
-			delay_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[d_tap_t]];
-			if(delay_time<2731)
-				gui_send(3, 1);
-			trem_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[t_tap_t]];
-			if(trem_time<2731)
-				gui_send(10, 5);
-		}
-		a = 1;
-	}
-	tap_temp = 0;
-	return a;
 }
 //---------------------------------------------------------------------------------
 extern "C" void TIM4_IRQHandler()
