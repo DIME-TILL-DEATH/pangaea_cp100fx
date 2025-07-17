@@ -232,27 +232,17 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 {
 	if(cab1.name[0] == 0)
 	{
-		kgp_sdk_libc::memset(preset_temp, 0, 24576);
-//		kgp_sdk_libc::memset(name_buf_temp, 0, 64);
-//		cab_num = 0;
-
 		if(TSD_TESTTask::sdInitState == 1)
 		{
-		 // current_menu = MENU_CABBROWSER;
-		  DisplayTask->Clear();
+
 
 		  if(TFsBrowser::impulseDirExist)
 		  {
-			  vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME1];
-			  DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
-			  DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
-
-			  //?????
-//			  FSTask->SendCommand( TFsBrowser::bcCurrent );
-//			  FSTask->SendCommand( TFsBrowser::bcLoadImp );
+			  // open cab browser
 		  }
 		  else
 		  {
+			  DisplayTask->Clear();
 			  DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "There is no directory");
 			  DisplayTask->StringOut(42, 3, Font::fntSystem, 0, "IMPULSE");
 			  CSTask->CS_del(1000);

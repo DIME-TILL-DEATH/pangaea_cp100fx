@@ -73,7 +73,6 @@ void CabBrowserMenu::keyUp()
 	if(m_cabNumber == 0)
 	{
 		DSP_SendPrimaryCabData(cab1.data);
-		vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME1];
 		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
 
 		topLevelMenu->returnFromChildMenu();
@@ -81,8 +80,6 @@ void CabBrowserMenu::keyUp()
 	else
 	{
 		DSP_SendSecondaryCabData(cab2.data);
-
-		vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME2];
 		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
 
 		topLevelMenu->returnFromChildMenu();
@@ -109,8 +106,6 @@ void CabBrowserMenu::encoderPressed()
 			kgp_sdk_libc::memcpy(cab1.name, selectedCabName, 64);
 
 			DSP_SendPrimaryCabData(cab1.data);
-
-			vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME1];
 			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
 		}
 		else
@@ -119,8 +114,6 @@ void CabBrowserMenu::encoderPressed()
 			kgp_sdk_libc::memcpy(cab2.name, selectedCabName, 64);
 
 			DSP_SendSecondaryCabData(cab2.data);
-
-			vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME2];
 			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
 		}
 

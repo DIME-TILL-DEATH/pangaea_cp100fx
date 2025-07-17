@@ -197,7 +197,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1);
+		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1, &currentPreset.modules.rawData[IR_VOLUME1]);
 		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
@@ -233,11 +233,11 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2);
+		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2, &currentPreset.modules.rawData[IR_VOLUME2]);
 		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
-		menu->setRunningString(runningString);
+		runningString->setRunning(true, menu);
 	}
 
 	return menu;

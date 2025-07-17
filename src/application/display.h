@@ -310,9 +310,10 @@ public:
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
 
 	void NumberOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState state, uint32_t val);
-	void SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
-	void VolIndicator();
-//	void Menu_init(void);
+
+	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
+	void VolIndicatorTask();
+
 	void Prog_ind(uint8_t pro);
 	void EfIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
 	void SetColumn(uint8_t x);
@@ -349,6 +350,10 @@ private:
 	TQueue *queue;
 
 	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
+	uint8_t* m_volIndPar_ptr;
+	uint16_t m_indRefreshCounter;
+
+	void DrawVolIndicator(uint8_t xPos, uint8_t indLength);
 };
 
 extern volatile uint8_t ind_en;

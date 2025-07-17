@@ -9,9 +9,9 @@
 #include "BF706_send.h"
 #include "modules.h"
 
-#include "paramlistmenu/baseparam.h"
-#include "paramlistmenu/stringlistparam.h"
-#include "paramlistmenu/submenuparam.h"
+#include "baseparam.h"
+#include "stringlistparam.h"
+#include "submenuparam.h"
 
 class ParamListMenu : public AbstractMenu
 {
@@ -20,7 +20,8 @@ public:
 	~ParamListMenu();
 
 	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount);
-	void setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
+	void setVolumeIndicator(TDisplayTask::TVolIndicatorType indicatorType,
+			dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 
 	virtual void show(TShowMode showMode = FirstShow) override;
 	virtual void task() override;
@@ -67,8 +68,7 @@ protected:
 
 	TDisplayTask::TVolIndicatorType m_volIndicatorType{TDisplayTask::VOL_INDICATOR_OFF};
 	dsp_indicator_source_t m_indicatorSource;
-
-
+	uint8_t* m_indicatorParam_ptr;
 
 	void printPage(bool forceDrawIcon = false);
 };

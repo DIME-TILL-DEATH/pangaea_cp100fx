@@ -53,14 +53,14 @@ public:
 		rpFileInvalid,
 		rpFileSelected,
 		rpDirSelected
-	}TResponseType;
+	} TResponseType;
 
 	typedef struct
 	{
 		fs_object_type_t type;
 		char name[64];
-		uint8_t* buffer;
-	}TResponseFile;
+		uint8_t *buffer;
+	} TResponseFile;
 
 	typedef struct
 	{
@@ -69,9 +69,9 @@ public:
 		{
 			TResponseFile file;
 		};
-	}TResponse;
+	} TResponse;
 
-	void SendResponse(const TResponse& response)
+	void SendResponse(const TResponse &response)
 	{
 		queue->SendToBack((void*)&response, portMAX_DELAY);
 	}
@@ -94,7 +94,7 @@ private:
 
 extern TCSTask *CSTask;
 
-extern MainMenu* mainMenu;
-extern UsbMenu* usbMenu;
+extern MainMenu *mainMenu;
+extern UsbMenu *usbMenu;
 
 #endif /*__CS_H__*/
