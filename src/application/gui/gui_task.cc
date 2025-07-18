@@ -80,6 +80,15 @@ void prog_ch(void)
 
 void gui(void)
 {
+	if(usb_flag && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
+	{
+		while(currentMenu->menuType() != MENU_MAIN)
+		{
+			currentMenu->keyUp();
+		}
+		usbMenu->show();
+	}
+
 	currentMenu->task();
 
 	if(encoder_knob_pressed)

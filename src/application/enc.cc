@@ -507,12 +507,12 @@ void TENCTask::Code()
 			{
 				usb_flag = 1;
 
-				while(currentMenu->menuType() != MENU_MAIN)
-				{
-					currentMenu->keyUp();
-				}
-
-				usbMenu->show();
+//				while(currentMenu->menuType() != MENU_MAIN)
+//				{
+//					currentMenu->keyUp();
+//				}
+//
+//				usbMenu->show();
 			}
 		}
 		else
