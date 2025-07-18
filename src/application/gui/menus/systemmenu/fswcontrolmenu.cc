@@ -26,7 +26,7 @@ void FswControlMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
-	DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
+	DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
 
 	printPage();
 }
@@ -37,13 +37,13 @@ void FswControlMenu::task()
 	{
 		if(!m_parNum)
 		{
-			DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 2 * blinkFlag_fl, &expr_menu[0][0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, 2 * blinkFlag_fl, &expr_menu[0][0]);
 		}
 		else
 		{
 			if((*(m_fswControls.fs)==1) && (m_parNum==1))
 			{
-				DisplayTask->StringOut(52, 2, TDisplayTask::fntSystem, 2 * blinkFlag_fl, "CC#");
+				DisplayTask->StringOut(52, 2, Font::fntSystem, 2 * blinkFlag_fl, "CC#");
 			}
 			if(*(m_fswControls.fs) > 2)
 			{
@@ -58,7 +58,7 @@ void FswControlMenu::task()
 					str_temp[(m_parNum-1)*4] &= ~0x80;
 					str_temp[(m_parNum-1)*4+1] &= ~0x80;
 				}
-				DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, TDisplayTask::fntSystem, 0, &str_temp[0]);
+				DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, Font::fntSystem, 0, &str_temp[0]);
 			}
 		}
 	}
@@ -80,17 +80,17 @@ void FswControlMenu::encoderClockwise()
 		{
 			if(!m_parNum)
 			{
-				DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 0, &expr_menu[0][0]);
+				DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &expr_menu[0][0]);
 			}
 			if(m_parNum<(*(m_fswControls.fs)-2))
 			{
 				str_temp[(m_parNum-1)*4] &= ~0x80;
 				str_temp[(m_parNum++ - 1)*4+1] &= ~0x80;
-				DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, TDisplayTask::fntSystem, 0, &str_temp[0]);
+				DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, Font::fntSystem, 0, &str_temp[0]);
 
 				str_temp[(m_parNum-1)*4] |= 0x80;
 				str_temp[(m_parNum-1)*4+1] |= 0x80;
-				DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, TDisplayTask::fntSystem, 0, &str_temp[0]);
+				DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, Font::fntSystem, 0, &str_temp[0]);
 			}
 			tim5_start(0);
 		}
@@ -100,8 +100,8 @@ void FswControlMenu::encoderClockwise()
 			if(!m_parNum)
 			{
 				m_parNum++;
-				DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 0, &expr_menu[0][0]);
-				DisplayTask->StringOut(52, 2, TDisplayTask::fntSystem, 2, "CC#");
+				DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &expr_menu[0][0]);
+				DisplayTask->StringOut(52, 2, Font::fntSystem, 2, "CC#");
 				tim5_start(0);
 			}
 		}
@@ -112,8 +112,8 @@ void FswControlMenu::encoderClockwise()
 		{
 			if(*(m_fswControls.fs) < 6) *(m_fswControls.fs) += 1;
 
-			DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
-			DisplayTask->Clear_str(0, 2, TDisplayTask::fntSystem, 21);
+			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
+			DisplayTask->Clear_str(0, 2, Font::fntSystem, 21);
 
 			printPage();
 		}
@@ -123,11 +123,11 @@ void FswControlMenu::encoderClockwise()
 			{
 				uint8_t a = *(m_fswControls.k1_cc);
 				if(a<128)
-					a = enc_speed_inc(a, 128);
+					a = BaseParam::encSpeedInc(a, 128);
 				*(m_fswControls.k1_cc) = a;
 
 				if(a == 0)
-					DisplayTask->StringOut(76, 2, TDisplayTask::fntSystem, 0, "Off");
+					DisplayTask->StringOut(76, 2, Font::fntSystem, 0, "Off");
 				else
 					DisplayTask->ParamIndicNum(76, 2, a-1);
 			}
@@ -135,16 +135,16 @@ void FswControlMenu::encoderClockwise()
 			if(*(m_fswControls.fs) >= Footswitch::FswType::PresetMap1)
 			{
 				uint8_t a = *(m_fswControls.pr_start + m_parNum - 1);
-				a = enc_speed_inc(a, 98);
+				a = BaseParam::encSpeedInc(a, 98);
 				if(a>98) a = 0;
 				*(m_fswControls.pr_start + m_parNum - 1) = a++;
 
 				str_temp[(m_parNum-1)*4] = ('0'+a/10)|0x80;
 				str_temp[(m_parNum-1)*4+1] = ('0'+a%10)|0x80;
 				DisplayTask->SymbolOut(presetNumPos[*(m_fswControls.fs)-3]+(m_parNum-1)*24, 2,
-						TDisplayTask::fntSystem, 2, '0'+a/10);
+						Font::fntSystem, 2, '0'+a/10);
 				DisplayTask->SymbolOut(presetNumPos[*(m_fswControls.fs)-3]+(m_parNum-1)*24+6, 2,
-						TDisplayTask::fntSystem, 2, '0'+a%10);
+						Font::fntSystem, 2, '0'+a%10);
 			}
 		}
 	}
@@ -156,18 +156,18 @@ void FswControlMenu::encoderCounterClockwise()
 	{
 		if(m_parNum>0)
 		{
-			if((*(m_fswControls.fs)==1)&&(m_parNum==1)) DisplayTask->StringOut(52, 2, TDisplayTask::fntSystem, 0, "CC#");
+			if((*(m_fswControls.fs)==1)&&(m_parNum==1)) DisplayTask->StringOut(52, 2, Font::fntSystem, 0, "CC#");
 
 			// Вывод на одну и ту же позицию, но в первом есть --
 			str_temp[(m_parNum - 1)*4] &= ~0x80;
 			str_temp[(m_parNum-- - 1)*4 + 1] &= ~0x80;
-			DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, TDisplayTask::fntSystem, 0, &str_temp[0]);
+			DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, Font::fntSystem, 0, &str_temp[0]);
 
 			str_temp[(m_parNum-1)*4] |= 0x80;
 			str_temp[(m_parNum-1)*4+1] |= 0x80;
-			DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, TDisplayTask::fntSystem, 0, &str_temp[0]);
+			DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, Font::fntSystem, 0, &str_temp[0]);
 
-			if(!m_parNum) DisplayTask->StringOut(3, 0, TDisplayTask::fntSystem, 2, &expr_menu[0][0]);
+			if(!m_parNum) DisplayTask->StringOut(3, 0, Font::fntSystem, 2, &expr_menu[0][0]);
 
 			tim5_start(0);
 		}
@@ -176,8 +176,8 @@ void FswControlMenu::encoderCounterClockwise()
 	{
 		if(*(m_fswControls.fs)>0) *(m_fswControls.fs) -= 1;
 
-		DisplayTask->StringOut(40, 0, TDisplayTask::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
-		DisplayTask->Clear_str(0, 2, TDisplayTask::fntSystem, 21);
+		DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
+		DisplayTask->Clear_str(0, 2, Font::fntSystem, 21);
 
 		printPage();
 	}
@@ -187,11 +187,11 @@ void FswControlMenu::encoderCounterClockwise()
 		{
 			uint8_t a = *(m_fswControls.k1_cc);
 			if(a>0)
-				a = enc_speed_dec(a, 0);
+				a = BaseParam::encSpeedDec(a, 0);
 			*(m_fswControls.k1_cc) = a;
 
 			if(!a)
-				DisplayTask->StringOut(76, 2, TDisplayTask::fntSystem, 0, "Off");
+				DisplayTask->StringOut(76, 2, Font::fntSystem, 0, "Off");
 			else
 				DisplayTask->ParamIndicNum(76, 2, a-1);
 		}
@@ -199,16 +199,16 @@ void FswControlMenu::encoderCounterClockwise()
 		{
 
 			int8_t a = *(m_fswControls.pr_start + m_parNum - 1);
-			a = enc_speed_dec(a, -1);
+			a = BaseParam::encSpeedDec(a, -1);
 			if(a<0) a = 98;
 
 			*(m_fswControls.pr_start + m_parNum - 1) = a++;
 			str_temp[(m_parNum-1)*4] = ('0'+a/10)|0x80;
 			str_temp[(m_parNum-1)*4+1] = ('0'+a%10)|0x80;
 			DisplayTask->SymbolOut(presetNumPos[*(m_fswControls.fs)-3]+(m_parNum-1)*24, 2,
-					TDisplayTask::fntSystem, 2, '0'+a/10);
+					Font::fntSystem, 2, '0'+a/10);
 			DisplayTask->SymbolOut(presetNumPos[*(m_fswControls.fs)-3]+(m_parNum-1)*24+6, 2,
-					TDisplayTask::fntSystem, 2, '0'+a%10);
+					Font::fntSystem, 2, '0'+a%10);
 		}
 	}
 }
@@ -247,14 +247,14 @@ void FswControlMenu::printPage()
 			strPresetInit(str_temp+12, *(m_fswControls.pr_start + 3) + 1);
 		}
 
-		DisplayTask->StringOut(presetNumPos[a], 2, TDisplayTask::fntSystem, 0, &str_temp[0]);
+		DisplayTask->StringOut(presetNumPos[a], 2, Font::fntSystem, 0, &str_temp[0]);
 	}
 	else if(*(m_fswControls.fs) == Footswitch::FswType::Controller)
 	{
-		DisplayTask->StringOut(52, 2, TDisplayTask::fntSystem, 0, "CC#");
+		DisplayTask->StringOut(52, 2, Font::fntSystem, 0, "CC#");
 
 		if(!*(m_fswControls.k1_cc))
-			DisplayTask->StringOut(76, 2, TDisplayTask::fntSystem, 0, "Off");
+			DisplayTask->StringOut(76, 2, Font::fntSystem, 0, "Off");
 		else
 			DisplayTask->ParamIndicNum(76, 2, *(m_fswControls.k1_cc)-1);
 	}

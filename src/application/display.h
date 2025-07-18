@@ -3,8 +3,10 @@
 
 #include "appdefs.h"
 #include "modules.h"
+#include "BF706_send.h"
 
-#include "gui/elements/icon_bit.h"
+#include "allFonts.h"
+#include "icon_bit.h"
 
 #define FILE_NAME_LENGTH 64
 
@@ -19,28 +21,6 @@ public:
 		wrdData,
 		wrdCount
 	}TWriteRegDest;
-
-	typedef enum
-	{
-		fnt12x13 = 0,
-		fnt33x30,
-		fntSystem,
-		fntCount
-	}TFontName;
-
-	typedef enum
-	{
-		fnsBlack = 0,
-		fnsWhite,
-		fnsBlackUnderline,
-		fnsCount
-	}TFontState;
-
-	typedef struct
-	{
-		TFontName name;
-		uint8_t curs;
-	}TFont;
 
 	typedef struct
 	{
@@ -79,8 +59,8 @@ public:
 		dcSys_Menu,
 		dcLed_Write,
 		dcPot_Write,
-		dcMain_scr,
-		dcPresetPreview,
+//		dcMain_scr,
+//		dcPresetPreview,
 		dcIcStrel,
 		dcTunIni,
 		dcTunNote,
@@ -151,34 +131,35 @@ public:
 	typedef struct
 	{
 		TPos pos;
-		TFont font;
+		Font::TFontStruct font;
 		uint8_t count;
 	}TClear_strParams;
 
 	typedef struct
 	{
 		TPos pos;
-		TFont font;
+		Font::TFontStruct font;
 		uint8_t symbol;
 	}TSymbolOutParams;
 
 	typedef struct
 	{
 		TPos pos;
-		TFont font;
+		Font::TFontStruct font;
 		uint8_t string[FILE_NAME_LENGTH];
 	}TStringOutParams;
 
 	typedef struct
 	{
 		TPos pos;
-		TFont font;
+		Font::TFontStruct font;
 		uint32_t val;
 	} TNumberOutParams;
 
 	typedef struct
 	{
-		uint8_t pro;
+		uint8_t prog;
+		uint8_t filled;
 	}TProg_indParam;
 
 	typedef struct
@@ -322,18 +303,19 @@ public:
 
 	void WriteReg(TWriteRegDest dest, uint32_t data);
 	void Clear();
-	void Clear_str(uint8_t x, uint8_t y, TFontName name, uint8_t count);
-	void SymbolOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, uint8_t symbol);
+	void Clear_str(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count);
+	void SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol);
 
-	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, uint8_t *string);
-	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, const uint8_t *string);
-	void StringOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, const char *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const uint8_t *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
 
-	void NumberOut(uint8_t x, uint8_t y, TFontName name, TFontState state, uint32_t val);
-	void SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
-	void VolIndicator();
-//	void Menu_init(void);
-	void Prog_ind(uint8_t pro);
+	void NumberOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState state, uint32_t val);
+
+	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
+	void VolIndicatorTask();
+
+	void Prog_ind(uint8_t prog, bool filled = true);
 	void EfIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
 	void SetColumn(uint8_t x);
 	void SetPagAdr(uint8_t x);
@@ -354,7 +336,7 @@ public:
 	void Sys_Menu(void);
 	void Led_Write(void);
 	void Pot_Write(void);
-	void Main_scr();
+//	void Main_scr();
 	void Icon_Strel(icon_t num, strelka_t strel);
 	void TunIni(void);
 	void TunNote(void);
@@ -369,6 +351,10 @@ private:
 	TQueue *queue;
 
 	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
+	uint8_t* m_volIndPar_ptr;
+	uint16_t m_indRefreshCounter;
+
+	void DrawVolIndicator(uint8_t xPos, uint8_t indLength);
 };
 
 extern volatile uint8_t ind_en;

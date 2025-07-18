@@ -110,8 +110,6 @@ void pin_usb_init(void)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
-
-
 int main(void)
 {
 	pin_usb_init();

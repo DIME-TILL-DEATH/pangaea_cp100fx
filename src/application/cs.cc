@@ -15,116 +15,107 @@
 
 #include "preset.h"
 
-float m_vol = 1.0;
-float p_vol = 1.0;
-uint8_t tempo_fl = 0;
-TCSTask* CSTask ;
+#include "compressor.h"
+
+#include "system.h"
+
+TCSTask *CSTask;
 
 void oled023_1_disp_init(void);
 void led_disp_write(void);
 extern uint8_t led_buf[];
-//volatile uint16_t mas_eq_fr;
 
-AbstractMenu* currentMenu;
-MainMenu* mainMenu;
-UsbMenu* usbMenu;
+AbstractMenu *currentMenu;
+MainMenu *mainMenu;
+UsbMenu *usbMenu;
 
-TCSTask::TCSTask () : TTask()
- {
-             //DispalyAccess = true ;
- }
+TCSTask::TCSTask() :
+		TTask()
+{
+	queue = new TQueue(4, sizeof(TResponse));
+}
 
-volatile uint32_t saa;
-volatile FRESULT res;
-char mes[512]="";
-UINT d ;
-
-#include "diskio.h"
-#include "sdcard_diskio.h"
+TCSTask::~TCSTask()
+{
+	delete queue;
+}
 
 void TCSTask::Code()
 {
 	Delay(100);
-	sem = new TSemaphore (TSemaphore::fstCounting, 4 , 0 ) ;
-	saa = GetCpuClock();
+	sem = new TSemaphore(TSemaphore::fstCounting, 4, 0);
+	GetCpuClock();
 
-	Gate_Change_Preset ();
-	Compressor_init();
-	Compressor_Change_Preset(0,0);
+	GATE_ChangePreset();
+	COMPR_Init();
+	COMPR_ChangePreset(0, 0);
 
 	CSTask->DisplayAccess(false);
 
-    currentPresetNumber = preselectedPresetNumber = sys_para[31];
+	currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
 
-    DisplayTask->StartScreen(1);
+	DisplayTask->StartScreen(1);
 
-	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);
-	TIM_Cmd(TIM4,ENABLE);
+	TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM4, ENABLE);
 
 	while(!ind_en);
 
-  	USART_Cmd(USART1,ENABLE);
+	USART_Cmd(USART1, ENABLE);
 
-    if(sys_para[3] & 0x80)
-    {
- 	   adc_init(1);
-    }
+	if(sys_para[3] & 0x80)
+	{
+		adc_init(1);
+	}
 
-   	CSTask->DisplayAccess(true);
+	CSTask->DisplayAccess(true);
 
-  	gui_send(14,0); // global cab on off
-  	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-  	gui_send(26,sys_para[SPDIF_OUT_TYPE]);
-  	gui_send(33,sys_para[TAP_TYPE] | (sys_para[TAP_HIGH] << 8)); //global temp
-	tempo_fl = 1;
-	gui_send(28,sys_para[2]); // left cab bypass
-	if(!sys_para[125])sys_para[125] = 127;
-  	DisplayTask->Pot_Write();
-	gui_send(1,sys_para[126]); //master volum
+	DSP_GuiSendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
-//	if(!sys_para[508] && !sys_para[509])
-//	{
-//		sys_para[508] = 2;
-//		sys_para[509] = 0x6a;
-//	}
-//	mas_eq_fr = sys_para[508] << 8;
-//	mas_eq_fr |= sys_para[509];
+	DSP_GuiSendParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	DSP_GuiSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0); // left cab bypass
 
+	if(!sys_para[System::PHONES_VOLUME]) sys_para[System::PHONES_VOLUME] = 127;
 
-//	mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
+	DisplayTask->Pot_Write(); // phones, attenuator
 
+	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
 
-	if(!sys_para[MASTER_EQ_FREQ_LO] && !sys_para[MASTER_EQ_FREQ_HI])
+	if(!sys_para[System::MASTER_EQ_FREQ_LO] && !sys_para[System::MASTER_EQ_FREQ_HI])
 	{
 		mstEqMidFreq = 1000;
 	}
 	else
 	{
-		mstEqMidFreq = sys_para[MASTER_EQ_FREQ_LO] << 8;
-		mstEqMidFreq |= sys_para[MASTER_EQ_FREQ_HI];
+		mstEqMidFreq = sys_para[System::MASTER_EQ_FREQ_LO] << 8;
+		mstEqMidFreq |= sys_para[System::MASTER_EQ_FREQ_HI];
 	}
 
-	for(uint8_t i = 0 ; i < 4 ; i++)gui_send(25,i);
-	gui_send(18, 14 | (sys_para[120] << 8)); // master eq
-	tun_del_val = (127 - sys_para[TUNER_SPEED]) * (90.0f/127.0f) + 10.0f;
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_LOW] + 24);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_GAIN_POS, sys_para[System::MASTER_EQ_MID] + 24);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_HIGH_GAIN_POS, sys_para[System::MASTER_EQ_HIGH] + 24);
+
+	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
+
+	tun_del_val = (127 - sys_para[System::TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
 	Delay(500);
 	prog_ch();
-	eepr_read_imya(preselectedPresetNumber);
-	DisplayTask->Main_scr();
-	DisplayTask->Prog_ind(preselectedPresetNumber);
-    for(uint8_t i = 0 ; i < 3 ; i++)
-    {
-    	contr_kn[i] = currentPreset.modules.rawData[fo1 + i];
-    	contr_kn1[i] = currentPreset.modules.rawData[fo11 + i];
-    }
-	if((sys_para[FSW1_PRESS_TYPE] == 1) || ((sys_para[FSW1_HOLD_TYPE] == 1) && sys_para[FSW1_MODE]))DisplayTask->IndFoot(0,contr_kn[0]);
-	if((sys_para[FSW2_PRESS_TYPE] == 1) || ((sys_para[FSW2_HOLD_TYPE] == 1) && sys_para[FSW2_MODE]))DisplayTask->IndFoot(1,contr_kn[1]);
-	if((sys_para[FSW3_PRESS_TYPE] == 1) || ((sys_para[FSW3_HOLD_TYPE] == 1) && sys_para[FSW3_MODE]))DisplayTask->IndFoot(2,contr_kn[2]);
-	send_codec(0xa301);
-   	ENCTask->SetEnc(1);
 
-   	sem->Take(portMAX_DELAY);
-	if (DisplayAccess())
+	for(uint8_t i = 0; i < 3; i++)
+	{
+		contr_kn[i] = currentPreset.modules.rawData[fo1 + i];
+		contr_kn1[i] = currentPreset.modules.rawData[fo11 + i];
+	}
+
+	send_codec(0xa301);
+	ENCTask->SetEnc(1);
+
+	sem->Take(portMAX_DELAY);
+	if(DisplayAccess())
 	{
 		mainMenu = new MainMenu();
 		usbMenu = new UsbMenu();
@@ -133,14 +124,14 @@ void TCSTask::Code()
 		mainMenu->show();
 	}
 
-   	while(1)
-   	{
+	while(1)
+	{
 		sem->Take(portMAX_DELAY);
 		if(DisplayAccess())
 		{
 			gui();
 		}
-   	}
+	}
 }
 
 void TCSTask::Restart(void)
@@ -153,10 +144,10 @@ void TCSTask::Restart(void)
 //------------------------------------------------------------------------------------
 extern ad_data_t adc_data[];
 extern da_data_t dac_data[];
-int32_t ccl;
-int32_t ccr;
-volatile uint32_t cl;
-volatile uint32_t cr;
+int32_t __CCM_BSS__ ccl;
+int32_t __CCM_BSS__ ccr;
+volatile uint32_t __CCM_BSS__ cl;
+volatile uint32_t __CCM_BSS__ cr;
 uint8_t dma_ht_fl;
 uint8_t tun_del;
 uint8_t tun_del_val;
@@ -165,61 +156,54 @@ uint8_t tun_del_val;
 
 extern "C" void DMA1_Stream2_IRQHandler()
 {
-  if (tap_temp < 131071)tap_temp += 1;
-  if(DMA_GetITStatus(DMA1_Stream2, DMA_IT_HTIF2))
-  {
-	  DMA_ClearITPendingBit ( DMA1_Stream2 , DMA_IT_HTIF2);
-	  dma_ht_fl = 0;
-  }
-  else {
-	  DMA_ClearITPendingBit ( DMA1_Stream2 , DMA_IT_TCIF2);
-	  dma_ht_fl = 1;
-  }
-  //GPIO_SetBits(GPIOC,GPIO_Pin_5);
+	if(tap_temp < 131071) tap_temp += 1;
 
-  cr = ror16(adc_data[dma_ht_fl].left.sample);
-  cl = ror16(adc_data[dma_ht_fl].right.sample);
-  ccl = cl;
-  ccl = ccl >> 8;
-  ccr = cr;
-  ccr = ccr >> 8;
-//-------------------------------------------------------
-  float in = ccl * 0.000000119f;
-//--------------------Tuner------------------------------
-  if(tuner_use)
-  {
-	  SpectrumBuffsUpdate( compr_out(in) );
-	  if(tun_del > tun_del_val)
-	  {
-	    tun_del = 0;
-	    inline void strel_tun(void);
-	    strel_tun();
-	  }
-	  tun_del++;
-  }
-  else GPIOB->BSRRH |= GPIO_Pin_11;
-
-//-------------------------------------------------------
-
-  ind_out_l[0] = abs(ccl);
-  if(ind_out_l[0] > ind_out_l[1])ind_out_l[1] = ind_out_l[0];
-
-	if((ind_poin++ == 4000) && (!tuner_use)
-//			&& ((current_menu == MENU_VOLUME) || (current_menu == MENU_CABSIM)
-//			|| (current_menu == MENU_PA) || (current_menu == MENU_PREAMP)
-//			|| (current_menu == MENU_ATTENUATOR))
-			)
+	if(DMA_GetITStatus(DMA1_Stream2, DMA_IT_HTIF2))
 	{
-	  DisplayTask->VolIndicator();
-	  ind_poin = 0;
+		DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_HTIF2);
+		dma_ht_fl = 0;
 	}
+	else
+	{
+		DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_TCIF2);
+		dma_ht_fl = 1;
+	}
+	//GPIO_SetBits(GPIOC,GPIO_Pin_5);
 
-  dac_data[dma_ht_fl].left.sample  = ror16(cr);
-  dac_data[dma_ht_fl].right.sample = ror16(cr);
-  //GPIO_ResetBits(GPIOC,GPIO_Pin_5);
+	cr = ror16(adc_data[dma_ht_fl].left.sample);
+	cl = ror16(adc_data[dma_ht_fl].right.sample);
+	ccl = cl;
+	ccl = ccl >> 8;
+	ccr = cr;
+	ccr = ccr >> 8;
+//-------------------------------------------------------
+	float in = ccl * 0.000000119f;
+//--------------------Tuner------------------------------
+	if(tuner_use)
+	{
+		SpectrumBuffsUpdate(COMPR_Out(in));
+		if(tun_del > tun_del_val)
+		{
+			tun_del = 0;
+			inline void strel_tun(void);
+			strel_tun();
+		}
+		tun_del++;
+	}
+	else
+		GPIOB->BSRRH |= GPIO_Pin_11;
+
+//---------------------Vol indicator----------------------------
+
+	ind_out_l[0] = abs(ccl);
+	if(ind_out_l[0] > ind_out_l[1])
+		ind_out_l[1] = ind_out_l[0];
+
+
+	DisplayTask->VolIndicatorTask();
+
+
+	dac_data[dma_ht_fl].left.sample = ror16(cr);
+	dac_data[dma_ht_fl].right.sample = ror16(cr);
 }
-
-
-
-
 

@@ -63,15 +63,15 @@ void RealParam::printParam(uint8_t yDisplayPosition)
 		case TIndicatorType::IndBarTransparent:
 		{
 			DisplayTask->ParamIndicTransparent(m_xDisplayPosition, yDisplayPosition, ((m_displayValue+abs(m_minDisplayValue))*(127.0f/abs(m_maxDisplayValue-m_minDisplayValue))));
-			DisplayTask->Clear_str(m_xDisplayPosition + 40, yDisplayPosition, TDisplayTask::fntSystem, 8);
-			DisplayTask->StringOut(m_xDisplayPosition + 40, yDisplayPosition, TDisplayTask::fntSystem , 0, (uint8_t*)string);
+			DisplayTask->Clear_str(m_xDisplayPosition + 40, yDisplayPosition, Font::fntSystem, 8);
+			DisplayTask->StringOut(m_xDisplayPosition + 40, yDisplayPosition, Font::fntSystem , 0, (uint8_t*)string);
 			break;
 		}
 
 		case TIndicatorType::IndNone:
 		{
-			DisplayTask->Clear_str(m_xDisplayPosition, yDisplayPosition, TDisplayTask::fntSystem, 8);
-			DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, TDisplayTask::fntSystem , 0, (uint8_t*)string);
+			DisplayTask->Clear_str(m_xDisplayPosition, yDisplayPosition, Font::fntSystem, 8);
+			DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, Font::fntSystem , 0, (uint8_t*)string);
 			break;
 		}
 

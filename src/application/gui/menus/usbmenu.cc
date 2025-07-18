@@ -21,15 +21,15 @@ void UsbMenu::show(TShowMode showMode)
 	currentMenu = this;
 
 	DisplayTask->Clear();
-	DisplayTask->StringOut(strPositions[0], 1, TDisplayTask::fntSystem, 0, &strUsbMenu[0][0]);
-	DisplayTask->StringOut(strPositions[1], 2, TDisplayTask::fntSystem, 0, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[0], 1, Font::fntSystem, 0, &strUsbMenu[0][0]);
+	DisplayTask->StringOut(strPositions[1], 2, Font::fntSystem, 0, &strUsbMenu[1][0]);
 }
 
 void UsbMenu::task()
 {
 	if(usbConnected) return;
 
-	DisplayTask->StringOut(strPositions[m_parNum], m_parNum + 1, TDisplayTask::fntSystem, 2 * blinkFlag_fl, &strUsbMenu[m_parNum][0]);
+	DisplayTask->StringOut(strPositions[m_parNum], m_parNum + 1, Font::fntSystem, 2 * blinkFlag_fl, &strUsbMenu[m_parNum][0]);
 }
 
 void UsbMenu::encoderPressed()
@@ -42,22 +42,22 @@ void UsbMenu::encoderPressed()
 		case TUsbTask::mMSC:
 		{
 			send_codec(0xa102);
-			DSP_gui_set_parameter(DSP_ADDRESS_TUN_PROC, 0, 0);
+			DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 
 			DisplayTask->Clear();
-			DisplayTask->StringOut(6, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"cp100fx connected as");
-			DisplayTask->StringOut(30, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"mass storage");
+			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"cp100fx connected as");
+			DisplayTask->StringOut(30, 2, Font::fntSystem, 0, (uint8_t*)"mass storage");
 			break;
 		}
 
 		case TUsbTask::mCDC:
 		{
 			DisplayTask->Clear();
-			DisplayTask->StringOut(6, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"cp100fx connected as");
-			DisplayTask->StringOut(34, 2, TDisplayTask::fntSystem, 0, (uint8_t*)"serial port");
+			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"cp100fx connected as");
+			DisplayTask->StringOut(34, 2, Font::fntSystem, 0, (uint8_t*)"serial port");
 
-//			currentMenu = mainMenu;
-//			mainMenu->show();
+			currentMenu = mainMenu;
+			mainMenu->show();
 			break;
 		}
 	}
@@ -71,7 +71,7 @@ void UsbMenu::encoderClockwise()
 
 	if(m_parNum < 1) m_parNum++;
 
-	DisplayTask->StringOut(strPositions[0], 1, TDisplayTask::fntSystem, 0, &strUsbMenu[0][0]);
+	DisplayTask->StringOut(strPositions[0], 1, Font::fntSystem, 0, &strUsbMenu[0][0]);
 	tim5_start(0);
 }
 
@@ -81,7 +81,7 @@ void UsbMenu::encoderCounterClockwise()
 
 	if(m_parNum > 0) m_parNum--;
 
-	DisplayTask->StringOut(strPositions[1], 2, TDisplayTask::fntSystem, 0, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[1], 2, Font::fntSystem, 0, &strUsbMenu[1][0]);
 	tim5_start(0);
 }
 

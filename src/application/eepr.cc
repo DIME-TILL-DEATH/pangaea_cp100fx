@@ -2,23 +2,19 @@
 #include "eepr.h"
 #include "fs.h"
 
+#include "init.h"
+
+#include "system.h"
+
 #include "controllers.h"
 #include "preset.h"
-
-uint16_t delay_time;
-
-volatile uint8_t currentPresetNumber;
-volatile uint8_t preselectedPresetNumber;
+#include "modules.h"
 
 volatile uint32_t flash_adr;
 volatile uint16_t adc_low;
 volatile uint16_t adc_high;
 volatile uint16_t adc_val;
 volatile float adc_val1;
-extern uint8_t cab_type;
-
-const uint8_t stas[] =
-{"STAS"};
 
 const uint8_t prog_data_init[512] =
 {/*switch*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -57,8 +53,6 @@ const uint8_t prog_data_init[512] =
 		0,
 		/*bpm del*/120};
 
-
-uint8_t __CCM_BSS__ preset_temp[38560];
 const uint32_t del_tim_init = 500;
 const uint8_t nameInit[] = {"Preset        "};
 const uint8_t commentInit[] = {"Name          "};
@@ -67,24 +61,7 @@ uint8_t __CCM_BSS__ sys_para[512] =
 {/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
 /*foot3*/0,/*calibrate*/0, 0, 0xff, 0xf};
 
-uint8_t impulse_path[512];
-
-uint8_t __CCM_BSS__ imya_t[15];
-uint8_t __CCM_BSS__ imya1_t[15];
-
 volatile uint32_t fl_st;
-const uint8_t no_loaded[] = "No loaded";
-
-//char __CCM_BSS__ cab1.name[64];
-//char __CCM_BSS__ cab2.name[64];
-char __CCM_BSS__ name_buf_temp[64];
-
-uint8_t cab_num = 0;
-extern volatile uint8_t prog_sym_cur;
-extern uint8_t name_run_fl;
-extern emb_string full_curr_dir_path;
-
-char fna[_MAX_LFN];
 
 int16_t mstEqMidFreq;
 
@@ -94,11 +71,11 @@ void write_sys(void)
 	// mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
 	//	mas_eq_fr = sys_para[508] << 8;
 	//	mas_eq_fr |= sys_para[509];
-	sys_para[MASTER_EQ_FREQ_VAL_LO] = 2;
-	sys_para[MASTER_EQ_FREQ_VAL_HI] = 0x6a;
+	sys_para[System::MASTER_EQ_FREQ_VAL_LO] = 2;
+	sys_para[System::MASTER_EQ_FREQ_VAL_HI] = 0x6a;
 
-	sys_para[MASTER_EQ_FREQ_LO] = (mstEqMidFreq>>8) & 0xF;
-	sys_para[MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xF;
+	sys_para[System::MASTER_EQ_FREQ_LO] = (mstEqMidFreq>>8) & 0xF;
+	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xF;
 
 	FATFS fs;
 	FIL file;
@@ -113,6 +90,8 @@ void write_sys(void)
 void eepr_write(uint8_t nu)
 {
 	nu++;
+
+	char fna[_MAX_LFN];
 	FATFS fs;
 	FIL file;
 	UINT f_size;
@@ -129,20 +108,20 @@ void eepr_write(uint8_t nu)
 	del_t_b[0] = delay_time;
 	del_t_b[1] = delay_time>>8;
 	f_write(&file, del_t_b, 2, &f_size);
-	f_write(&file, cab1.data, 12288, &f_size);
-	f_write(&file, cab1.name, 64, &f_size);
-	if(cab_type==2)
+	f_write(&file, cab1.data, CAB_DATA_SIZE, &f_size);
+	f_write(&file, cab1.name.string, 64, &f_size);
+	if(cab_type == CAB_CONFIG_STEREO)
 	{
-		f_write(&file, cab2.data, 12288, &f_size);
-		f_write(&file, cab2.name, 64, &f_size);
+		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
+		f_write(&file, cab2.name.string, 64, &f_size);
 		f_lseek(&file, 38048);
 	}
 	else
 	{
 		f_lseek(&file, 25760);
-		f_write(&file, cab2.data, 12288, &f_size);
+		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
 	}
-	f_write(&file, impulse_path, 512, &f_size);
+	f_write(&file, Preset::impulsePath, 512, &f_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
 }
@@ -150,7 +129,10 @@ void eepr_write(uint8_t nu)
 void EEPROM_loadPreset(uint8_t nu)
 {
 	FSTask->Suspend();
+
 	nu++;
+
+	char fna[_MAX_LFN];
 	FRESULT fs_res;
 	FATFS fs;
 	FIL file;
@@ -171,19 +153,16 @@ void EEPROM_loadPreset(uint8_t nu)
 
 		uint8_t del_t_buf[2];
 		f_read(&file, del_t_buf, 2, &f_size);
-//		extern uint8_t tempo_fl;
-//		if(!tempo_fl || !sys_para[tap_typ])
-//	    {
+
 		delay_time = del_t_buf[0];
 		delay_time |= del_t_buf[1]<<8;
-//	    }
 
 		f_read(&file, cab1.data, CAB_DATA_SIZE, &f_size);
-		f_read(&file, cab1.name, 64, &f_size);
+		f_read(&file, cab1.name.string, 64, &f_size);
 		if(cab_type==2)
 		{
 			f_read(&file, cab2.data, CAB_DATA_SIZE, &f_size);
-			f_read(&file, cab2.name, 64, &f_size);
+			f_read(&file, cab2.name.string, 64, &f_size);
 		}
 		else
 		{
@@ -195,17 +174,17 @@ void EEPROM_loadPreset(uint8_t nu)
 		}
 
 		f_lseek(&file, 38048);
-		kgp_sdk_libc::memset(impulse_path, 0, 512);
+		kgp_sdk_libc::memset(Preset::impulsePath, 0, 512);
 		char *tmp = new char[_MAX_LFN];
 		if(!tmp)
 			throw_exeption_catcher("not enough memory");
 		f_read(&file, tmp, _MAX_LFN, &f_size);
 		if(f_size)
 		{
-			kgp_sdk_libc::memcpy(impulse_path, tmp, _MAX_LFN);
+			kgp_sdk_libc::memcpy(Preset::impulsePath, tmp, _MAX_LFN);
 			FSTask->Object().name = emb_string(tmp);
 			f_read(&file, tmp, _MAX_LFN, &f_size);
-			kgp_sdk_libc::memcpy(impulse_path+255, tmp, _MAX_LFN);
+			kgp_sdk_libc::memcpy(Preset::impulsePath+255, tmp, _MAX_LFN);
 			FSTask->Object().startup = emb_string(tmp);
 
 			emb_string startup = FSTask->Object().name+emb_string("/")+FSTask->Object().startup;
@@ -216,7 +195,7 @@ void EEPROM_loadPreset(uint8_t nu)
 			}
 		}
 		delete tmp;
-		prog_sym_cur = 0;
+//		prog_sym_cur = 0;
 	}
 	else
 	{
@@ -235,7 +214,7 @@ void EEPROM_loadPreset(uint8_t nu)
 			currentPreset.controller[i].maxVal = 127;
 		delay_time = del_tim_init;
 
-		cab1.name[0] = cab2.name[0] = 0;
+		cab1.name.size = cab2.name.size = 0;
 		cab1.data[0] = 0xff;
 		cab1.data[1] = 0xff;
 		cab1.data[2] = 0x7f;
@@ -246,7 +225,7 @@ void EEPROM_loadPreset(uint8_t nu)
 			cab2.data[1] = 0xff;
 			cab2.data[2] = 0x7f;
 		}
-		prog_sym_cur = 1;
+//		prog_sym_cur = 1;
 	}
 	f_close(&file);
 
@@ -257,7 +236,7 @@ void EEPROM_loadPreset(uint8_t nu)
 
 	currentPreset.name[14] = 0;
 	currentPreset.comment[14] = 0;
-	cab1.name[63] = cab2.name[63] = 0;
+	cab1.name.string[63] = cab2.name.string[63] = 0;
 
 	FSTask->Resume();
 }
@@ -265,10 +244,14 @@ void EEPROM_loadPreset(uint8_t nu)
 void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 {
 	FSTask->Suspend();
+
+	char fna[_MAX_LFN];
 	FRESULT fs_res;
 	FATFS fs;
 	FIL file;
 	UINT f_size;
+
+//	kgp_sdk_libc::memset(presetData, 0, sizeof(Preset::TPresetBrief));
 
 	presetNum++;
 	if(presetNum<10)
@@ -302,11 +285,15 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 	presetData->comment[14] = 0;
 	presetData->cab1Name[63] = 0;
 	presetData->cab2Name[63] = 0;
+
+	FSTask->Resume();
 }
 
 void read_prog_temp(uint8_t nu)
 {
 	nu++;
+
+	char fna[_MAX_LFN];
 	FRESULT fs_res;
 	FATFS fs;
 	FIL file;
@@ -337,7 +324,7 @@ void read_prog_temp(uint8_t nu)
 			else
 				f_read(&file, preset_temp, 38560, &f_size);
 		}
-		prog_sym_cur = 0;
+//		prog_sym_cur = 0;
 	}
 	else
 	{
@@ -369,7 +356,7 @@ void read_prog_temp(uint8_t nu)
 			preset_temp[pres_po++] = 0;
 		for(uint16_t i = 0; i<512; i++)
 			preset_temp[pres_po++] = 0;
-		prog_sym_cur = 1;
+//		prog_sym_cur = 1;
 	}
 	f_close(&file);
 	f_mount(0, "1:", 0);
@@ -377,6 +364,8 @@ void read_prog_temp(uint8_t nu)
 void write_prog_temp(uint8_t nu)
 {
 	nu++;
+
+	char fna[_MAX_LFN];
 	FATFS fs;
 	FIL file;
 	UINT f_size;
@@ -391,47 +380,7 @@ void write_prog_temp(uint8_t nu)
 	f_close(&file);
 	f_mount(0, "1:", 0);
 }
-// read a  header
-void eepr_read_imya(uint8_t nu)
-{
-	nu++;
-	FRESULT fs_res;
-	FATFS fs;
-	FIL file;
-	UINT f_size;
-	f_mount(&fs, "1:", 1);
-	if(nu<10)
-		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)nu);
-	else
-		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
-	fs_res = f_open(&file, fna, FA_READ);
-	//name_run_fl = 0;
-	if(fs_res==FR_OK)
-	{
-		f_lseek(&file, 13344);
-		f_read(&file, imya_t, 1, &f_size);
-		f_lseek(&file, 25696);
-		f_read(&file, imya1_t, 1, &f_size);
-		if((imya_t[0])||(imya1_t[0]))
-			prog_sym_cur = 0;
-		else
-			prog_sym_cur = 1;
-		f_lseek(&file, 0);
-		f_read(&file, imya_t, 15, &f_size);
-		f_read(&file, imya1_t, 15, &f_size);
-		prog_sym_cur = 0;
-	}
-	else
-	{
-		for(uint8_t i = 0; i<15; i++)
-			imya_t[i] = nameInit[i];
-		for(uint8_t i = 0; i<15; i++)
-			imya1_t[i] = commentInit[i];
-		prog_sym_cur = 1;
-	}
-	f_close(&file);
-	f_mount(0, "1:", 0);
-}
+
 void preset_erase(uint8_t nu)
 {
 	nu++;
@@ -445,9 +394,11 @@ void preset_erase(uint8_t nu)
 	f_unlink(fna);
 	f_mount(0, "1:", 0);
 }
+
 void load_mass_imp(void)
 {
 	uint32_t buf;
+	char fna[_MAX_LFN];
 	FATFS fs;
 	FIL file;
 	UINT f_size;

@@ -27,6 +27,8 @@ public:
 
 	TUsbTask::TMode connectionMode() {return usb_connect_type;};
 
+	bool isConnected() {return usbConnected;};
+
 private:
 	uint8_t m_parNum{0};
 	TUsbTask::TMode usb_connect_type;

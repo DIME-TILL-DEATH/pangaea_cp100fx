@@ -3,7 +3,7 @@
 
 #include "appdefs.h"
 
-#include "gui/gui_task.h"
+#include "gui_task.h"
 
 #define CS GPIO_Pin_1
 #define RS GPIO_Pin_0

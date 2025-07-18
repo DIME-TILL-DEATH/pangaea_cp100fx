@@ -1,10 +1,12 @@
 #include "appdefs.h"
 #include "init.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
+#include "allFonts.h"
 #include "fs.h"
 #include "cs.h"
 #include "AT45DB321.h"
+
+#include "system.h"
 
 uint32_t sram_point;
 uint32_t sram_point1;
@@ -22,10 +24,10 @@ extern volatile uint16_t key_reg_in;
 extern const uint8_t dsp_cod[];
 void adc_calib(void)
 {
-	adc_low = sys_para[EXPR_CAL_MIN_HI];
-	adc_low |= sys_para[EXPR_CAL_MIN_LO]<<8;
-	adc_high = sys_para[EXPR_CAL_MAX_HI];
-	adc_high |= sys_para[EXPR_CAL_MAX_LO]<<8;
+	adc_low = sys_para[System::EXPR_CAL_MIN_HI];
+	adc_low |= sys_para[System::EXPR_CAL_MIN_LO]<<8;
+	adc_high = sys_para[System::EXPR_CAL_MAX_HI];
+	adc_high |= sys_para[System::EXPR_CAL_MAX_LO]<<8;
 	extern volatile uint8_t adc_inv_fl;
 	adc_inv_fl = 0;
 	if(adc_high<adc_low)
@@ -173,7 +175,9 @@ void init(void)
 	for(uint32_t d = 0; d<0xfffff; d++)
 		NOP();
 	eepr_init();
-	cab_type = sys_para[2];
+
+	cab_type = sys_para[System::CAB_SIM_CONFIG];
+
 //-------------------------------------------------GPIO_init-----------------------------------------------
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
@@ -459,10 +463,15 @@ void init(void)
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, 0);
 	}
-	if(cab_type!=2)
+
+	if(cab_type != CAB_CONFIG_STEREO)
 	{
+		cab1.data = &ccmBuffer[0];
+		cab2.data = nullptr;
+
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_end;
+
 		size_t _binary_Pangaea_CP100FX_1_ldr_size = (size_t)(
 				&_binary_Pangaea_CP100FX_1_ldr_end-&_binary_Pangaea_CP100FX_1_ldr_start);
 		for(size_t i = 0; i<_binary_Pangaea_CP100FX_1_ldr_size; i++)
@@ -473,8 +482,12 @@ void init(void)
 	}
 	else
 	{
+		cab1.data = &ccmBuffer[0];
+		cab2.data = &ccmBuffer[4096 * 3];
+
 		extern uint8_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_end;
+
 		size_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_size = (size_t)(
 				&_binary_Pangaea_CP100FX_1_duble_fir_ldr_end-&_binary_Pangaea_CP100FX_1_duble_fir_ldr_start);
 		for(size_t i = 0; i<_binary_Pangaea_CP100FX_1_duble_fir_ldr_size; i++)
@@ -538,7 +551,7 @@ void eepr_init(void)
 	f_read(&file, sys_para, 512, &file_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
-	if(!sys_para[MIDI_PC_IND])
+	if(!sys_para[System::MIDI_PC_IND])
 	{
 		for(uint8_t i = 0; i<128; i++)
 		{
@@ -547,7 +560,7 @@ void eepr_init(void)
 			else
 				sys_para[i+128] = i-99;
 		}
-		sys_para[MIDI_PC_IND] = 1;
+		sys_para[System::MIDI_PC_IND] = 1;
 		void write_sys(void);
 		write_sys();
 	}

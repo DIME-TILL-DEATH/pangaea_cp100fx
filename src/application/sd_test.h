@@ -20,6 +20,8 @@ public:
 			sem->Give();
 	}
 
+	static uint8_t sdInitState;
+
 private:
 
 	void Code();

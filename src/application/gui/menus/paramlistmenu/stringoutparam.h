@@ -1,7 +1,7 @@
 #ifndef SRC_APPLICATION_GUI_MENUS_PARAMLISTMENU_STRINGOUTPARAM_H_
 #define SRC_APPLICATION_GUI_MENUS_PARAMLISTMENU_STRINGOUTPARAM_H_
 
-#include "../paramlistmenu/baseparam.h"
+#include "baseparam.h"
 
 //#include "../abstractmenu.h"
 
@@ -31,8 +31,8 @@ private:
 
 	uint8_t m_symbolOffset{0};
 
-	static constexpr uint8_t bufSize = 32;
-	uint8_t m_nameBuffer[bufSize];
+//	static constexpr uint8_t bufSize = 32;
+//	uint8_t m_nameBuffer[bufSize];
 
 	uint32_t m_timeThreshold{150000};
 	uint32_t m_timeCounter{0};

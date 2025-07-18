@@ -2,7 +2,8 @@
 #define BASEPARAM_H_
 
 #include "appdefs.h"
-#include "../../../modules.h"
+#include "modules.h"
+#include "BF706_send.h"
 
 class BaseParam
 {
@@ -16,7 +17,7 @@ public:
 		GUI_PARAMETER_MIX,
 		GUI_PARAMETER_PAN,
 		GUI_PARAMETER_LIST,
-		GUI_PARAMETER_DELAY_TIME,
+//		GUI_PARAMETER_DELAY_TIME,
 		GUI_PARAMETER_SUBMENU_DELAY_TIME,
 		GUI_PARAMETER_SUBMENU,
 		GUI_PARAMETER_CUSTOM,
@@ -37,7 +38,7 @@ public:
 	virtual ~BaseParam() {};
 
 	gui_param_type type() const {return m_type;};
-	const char* name();
+	virtual const char* name();
 	uint8_t* valuePtr() const {return m_valuePtr;};
 
 	virtual uint32_t value() const;
@@ -45,6 +46,8 @@ public:
 	virtual void decreaseParam();
 
 	virtual void printParam(uint8_t yPos);
+
+	virtual void setToDsp();
 
 	void setDspAddress(dsp_module_address_t moduleAddress, uint8_t bytePosition);
 	dsp_module_address_t moduleAddress() const {return m_moduleAddress;};
@@ -72,7 +75,8 @@ public:
 
 	void setIndicatorType(TIndicatorType indicatorType);
 
-	void setToDsp();
+	static int16_t encSpeedInc(int16_t data, int16_t max, uint8_t stepSize = 1);
+	static int16_t encSpeedDec(int16_t data, int16_t min, uint8_t stepSize = 1);
 
 protected:
 	const char* m_name;

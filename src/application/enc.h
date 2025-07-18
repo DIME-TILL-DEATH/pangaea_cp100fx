@@ -35,9 +35,6 @@ private:
 
 };
 
-int16_t enc_speed_inc(int16_t data, int16_t max);
-uint16_t enc_speed_dec(int16_t data, int16_t min);
-
 extern volatile uint8_t encoder_state;
 extern volatile uint8_t encoder_state_updated;
 extern volatile uint8_t encoder_knob_pressed;
@@ -45,6 +42,8 @@ extern volatile uint8_t encoder_flag;
 extern volatile uint8_t k_tuner;
 extern volatile uint8_t contr_kn[];
 extern volatile uint8_t contr_kn1[];
+
+extern volatile uint8_t usb_flag;
 
 extern TENCTask *ENCTask;
 

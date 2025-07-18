@@ -1,10 +1,11 @@
 #include "abstractmenu.h"
 
-#include "../../display.h"
-#include "../gui_task.h"
+#include "eepr.h"
 
-const uint8_t AbstractMenu::ascii_low[];
-const uint8_t AbstractMenu::ascii_high[];
+#include "display.h"
+#include "gui_task.h"
+
+#include "preset.h"
 
 gui_menu_type AbstractMenu::menuType()
 {

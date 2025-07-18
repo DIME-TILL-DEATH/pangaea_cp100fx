@@ -30,7 +30,8 @@ enum icon_t
 	ICON_PR,
 	ICON_CM,
 	ICON_GT,
-	ICON_RF
+	ICON_RF,
+	ICON_NONE = 255
 };
 
 icon_t iconFormMenuType(gui_menu_type menuType);

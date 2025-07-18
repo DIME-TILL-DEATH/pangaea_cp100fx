@@ -11,6 +11,8 @@
 #include "midi_send.h"
 #include "init.h"
 
+#include "system.h"
+
 #include "modules.h"
 #include "footswitch.h"
 #include "controllers.h"
@@ -37,11 +39,7 @@ extern uint8_t k_master_eq;
 volatile uint8_t write_fl = 0;
 
 uint32_t send_buf;
-uint32_t del_time = 48000;
-uint16_t trem_time;
-uint16_t moog_time;
-uint32_t tap_temp;
-uint32_t tap_global;
+
 uint8_t tuner_use;
 
 void tim5_start(uint8_t val)
@@ -60,8 +58,8 @@ void clean_flag(void)
 extern volatile uint8_t pc_mute_fl;
 void prog_ch(void)
 {
-	gui_send(32, currentPresetNumber);
-//	eepr_read_prog_data(currentPresetNumber);
+	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
+
 	EEPROM_loadPreset(currentPresetNumber);
 	pc_mute_fl = 0;
 
@@ -73,37 +71,24 @@ void prog_ch(void)
 		contr_kn[i] = currentPreset.modules.rawData[fo1+i];
 		contr_kn1[i] = currentPreset.modules.rawData[fo11+i];
 	}
-	if((sys_para[FSW1_PRESS_TYPE]==1) || ((sys_para[FSW1_HOLD_TYPE]==1) && sys_para[FSW1_MODE] == Footswitch::Double))
-		DisplayTask->IndFoot(0, contr_kn[0]);
 
-	if((sys_para[FSW2_PRESS_TYPE]==1) || ((sys_para[FSW2_HOLD_TYPE]==1) && sys_para[FSW2_MODE] == Footswitch::Double))
-		DisplayTask->IndFoot(1, contr_kn[1]);
-
-	if((sys_para[FSW3_PRESS_TYPE]==1) || ((sys_para[FSW3_HOLD_TYPE]==1) && sys_para[FSW3_MODE] == Footswitch::Double))
-		DisplayTask->IndFoot(2, contr_kn[2]);
-
-	if(sys_para[EXPR_STORE_LEVEL])
+	if(sys_para[System::EXPR_STORE_LEVEL])
 		adc_proc();
 
 	pc_mute_fl = 1;
-	tap_del_fl = tap_trem_fl = tap_moog_fl = 0;
-	for(uint8_t i = 0; i < controllersCount; i++)
-	{
-		if(currentPreset.controller[i].src != Controller::Src::Off)
-		{
-			if(currentPreset.controller[i].dst == Controller::Dst::DelayTap)
-				tap_del_fl = 1;
-			if(currentPreset.controller[i].dst == Controller::Dst::TremoloTap)
-				tap_trem_fl = 1;
-			if(currentPreset.controller[i].dst == Controller::Dst::RfLFOTAP)
-				tap_moog_fl = 1;
-		}
-	}
-
 }
 
 void gui(void)
 {
+	if(usb_flag && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
+	{
+		while(currentMenu->menuType() != MENU_MAIN)
+		{
+			currentMenu->keyUp();
+		}
+		usbMenu->show();
+	}
+
 	currentMenu->task();
 
 	if(encoder_knob_pressed)
@@ -168,7 +153,7 @@ void gui(void)
 		clean_flag();
 	}
 
-	if(sys_para[TAP_TYPE]==2)
+	if(sys_para[System::TAP_TYPE]==2)
 	{
 		extern volatile uint16_t midi_clk_buf[];
 		uint16_t mediann_tap(uint16_t *array, int length);
@@ -181,31 +166,6 @@ void gui(void)
 			send_midi_temp(&c);
 		}
 	}
-}
-
-uint8_t tap_temp_global(void)
-{
-	uint8_t a = 0;
-	if(tap_temp<=131070)
-	{
-		tap_global = tap_temp>>4;
-		if(sys_para[TAP_TYPE]) // global temp On
-		{
-			sys_para[TAP_HIGH] = (tap_global/3)>>8;
-			gui_send(33, tap_global/3);
-			moog_time = tap_global/3.0f;
-			gui_send(31, 13);
-			delay_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[d_tap_t]];
-			if(delay_time<2731)
-				gui_send(3, 1);
-			trem_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[t_tap_t]];
-			if(trem_time<2731)
-				gui_send(10, 5);
-		}
-		a = 1;
-	}
-	tap_temp = 0;
-	return a;
 }
 //---------------------------------------------------------------------------------
 extern "C" void TIM4_IRQHandler()

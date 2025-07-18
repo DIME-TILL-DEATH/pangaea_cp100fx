@@ -38,13 +38,12 @@ private:
 	uint8_t m_numMenu = 0;
 	bool presetEdited{false};
 
-	PresetActionsMenu copyMenu{this, PresetActionsMenu::Copy};
 	PresetActionsMenu confirmSaveMenu{this, PresetActionsMenu::Save};
 	Dialog saveDialog{this, Dialog::SaveChanges};
-	Dialog erasePresetDialog{this, Dialog::ErasePreset};
-	NameEditMenu nameEditMenu{this};
 
 	void iconRefresh(uint8_t num);
+
+	void arrangeModules();
 };
 
 #endif /* MODULESMENU_H_ */

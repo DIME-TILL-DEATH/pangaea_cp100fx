@@ -6,55 +6,55 @@
 static void phaser_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[phas], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PHASER, currentPreset.modules.rawData[ENABLE_PHASER]);
+	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PHASER, currentPreset.modules.rawData[ENABLE_PHASER]);
 }
 
 static void phaser_mix_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[PHASER_MIX], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PHASER, PHASER_MIX_POS, currentPreset.modules.rawData[PHASER_MIX]);
+	DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_MIX_POS, currentPreset.modules.rawData[PHASER_MIX]);
 }
 
 static void phaser_rate_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[PHASER_RATE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PHASER, PHASER_RATE_POS, currentPreset.modules.rawData[PHASER_RATE]);
+	DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_RATE_POS, currentPreset.modules.rawData[PHASER_RATE]);
 }
 
 static void phaser_width_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[PHASER_WIDTH], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modules.rawData[PHASER_WIDTH]);
+	DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modules.rawData[PHASER_WIDTH]);
 }
 
 static void phaser_center_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[PHASER_CENTER], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modules.rawData[PHASER_CENTER]);
+	DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modules.rawData[PHASER_CENTER]);
 }
 
 static void phaser_feedback_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[PHASER_FEEDBACK], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PHASER, PHASER_FEEDBACK_POS, currentPreset.modules.rawData[PHASER_FEEDBACK]);
+	DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_FEEDBACK_POS, currentPreset.modules.rawData[PHASER_FEEDBACK]);
 }
 
 static void phaser_stages_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[PHASER_TYPE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PHASER, PHASER_TYPE_POS, currentPreset.modules.rawData[PHASER_TYPE]);
+	DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_TYPE_POS, currentPreset.modules.rawData[PHASER_TYPE]);
 }
 
 static void phaser_hpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[PHASER_HPF], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PHASER, PHASER_HPF_POS, currentPreset.modules.rawData[PHASER_HPF]);
+	DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_HPF_POS, currentPreset.modules.rawData[PHASER_HPF]);
 }
 
 static void phaser_position_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[PHASER_PREPOST], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_PHASER, PHASER_PREPOST_POS, currentPreset.modules.rawData[PHASER_PREPOST]);
+	DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_PREPOST_POS, currentPreset.modules.rawData[PHASER_PREPOST]);
 }
 
 void set_phaser_handlers(TReadLine *rl)

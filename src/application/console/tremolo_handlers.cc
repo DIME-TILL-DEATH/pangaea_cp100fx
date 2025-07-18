@@ -6,37 +6,37 @@
 static void tremolo_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[ENABLE_TREMOLO], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_TREMOLO, currentPreset.modules.rawData[ENABLE_TREMOLO]);
+	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_TREMOLO, currentPreset.modules.rawData[ENABLE_TREMOLO]);
 }
 
 static void tremolo_intensity_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[TREMOLO_INTENSITY], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_INTENSITY_POS, currentPreset.modules.rawData[TREMOLO_INTENSITY]);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_INTENSITY_POS, currentPreset.modules.rawData[TREMOLO_INTENSITY]);
 }
 
 static void tremolo_rate_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[TREMOLO_RATE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_RATE_POS, currentPreset.modules.rawData[TREMOLO_RATE]);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_RATE_POS, currentPreset.modules.rawData[TREMOLO_RATE]);
 }
 
 static void tremolo_from_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[TREMOLO_LFO_TYPE], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_TYPE_POS, currentPreset.modules.rawData[TREMOLO_LFO_TYPE]);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_TYPE_POS, currentPreset.modules.rawData[TREMOLO_LFO_TYPE]);
 }
 
 static void tremolo_lfomod_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[TREMOLO_LFO_MOD], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_MOD_POS, currentPreset.modules.rawData[TREMOLO_LFO_MOD]);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_MOD_POS, currentPreset.modules.rawData[TREMOLO_LFO_MOD]);
 }
 
 static void tremolo_ms_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[TREMOLO_MS], rl, args, count);
-	DSP_contr_set_parameter(DSP_ADDRESS_TREMOLO, TREMOLO_MS_POS, currentPreset.modules.rawData[TREMOLO_MS]);
+	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_MS_POS, currentPreset.modules.rawData[TREMOLO_MS]);
 }
 
 static void tremolo_tap_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)

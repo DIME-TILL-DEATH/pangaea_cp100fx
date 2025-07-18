@@ -19,7 +19,7 @@ void TunerMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 	send_codec(0xa102);
-	DSP_gui_set_parameter(DSP_ADDRESS_TUN_PROC, 0, 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 	tun_base_old = 0.0f;
 	tun_ini();
 	tuner_use = 1;
@@ -83,7 +83,7 @@ void TunerMenu::key5()
 void TunerMenu::endTunerTask()
 {
 	tuner_use = 0;
-	DSP_gui_set_parameter(DSP_ADDRESS_TUN_PROC, 1, 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 	DisplayTask->Clear();
 	CSTask->Give();
 	GPIO_ResetBits(GPIOB, GPIO_Pin_11);

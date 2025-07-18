@@ -1,25 +1,20 @@
 #include "cabbrowsermenu.h"
 
 #include "appdefs.h"
+#include "init.h"
+
 #include "cs.h"
 #include "fs.h"
-#include "eepr.h"
+
 #include "allFonts.h"
-#include "icon_bit.h"
 #include "display.h"
-#include "enc.h"
-#include "cc.h"
+
 #include "BF706_send.h"
 
 #include "preset.h"
 
-extern uint8_t sd_init_fl;
-extern volatile uint8_t imp_dir_fl;
-
-extern volatile uint8_t file_fl;
-extern volatile uint8_t action_fl;
-
-extern uint8_t cab_type;
+#include "fs_browser.h"
+#include "sd_test.h"
 
 CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 {
@@ -31,20 +26,26 @@ CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 
 void CabBrowserMenu::show(TShowMode showMode)
 {
-	if(sd_init_fl==1)
+	currentMenu = this;
+
+	if(TSD_TESTTask::sdInitState == 1)
 	{
 
 		DisplayTask->Clear();
 
-		if(imp_dir_fl)
+		if(TFsBrowser::impulseDirExist)
 		{
 			FSTask->SendCommand(TFsBrowser::bcCurrent);
 			FSTask->SendCommand(TFsBrowser::bcLoadImp);
+			CSTask->Give();
+
+			processBrowserResponse();
+			refresh();
 		}
 		else
 		{
-			DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"There is no directory"); //imp_dir_n
-			DisplayTask->StringOut(42, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"IMPULSE");	//imp_dir_no
+			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"There is no directory"); //imp_dir_n
+			DisplayTask->StringOut(42, 3, Font::fntSystem, 0, (uint8_t*)"IMPULSE");	//imp_dir_no
 			CSTask->CS_del(1000);
 			DisplayTask->Clear();
 
@@ -55,10 +56,10 @@ void CabBrowserMenu::show(TShowMode showMode)
 	{
 		DisplayTask->Clear();
 
-		if(!sd_init_fl)
-			DisplayTask->StringOut(6, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"MicroSD is not ready"); //sd_nr
+		if(!TSD_TESTTask::sdInitState)
+			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is not ready"); //sd_nr
 		else
-			DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, (uint8_t*)"MicroSD is loading..");  //sd_lo
+			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is loading..");  //sd_lo
 
 		CSTask->CS_del(1000);
 		DisplayTask->Clear();
@@ -69,110 +70,118 @@ void CabBrowserMenu::show(TShowMode showMode)
 
 void CabBrowserMenu::keyUp()
 {
-	DisplayTask->Clear();
+//	DisplayTask->Clear();
 
 	if(m_cabNumber == 0)
 	{
-//		if(name_buf[0]==0)
-//		{
-//			gui_send(16, 0);
-//			vol_vol = currentPreset.modules.rawData[pres_lev];
-//			DisplayTask->ParamIndicNum(42, 3, currentPreset.modules.rawData[pres_lev]);
-//			//??????????? Почему в MainMenu??????
-//			//return_to_main_menu without clean flag
-//
-//			DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-//			current_menu = MENU_MAIN;
-//			DisplayTask->Menu_init();
-//			tim5_start(0);
-//
-//			currentPreset.modules.rawData[cab] = 0;
-//			gui_send(18, 0|(currentPreset.modules.rawData[cab]<<8));
-//		}
-//		else
-//		{
-			gui_send(16, 0);
-			vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME1];
-			gui_send(7, 0);
-
-			topLevelMenu->returnFromChildMenu();
-//		}
+		DSP_SendPrimaryCabData(cab1.data);
+		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
 	}
 	else
 	{
-		gui_send(17, 0);
-
-		vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME2];
-		gui_send(7, 3);
-
-		topLevelMenu->returnFromChildMenu();
+		DSP_SendSecondaryCabData(cab2.data);
+		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
 	}
+	topLevelMenu->returnFromChildMenu();
 }
 
 void CabBrowserMenu::encoderPressed()
 {
 	FSTask->SendCommand(TFsBrowser::bcAction);
+	CSTask->Give();
 
-	while(!action_fl);
-	action_fl = 0;
+	TCSTask::TResponse browserResponse;
+	browserResponse = CSTask->GetResponseBlocking();
 
-	if(file_fl)
+	if(browserResponse.responseType == TCSTask::TResponseType::rpFileSelected)
 	{
-		file_fl = 0;
 		DisplayTask->Clear();
 
 		if(m_cabNumber==0)
 		{
-			kgp_sdk_libc::memcpy(cab1.data, preset_temp, 12288);
+			kgp_sdk_libc::memcpy(cab1.data, preset_temp, 4096 * 3);
+			if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memcpy(cab1.data + 4096 * 3, preset_temp + 4096 * 3, 4096 * 3);
 
-			if(cab_type!=2) kgp_sdk_libc::memcpy(cab2.data, preset_temp+12288, 12288);
+			kgp_sdk_libc::memcpy(cab1.name.string, selectedCabName, 64);
 
-			send_cab_data(0, 0, 0);
-
-			kgp_sdk_libc::memcpy(cab1.name, name_buf_temp, 64);
-
-//			if(name_buf[0]==0)
-//			{
-//				vol_vol = currentPreset.modules.rawData[pres_lev];
-//				DisplayTask->ParamIndicNum(42, 3, currentPreset.modules.rawData[pres_lev]);
-//				// return to main menu without clean flag
-//				encoder_knob_selected = 0;
-//				DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
-//				current_menu = MENU_MAIN;
-//				DisplayTask->Menu_init();
-//				tim5_start(0);
-//				//
-//				currentPreset.modules.rawData[cab] = 0;
-//				gui_send(18, 0|(currentPreset.modules.rawData[cab]<<8));
-//
-//			}
-
-			vol_ind_level_pos = currentPreset.modules.rawData[vol];
-			gui_send(7, 0);
-
+			DSP_SendPrimaryCabData(cab1.data);
+			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
 		}
 		else
 		{
 			kgp_sdk_libc::memcpy(cab2.data, preset_temp, 12288);
-			send_cab_data1(0, 0);
-			kgp_sdk_libc::memcpy(cab2.name, name_buf_temp, 64);
+			kgp_sdk_libc::memcpy(cab2.name.string, selectedCabName, 64);
 
-			vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME2];
-			gui_send(7, 3);
+			DSP_SendSecondaryCabData(cab2.data);
+			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
 		}
 
 		topLevelMenu->returnFromChildMenu();
+	}
+	else
+	{
+		refresh();
 	}
 }
 
 void CabBrowserMenu::encoderCounterClockwise()
 {
 	FSTask->SendCommand(TFsBrowser::bcUp);
+	CSTask->Give();
+
+	processBrowserResponse();
+	refresh();
 }
 
 void CabBrowserMenu::encoderClockwise()
 {
 	FSTask->SendCommand(TFsBrowser::bcDown);
+	CSTask->Give();
+
+	processBrowserResponse();
+	refresh();
 }
 
+void CabBrowserMenu::processBrowserResponse()
+{
+	TCSTask::TResponse browserResponse;
+	browserResponse = CSTask->GetResponseBlocking();
 
+	switch(browserResponse.responseType)
+	{
+		case TCSTask::rpFileLoaded:
+		{
+			kgp_sdk_libc::memcpy(selectedCabName, browserResponse.file.name, 64);
+
+			if(m_cabNumber == 0)
+				DSP_SendPrimaryCabData(browserResponse.file.buffer); //gui_send(16, 1);
+			else
+				DSP_SendSecondaryCabData(browserResponse.file.buffer);
+
+			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+
+			break;
+		}
+
+		case TCSTask::rpFileInvalid:
+		{
+			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]/2);
+			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]/2);
+
+			break;
+		}
+
+		default: break;
+	}
+}
+
+void CabBrowserMenu::refresh()
+{
+	//	Delay(10);
+		DisplayTask->Clear();
+		DisplayTask->StringOut(4, 0, Font::fntSystem, Font::fnsBlack,
+				(uint8_t*)FSTask->Object().dir.c_str());
+		DisplayTask->StringOut(4, 1, Font::fntSystem, Font::fnsBlack,
+				(uint8_t*)FSTask->Object().name.c_str());
+}

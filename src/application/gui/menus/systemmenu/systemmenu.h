@@ -38,7 +38,7 @@ private:
 	static void tunerExtIncrease(void* parameter);
 	static void tunerExtKeyDown(void* parameter);
 
-	static void tempoDescrease(void* parameter);
+	static void tempoDecrease(void* parameter);
 	static void tempoIncrease(void* parameter);
 
 	static void tunerSpeedDescrease(void* parameter);

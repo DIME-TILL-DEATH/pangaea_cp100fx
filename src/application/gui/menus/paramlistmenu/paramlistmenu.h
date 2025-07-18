@@ -3,14 +3,17 @@
 
 #include "abstractmenu.h"
 
-#include "../../display.h"
+#include "system.h"
+
+#include "display.h"
+#include "icon_bit.h"
 
 #include "BF706_send.h"
 #include "modules.h"
 
-#include "paramlistmenu/baseparam.h"
-#include "paramlistmenu/stringlistparam.h"
-#include "paramlistmenu/submenuparam.h"
+#include "baseparam.h"
+#include "stringlistparam.h"
+#include "submenuparam.h"
 
 class ParamListMenu : public AbstractMenu
 {
@@ -19,7 +22,8 @@ public:
 	~ParamListMenu();
 
 	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount);
-	void setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource);
+	void setVolumeIndicator(TDisplayTask::TVolIndicatorType indicatorType,
+			dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 
 	virtual void show(TShowMode showMode = FirstShow) override;
 	virtual void task() override;
@@ -33,7 +37,8 @@ public:
 
 	static constexpr uint8_t maxParamCount = 16;
 
-	void setIcon(bool drawIcon, uint8_t iconNumber);
+	void setIcon(bool drawIcon, icon_t icon);
+	void setTapDestination(System::TapDestination tapDst) { m_tapDst = tapDst; }
 
 	static constexpr uint8_t paramsOnPage = 4;
 	static constexpr uint8_t leftPad = 3;
@@ -53,19 +58,20 @@ protected:
 	uint8_t m_firstSelectableParam;
 	uint8_t m_lastSelectableParam;
 
-	bool m_canTap{false};
+	System::TapDestination m_tapDst{System::TapDestination::TAP_OFF};
 	bool m_drawIcon{true};
 
 	int8_t m_currentPageNumber{-1};
 
 	uint8_t m_pagesCount;
 
+	icon_t m_icon;
+
 	bool m_encoderKnobSelected;
 
 	TDisplayTask::TVolIndicatorType m_volIndicatorType{TDisplayTask::VOL_INDICATOR_OFF};
 	dsp_indicator_source_t m_indicatorSource;
-
-
+	uint8_t* m_indicatorParam_ptr;
 
 	void printPage(bool forceDrawIcon = false);
 };

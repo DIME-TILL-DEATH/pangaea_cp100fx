@@ -1,4 +1,4 @@
-#include "../paramlistmenu/baseparam.h"
+#include "baseparam.h"
 
 #include "BF706_send.h"
 #include "enc.h"
@@ -109,9 +109,9 @@ void BaseParam::setToDsp()
 	for(uint8_t i=0; i<m_byteSize; i++)
 	{
 		if(m_bytePosition == PARAM_EQUAL_POS)
-			DSP_gui_set_parameter(m_moduleAddress, *(m_valuePtr+i) + m_offset, 0);
+			DSP_GuiSendParameter(m_moduleAddress, *(m_valuePtr+i) + m_offset, 0);
 		else
-			DSP_gui_set_parameter(m_moduleAddress,	m_bytePosition + i,
+			DSP_GuiSendParameter(m_moduleAddress,	m_bytePosition + i,
 					*(m_valuePtr + m_byteSize - 1 - i) + m_offset);
 	}
 }
@@ -120,6 +120,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 {
 	if(m_disabled)
 	{
+		DisplayTask->Clear_str(m_xDisplayPosition, yDisplayPosition, Font::fntSystem, 8);
 		return;
 	}
 
@@ -141,19 +142,6 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 		case BaseParam::GUI_PARAMETER_NUM:
 			DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
-		case BaseParam::GUI_PARAMETER_DELAY_TIME:
-		{
-			if(!sys_para[TIME_FORMAT])
-			{
-				DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, delay_time);
-			}
-			else
-			{
-				DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, 60000/delay_time);
-				DisplayTask->StringOut(m_xDisplayPosition + 45, yDisplayPosition, TDisplayTask::fntSystem, 0, (uint8_t*)"BPM");
-			}
-			break;
-		}
 		default: break;
 	}
 }
@@ -246,4 +234,102 @@ void BaseParam::encoderSpeedDecrease()
 	TIM_SetCounter(TIM6, 0);
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	TIM_Cmd(TIM6, ENABLE);
+}
+
+int16_t BaseParam::encSpeedInc(int16_t data, int16_t max, uint8_t stepSize)
+{
+	TIM_Cmd(TIM6, DISABLE);
+
+	if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update))
+	{
+		data += stepSize;
+	}
+	else
+	{
+		if(TIM_GetCounter(TIM6) > 0x3fff)
+			data += stepSize;
+		else
+		{
+			if(TIM_GetCounter(TIM6) > 0x1fff)
+			{
+				if(data < (max - 1)) data += 2 * stepSize;
+				else data += stepSize;
+			}
+			else
+			{
+				if(TIM_GetCounter(TIM6) > 0xfff)
+				{
+					if(data < (max - 3)) data += 4 * stepSize;
+					else data += 1 * stepSize;
+				}
+				else
+				{
+					if(TIM_GetCounter(TIM6) > 0x7ff)
+					{
+						if(data < (max - 7)) data += 8 * stepSize;
+						else data += 1 * stepSize;
+					}
+					else
+					{
+						if(data < (max - 49)) data += 50 * stepSize;
+						else data += 1 * stepSize;
+					}
+				}
+			}
+		}
+	}
+
+	TIM_SetCounter(TIM6, 0);
+	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
+	TIM_Cmd(TIM6, ENABLE);
+	return data;
+}
+
+int16_t BaseParam::encSpeedDec(int16_t data, int16_t min, uint8_t stepSize)
+{
+	TIM_Cmd(TIM6, DISABLE);
+
+	if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update))
+	{
+		data -= stepSize;
+	}
+	else
+	{
+		if(TIM_GetCounter(TIM6) > 0x3fff)
+			data -= stepSize;
+		else
+		{
+			if(TIM_GetCounter(TIM6) > 0x1fff)
+			{
+				if(data > (min + 1)) data -= 2 * stepSize;
+				else data -= stepSize;
+			}
+			else
+			{
+				if(TIM_GetCounter(TIM6) > 0xfff)
+				{
+					if(data > (min + 3)) data -= 4 * stepSize;
+					else data -= stepSize;
+				}
+				else
+				{
+					if(TIM_GetCounter(TIM6) > 0x7ff)
+					{
+						if(data > (min + 7)) data -= 8 * stepSize;
+						else data -= stepSize;
+					}
+					else
+					{
+						if(data > (min + 49)) data -= 50 * stepSize;
+						else data -= stepSize;
+					}
+				}
+			}
+		}
+	}
+
+	TIM_SetCounter(TIM6, 0);
+	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
+	TIM_Cmd(TIM6, ENABLE);
+	return data;
 }

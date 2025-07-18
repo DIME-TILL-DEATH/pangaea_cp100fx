@@ -2,11 +2,6 @@
 
 #include "appdefs.h"
 
-extern uint32_t tap_temp;
-extern uint32_t tap_temp1;
-extern uint32_t tap_temp2;
-extern uint32_t tap_global;
-
 class TCCTask: public TTask
 {
 public:

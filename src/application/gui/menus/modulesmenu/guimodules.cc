@@ -9,6 +9,9 @@
 
 #include "submenuparam.h"
 #include "stringoutparam.h"
+#include "customparam.h"
+
+#include "system.h"
 
 #include "preset.h"
 
@@ -42,7 +45,11 @@ AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_RESONANCE_FILTER, i);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_RESONANCE_FILTER);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setTapDestination(System::TapDestination::TAP_RFILTER);
+	}
 
 	typeSelect->setAffectedParamsList(params, paramNum);
 
@@ -158,7 +165,7 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 
 		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
 		paramsMenu->setParams(params, paramNum);
-		paramsMenu->setIcon(false, 0);
+		paramsMenu->setIcon(false, ICON_NONE);
 
 		menu = paramsMenu;
 	}
@@ -175,7 +182,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 4;
 	BaseParam* params[paramNum];
 
-	params[0] = new StringOutParam(cab1.name);
+	params[0] = new StringOutParam(cab1.name.string);
 	params[0]->setDisplayPosition(ParamListMenu::leftPad);
 
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab1BrowserMenu);
@@ -196,8 +203,8 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1);
-		menu->setIcon(false, 0);
+		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1, &currentPreset.modules.rawData[IR_VOLUME1]);
+		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
 		runningString->setRunning(true, menu);
@@ -211,7 +218,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 4;
 	BaseParam* params[paramNum];
 
-	params[0] = new StringOutParam(cab2.name);
+	params[0] = new StringOutParam(cab2.name.string);
 	params[0]->setDisplayPosition(ParamListMenu::leftPad);
 
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab2BrowserMenu);
@@ -232,11 +239,11 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2);
-		menu->setIcon(false, 0);
+		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2, &currentPreset.modules.rawData[IR_VOLUME2]);
+		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
-		menu->setRunningString(runningString);
+		runningString->setRunning(true, menu);
 	}
 
 	return menu;
@@ -295,7 +302,7 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &currentPreset.modules.rawData[FLANGER_DELAY]);
 	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &currentPreset.modules.rawData[FLANGER_FEEDBACK]);
 	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &currentPreset.modules.rawData[FLANGER_HPF]);
-	params[7] = new StringListParam("Pos.", &currentPreset.modules.rawData[FLANGER_LFO], {"Post", "Pre "}, 4);
+	params[7] = new StringListParam("Pos.", &currentPreset.modules.rawData[FLANGER_PREPOST], {"Post", "Pre "}, 4);
 
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_FLANGER, i);
 
@@ -305,13 +312,22 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	return menu;
 }
 
+const char* rateChorusPrint(void* parameter)
+{
+	if(currentPreset.modules.rawData[CHORUS_TYPE] == 4) return "Detune";
+	else return "Rate  ";
+}
+
 AbstractMenu* GuiModules::createChorusMenu(AbstractMenu* parentMenu)
 {
 	const uint8_t paramNum = 6;
 	BaseParam* params[paramNum];
 
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modules.rawData[CHORUS_MIX]);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &currentPreset.modules.rawData[CHORUS_RATE]);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Level, "Rate", &currentPreset.modules.rawData[CHORUS_RATE]);
+	customParam->nameCallback = rateChorusPrint;
+	params[1] = customParam;
+
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &currentPreset.modules.rawData[CHORUS_WIDTH]);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &currentPreset.modules.rawData[CHORUS_DELAY]);
 	StringListParam* typeSelect = new StringListParam("Type", &currentPreset.modules.rawData[CHORUS_TYPE],
@@ -386,28 +402,69 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 	params[11]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_DIRECTION_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_DELAY);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setTapDestination(System::TapDestination::TAP_DELAY);
+	}
 
 	return menu;
 }
 
+void delayTimeDecrease(void* parameter)
+{
+	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
+	{
+		if(delay_time > 10) delay_time = BaseParam::encSpeedDec(delay_time, 10);
+	}
+	else
+	{
+		uint16_t tempo = 60000 / delay_time;
+		if(tempo > 25) tempo = BaseParam::encSpeedDec(tempo, 25);
+		else tempo = 25;
+		delay_time = 60000 / tempo;
+	}
 
-//constexpr static uint8_t tap_tim       [][6] ={"1/1  ","1/1.5","1/2  ","1/3  ","1/4  ","2/1  "};
-//constexpr static float   tap_tim_v     [6]   ={1.0f,1.5f,2.0f,3.0f,4.0f,0.5f};
+	currentPreset.modules.rawData[DELAY_TIME_LO] = delay_time & 0xFF;
+	currentPreset.modules.rawData[DELAY_TIME_HI] = delay_time >> 8;
 
-// Отображение в BPM
-//uint16_t temp = 60000 / delay_time;
-//if(temp < 240)
-//{
-//	temp = enc_speed_inc(temp , 240);
-//	delay_time = 60000 / temp;
-//	DisplayTask->ParamIndicNum(53,0,temp);
-//	DisplayTask->StringOut(90,0,TDisplayTask::fntSystem , 0 , (uint8_t*)"BPM");
-//}
-//else {
-//	temp = 240;
-//	delay_time = 60000 / temp;
-//}
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time & 0xFF);
+}
+
+void delayTimeIncrease(void* parameter)
+{
+	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
+	{
+		if(delay_time < 2730) delay_time = BaseParam::encSpeedInc(delay_time, 2730);
+	}
+	else
+	{
+		uint16_t tempo = 60000 / delay_time;
+		if(tempo < 240) tempo = BaseParam::encSpeedInc(tempo, 240);
+		else tempo = 240;
+		delay_time = 60000 / tempo;
+	}
+
+	currentPreset.modules.rawData[DELAY_TIME_LO] = delay_time & 0xFF;
+	currentPreset.modules.rawData[DELAY_TIME_HI] = delay_time >> 8;
+
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time & 0xFF);
+}
+
+void delayTimePrint(void* parameter)
+{
+	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
+	{
+		DisplayTask->DelayTimeInd(58, 0, delay_time);
+	}
+	else
+	{
+		DisplayTask->ParamIndicNum(58, 0, 60000/delay_time);
+		DisplayTask->StringOut(58 + 24, 0, Font::fntSystem, 0, (uint8_t*)"BPM");
+	}
+}
 
 AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 {
@@ -416,25 +473,31 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 
 	ParamListMenu* menu;
 
-	// Отдельный класс для delay time
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_DELAY_TIME, "Time", &delay_time);
-	params[0]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS);
-	params[0]->setByteSize(2);
-	params[0]->setBounds(10, 2730);
-	params[0]->setScaling(10, 0);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Time", &delay_time);
+	customParam->decreaseCallback = delayTimeDecrease;
+	customParam->increaseCallback = delayTimeIncrease;
+	customParam->printCallback = delayTimePrint;
+	params[0] = customParam;
 
-	params[1] = new StringListParam("TAP", &currentPreset.modules.rawData[TREMOLO_TAP],
+	params[1] = new StringListParam("TAP", &currentPreset.modules.rawData[DELAY_TAP],
 			{"1/1  ", "1/1.5" ,"1/2  " ,"1/3  " ,"1/4  " ,"2/1  "}, 6);
 	params[1]->setDspAddress(DSP_ADDRESS_DELAY, NOT_SEND_POS);
 
-	params[2] = new StringListParam("Tail", &currentPreset.modules.rawData[REVERB_TAIL], {"On ", "Off"}, 3);
+	params[2] = new StringListParam("Tail", &currentPreset.modules.rawData[DELAY_TAIL], {"On ", "Off"}, 3);
 	params[2]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TAIL_POS);
 
 	menu = new ParamListMenu(parentMenu, MENU_TAP_DELAY);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setIcon(true, ICON_DL);
+		menu->setTapDestination(System::TapDestination::TAP_DELAY);
+	}
 
 	return menu;
 }
+
+
 
 AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 {
@@ -496,8 +559,11 @@ AbstractMenu* GuiModules::createTremoloMenu(AbstractMenu* parentMenu)
 	params[5]->setDspAddress(DSP_ADDRESS_TREMOLO, NOT_SEND_POS);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_TREMOLO);
-	if(menu) menu->setParams(params, paramNum);
-
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setTapDestination(System::TapDestination::TAP_TREMOLO);
+	}
 	return menu;
 }
 

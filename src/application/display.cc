@@ -1,6 +1,6 @@
 #include "display.h"
-#include "gui/elements/allFonts.h"
-#include "gui/elements/icon_bit.h"
+#include "allFonts.h"
+#include "icon_bit.h"
 #include "eepr.h"
 
 #include "BF706_send.h"
@@ -11,7 +11,8 @@ TDisplayTask* DisplayTask;
 
 TDisplayTask::TDisplayTask () :TTask()
 {
-
+	m_volIndPar_ptr = nullptr;
+	m_indRefreshCounter = 0;
 }
 
 void TDisplayTask::Code()
@@ -43,15 +44,17 @@ void TDisplayTask::Code()
 			case dcSymbolOut:
 				switch(cmd.SymbolOutParams.font.name)
 				{
-					case fnt12x13 :
+					case Font::fnt12x13 :
 						t12x13_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
 								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
 					break;
-					case fnt33x30:
+					case Font::fnt33x30:
+					{
 						t33x30_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
-								cmd.SymbolOutParams.symbol);
+								cmd.SymbolOutParams.symbol, true);
 					break;
-					case fntSystem:
+					}
+					case Font::fntSystem:
 						Arsys_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
 								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
 					break;
@@ -62,14 +65,14 @@ void TDisplayTask::Code()
 			case dcStringOut:
 				switch(cmd.StringOutParams.font.name)
 				{
-					case fnt12x13:
+					case Font::fnt12x13:
 						t12x13_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y,
 								cmd.StringOutParams.string , cmd.StringOutParams.font.curs);
 					break;
-					case fnt33x30:
+					case Font::fnt33x30:
 
 					break;
-					case fntSystem:
+					case Font::fntSystem:
 						Arsys_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y ,
 								cmd.StringOutParams.string,cmd.StringOutParams.font.curs);
 					break;
@@ -80,13 +83,13 @@ void TDisplayTask::Code()
 			case dcNumberOut:
 				switch(cmd.StringOutParams.font.name)
 				{
-					case fnt12x13:
+					case Font::fnt12x13:
 						//t12x13_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y, cmd.StringOutParams.string );
 					break;
-					case fnt33x30:
+					case Font::fnt33x30:
 						//t33x30_line(cmd.NumberOutParams.pos.x , cmd.NumberOutParams.pos.y , cmd.NumberOutParams.val);
 					break;
-					case fntSystem:
+					case Font::fntSystem:
 						//Arsys_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y , cmd.StringOutParams.string,cmd.StringOutParams.font.state);
 					break;
 					default: break;
@@ -94,22 +97,23 @@ void TDisplayTask::Code()
             break ;
 
 			case dcIndicator:
-				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) vol_ind(64, 64);
-				else vol_ind(58, 50);
+				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) DrawVolIndicator(64, 64);
+				else DrawVolIndicator(58, 50);
             break;
 
 //			case dcMenu_init:
 //				menu_init();
 //        	break;
 
-			case dcMain_scr:
-				main_screen();
-        	break;
+//			case dcMain_scr:
+//				main_screen();
+//        	break;
 
 			case dcProg_ind:
-				prog_ind(cmd.Prog_indParam.pro);
-			break;
-
+			{
+				prog_ind(cmd.Prog_indParam.prog, cmd.Prog_indParam.filled);
+				break;
+			}
 			case dcClear_str:
 				clear_str(cmd.Clear_strParams.pos.x, cmd.Clear_strParams.pos.y,
 						cmd.Clear_strParams.font.name, cmd.Clear_strParams.count);
@@ -219,10 +223,6 @@ void TDisplayTask::Code()
 				strel_tun();
 			break;
 
-			case dcPresetPreview:
-				eepr_read_imya(cmd.PresetPreviewParam.index);
-			break ;
-
 			case dcInd_foot:
 				ind_foot(cmd.Ind_footParam.num , cmd.Ind_footParam.val);
 			break;
@@ -276,7 +276,7 @@ void TDisplayTask::Tap_ind(uint8_t cur)
 	cmd.Tap_indParam.data = cur;
 	Command( &cmd );
 }
-void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs, uint8_t symbol)
+void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcSymbolOut;
@@ -287,17 +287,17 @@ void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, TFontName name, uint8_t curs,
 	Command(&cmd);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , const char* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , const char* string)
 {
 	StringOut(x, y, name, curs, (uint8_t*)string);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , const uint8_t* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , const uint8_t* string)
 {
 	StringOut(x, y, name, curs, (uint8_t*)string);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , uint8_t* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , uint8_t* string)
 {
 	TDisplayCmd cmd ;
 	cmd.cmd=dcStringOut;
@@ -320,25 +320,33 @@ void TDisplayTask::NumberOut(uint8_t x, uint8_t y , TFontName name , uint8_t cur
   Command( &cmd ) ;
 }*/
 
-void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource)
+void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
 	m_volIndicatorType = volIndicatorType;
 
-	if(volIndicatorType == VOL_INDICATOR_VOLUME) vol_fl = 1;
-	else vol_fl = 0;
+	m_volIndPar_ptr = indicatorParPtr;
 
-	DSP_gui_set_parameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
+	DSP_GuiSendParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
 
-	ind_poin = 500;
+	m_indRefreshCounter = 500;
 }
 
-void TDisplayTask::VolIndicator()
+void TDisplayTask::VolIndicatorTask()
 {
+	if(m_indRefreshCounter < 4000)
+	{
+		m_indRefreshCounter++;
+		return;
+	}
+
+	m_indRefreshCounter = 0;
+
 	switch(m_volIndicatorType)
 	{
 		case VOL_INDICATOR_OFF: return;
-		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Input"); break;
-		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, TDisplayTask::fntSystem, 0, (uint8_t*)"Output"); break;
+		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Input"); break;
+		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Output"); break;
+		case VOL_INDICATOR_VOLUME: break;
 	}
 
 	TDisplayCmd cmd;
@@ -346,21 +354,15 @@ void TDisplayTask::VolIndicator()
 	Command(&cmd);
 }
 
-//void TDisplayTask::Menu_init()
-//{
-//	TDisplayCmd cmd;
-//	cmd.cmd=dcMenu_init;
-//	Command(&cmd);
-//}
-
-void TDisplayTask::Prog_ind(uint8_t pro)
+void TDisplayTask::Prog_ind(uint8_t prog, bool filled)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcProg_ind;
-	cmd.Prog_indParam.pro = pro;
+	cmd.Prog_indParam.prog = prog;
+	cmd.Prog_indParam.filled = filled;
 	Command(&cmd);
 }
-void TDisplayTask::Clear_str(uint8_t x, uint8_t y, TFontName name, uint8_t count)
+void TDisplayTask::Clear_str(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcClear_str;
@@ -502,20 +504,6 @@ void TDisplayTask::Pot_Write()
 	cmd.cmd=dcPot_Write;
 	Command(&cmd);
 }
-void TDisplayTask::Main_scr()
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcMain_scr;
-	Command(&cmd);
-}
-
-void TDisplayTask::PresetPreview(uint8_t val)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcPresetPreview;
-	cmd.PresetPreviewParam.index = val ;
-	Command(&cmd);
-}
 
 void TDisplayTask::Contrast(uint8_t val)
 {
@@ -564,3 +552,47 @@ void TDisplayTask::Strel(uint8_t x, uint8_t y , uint32_t dir)
 	cmd.StrelParam.dir = dir;
 	Command(&cmd);
 }
+
+void TDisplayTask::DrawVolIndicator(uint8_t xPos, uint8_t indLength)
+{
+	uint8_t volIndPosition = 32;
+
+	if(m_volIndPar_ptr) volIndPosition = (*m_volIndPar_ptr >> 1) + 1;
+	else volIndPosition = 0;
+
+	uint8_t outLevel;
+
+	if(ind_out_l[1] < 8388000)
+		outLevel = /*vsqrt*/(ind_out_l[1]) * ((float)(indLength - 1) / (8384000.0f));
+	else
+		outLevel = indLength - 1;
+
+	ind_in_p[1] = ind_out_l[1] = 0;
+
+	Set_Column_Address(xPos);
+	Set_Page_Address(3);
+	GPIO_ResetBits(GPIOB, CS);
+
+	for(uint8_t i = 0; i < indLength; i++)
+	{
+		if(m_volIndicatorType == TVolIndicatorType::VOL_INDICATOR_VOLUME && i >= volIndPosition - 2 && i <= volIndPosition)
+		{
+				if(i == volIndPosition - 1) oled023_1_send_data(0x42);
+				else oled023_1_send_data(0x3c);
+		}
+		else
+		{
+			if((i == indLength - 1) || (i == 0))
+			{
+				oled023_1_send_data(0x7e); //3c
+			}
+			else
+			{
+				if(i < outLevel) oled023_1_send_data(0x3c);
+				else oled023_1_send_data(0x0);
+			}
+		}
+	}
+	GPIO_SetBits(GPIOB, CS);
+}
+

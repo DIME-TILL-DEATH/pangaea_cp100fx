@@ -240,10 +240,17 @@ typedef union
 	uint8_t rawData[512];
 }UModulesData;
 
+typedef union
+{
+	char string[64];
+	uint8_t size;
+}UCabName;
+
 typedef struct
 {
-	uint8_t data[12288];
-	char name[64];
+	uint8_t* data;
+//	char name[64];
+	UCabName name;
 }TCabinet;
 
 typedef struct
@@ -259,10 +266,6 @@ typedef struct
 
 	uint8_t pcOut;
 	uint8_t set;
-
-
-	//=============
-	//uint8_t number;
 }TPreset;
 
 typedef struct
@@ -276,11 +279,17 @@ typedef struct
 	char cab2Name[64];
 }TPresetBrief;
 
-
+extern uint8_t impulsePath[];
 }
 
 extern Preset::TPreset currentPreset;
-extern Preset::TCabinet __CCM_BSS__ cab1;
-extern Preset::TCabinet __CCM_BSS__ cab2;
+extern Preset::TCabinet cab1;
+extern Preset::TCabinet cab2;
+
+extern uint8_t ccmBuffer[];
+extern uint8_t __CCM_BSS__ preset_temp[];
+
+extern uint16_t delay_time;
+extern volatile uint8_t currentPresetNumber;
 
 #endif /* SRC_APPLICATION_PRESET_H_ */

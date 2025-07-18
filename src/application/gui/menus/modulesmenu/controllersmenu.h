@@ -15,6 +15,12 @@ public:
 	void encoderClockwise() override;
 	void encoderCounterClockwise() override;
 
+	void key1() override;
+	void key2() override;
+	void key3() override;
+	void key4() override;
+	void key5() override;
+
 private:
 	enum ControllerMenuParams
 	{

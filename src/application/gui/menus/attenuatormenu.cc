@@ -1,9 +1,10 @@
 #include "attenuatormenu.h"
 
+#include "system.h"
 #include "eepr.h"
-#include "../gui_task.h"
+#include "gui_task.h"
 
-#include "paramlistmenu/stringlistparam.h"
+#include "stringlistparam.h"
 
 AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	: ParamListMenu(parentMenu, MENU_ATTENUATOR)
@@ -11,7 +12,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCount = 1;
 	BaseParam* params[paramCount];
 
-	params[0] = new StringListParam("Attenuator", &sys_para[ATTENUATOR],
+	params[0] = new StringListParam("Attenuator", &sys_para[System::ATTENUATOR],
 			 {" +4 dB", " +3 dB", " +2 dB", " +1 dB", "  0 dB", " -1 dB", " -2 dB", " -3 dB",
 			" -4 dB", " -5 dB", " -6 dB", " -7 dB", " -8 dB", " -9 dB", "-10 dB", "-11 dB", "-12 dB",
 			"-13 dB", "-14 dB", "-15 dB", "-16 dB", "-17 dB", "-18 dB", "-19 dB", "-20 dB", "-21 dB",
@@ -25,7 +26,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	setVolumeIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
 
 	setParams(params, paramCount);
-	setIcon(false, 0);
+	setIcon(false, ICON_NONE);
 
 	DisplayTask->Pot_Write();
 }

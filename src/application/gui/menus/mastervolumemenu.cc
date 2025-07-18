@@ -1,7 +1,9 @@
 #include "mastervolumemenu.h"
 
 #include "eepr.h"
-#include "../gui_task.h"
+#include "gui_task.h"
+
+#include "system.h"
 
 MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 	: ParamListMenu(parentMenu, MENU_MASTER_VOLUME)
@@ -9,14 +11,14 @@ MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCount = 2;
 	BaseParam* params[paramCount];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Master Volume", &sys_para[MASTER_VOLUME]);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Master Volume", &sys_para[System::MASTER_VOLUME]);
 	params[0]->setDspAddress(DSP_ADDRESS_MASTER, PARAM_EQUAL_POS);
 	params[0]->setDisplayPosition(85);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Phones Volume", &sys_para[PHONES_VOLUME]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Phones Volume", &sys_para[System::PHONES_VOLUME]);
 	params[1]->setDisplayPosition(85);
 
 	setParams(params, paramCount);
-	setIcon(false, 0);
+	setIcon(false, ICON_NONE);
 }
 
 void MasterVolumeMenu::encoderClockwise()

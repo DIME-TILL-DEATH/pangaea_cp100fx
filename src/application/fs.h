@@ -9,34 +9,30 @@ class TFSTask: public TTask
 public:
 	TFSTask();
 	virtual ~TFSTask();
-	inline void SendCommand(TFsBrowser::browse_command_t browse_command)
+
+	void SendCommand(TFsBrowser::browse_command_t browse_command)
 	{
 		TFsBrowser::browse_command_t tmp = browse_command;
 		queue->SendToBack((void*)&tmp, portMAX_DELAY);
 	}
 
-	inline void SendCommandFromISR(TFsBrowser::browse_command_t browse_command, BaseType_t *HigherPriorityTaskWoken)
+	void SendCommandFromISR(TFsBrowser::browse_command_t browse_command, BaseType_t *HigherPriorityTaskWoken)
 	{
 		TFsBrowser::browse_command_t tmp = browse_command;
 		queue->SendToBackFromISR((void*)&tmp, HigherPriorityTaskWoken);
 	}
 
-	fs_object_t& Object()
-	{
-		return object;
-	}
-	;
+	fs_object_t& Object() { return object; }
 
 private:
 	void Code();
 	TQueue *queue;
 	fs_object_t object;
 	fs_object_list_t object_list;
+
+	bool impulseDirectoryExist;
 };
 
-//extern uint8_t cab1.data[];
-//extern uint8_t cab2.data[];
-extern uint8_t print_flag;
 extern TFSTask *FSTask;
 
 #endif /*__FS_H__*/

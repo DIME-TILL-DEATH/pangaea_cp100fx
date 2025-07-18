@@ -3,7 +3,7 @@
 
 #include "appdefs.h"
 
-#include "paramlistmenu/stringoutparam.h"
+#include "stringoutparam.h"
 
 enum gui_menu_type
 {
@@ -71,6 +71,7 @@ public:
 		DeleteChild
 	};
 
+	AbstractMenu() {};
 	virtual ~AbstractMenu() {};
 
 	virtual void show(TShowMode swhoMode = FirstShow) {};
@@ -105,12 +106,8 @@ protected:
 
 	gui_menu_type m_menuType{MENU_ABSTRACT};
 
-	constexpr static uint8_t ascii_low[] = " abcdefghijklmnopqrstuvwxyz0123456789!@#$%";
-	constexpr static uint8_t ascii_high[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{}()-+_=<>?*.,/&";
-
 	StringOutParam* m_runningString{nullptr};
 //	uint8_t m_runningStringsCount{0};
-
 };
 
 extern AbstractMenu* currentMenu;

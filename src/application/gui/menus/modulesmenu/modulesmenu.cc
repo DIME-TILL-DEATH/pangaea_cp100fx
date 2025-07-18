@@ -12,11 +12,15 @@
 #include "cc.h"
 #include "BF706_send.h"
 
+#include "sd_test.h"
+#include "fs_browser.h"
+
 #include "modules.h"
 #include "preset.h"
 
 #include "paramlistmenu.h"
 #include "controllersmenu.h"
+#include "cabbrowsermenu.h"
 
 #include "stringlistparam.h"
 #include "stringoutparam.h"
@@ -74,6 +78,8 @@ void ModulesMenu::show(TShowMode showMode)
 
 void ModulesMenu::refresh()
 {
+	arrangeModules();
+
 	DisplayTask->Clear();
 	for(uint8_t i=0; i<modulesCount; i++)
 	{
@@ -105,7 +111,7 @@ void ModulesMenu::encoderPressed()
 	presetEdited = true;
 
 	*modules[m_numMenu].enablePtr = !((bool)*modules[m_numMenu].enablePtr);
-	DSP_gui_set_parameter(DSP_ADDRESS_MODULES_ENABLE, modules[m_numMenu].dspEnablePosition, *modules[m_numMenu].enablePtr);
+	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, modules[m_numMenu].dspEnablePosition, *modules[m_numMenu].enablePtr);
 
 	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction(this);
 
@@ -150,14 +156,11 @@ void ModulesMenu::keyUp()
 
 void ModulesMenu::keyDown()
 {
-	if(preselectedPresetNumber == currentPresetNumber)
+	if(*modules[m_numMenu].enablePtr)
 	{
-		if(*modules[m_numMenu].enablePtr)
-		{
-			presetEdited = true;
-			shownChildMenu = modules[m_numMenu].createMenu(this);
-			shownChildMenu->show();
-		}
+		presetEdited = true;
+		shownChildMenu = modules[m_numMenu].createMenu(this);
+		shownChildMenu->show();
 	}
 
 	tim5_start(0);
@@ -165,7 +168,11 @@ void ModulesMenu::keyDown()
 
 void ModulesMenu::key1()
 {
-	shownChildMenu = &erasePresetDialog;
+	currentMenu = this;
+
+	if(shownChildMenu) delete shownChildMenu;
+
+	shownChildMenu = new Dialog(this, Dialog::ErasePreset);
 	shownChildMenu->show();
 
 	tim5_start(0);
@@ -173,7 +180,10 @@ void ModulesMenu::key1()
 
 void ModulesMenu::key2()
 {
+	currentMenu = this;
+
 	// было своё copyMenu
+	if(shownChildMenu) delete shownChildMenu;
 
 	const uint8_t paramCount = 3;
 	BaseParam* params[paramCount];
@@ -188,7 +198,7 @@ void ModulesMenu::key2()
 	if(menu)
 	{
 		menu->setParams(params, paramCount);
-		menu->setIcon(false, 0);
+		menu->setIcon(false, ICON_NONE);
 		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
 	}
 
@@ -201,22 +211,31 @@ void ModulesMenu::key2()
 void ModulesMenu::key3()
 {
 	// было своё copyMenu
+	if(shownChildMenu) delete shownChildMenu;
 
+	presetEdited = true;
 	shownChildMenu = new ControllersMenu(this);
 	shownChildMenu->show();
 }
 
 void ModulesMenu::key4()
 {
-	// было своё copyMenu
+	currentMenu = this;
 
-	shownChildMenu = &nameEditMenu;
+	// было своё copyMenu
+	if(shownChildMenu) delete shownChildMenu;
+
+	shownChildMenu = new NameEditMenu(this);
 	shownChildMenu->show();
 }
 
 void ModulesMenu::key5()
 {
-	shownChildMenu = &copyMenu;
+	currentMenu = this;
+
+	if(shownChildMenu) delete shownChildMenu;
+
+	shownChildMenu = new PresetActionsMenu(this, PresetActionsMenu::Copy);
 	shownChildMenu->show();
 }
 
@@ -227,31 +246,19 @@ void ModulesMenu::iconRefresh(uint8_t num)
 
 void ModulesMenu::enableCab(ModulesMenu* parent)
 {
-	if(cab1.name[0] == 0)
+	if(cab1.name.size == 0)
 	{
-		kgp_sdk_libc::memset(preset_temp, 0, 24576);
-		kgp_sdk_libc::memset(name_buf_temp, 0, 64);
-		cab_num = 0;
-		extern uint8_t sd_init_fl;
-
-		if(sd_init_fl == 1)
+		if(TSD_TESTTask::sdInitState == 1)
 		{
-		 // current_menu = MENU_CABBROWSER;
-		  DisplayTask->Clear();
-		  extern volatile uint8_t imp_dir_fl;
-		  if(imp_dir_fl)
+		  if(TFsBrowser::impulseDirExist)
 		  {
-			  vol_ind_level_pos = currentPreset.modules.rawData[IR_VOLUME1];
-			  DSP_gui_set_parameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
-			  DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_CAB1);
-
-			  FSTask->SendCommand( TFsBrowser::bcCurrent );
-			  FSTask->SendCommand( TFsBrowser::bcLoadImp );
+			  parent->showChild(new CabBrowserMenu(parent, 1));
 		  }
 		  else
 		  {
-			  DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, "There is no directory");
-			  DisplayTask->StringOut(42, 3, TDisplayTask::fntSystem, 0, "IMPULSE");
+			  DisplayTask->Clear();
+			  DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "There is no directory");
+			  DisplayTask->StringOut(42, 3, Font::fntSystem, 0, "IMPULSE");
 			  CSTask->CS_del(1000);
 			  currentPreset.modules.rawData[cab] = 0;
 
@@ -261,8 +268,8 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 		else
 		{
 			DisplayTask->Clear();
-			if(!sd_init_fl)DisplayTask->StringOut(6, 1, TDisplayTask::fntSystem, 0, "MicroSD is not ready");
-			else DisplayTask->StringOut(0, 1, TDisplayTask::fntSystem, 0, "MicroSD is loading..");
+			if(!TSD_TESTTask::sdInitState) DisplayTask->StringOut(6, 1, Font::fntSystem, 0, "MicroSD is not ready");
+			else DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "MicroSD is loading..");
 			CSTask->CS_del(1000);
 
 			currentPreset.modules.rawData[cab] = 0;
@@ -270,4 +277,31 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 			parent->refresh();
 		}
 	}
+}
+
+void ModulesMenu::arrangeModules()
+{
+	uint8_t i = 0;
+
+	modules[i++] = RF;
+	modules[i++] = GT;
+	modules[i++] = CM;
+	modules[i++] = PR;
+	modules[i++] = PA;
+
+	if(currentPreset.modules.paramData.eq_pre_post) modules[i++] = EQ;
+	if(currentPreset.modules.paramData.phaser_pre_post) modules[i++] = PH;
+	if(currentPreset.modules.paramData.flanger_pre_post) modules[i++] = FL;
+
+	modules[i++] = IR;
+
+	if(!currentPreset.modules.paramData.eq_pre_post) modules[i++] = EQ;
+	if(!currentPreset.modules.paramData.phaser_pre_post) modules[i++] = PH;
+	if(!currentPreset.modules.paramData.flanger_pre_post) modules[i++] = FL;
+
+	modules[i++] = CH;
+	modules[i++] = DL;
+	modules[i++] = ER;
+	modules[i++] = RV;
+	modules[i++] = TR;
 }

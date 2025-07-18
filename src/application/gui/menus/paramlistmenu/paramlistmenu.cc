@@ -3,22 +3,22 @@
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
-#include "gui/elements/allFonts.h"
-#include "gui/elements/icon_bit.h"
+#include "allFonts.h"
+#include "icon_bit.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
 
-#include "paramlistmenu/stringoutparam.h"
+#include "stringoutparam.h"
 
-extern volatile int8_t temp;
-extern const uint16_t bpm_time[];
-extern uint16_t trem_time;
+#include "system.h"
 
 ParamListMenu::ParamListMenu(AbstractMenu* parent, gui_menu_type menuType)
 {
 	topLevelMenu = parent;
 	m_menuType = menuType;
+
+	m_icon = iconFormMenuType(m_menuType);
 }
 
 ParamListMenu::~ParamListMenu()
@@ -46,15 +46,18 @@ void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingPara
 	m_pagesCount = ceil((float)m_paramsCount/(float)paramsOnPage);
 }
 
-void ParamListMenu::setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource)
+void ParamListMenu::setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType,
+		dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
 	m_volIndicatorType = volIndicatorType;
 	m_indicatorSource = indicatorSource;
+	m_indicatorParam_ptr = indicatorParPtr;
 }
 
-void ParamListMenu::setIcon(bool drawIcon, uint8_t iconNumber)
+void ParamListMenu::setIcon(bool drawIcon, icon_t icon)
 {
-	ParamListMenu::m_drawIcon = drawIcon;
+	m_drawIcon = drawIcon;
+	m_icon = icon;
 }
 
 void ParamListMenu::show(TShowMode showMode)
@@ -91,7 +94,7 @@ void ParamListMenu::show(TShowMode showMode)
 	}
 
 	printPage();
-	DisplayTask->SetVolIndicator(m_volIndicatorType, m_indicatorSource);
+	DisplayTask->SetVolIndicator(m_volIndicatorType, m_indicatorSource, m_indicatorParam_ptr);
 }
 
 void ParamListMenu::refresh()
@@ -105,7 +108,7 @@ void ParamListMenu::task()
 
 	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
 								blinkFlag_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 }
@@ -126,13 +129,13 @@ void ParamListMenu::encoderPressed()
 		if(!m_encoderKnobSelected)
 		{
 			m_encoderKnobSelected = true;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
 									2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 		else
 		{
 			m_encoderKnobSelected = false;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, TDisplayTask::fntSystem,
+			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
 									0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 	}
@@ -202,88 +205,8 @@ void ParamListMenu::encoderCounterClockwise()
 
 void ParamListMenu::keyDown()
 {
-//	if(m_canTap)
-//	{
-//		// Tremolo tap
-//		if(tap_temp_global() && !sys_para[tap_typ])
-//		{
-//			trem_time = tap_global / 48.0f / tap_tim_v[prog_data[t_tap_t]];
-//			if(trem_time < 2731)
-//			{
-//				if(!sys_para[tim_type])
-//				{
-//					gui_send(10,5);
-//				}
-//				else
-//				{
-//					if(trem_time < 2728 && trem_time > 249)
-//					{
-//						while(trem_time < bpm_time[temp++]);
-//						trem_time = bpm_time[temp];
-//						gui_send(10,5);
-//					}
-//				}
-//			}
-//
-//		}
-//	}
-
-	// moog tap
-//	if(prog_data[mog_gen_t])
-//	{
-//		moog_time = tap_global / 48.0f;
-//		gui_send(31,13);
-//	}
-
-	// delay tap
-//	  if(tap_temp_global() && !sys_para[tap_typ])
-//	  {
-//		  delay_time = tap_global / 3.0f / tap_tim_v[prog_data[d_tap_t]];
-//		  if(delay_time < 2731)
-//		  {
-//			  uint8_t temp = 0;
-//			  if(!sys_para[tim_type])
-//			  {
-//				  if(par_num < 4)DisplayTask->DelayTimeInd(53,1,delay_time);
-//    			  gui_send(3,1);
-//			  }
-//			  else {
-//				  if(delay_time < 2728 && delay_time > 249)
-//				  {
-//					  while(delay_time < bpm_time[temp++]);
-//					  delay_time = bpm_time[temp];
-//					  prog_data[bpm_del] = 60000 / delay_time;
-//					  DisplayTask->ParamIndicNum(53,1,prog_data[bpm_del]);
-//					  DisplayTask->StringOut(90,1,TDisplayTask::fntSystem , 0 , (uint8_t*)"BPM");
-//	      			  gui_send(3,1);
-//				  }
-//			  }
-//		  }
-
-//	  if(tap_temp_global() && !sys_para[tap_typ])
-//	  {
-//		  delay_time = tap_global / 3.0f / tap_tim_v[prog_data[d_tap_t]];
-//  		  if(delay_time < 2731)
-//  		  {
-//  			  uint8_t temp = 0;
-//  			  if(!sys_para[tim_type])
-//  			  {
-//  				  if(par_num < 4)DisplayTask->DelayTimeInd(53,0,delay_time);
-//      			  gui_send(3,1);
-//  			  }
-//  			  else {
-//  				  if(delay_time < 2728 && delay_time > 249)
-//  				  {
-//  					  while(delay_time < bpm_time[temp++]);
-//  					  delay_time = bpm_time[temp];
-//  					  prog_data[bpm_del] = 60000 / delay_time;
-//  					  DisplayTask->ParamIndicNum(53,0,prog_data[bpm_del]);
-//  					  DisplayTask->StringOut(90,0,TDisplayTask::fntSystem , 0 , (uint8_t*)"BPM");
-//  	      			  gui_send(3,1);
-//  				  }
-//  			  }
-//  		  }
-//	  }
+	System::TapTempo(m_tapDst);
+	refresh();
 }
 
 void ParamListMenu::printPage(bool forceDrawIcon)
@@ -302,7 +225,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 		if(m_pagesCount == 1) drawStrelka = STRELKA_NONE;
 
 		DisplayTask->Clear();
-		DisplayTask->Icon_Strel(iconFormMenuType(m_menuType), drawStrelka);
+		DisplayTask->Icon_Strel(m_icon, drawStrelka);
 
 	}
 	m_currentPageNumber = newPageNumber;
@@ -318,7 +241,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 
 		m_paramsList[displayParamNum]->printParam(i);
-		DisplayTask->StringOut(leftPad, i, TDisplayTask::fntSystem , 2 * highlight, (uint8_t*)(m_paramsList[displayParamNum]->name()));
+		DisplayTask->StringOut(leftPad, i, Font::fntSystem , 2 * highlight, (uint8_t*)(m_paramsList[displayParamNum]->name()));
 	}
 }
 
