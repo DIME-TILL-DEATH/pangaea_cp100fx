@@ -42,6 +42,8 @@ private:
 	Dialog saveDialog{this, Dialog::SaveChanges};
 
 	void iconRefresh(uint8_t num);
+
+	void arrangeModules();
 };
 
 #endif /* MODULESMENU_H_ */

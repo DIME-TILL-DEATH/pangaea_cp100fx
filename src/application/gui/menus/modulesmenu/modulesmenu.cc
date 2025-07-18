@@ -78,6 +78,8 @@ void ModulesMenu::show(TShowMode showMode)
 
 void ModulesMenu::refresh()
 {
+	arrangeModules();
+
 	DisplayTask->Clear();
 	for(uint8_t i=0; i<modulesCount; i++)
 	{
@@ -275,4 +277,31 @@ void ModulesMenu::enableCab(ModulesMenu* parent)
 			parent->refresh();
 		}
 	}
+}
+
+void ModulesMenu::arrangeModules()
+{
+	uint8_t i = 0;
+
+	modules[i++] = RF;
+	modules[i++] = GT;
+	modules[i++] = CM;
+	modules[i++] = PR;
+	modules[i++] = PA;
+
+	if(currentPreset.modules.paramData.eq_pre_post) modules[i++] = EQ;
+	if(currentPreset.modules.paramData.phaser_pre_post) modules[i++] = PH;
+	if(currentPreset.modules.paramData.flanger_pre_post) modules[i++] = FL;
+
+	modules[i++] = IR;
+
+	if(!currentPreset.modules.paramData.eq_pre_post) modules[i++] = EQ;
+	if(!currentPreset.modules.paramData.phaser_pre_post) modules[i++] = PH;
+	if(!currentPreset.modules.paramData.flanger_pre_post) modules[i++] = FL;
+
+	modules[i++] = CH;
+	modules[i++] = DL;
+	modules[i++] = ER;
+	modules[i++] = RV;
+	modules[i++] = TR;
 }

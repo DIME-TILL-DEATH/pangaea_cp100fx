@@ -302,7 +302,7 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &currentPreset.modules.rawData[FLANGER_DELAY]);
 	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &currentPreset.modules.rawData[FLANGER_FEEDBACK]);
 	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &currentPreset.modules.rawData[FLANGER_HPF]);
-	params[7] = new StringListParam("Pos.", &currentPreset.modules.rawData[FLANGER_LFO], {"Post", "Pre "}, 4);
+	params[7] = new StringListParam("Pos.", &currentPreset.modules.rawData[FLANGER_PREPOST], {"Post", "Pre "}, 4);
 
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_FLANGER, i);
 
