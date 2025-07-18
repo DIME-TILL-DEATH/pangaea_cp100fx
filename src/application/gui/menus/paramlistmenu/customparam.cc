@@ -113,3 +113,9 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 		}
 	}
 }
+
+void CustomParam::setToDsp()
+{
+	if(setToDspCallback) return setToDspCallback(m_valuePtr);
+	else return BaseParam::setToDsp();
+}

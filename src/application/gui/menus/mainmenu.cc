@@ -110,6 +110,8 @@ void MainMenu::keyDown()
 
 void MainMenu::key1()
 {
+	currentMenu = this;
+
 	if(shownChildMenu) delete shownChildMenu;
 
 	shownChildMenu = new AttenuatorMenu(this);
@@ -120,6 +122,8 @@ void MainMenu::key1()
 
 void MainMenu::key2()
 {
+	currentMenu = this;
+
 	if(shownChildMenu) delete shownChildMenu;
 
 	shownChildMenu = new MasterVolumeMenu(this);
@@ -130,8 +134,9 @@ void MainMenu::key2()
 
 void MainMenu::key3()
 {
+	currentMenu = this;
+
 	if(shownChildMenu) delete shownChildMenu;
-	shownChildMenu = nullptr;
 
 	shownChildMenu = new MasterEqMenu(this);
 	shownChildMenu->show();
@@ -141,6 +146,8 @@ void MainMenu::key3()
 
 void MainMenu::key4()
 {
+	currentMenu = this;
+
 	if(shownChildMenu) delete shownChildMenu;
 
 	shownChildMenu = SystemMenu::create(this);
@@ -151,8 +158,9 @@ void MainMenu::key4()
 
 void MainMenu::key5()
 {
+	currentMenu = this;
+
 	if(shownChildMenu) delete shownChildMenu;
-	shownChildMenu = nullptr;
 
 	shownChildMenu = new TunerMenu(this);
 	shownChildMenu->show();

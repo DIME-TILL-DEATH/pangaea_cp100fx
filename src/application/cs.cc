@@ -70,16 +70,16 @@ void TCSTask::Code()
 
 	CSTask->DisplayAccess(true);
 
-	gui_send(14, 0); // global cab on off
+	DSP_GuiSendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	DSP_GuiSendParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
 	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
 	DSP_GuiSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0); // left cab bypass
 
-	if(!sys_para[System::PHONES_VOLUME])
-		sys_para[System::PHONES_VOLUME] = 127;
-	DisplayTask->Pot_Write();
+	if(!sys_para[System::PHONES_VOLUME]) sys_para[System::PHONES_VOLUME] = 127;
+
+	DisplayTask->Pot_Write(); // phones, attenuator
 
 	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
 
@@ -93,14 +93,17 @@ void TCSTask::Code()
 		mstEqMidFreq |= sys_para[System::MASTER_EQ_FREQ_HI];
 	}
 
-	for(uint8_t i = 0; i < 4; i++)
-		gui_send(25, i);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_LOW] + 24);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_GAIN_POS, sys_para[System::MASTER_EQ_MID] + 24);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_HIGH_GAIN_POS, sys_para[System::MASTER_EQ_HIGH] + 24);
 
-	gui_send(18, 14 | (sys_para[120] << 8)); // master eq
+	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
+
 	tun_del_val = (127 - sys_para[System::TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
 	Delay(500);
 	prog_ch();
-//	eepr_read_imya(preselectedPresetNumber);
 
 	for(uint8_t i = 0; i < 3; i++)
 	{

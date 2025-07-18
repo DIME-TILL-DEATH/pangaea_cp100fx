@@ -23,6 +23,9 @@ public:
 	void key3() override;
 	void key4() override;
 	void key5() override;
+private:
+	static void printMidFreqCallback(void* parameter);
+	static void setMidFreqCallback(void* parameter);
 };
 
 #endif /* SRC_APPLICATION_GUI_MENUS_MASTEREQMENU_H_ */

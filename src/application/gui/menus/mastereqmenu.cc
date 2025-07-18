@@ -12,6 +12,7 @@
 #include "system.h"
 
 #include "realparam.h"
+#include "customparam.h"
 
 extern uint8_t k_master_eq;
 
@@ -42,16 +43,12 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	realParam->setDisplayPosition(30);
 	params[1] = realParam;
 
-	realParam = new RealParam("Mid Freq", &mstEqMidFreq);
-	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS);
-	realParam->setByteSize(2);
-	realParam->setBounds(20, 4000);
-	realParam->setDisplayBounds(20, 4000);
-	realParam->setUnits("Hz", 2);
-	realParam->setDisplayPrecision(0);
-	realParam->setIndicatorType(BaseParam::IndNone);
-	realParam->setDisplayPosition(60);
-	params[2] = realParam;
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Mid Freq", &mstEqMidFreq);
+	customParam->setBounds(20, 4000);
+	customParam->setByteSize(2);
+	customParam->printCallback = printMidFreqCallback;
+	customParam->setToDspCallback = setMidFreqCallback;
+	params[2] = customParam;
 
 	realParam = new RealParam("High", &sys_para[System::MASTER_EQ_HIGH]);
 	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_HIGH_GAIN_POS);
@@ -218,4 +215,26 @@ void MasterEqMenu::key5()
 {
 	write_sys();
 	topLevelMenu->key5();
+}
+
+void MasterEqMenu::printMidFreqCallback(void* parameter)
+{
+	char string[16];
+	kgp_sdk_libc::memset(string, 0, 16);
+
+	uint16_t value = *(uint16_t*)parameter;
+
+	ksprintf(string, "%d %s", value, "Hz");
+
+	DisplayTask->Clear_str(60, 2, Font::fntSystem, 8);
+	DisplayTask->StringOut(60, 2, Font::fntSystem , 0, (uint8_t*)string);
+}
+
+void MasterEqMenu::setMidFreqCallback(void* parameter)
+{
+	sys_para[System::MASTER_EQ_FREQ_LO] = mstEqMidFreq >> 8;
+	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xFF;
+
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
 }

@@ -166,6 +166,8 @@ void ModulesMenu::keyDown()
 
 void ModulesMenu::key1()
 {
+	currentMenu = this;
+
 	if(shownChildMenu) delete shownChildMenu;
 
 	shownChildMenu = new Dialog(this, Dialog::ErasePreset);
@@ -176,6 +178,8 @@ void ModulesMenu::key1()
 
 void ModulesMenu::key2()
 {
+	currentMenu = this;
+
 	// было своё copyMenu
 	if(shownChildMenu) delete shownChildMenu;
 
@@ -214,6 +218,8 @@ void ModulesMenu::key3()
 
 void ModulesMenu::key4()
 {
+	currentMenu = this;
+
 	// было своё copyMenu
 	if(shownChildMenu) delete shownChildMenu;
 
@@ -223,6 +229,8 @@ void ModulesMenu::key4()
 
 void ModulesMenu::key5()
 {
+	currentMenu = this;
+
 	if(shownChildMenu) delete shownChildMenu;
 
 	shownChildMenu = new PresetActionsMenu(this, PresetActionsMenu::Copy);

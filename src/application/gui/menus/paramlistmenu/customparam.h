@@ -26,6 +26,7 @@ public:
 	void increaseParam() override;
 	void decreaseParam() override;
 	void printParam(uint8_t yDisplayPosition) override;
+	void setToDsp() override;
 
 	void setStrings(std::initializer_list<const char*> stringList, uint8_t maxStringLength);
 
@@ -37,6 +38,7 @@ public:
 	void (*keyDownCallback)(void* parameter){nullptr};
 	const char* (*nameCallback)(void* parameter){nullptr};
 	void (*printCallback)(void* parameter){nullptr};
+	void (*setToDspCallback)(void* parameter){nullptr};
 
 private:
 	TDisplayType m_displayType;

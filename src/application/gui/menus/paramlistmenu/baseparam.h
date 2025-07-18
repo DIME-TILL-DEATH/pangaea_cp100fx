@@ -47,6 +47,8 @@ public:
 
 	virtual void printParam(uint8_t yPos);
 
+	virtual void setToDsp();
+
 	void setDspAddress(dsp_module_address_t moduleAddress, uint8_t bytePosition);
 	dsp_module_address_t moduleAddress() const {return m_moduleAddress;};
 	uint8_t bytePosition() const {return m_bytePosition;};
@@ -72,8 +74,6 @@ public:
 	uint8_t byteSize() const {return m_byteSize;};
 
 	void setIndicatorType(TIndicatorType indicatorType);
-
-	void setToDsp();
 
 	static int16_t encSpeedInc(int16_t data, int16_t max, uint8_t stepSize = 1);
 	static int16_t encSpeedDec(int16_t data, int16_t min, uint8_t stepSize = 1);

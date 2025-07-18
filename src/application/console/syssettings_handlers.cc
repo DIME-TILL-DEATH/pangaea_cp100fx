@@ -93,7 +93,7 @@ static void meq_mid_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_
 	sys_para[System::MASTER_EQ_FREQ_LO] = mstEqMidFreq >> 8;
 	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xFF;
 
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
+	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
 	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
 	write_sys();
 }
