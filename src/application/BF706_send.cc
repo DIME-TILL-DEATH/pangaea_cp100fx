@@ -54,7 +54,7 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 {
 
 	//presetNum == 0; //current
-
+	uint32_t send_buf;
 	uint32_t a;
 	extern bool cab_data_ready;
 	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY)
@@ -172,6 +172,7 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 
 void send_cab_data1(uint8_t val, uint8_t num)
 {
+	uint32_t send_buf;
 	extern bool cab_data_ready;
 	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY)
 	{
@@ -332,6 +333,7 @@ void DSP_SendSecondaryCabData(uint8_t* data, uint8_t presetNum)
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 	SPI_I2S_SendData(SPI2, DSP_ADDRESS_CAB_DATA_SECONDARY);
 
+	uint32_t send_buf;
 	for(int i = 0; i < 4096; i++)
 	{
 		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
@@ -421,7 +423,7 @@ void DSP_EraseSecondaryCab(uint8_t presetNum)
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 	SPI_I2S_SendData(SPI2, DSP_ADDRESS_CAB_DATA_SECONDARY);
 
-	uint32_t sendBuf = 0x7fffff00;
+	uint32_t send_buf = 0x7fffff00;
 	for(int i = 0; i < 4096; i++)
 	{
 		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
@@ -433,7 +435,7 @@ void DSP_EraseSecondaryCab(uint8_t presetNum)
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, send_buf);
 
-		sendBuf = 0;
+		send_buf = 0;
 	}
 
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));

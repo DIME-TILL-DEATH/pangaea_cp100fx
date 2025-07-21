@@ -22,7 +22,6 @@ void TunerMenu::show(TShowMode showMode)
 	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 	tun_base_old = 0.0f;
 	tun_ini();
-	tuner_use = 1;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
 }
@@ -52,25 +51,30 @@ void TunerMenu::keyUp()
 void TunerMenu::key1()
 {
 	endTunerTask();
-	topLevelMenu->key1();
+//	topLevelMenu->key1();
+	topLevelMenu->returnFromChildMenu();
 }
 
 void TunerMenu::key2()
 {
 	endTunerTask();
-	topLevelMenu->key2();
+//	topLevelMenu->key2();
+
+	topLevelMenu->returnFromChildMenu();
 }
 
 void TunerMenu::key3()
 {
 	endTunerTask();
-	topLevelMenu->key3();
+//	topLevelMenu->key3();
+	topLevelMenu->returnFromChildMenu();
 }
 
 void TunerMenu::key4()
 {
 	endTunerTask();
-	topLevelMenu->key4();
+//	topLevelMenu->key4();
+	topLevelMenu->returnFromChildMenu();
 }
 
 void TunerMenu::key5()
@@ -82,7 +86,6 @@ void TunerMenu::key5()
 
 void TunerMenu::endTunerTask()
 {
-	tuner_use = 0;
 	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 	DisplayTask->Clear();
 	CSTask->Give();

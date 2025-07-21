@@ -40,6 +40,8 @@ void StringOutParam::printParam(uint8_t yDisplayPosition)
 
 void StringOutParam::task()
 {
+	if(!m_stringPtr) return;
+
 	if(m_timeCounter++ >= m_timeThreshold)
 	{
 		uint8_t strLength = m_stringPtr[0];

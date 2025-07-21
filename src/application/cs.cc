@@ -25,9 +25,9 @@ void oled023_1_disp_init(void);
 void led_disp_write(void);
 extern uint8_t led_buf[];
 
-AbstractMenu *currentMenu;
-MainMenu *mainMenu;
-UsbMenu *usbMenu;
+AbstractMenu *currentMenu = nullptr;
+MainMenu *mainMenu = nullptr;
+UsbMenu *usbMenu = nullptr;
 
 TCSTask::TCSTask() :
 		TTask()
@@ -179,7 +179,7 @@ extern "C" void DMA1_Stream2_IRQHandler()
 //-------------------------------------------------------
 	float in = ccl * 0.000000119f;
 //--------------------Tuner------------------------------
-	if(tuner_use)
+	if(currentMenu->menuType() == MENU_TUNER)
 	{
 		SpectrumBuffsUpdate(COMPR_Out(in));
 		if(tun_del > tun_del_val)

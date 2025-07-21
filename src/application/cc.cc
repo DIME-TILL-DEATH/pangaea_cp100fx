@@ -319,7 +319,7 @@ TCCTask::TCCTask() :
 		TTask()
 {
 }
-extern uint8_t tuner_use;
+
 void TCCTask::Code()
 {
 	sem = new TSemaphore(TSemaphore::fstCounting, 8, 0);
@@ -327,7 +327,7 @@ void TCCTask::Code()
 	while(1)
 	{
 		sem->Take(portMAX_DELAY);
-		if(mid_fl && !tuner_use && pc_mute_fl)
+		if(mid_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
@@ -338,7 +338,7 @@ void TCCTask::Code()
 			mid_fl = 0;
 		}
 
-		if(ext_fl && !tuner_use && pc_mute_fl)
+		if(ext_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{

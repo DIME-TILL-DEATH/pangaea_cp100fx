@@ -53,7 +53,6 @@ enum dsp_indicator_source_t
 	DSP_INDICATOR_IN
 };
 
-extern uint32_t send_buf;
 extern uint8_t spi_stat;
 extern uint8_t __CCM_BSS__ preset_temp[];
 

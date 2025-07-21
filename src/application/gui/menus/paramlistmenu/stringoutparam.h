@@ -23,7 +23,7 @@ public:
 	void task();
 
 private:
-	const char* m_stringPtr;
+	const char* m_stringPtr = nullptr;
 
 	bool m_running{false};
 
