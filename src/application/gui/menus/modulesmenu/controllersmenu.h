@@ -21,6 +21,8 @@ public:
 	void key4() override;
 	void key5() override;
 
+	void showInputMidiCC(uint8_t midiCC);
+
 private:
 	enum ControllerMenuParams
 	{

@@ -68,6 +68,12 @@ void ControllersMenu::show(TShowMode swhoMode)
 	DisplayTask->Strel(58, 3, 0);
 }
 
+void ControllersMenu::showInputMidiCC(uint8_t midiCC)
+{
+	DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)"midi in CC#->");
+	DisplayTask->ParamIndicNum(100, 3, midiCC);
+}
+
 void ControllersMenu::task()
 {
 	if(!m_encoderKnobSelected)

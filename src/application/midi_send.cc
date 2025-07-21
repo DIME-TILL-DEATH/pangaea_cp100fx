@@ -8,6 +8,9 @@
 #include "BF706_send.h"
 #include "allFonts.h"
 
+#include "tunerextmenu.h"
+#include "controllersmenu.h"
+
 #include "system.h"
 
 #include "preset.h"
@@ -122,13 +125,18 @@ void TMidiSendTask::Code()
 								else
 								{
 									CCTask->Give();
-									//  Через menu->refresh()
-//									if((current_menu_type==MENU_CONTROLLERS&&(par_num<3))||(current_menu_type==MENU_TUNER_EXT))
-//									{
-//										uint8_t midi_in_cc[] = "midi in CC#->";
-//										DisplayTask->StringOut(20, 3, Font::fntSystem, 0, (uint8_t*)midi_in_cc);
-//										DisplayTask->ParamIndicNum(100, 3, midi_b[1]);
-//									}
+
+									if(currentMenu->menuType() == MENU_TUNER_EXT)
+									{
+										TunerExtMenu* tunerExtMenu = static_cast<TunerExtMenu*>(currentMenu);
+										tunerExtMenu->showInputMidiCC(midi_b[1]);
+									}
+
+									if(currentMenu->menuType() == MENU_CONTROLLERS)
+									{
+										ControllersMenu* controllersMenu = static_cast<ControllersMenu*>(currentMenu);
+										controllersMenu->showInputMidiCC(midi_b[1]);
+									}
 								}
 							}
 							contr_cont = 0;

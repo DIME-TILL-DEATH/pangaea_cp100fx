@@ -84,7 +84,6 @@ void controllerSetData(uint8_t adr, uint8_t data)
 
 		case Controller::Dst::DelayTap:
 			System::TapTempo(System::TAP_DELAY);
-			currentMenu->refresh();
 		break;
 //-------------------------------------------------Phaser---------------------------------------------
 		case Controller::Dst::PhaserOnOff:
@@ -164,7 +163,6 @@ void controllerSetData(uint8_t adr, uint8_t data)
 
 		case Controller::Dst::TremoloTap:
 			System::TapTempo(System::TAP_TREMOLO);
-			currentMenu->refresh();
 		break;
 //---------------------------------------------------------------------------------------------------
 		case Controller::Dst::PresetLevel:
@@ -214,7 +212,6 @@ void controllerSetData(uint8_t adr, uint8_t data)
 //---------------------------------------------------Moog Tap--------------------------------------------------------
 		case Controller::Dst::RfLFOTAP:
 			System::TapTempo(System::TAP_RFILTER);
-			currentMenu->refresh();
 		break;
 
 		case Controller::Dst::VolCtrlOnOff:

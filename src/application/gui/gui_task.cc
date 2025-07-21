@@ -25,8 +25,6 @@ const float tap_time_coefs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
 uint16_t midi_clk_send;
 
-
-
 void tim5_start(uint8_t val)
 {
 	TIM_ClearITPendingBit(TIM4, TIM_IT_Update);

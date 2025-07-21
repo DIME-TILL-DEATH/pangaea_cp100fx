@@ -14,6 +14,7 @@
 #include "midimapmenu.h"
 #include "expressionmenu.h"
 #include "fswtypemenu.h"
+#include "tunerextmenu.h"
 
 #include "baseparam.h"
 #include "stringlistparam.h"
@@ -231,8 +232,7 @@ void SystemMenu::expressionKeyDown(void* parameter)
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	if(*valuePtr&0x80)
 	{
-		ExpressionMenu* expressionMenu = new ExpressionMenu(currentMenu);
-		currentMenu->showChild(expressionMenu);
+		currentMenu->showChild(new ExpressionMenu(currentMenu));
 	}
 }
 
@@ -260,20 +260,7 @@ void SystemMenu::tunerExtKeyDown(void* parameter)
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	if(*valuePtr&0x80)
 	{
-		BaseParam* ccParam = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "    CC#", &sys_para[System::TUNER_EXTERNAL]);
-		ccParam->setScaling(1, -128);
-//		ccParam->setBounds(129, 255);
-		ccParam->setBounds(-127, -1);
-
-		ParamListMenu* ccMenu = new ParamListMenu(currentMenu, MENU_TUNER_EXT);
-		if(ccMenu)
-		{
-			ccMenu->setParams(&ccParam, 1);
-
-			ccMenu->setIcon(false, ICON_NONE);
-			currentMenu = ccMenu;
-			currentMenu->show();
-		}
+		currentMenu->showChild(new TunerExtMenu(currentMenu));
 	}
 }
 
