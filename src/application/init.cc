@@ -10,7 +10,7 @@
 
 uint32_t sram_point;
 uint32_t sram_point1;
-uint8_t blinkFlag_fl;
+volatile uint8_t blinkFlag_fl;
 uint8_t us2_buf[2];
 uint8_t us2_buf1[2] =
 {0xaa, 0x55};

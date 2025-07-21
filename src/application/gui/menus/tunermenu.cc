@@ -23,7 +23,7 @@ void TunerMenu::show(TShowMode showMode)
 	tun_base_old = 0.0f;
 	tun_ini();
 
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_IN);
 }
 
 void TunerMenu::encoderClockwise()

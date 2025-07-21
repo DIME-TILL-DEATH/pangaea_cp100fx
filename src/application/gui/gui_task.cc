@@ -159,6 +159,6 @@ extern "C" void TIM4_IRQHandler()
 	else
 		blinkFlag_fl = 1;
 
-	if(!currentMenu->menuType() == MENU_TUNER)
+	if(!(currentMenu->menuType() == MENU_TUNER))
 		CSTask->Give();
 }

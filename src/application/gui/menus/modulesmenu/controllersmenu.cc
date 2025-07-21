@@ -70,7 +70,7 @@ void ControllersMenu::show(TShowMode swhoMode)
 
 void ControllersMenu::showInputMidiCC(uint8_t midiCC)
 {
-	DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)"midi in CC#->");
+	DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)"Midi in CC#->");
 	DisplayTask->ParamIndicNum(100, 3, midiCC);
 }
 
