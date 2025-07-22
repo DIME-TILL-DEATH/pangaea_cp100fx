@@ -15,9 +15,8 @@ public:
 
 	void show(TShowMode showMode = FirstShow) override;
 private:
-	uint8_t cab_n_fl1{0};
-	uint8_t cab_n_fl2{0};
-	uint8_t tim_fl{0};
+	uint8_t m_currentShowCab{0};
+	uint8_t m_delay{0};
 };
 
 #endif /* SRC_APPLICATION_GUI_MENUS_CABNAMEMENU_H_ */

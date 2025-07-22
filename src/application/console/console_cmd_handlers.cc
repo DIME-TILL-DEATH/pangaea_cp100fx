@@ -104,7 +104,36 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	{
 		Preset::TPresetBrief presetData;
 		EEPROM_loadBriefPreset(p, &presetData);
-		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, presetData.cab1Name + 1, presetData.cab2Name + 1);
+
+		char *cab1NameSrc = presetData.cab1Name + 1;
+		char *cab2NameSrc = presetData.cab2Name + 1;
+		char cab1NameDst[64];
+		char cab2NameDst[64];
+
+		uint8_t pos=0;
+
+		while(*cab1NameSrc)
+		{
+			if(*cab1NameSrc != '|' && *cab1NameSrc != '\r' && *cab1NameSrc != '\n')
+			{
+				cab1NameDst[pos] = *cab1NameSrc;
+				pos++;
+			}
+			cab1NameSrc++;
+		}
+
+		pos=0;
+		while(*cab2NameSrc)
+		{
+			if(*cab2NameSrc != '|' && *cab2NameSrc != '\r' && *cab2NameSrc != '\n')
+			{
+				cab2NameDst[pos] = *cab1NameSrc;
+				pos++;
+			}
+			cab2NameSrc++;
+		}
+
+		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
 
 		uint8_t enabled[14];
 		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);

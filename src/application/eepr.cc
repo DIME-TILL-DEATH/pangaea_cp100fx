@@ -55,7 +55,7 @@ const uint8_t prog_data_init[512] =
 
 const uint32_t del_tim_init = 500;
 const uint8_t nameInit[] = {"Preset        "};
-const uint8_t commentInit[] = {"Name          "};
+const uint8_t commentInit[] = {"Comment       "};
 
 uint8_t __CCM_BSS__ sys_para[512] =
 {/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
@@ -176,8 +176,9 @@ void EEPROM_loadPreset(uint8_t nu)
 		f_lseek(&file, 38048);
 		kgp_sdk_libc::memset(Preset::impulsePath, 0, 512);
 		char *tmp = new char[_MAX_LFN];
-		if(!tmp)
-			throw_exeption_catcher("not enough memory");
+		if(!tmp) throw_exeption_catcher("not enough memory");
+
+
 		f_read(&file, tmp, _MAX_LFN, &f_size);
 		if(f_size)
 		{
@@ -278,6 +279,8 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 			presetData->name[i] = nameInit[i];
 		for(uint8_t i = 0; i<15; i++)
 			presetData->comment[i] = commentInit[i];
+
+		kgp_sdk_libc::memset(&(presetData->switches), 0, sizeof(Preset::TEnableData));
 	}
 	f_close(&file);
 
