@@ -1,7 +1,9 @@
 #ifndef PRESETACTIONSMENU_H_
 #define PRESETACTIONSMENU_H_
 
-#include "../abstractmenu.h"
+#include "abstractmenu.h"
+
+#include "preset.h"
 
 class PresetActionsMenu : public AbstractMenu
 {
@@ -28,6 +30,8 @@ private:
 	TActionType m_actionType;
 
 	uint8_t targetPresetNum = 0;
+
+	Preset::TPresetBrief m_selectedPresetBrief;
 
 	void updatePresetData();
 	void copyPreset();

@@ -103,7 +103,7 @@ void TCSTask::Code()
 
 	tun_del_val = (127 - sys_para[System::TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
 	Delay(500);
-	prog_ch();
+	Preset::Change();
 
 	for(uint8_t i = 0; i < 3; i++)
 	{

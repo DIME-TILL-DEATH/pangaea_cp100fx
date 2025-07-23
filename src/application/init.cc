@@ -521,7 +521,6 @@ void init(void)
 		send_codec(fff[i]);
 	}
 
-	void load_mass_imp(void);
 	load_mass_imp();
 }
 //---------------------------------------------------------------------------

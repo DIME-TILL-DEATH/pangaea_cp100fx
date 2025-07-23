@@ -1,6 +1,5 @@
 #include "gui_task.h"
 
-#include "appdefs.h"
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
@@ -36,29 +35,6 @@ void clean_flag(void)
 {
 	k_up = k_down = k_sys = k_att = k_master = k_master_eq = encoder_knob_pressed = encoder_state_updated = k_tuner = 0;
 	TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
-}
-
-extern volatile uint8_t pc_mute_fl;
-void prog_ch(void)
-{
-	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
-
-	EEPROM_loadPreset(currentPresetNumber);
-	pc_mute_fl = 0;
-
-	MidiSendTask->prog_ch_midi_start();
-	MidiSendTask->Give();
-
-	for(uint8_t i = 0; i<3; i++)
-	{
-		contr_kn[i] = currentPreset.modules.rawData[fo1+i];
-		contr_kn1[i] = currentPreset.modules.rawData[fo11+i];
-	}
-
-	if(sys_para[System::EXPR_STORE_LEVEL])
-		adc_proc();
-
-	pc_mute_fl = 1;
 }
 
 void gui(void)
@@ -136,7 +112,7 @@ void gui(void)
 		clean_flag();
 	}
 
-	if(sys_para[System::TAP_TYPE]==2)
+	if(sys_para[System::TAP_TYPE] == System::TAP_TYPE_GLOBAL_MIDI)
 	{
 		extern volatile uint16_t midi_clk_buf[];
 		uint16_t mediann_tap(uint16_t *array, int length);

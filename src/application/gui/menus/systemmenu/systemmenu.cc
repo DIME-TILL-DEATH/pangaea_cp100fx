@@ -131,7 +131,7 @@ bool SystemMenu::editingFinished()
 
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 {
-	const uint8_t paramNum = 12;
+	const uint8_t paramNum = 13;
 	BaseParam* params[paramNum];
 
 	params[0] = new StringListParam("Mode", &sys_para[System::CAB_SIM_DISABLED], {"CabSim On ", "CabSim Off"}, 10);
@@ -157,37 +157,40 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 
 	params[4] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Footswitch", &SystemMenu::createFootswitchMenu, nullptr);
 
-	params[5] = new StringListParam("S/PDIF", &sys_para[System::SPDIF_OUT_TYPE], {"Main Output", " Dry Input "}, 12);
-	params[5]->setDspAddress(DSP_ADDRESS_SPDIF, PARAM_EQUAL_POS);
-	params[5]->setDisplayPosition(44);
-
-	params[6] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::createMidiPcMapMenu, nullptr);
+	params[5] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::createMidiPcMapMenu, nullptr);
 
 	customParam = new CustomParam(CustomParam::TDisplayType::String, "Tempo", &sys_para[System::TAP_TYPE]);
 	customParam->setStrings({"Preset   ", "Global   ", "Glob+MIDI"}, 10);
-	customParam->setDisplayPosition(38);
+	customParam->setDisplayPosition(leftPad + 6 * 6);
 	customParam->decreaseCallback = tempoDecrease;
 	customParam->increaseCallback = tempoIncrease;
-	params[7] = customParam;
+	params[6] = customParam;
+
+	params[7] = new StringListParam("TAP Popup", &sys_para[System::TAP_SCREEN_POPUP], {"On ", "Off"}, 4);
+	params[7]->setDisplayPosition(leftPad + 6 * 10);
+
+	params[8] = new StringListParam("S/PDIF", &sys_para[System::SPDIF_OUT_TYPE], {"Main Output", " Dry Input "}, 12);
+	params[8]->setDspAddress(DSP_ADDRESS_SPDIF, PARAM_EQUAL_POS);
+	params[8]->setDisplayPosition(44);
 
 	customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Tuner contr", &sys_para[System::TUNER_EXTERNAL]);
 	customParam->decreaseCallback = tunerExtDescrease;
 	customParam->increaseCallback = tunerExtIncrease;
 	customParam->printCallback = tunerExtPrint;
 	customParam->keyDownCallback = tunerExtKeyDown;
-	params[8] = customParam;
+	params[9] = customParam;
 
-	params[9] = new StringListParam("Time", &sys_para[System::TIME_FORMAT], {"Sec", "BPM"}, 3);
-	params[9]->setDisplayPosition(39);
+	params[10] = new StringListParam("Time", &sys_para[System::TIME_FORMAT], {"Sec", "BPM"}, 3);
+	params[10]->setDisplayPosition(39);
 
-	params[10] = new StringListParam("Swap UpConf", &sys_para[System::SWAP_SWITCH], {"Off", "On "}, 3);
-	params[10]->setDisplayPosition(78);
+	params[11] = new StringListParam("Swap UpConf", &sys_para[System::SWAP_SWITCH], {"Off", "On "}, 3);
+	params[11]->setDisplayPosition(78);
 
 	customParam = new CustomParam(CustomParam::TDisplayType::Number, "Speed tun", &sys_para[System::TUNER_SPEED]);
 	customParam->setDisplayPosition(78);
 	customParam->decreaseCallback = tunerSpeedDescrease;
 	customParam->increaseCallback = tunerSpeedIncrease;
-	params[11] = customParam;
+	params[12] = customParam;
 
 	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
 	systemMenu->setParams(params, paramNum);
@@ -239,8 +242,8 @@ void SystemMenu::expressionKeyDown(void* parameter)
 void SystemMenu::tunerExtPrint(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr&0x80) DisplayTask->StringOut(78, 0, Font::fntSystem, 0, (uint8_t*)"On >");
-	else DisplayTask->StringOut(78, 0, Font::fntSystem, 0, (uint8_t*)"Off " );
+	if(*valuePtr&0x80) DisplayTask->StringOut(78, 1, Font::fntSystem, 0, (uint8_t*)"On >");
+	else DisplayTask->StringOut(78, 1, Font::fntSystem, 0, (uint8_t*)"Off " );
 }
 
 void SystemMenu::tunerExtDescrease(void* parameter)

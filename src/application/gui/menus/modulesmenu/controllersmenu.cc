@@ -244,21 +244,6 @@ void ControllersMenu::encoderClockwise()
 				}
 			break;
 		}
-
-		tap_del_fl = tap_trem_fl = tap_moog_fl = 0;
-
-		for(uint8_t i = 0; i < controllersCount; i++)
-		{
-			if(currentPreset.controller[i].src != Controller::Src::Off)
-			{
-				if(currentPreset.controller[i].dst == Controller::Dst::DelayTap)
-					tap_del_fl = 1;
-				if(currentPreset.controller[i].dst == Controller::Dst::TremoloTap)
-					tap_trem_fl = 1;
-				if(currentPreset.controller[i].dst == Controller::Dst::RfLFOTAP)
-					tap_moog_fl = 1;
-			}
-		}
 	}
 }
 
@@ -429,21 +414,6 @@ void ControllersMenu::encoderCounterClockwise()
 					currentPreset.set = a | 0x80;
 				}
 			break;
-		}
-
-		tap_del_fl = tap_trem_fl = tap_moog_fl = 0;
-
-		for(uint8_t i = 0; i < controllersCount; i++)
-		{
-			if(currentPreset.controller[i].src != Controller::Src::Off)
-			{
-				if(currentPreset.controller[i].dst == Controller::Dst::DelayTap)
-					tap_del_fl = 1;
-				if(currentPreset.controller[i].dst == Controller::Dst::TremoloTap)
-					tap_trem_fl = 1;
-				if(currentPreset.controller[i].dst == Controller::Dst::RfLFOTAP)
-					tap_moog_fl = 1;
-			}
 		}
 	}
 }

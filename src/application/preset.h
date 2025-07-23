@@ -280,7 +280,10 @@ typedef struct
 }TPresetBrief;
 
 extern uint8_t impulsePath[];
+
+void Change();
 }
+
 
 extern Preset::TPreset currentPreset;
 extern Preset::TCabinet cab1;
@@ -290,6 +293,8 @@ extern uint8_t ccmBuffer[];
 extern uint8_t __CCM_BSS__ preset_temp[];
 
 extern uint16_t delay_time;
+extern uint16_t moog_time;
+extern uint16_t trem_time;
 extern volatile uint8_t currentPresetNumber;
 
 #endif /* SRC_APPLICATION_PRESET_H_ */

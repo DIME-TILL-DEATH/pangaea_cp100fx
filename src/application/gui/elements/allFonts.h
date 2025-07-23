@@ -2,15 +2,19 @@
 #define ALLFONTS_H_
 
 #include "appdefs.h"
+
+#include "init.h"
 #include "ER_OLEDM023-1B.h"
+
+#include "amt.h"
 #include "SystemFont5x7.h"
 #include "12x13.h"
 #include "33x30.h"
+
 #include "eq_bitmap.h"
 #include "par_bitmap.h"
-#include "amt.h"
-#include "init.h"
 #include "tun_bit.h"
+#include "icon_bit.h"
 
 #define disp_orient 0
 
@@ -39,8 +43,7 @@ typedef struct
 } TFontStruct;
 
 uint8_t symbolWidth(TFontName fontName);
-}
-;
+};
 
 extern const uint8_t syst[];
 extern const uint8_t equ[];

@@ -35,9 +35,6 @@ extern uint8_t ext_sourc;
 extern volatile uint8_t midi_in_buf[];
 extern volatile uint8_t midi_in_po;
 extern volatile uint16_t adc_bu;
-extern volatile uint8_t tap_del_fl;
-extern volatile uint8_t tap_trem_fl;
-extern volatile uint8_t tap_moog_fl;
 extern TCCTask *CCTask;
 
 #endif /* CC_H_ */

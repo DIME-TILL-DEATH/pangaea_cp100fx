@@ -280,6 +280,8 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 		for(uint8_t i = 0; i<15; i++)
 			presetData->comment[i] = commentInit[i];
 
+		kgp_sdk_libc::memset(&(presetData->cab1Name), 0, 64);
+		kgp_sdk_libc::memset(&(presetData->cab2Name), 0, 64);
 		kgp_sdk_libc::memset(&(presetData->switches), 0, sizeof(Preset::TEnableData));
 	}
 	f_close(&file);
@@ -386,9 +388,12 @@ void write_prog_temp(uint8_t nu)
 
 void preset_erase(uint8_t nu)
 {
+	FSTask->Suspend();
+
 	nu++;
 	FATFS fs;
-	f_mount(&fs, "1:", 1);
+	while(f_mount(&fs, "1:", 1));
+
 	char *fna = new char[_MAX_LFN];
 	if(nu<10)
 		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)nu);
@@ -396,6 +401,8 @@ void preset_erase(uint8_t nu)
 		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
 	f_unlink(fna);
 	f_mount(0, "1:", 0);
+
+	FSTask->Resume();
 }
 
 void load_mass_imp(void)

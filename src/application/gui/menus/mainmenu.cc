@@ -227,7 +227,7 @@ void MainMenu::presetConfirm()
 	refresh();
 
 	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-	prog_ch();
+	Preset::Change();
 
 	show();
 	tim5_start(1);

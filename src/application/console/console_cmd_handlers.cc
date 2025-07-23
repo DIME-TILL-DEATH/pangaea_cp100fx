@@ -77,7 +77,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	DSP_SendPrimaryCabData(cab1.data, currentPresetNumber+1);
 	if(cab_type == CAB_CONFIG_STEREO) DSP_SendSecondaryCabData(cab2.data, currentPresetNumber+1);
 
-	prog_ch();
+	Preset::Change();
 
 	msg_console("%s\r\n", args[0]);
 }
@@ -90,7 +90,7 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 		currentPresetNumber = kgp_sdk_libc::strtol(args[1], &end, 16);
 
 		sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-		prog_ch();
+		Preset::Change();
 	}
 	msg_console("%s\r\n", args[0]);
 }

@@ -1,19 +1,13 @@
 #include "presetactionsmenu.h"
 
-#include "appdefs.h"
-#include "cs.h"
+
 #include "fs.h"
 #include "eepr.h"
-#include "allFonts.h"
 #include "display.h"
-#include "enc.h"
 #include "eepr.h"
 #include "cc.h"
-#include "BF706_send.h"
 
 #include "modulesmenu.h"
-#include "preset.h"
-
 
 extern uint8_t cab_type;
 
@@ -27,8 +21,6 @@ PresetActionsMenu::PresetActionsMenu(AbstractMenu *parent, TActionType actionTyp
 		m_menuType = MENU_PRESET_WRITE;
 
 	topLevelMenu = parent;
-
-//	targetPresetNum = currentPresetNumber;
 }
 
 void PresetActionsMenu::show(TShowMode showMode)
@@ -44,9 +36,15 @@ void PresetActionsMenu::show(TShowMode showMode)
 void PresetActionsMenu::task()
 {
 	if(blinkFlag_fl==0)
-		DisplayTask->Prog_ind(targetPresetNum);
+	{
+
+		bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab1Name[0];
+		DisplayTask->Prog_ind(targetPresetNum, filled);
+	}
 	else if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update)==1)
+	{
 		DisplayTask->Clear_str(87, 0, Font::fnt33x30, 39);
+	}
 }
 
 void PresetActionsMenu::encoderPressed()
@@ -103,22 +101,20 @@ void PresetActionsMenu::updatePresetData()
 {
 	read_prog_temp(targetPresetNum);
 
-	Preset::TPresetBrief selectedPresetBrief;
-	EEPROM_loadBriefPreset(targetPresetNum, &selectedPresetBrief);
+	EEPROM_loadBriefPreset(targetPresetNum, &m_selectedPresetBrief);
 
 	DisplayTask->Clear_str(2, 0, Font::fntSystem, 14);
 	DisplayTask->Clear_str(2, 1, Font::fntSystem, 14);
 
-	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)selectedPresetBrief.name);
-	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)selectedPresetBrief.comment);
+	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.name);
+	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.comment);
 
 	if(m_actionType==TActionType::Copy)
 		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Copy to ->");
 	else
 		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Save to ->");
 
-	bool filled = selectedPresetBrief.cab1Name[0] || selectedPresetBrief.cab2Name[0];
-
+	bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
 	DisplayTask->Prog_ind(targetPresetNum, filled);
 
 	TIM_SetCounter(TIM6, 0x8000);
@@ -279,7 +275,7 @@ void PresetActionsMenu::savePreset()
 		send_cab_data1(0, targetPresetNum+1);
 
 	targetPresetNum = currentPresetNumber;
-	prog_ch();
+	Preset::Change();
 
 //	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 }

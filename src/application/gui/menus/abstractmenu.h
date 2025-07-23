@@ -32,6 +32,7 @@ enum gui_menu_type
 	MENU_FSW_CONTROL,
 	MENU_TUNER_EXT,
 	MENU_USB_SELECT,
+	MENU_TAP_SCREEN,
 
 	// Menus with icons
 	MENU_DELAY = 128,

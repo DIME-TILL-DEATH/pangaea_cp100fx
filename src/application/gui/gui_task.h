@@ -32,6 +32,4 @@ void adc_proc(void);
 void comp_para(uint32_t val);
 void gate_par(uint32_t val);
 
-void prog_ch(void);
-
 #endif /* GU_H_ */
