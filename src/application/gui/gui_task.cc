@@ -41,11 +41,7 @@ void gui(void)
 {
 	if(usb_flag && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
 	{
-		while(currentMenu->menuType() != MENU_MAIN)
-		{
-			currentMenu->keyUp();
-		}
-		usbMenu->show();
+		currentMenu->showChild(usbMenu);
 	}
 
 	currentMenu->task();

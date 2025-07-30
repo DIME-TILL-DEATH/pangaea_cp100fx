@@ -4,7 +4,7 @@
 #include "appdefs.h"
 #include "controllers.h"
 
-#define CAB_DATA_SIZE 12288
+#define CAB_DATA_SIZE 4096 * 3//12288
 
 namespace Preset
 {
@@ -289,7 +289,7 @@ extern Preset::TPreset currentPreset;
 extern Preset::TCabinet cab1;
 extern Preset::TCabinet cab2;
 
-extern uint8_t ccmBuffer[];
+extern uint8_t __CCM_BSS__ ccmCommonCabBuffer[4096 * 3 * 2];
 extern uint8_t __CCM_BSS__ preset_temp[];
 
 extern uint16_t delay_time;

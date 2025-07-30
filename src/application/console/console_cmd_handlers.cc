@@ -70,7 +70,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	currentPreset.modules.rawData[148] = delay_time>>8;
 
 	currentPresetNumber;
-	eepr_write(currentPresetNumber);
+	EEPR_writePreset(currentPresetNumber);
 
 	DSP_SendPresetData(currentPreset.modules.rawData);
 
@@ -91,8 +91,13 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 
 		sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
 		Preset::Change();
+
+		msg_console("%s\r\n", args[0]);
 	}
-	msg_console("%s\r\n", args[0]);
+	else
+	{
+		msg_console("%s\rINCORRECT_ARGUMENT\n", args[0]);
+	}
 }
 
 static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -179,8 +184,7 @@ static void pnum_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr
 {
 	msg_console("%s\r", args[0]);
 
-	char hex[3] =
-	{0, 0, 0};
+	char hex[3] = {0, 0, 0};
 	i2hex(currentPresetNumber, hex);
 	msg_console("%s", hex);
 

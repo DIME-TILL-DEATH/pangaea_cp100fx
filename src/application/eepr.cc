@@ -87,7 +87,7 @@ void write_sys(void)
 	f_mount(0, "1:", 0);
 }
 
-void eepr_write(uint8_t nu)
+void EEPR_writePreset(uint8_t nu)
 {
 	nu++;
 
@@ -114,12 +114,12 @@ void eepr_write(uint8_t nu)
 	{
 		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
 		f_write(&file, cab2.name.string, 64, &f_size);
-		f_lseek(&file, 38048);
+		f_lseek(&file, sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE * 3 + 64 * 2); // 38048
 	}
 	else
 	{
-		f_lseek(&file, 25760);
-		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
+		f_lseek(&file, sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE * 2 + 64 * 2); //25760
+		f_write(&file, cab1.data + CAB_DATA_SIZE, CAB_DATA_SIZE, &f_size);
 	}
 	f_write(&file, Preset::impulsePath, 512, &f_size);
 	f_close(&file);
@@ -166,18 +166,17 @@ void EEPROM_loadPreset(uint8_t nu)
 		}
 		else
 		{
-			f_lseek(&file, 25760);
-			if(f_size(&file)<=25760)
-				kgp_sdk_libc::memset(cab2.data, 0, CAB_DATA_SIZE);
+			f_lseek(&file, sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE * 2 + 64 * 2);
+			if(f_size(&file) <= sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE * 2 + 64 * 2)
+				kgp_sdk_libc::memset(cab1.data + CAB_DATA_SIZE, 0, CAB_DATA_SIZE);
 			else
-				f_read(&file, cab2.data, CAB_DATA_SIZE, &f_size);
+				f_read(&file, cab1.data + CAB_DATA_SIZE, CAB_DATA_SIZE, &f_size);
 		}
 
-		f_lseek(&file, 38048);
+		f_lseek(&file, sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE * 3 + 64 * 2);
 		kgp_sdk_libc::memset(Preset::impulsePath, 0, 512);
 		char *tmp = new char[_MAX_LFN];
 		if(!tmp) throw_exeption_catcher("not enough memory");
-
 
 		f_read(&file, tmp, _MAX_LFN, &f_size);
 		if(f_size)
@@ -196,7 +195,6 @@ void EEPROM_loadPreset(uint8_t nu)
 			}
 		}
 		delete tmp;
-//		prog_sym_cur = 0;
 	}
 	else
 	{
@@ -208,11 +206,13 @@ void EEPROM_loadPreset(uint8_t nu)
 		for(uint8_t i = 0; i<15; i++)
 			currentPreset.comment[i] = commentInit[i];
 
-		kgp_sdk_libc::memset(cab1.data, 0, 12288);
-		kgp_sdk_libc::memset(cab2.data, 0, 12288);
+		kgp_sdk_libc::memset(cab1.data, 0, CAB_DATA_SIZE * 2);
+		kgp_sdk_libc::memset(cab2.data, 0, CAB_DATA_SIZE);
+
 		kgp_sdk_libc::memset(currentPreset.controller, 0, controllersCount * sizeof(Controller::TController));
 		for(uint8_t i = 0; i<128; i++)
 			currentPreset.controller[i].maxVal = 127;
+
 		delay_time = del_tim_init;
 
 		cab1.name.size = cab2.name.size = 0;
@@ -424,89 +424,83 @@ void load_mass_imp(void)
 		{
 			while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 			EXTI_ClearITPendingBit (EXTI_Line9);
-			while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-			{
-			}
-			;
+
+			while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 			SPI_I2S_SendData(SPI2, i-1);
-			while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-			{
-			}
-			;
+
+			while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 			SPI_I2S_SendData(SPI2, i-1);
-			f_lseek(&file, 1056);
-			f_read(&file, cab1.data, 12288, &f_size);
+
+			f_lseek(&file, sizeof(Preset::TPreset) + 2);
+			f_read(&file, cab1.data, CAB_DATA_SIZE, &f_size);
+
 			for(uint32_t ii = 0; ii<4096; ii++)
 			{
 				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 				EXTI_ClearITPendingBit(EXTI_Line9);
+
 				buf = cab1.data[ii*3]<<8;
 				buf |= cab1.data[ii*3+1]<<16;
 				buf |= cab1.data[ii*3+2]<<24;
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-				{
-				}
-				;
+
+				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 				SPI_I2S_SendData(SPI2, buf>>16);
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-				{
-				}
-				;
+				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 				SPI_I2S_SendData(SPI2, buf);
 			}
+
 			if(cab_type!=2)
 			{
-				if(f_size(&file)<=25760)
+				if(f_size(&file) <= sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE * 2 + 64 * 2)
 				{
-					kgp_sdk_libc::memset(cab2.data, 0, 12288);
+					kgp_sdk_libc::memset(ccmCommonCabBuffer + CAB_DATA_SIZE, 0, + CAB_DATA_SIZE);
 				}
 				else
 				{
-					f_lseek(&file, 25760);
-					f_read(&file, cab2.data, 12288, &f_size);
+					f_lseek(&file, sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE * 2 + 64 * 2);
+					f_read(&file, ccmCommonCabBuffer + CAB_DATA_SIZE, + CAB_DATA_SIZE, &f_size);
 				}
 			}
 			else
 			{
-				f_lseek(&file, 13408);
-				f_read(&file, cab2.data, 12288, &f_size);
+				f_lseek(&file, sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE + 64); //13408);
+				f_read(&file, ccmCommonCabBuffer + CAB_DATA_SIZE, CAB_DATA_SIZE, &f_size);
 			}
+
 			for(uint32_t ii = 0; ii<4096; ii++)
 			{
 				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 				EXTI_ClearITPendingBit(EXTI_Line9);
-				buf = cab2.data[ii*3]<<8;
-				buf |= cab2.data[ii*3+1]<<16;
-				buf |= cab2.data[ii*3+2]<<24;
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-				{
-				}
-				;
+				buf = ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3]<<8;
+				buf |= ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3+1]<<16;
+				buf |= ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3+2]<<24;
+
+				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 				SPI_I2S_SendData(SPI2, buf>>16);
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-				{
-				}
-				;
+				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 				SPI_I2S_SendData(SPI2, buf);
 			}
+
 			f_lseek(&file, 30);
 			f_read(&file, currentPreset.modules.rawData, 512, &f_size);
+
 			f_lseek(&file, 1054);
-			f_read(&file, currentPreset.modules.rawData+147, 2, &f_size);
+			f_read(&file, &currentPreset.modules.paramData.delay_time, 2, &f_size);
+
 			for(uint32_t ii = 0; ii<512; ii++)
 			{
 				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 				EXTI_ClearITPendingBit(EXTI_Line9);
 				buf = currentPreset.modules.rawData[ii];
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-				{
-				}
-				;
+				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 				SPI_I2S_SendData(SPI2, buf>>16);
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-				{
-				}
-				;
+				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 				SPI_I2S_SendData(SPI2, buf);
 			}
 			f_close(&file);
@@ -514,15 +508,16 @@ void load_mass_imp(void)
 	}
 	while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 	EXTI_ClearITPendingBit (EXTI_Line9);
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-	{
-	}
-	;
+	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 	SPI_I2S_SendData(SPI2, 100);
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 	SPI_I2S_SendData(SPI2, 100);
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
+
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 	f_mount(0, "1:", 0);
 }

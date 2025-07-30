@@ -18,7 +18,7 @@ extern volatile float adc_val1;
 extern int16_t mstEqMidFreq;
 
 void write_sys(void);
-void eepr_write(uint8_t nu);
+void EEPR_writePreset(uint8_t nu);
 void EEPROM_loadPreset(uint8_t presetNum);
 void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData);
 

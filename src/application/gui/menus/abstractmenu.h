@@ -33,6 +33,7 @@ enum gui_menu_type
 	MENU_TUNER_EXT,
 	MENU_USB_SELECT,
 	MENU_TAP_SCREEN,
+	MENU_COPY_SELECTION,
 
 	// Menus with icons
 	MENU_DELAY = 128,

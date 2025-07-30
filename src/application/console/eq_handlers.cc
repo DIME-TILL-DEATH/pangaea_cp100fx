@@ -14,95 +14,104 @@ static void eq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_pt
 static void eq_gain_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
-	 uint8_t pos_in_data_array = args[1][0] - 48 + eq1;
+	uint8_t bandNum = args[1][0] - 48;
+	uint8_t pos_in_data_array =  EQ_G0 + bandNum; //eq1;
 
-	 if (count == 2)
-	 {
-		 char hex[4] = {0,0,0,0};
-		 i2hex(currentPreset.modules.rawData[pos_in_data_array], hex + 1);
+	if (count == 2)
+	{
+		char hex[4] = {0,0,0,0};
+		i2hex(currentPreset.modules.rawData[pos_in_data_array], hex + 1);
 
-		 if((int8_t) currentPreset.modules.rawData[pos_in_data_array] < 0) hex[0] = '-';
-		 else hex[0] = ' ';
+		if((int8_t) currentPreset.modules.rawData[pos_in_data_array] < 0) hex[0] = '-';
+		else hex[0] = ' ';
 
-		 msg_console("%s\n", hex);
-		 return;
-	 }
+		msg_console("%s\n", hex);
+		return;
+	}
 
-	 if (count == 3)
-	 {
-		 char* end;
-		 int32_t val = kgp_sdk_libc::strtol(args[2], &end, 16);
-	     currentPreset.modules.rawData[pos_in_data_array] = val;
-	     //set data to DSP
-	 }
+	if (count == 3)
+	{
+		char* end;
+		int32_t val = kgp_sdk_libc::strtol(args[2], &end, 16);
+		currentPreset.modules.rawData[pos_in_data_array] = val;
+		DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, val);
+	}
 }
 
 static void eq_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
-	 uint8_t pos_in_data_array = args[1][0] - 48 + f1;
+	uint8_t bandNum = args[1][0] - 48;
+	uint8_t pos_in_data_array = EQ_F0 + bandNum;//f1;
 
-	 if (count == 2)
-	 {
-		 char hex[4] = {0,0,0,0};
-		 i2hex(currentPreset.modules.rawData[pos_in_data_array], hex + 1);
+	if (count == 2)
+	{
+		char hex[4] = {0,0,0,0};
+		i2hex(currentPreset.modules.rawData[pos_in_data_array], hex + 1);
 
-		 if((int8_t) currentPreset.modules.rawData[pos_in_data_array] < 0) hex[0] = '-';
-		 else hex[0] = ' ';
+		if((int8_t) currentPreset.modules.rawData[pos_in_data_array] < 0) hex[0] = '-';
+		else hex[0] = ' ';
 
-		 msg_console("%s\n", hex);
-		 return;
-	 }
+		msg_console("%s\n", hex);
+		return;
+	}
 
-	 if (count == 3)
-	 {
-		 char* end;
-		 int32_t val = kgp_sdk_libc::strtol(args[2], &end, 16);
-		 currentPreset.modules.rawData[pos_in_data_array] = val;
-		 //set data to DSP
-		 msg_console("\n");
-	 }
+	if (count == 3)
+	{
+		char* end;
+		int32_t val = kgp_sdk_libc::strtol(args[2], &end, 16);
+		currentPreset.modules.rawData[pos_in_data_array] = val;
+
+		DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, val);
+
+		msg_console("\n");
+	}
 }
 
 static void eq_q_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
-	 uint8_t pos_in_data_array = args[1][0] - 48 + q1;
+	uint8_t bandNum = args[1][0] - 48;
+	uint8_t pos_in_data_array = EQ_Q0 + bandNum;//q1;
 
-	 if (count == 2)
-	 {
-		 char hex[4] = {0,0,0,0};
-		 i2hex(currentPreset.modules.rawData[pos_in_data_array], hex + 1);
+	if (count == 2)
+	{
+		char hex[4] = {0,0,0,0};
+		i2hex(currentPreset.modules.rawData[pos_in_data_array], hex + 1);
 
-		 if((int8_t) currentPreset.modules.rawData[pos_in_data_array] < 0) hex[0] = '-';
-		 else hex[0] = ' ';
+		if((int8_t) currentPreset.modules.rawData[pos_in_data_array] < 0) hex[0] = '-';
+		else hex[0] = ' ';
 
-		 msg_console("%s\n", hex);
-		 return;
-	 }
+		msg_console("%s\n", hex);
+		return;
+	}
 
-	 if (count == 3)
-	 {
-		 char* end;
-		 int32_t val = kgp_sdk_libc::strtol(args[2], &end, 16);
-	     currentPreset.modules.rawData[pos_in_data_array] = val;
-	     //set data to DSP
-	 }
+	if (count == 3)
+	{
+		char* end;
+		int32_t val = kgp_sdk_libc::strtol(args[2], &end, 16);
+		currentPreset.modules.rawData[pos_in_data_array] = val;
+
+		DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, val);
+	}
 }
 
 static void eq_position_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[eq_pr_po], rl, args, count);
+	default_param_handler(&currentPreset.modules.rawData[EQ_PREPOST], rl, args, count);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, currentPreset.modules.rawData[EQ_PREPOST]);
 }
 
 static void lpf_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[lpf_v], rl, args, count);
+	default_param_handler(&currentPreset.modules.rawData[EQ_LPF], rl, args, count);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_LPF_POS, currentPreset.modules.rawData[EQ_LPF]);
 }
 
 static void hpf_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[hpf_v], rl, args, count);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_HPF_POS, currentPreset.modules.rawData[EQ_HPF]);
 }
 
 void set_eq_handlers(TReadLine *rl)

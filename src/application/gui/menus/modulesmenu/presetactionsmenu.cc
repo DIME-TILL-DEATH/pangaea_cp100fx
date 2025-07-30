@@ -8,6 +8,7 @@
 #include "cc.h"
 
 #include "modulesmenu.h"
+#include "copyselectmenu.h"
 
 extern uint8_t cab_type;
 
@@ -53,8 +54,9 @@ void PresetActionsMenu::encoderPressed()
 
 	if(m_actionType==TActionType::Copy)
 	{
-		copyPreset();
-		topLevelMenu->returnFromChildMenu(TReturnMode::DeleteChild);
+//		copyPreset();
+//		topLevelMenu->returnFromChildMenu(TReturnMode::DeleteChild);
+		showChild(new CopySelectMenu(this));
 	}
 	else
 	{
@@ -268,7 +270,7 @@ void PresetActionsMenu::savePreset()
 
 	currentPreset.modules.rawData[147] = delay_time;
 	currentPreset.modules.rawData[148] = delay_time>>8;
-	eepr_write(targetPresetNum);
+	EEPR_writePreset(targetPresetNum);
 
 	send_cab_data(0, targetPresetNum+1, 0);
 	if(cab_type==2)

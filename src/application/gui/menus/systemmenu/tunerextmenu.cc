@@ -5,7 +5,7 @@ TunerExtMenu::TunerExtMenu(AbstractMenu* parent)
 {
 	BaseParam* ccParam = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "    CC#", &sys_para[System::TUNER_EXTERNAL]);
 	ccParam->setScaling(1, -128);
-	ccParam->setBounds(-127, -1);
+	ccParam->setBounds(-128, -1);
 
 	setParams(&ccParam, 1);
 	setIcon(false, ICON_NONE);
