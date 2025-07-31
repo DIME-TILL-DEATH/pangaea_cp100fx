@@ -395,18 +395,11 @@ void disp_contr(uint8_t val)
 	//erc12864_Set_Contrast_Control_Register(val * (22.0/31.0) + 14.0);
 }
 
-void sys_menu_init(void)
-{
 
-}
 void tun_ini(void)
 {
 	oled023_1_disp_clear();
 	scal_tun();
-}
-void tun_ind(void)
-{
-	strel_tun();
 }
 
 void del_sec_ind(uint8_t col, uint8_t pag, uint32_t d)

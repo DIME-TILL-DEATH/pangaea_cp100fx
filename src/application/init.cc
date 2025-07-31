@@ -546,9 +546,14 @@ void eepr_init(void)
 		f_closedir(&dir);
 	else
 		f_mkdir("1:PRESETS");
+
 	res = f_open(&file, "1:system.pan", FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
 	if(f_size(&file)==0)
+	{
+		sys_para[System::TUNER_EXTERNAL] = 0x81;
 		f_write(&file, sys_para, 512, &file_size);
+	}
+
 	f_read(&file, sys_para, 512, &file_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);

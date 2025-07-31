@@ -37,7 +37,6 @@ public:
 		dcStringOut,
 		dcNumberOut,
 		dcIndicator,
-//		dcMenu_init,
 		dcProg_ind,
 		dcEfIcon,
 		dcSetColumn,
@@ -56,14 +55,10 @@ public:
 		dcStart,
 		dcContrast,
 		dcTap_ind,
-		dcSys_Menu,
 		dcLed_Write,
 		dcPot_Write,
-//		dcMain_scr,
-//		dcPresetPreview,
 		dcIcStrel,
 		dcTunIni,
-		dcTunNote,
 		dcTunStrel,
 		dcInd_foot,
 		dcReset,
@@ -333,14 +328,14 @@ public:
 	void StartScreen(uint8_t data);
 	void Contrast(uint8_t val);
 	void Tap_ind(uint8_t cur);
-	void Sys_Menu(void);
+
 	void Led_Write(void);
 	void Pot_Write(void);
-//	void Main_scr();
+
 	void Icon_Strel(icon_t num, strelka_t strel);
-	void TunIni(void);
-	void TunNote(void);
-	void TunStrel(void);
+	void TunerInit();
+	void TunerDeinit();
+	void TunStrel();
 	void PresetPreview(uint8_t index);
 	void IndFoot(uint8_t num, uint8_t val);
 	void Display_Reset(void);
@@ -353,6 +348,8 @@ private:
 	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
 	uint8_t* m_volIndPar_ptr;
 	uint16_t m_indRefreshCounter;
+
+	bool m_tunerInitiated{false};
 
 	void DrawVolIndicator(uint8_t xPos, uint8_t indLength);
 };

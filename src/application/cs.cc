@@ -185,8 +185,9 @@ extern "C" void DMA1_Stream2_IRQHandler()
 		if(tun_del > tun_del_val)
 		{
 			tun_del = 0;
-			inline void strel_tun(void);
-			strel_tun();
+//			inline void strel_tun(void);
+//			strel_tun();
+			DisplayTask->TunStrel();
 		}
 		tun_del++;
 	}

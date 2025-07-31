@@ -76,10 +76,8 @@ void Arsys_ef(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs);
 void disp_contr(uint8_t val);
 void mode_ind(uint8_t val);
 void tap_ind(uint8_t cur);
-void sys_menu_init(void);
 void pot32x32_(uint8_t col, uint8_t pag, uint16_t sym);
 void tun_ini(void);
-void tun_ind(void);
 void ind_foot(uint8_t num, uint8_t val);
 void strel_print(uint8_t col, uint8_t pag, uint8_t dir);
 

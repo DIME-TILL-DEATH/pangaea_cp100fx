@@ -101,19 +101,12 @@ void TDisplayTask::Code()
 				else DrawVolIndicator(58, 50);
             break;
 
-//			case dcMenu_init:
-//				menu_init();
-//        	break;
-
-//			case dcMain_scr:
-//				main_screen();
-//        	break;
-
 			case dcProg_ind:
 			{
 				prog_ind(cmd.Prog_indParam.prog, cmd.Prog_indParam.filled);
 				break;
 			}
+
 			case dcClear_str:
 				clear_str(cmd.Clear_strParams.pos.x, cmd.Clear_strParams.pos.y,
 						cmd.Clear_strParams.font.name, cmd.Clear_strParams.count);
@@ -195,10 +188,6 @@ void TDisplayTask::Code()
 				tap_ind(cmd.Tap_indParam.data);
 			break;
 
-			case dcSys_Menu:
-				sys_menu_init();
-			break;
-
 			case dcLed_Write:
 				led_disp_write();
 			break;
@@ -213,10 +202,7 @@ void TDisplayTask::Code()
 
 			case dcTunIni:
 				tun_ini();
-			break;
-
-			case dcTunNote:
-				note_tun();
+				m_tunerInitiated = true;
 			break;
 
 			case dcTunStrel:
@@ -263,12 +249,7 @@ void TDisplayTask::Clear()
 	cmd.cmd=dcClear;
 	Command( &cmd );
 }
-void TDisplayTask::Sys_Menu()
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcSys_Menu;
-	Command(&cmd);
-}
+
 void TDisplayTask::Tap_ind(uint8_t cur)
 {
 	TDisplayCmd cmd;
@@ -307,18 +288,6 @@ void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8
 	kgp_sdk_libc::strncpy ( (char*)cmd.StringOutParams.string, (const char*)string, FILE_NAME_LENGTH) ;
 	Command(&cmd);
 }
-
-/*
-void TDisplayTask::NumberOut(uint8_t x, uint8_t y , TFontName name , uint8_t curs , uint32_t val)
-{
-  TDisplayCmd cmd ;
-  cmd.cmd=dcNumberOut;
-  cmd.NumberOutParams.pos = {x,y} ;
-  cmd.NumberOutParams.font.name = name ;
-  cmd.NumberOutParams.font.curs = curs ;
-  cmd.NumberOutParams.val = val ;
-  Command( &cmd ) ;
-}*/
 
 void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
@@ -520,18 +489,20 @@ void TDisplayTask::Icon_Strel(icon_t num , strelka_t strel)
 	cmd.IcStrelParam.str = strel;
 	Command(&cmd);
 }
-void TDisplayTask::TunIni(void)
+void TDisplayTask::TunerInit(void)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcTunIni;
 	Command(&cmd);
 }
-void TDisplayTask::TunNote()
+void TDisplayTask::TunerDeinit()
 {
+	m_tunerInitiated = false;
 	TDisplayCmd cmd;
-	cmd.cmd=dcTunNote;
+	cmd.cmd=dcClear;
 	Command(&cmd);
 }
+
 void TDisplayTask::TunStrel()
 {
 	TDisplayCmd cmd;
@@ -546,11 +517,14 @@ void TDisplayTask::Display_Reset(void)
 }
 void TDisplayTask::Strel(uint8_t x, uint8_t y , uint32_t dir)
 {
-	TDisplayCmd cmd;
-	cmd.cmd=dcStrel;
-	cmd.StrelParam.pos = {x,y};
-	cmd.StrelParam.dir = dir;
-	Command(&cmd);
+	if(m_tunerInitiated)
+	{
+		TDisplayCmd cmd;
+		cmd.cmd=dcStrel;
+		cmd.StrelParam.pos = {x,y};
+		cmd.StrelParam.dir = dir;
+		Command(&cmd);
+	}
 }
 
 void TDisplayTask::DrawVolIndicator(uint8_t xPos, uint8_t indLength)
