@@ -57,14 +57,13 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 	uint32_t send_buf;
 	uint32_t a;
 	extern bool cab_data_ready;
-	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY)
+	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY_SELECTION)
 	{
 		kgp_sdk_libc::memset(preset_temp, 0, 24576);
 		preset_temp[0] = 0xff;
 		preset_temp[1] = 0xff;
 		preset_temp[2] = 0x7f;
 	}
-
 
 	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
 	EXTI_ClearITPendingBit (EXTI_Line9);

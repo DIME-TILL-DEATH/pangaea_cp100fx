@@ -117,6 +117,10 @@ void TDisplayTask::Code()
 						cmd.EfIconParam.adr , cmd.EfIconParam.cur);
 			break;
 
+			case dcCheckBox:
+				checkbox(cmd.CheckBoxparam.pos.x, cmd.CheckBoxparam.pos.y, cmd.CheckBoxparam.checked);
+			break;
+
 			case dcSetColumn:
 				Set_Column_Address(cmd.SetColumnParam.x);
 			break;
@@ -349,6 +353,16 @@ void TDisplayTask::EfIcon(uint8_t x, uint8_t y , uint8_t* adr , uint8_t cur)
 	cmd.EfIconParam.cur = cur;
 	Command(&cmd);
 }
+
+void TDisplayTask::CheckBox(uint8_t x, uint8_t y, uint8_t checked)
+{
+	TDisplayCmd cmd;
+	cmd.cmd=dcCheckBox;
+	cmd.CheckBoxparam.pos = {x,y};
+	cmd.CheckBoxparam.checked = checked;
+	Command(&cmd);
+}
+
 void TDisplayTask::SetColumn(uint8_t x)
 {
 	TDisplayCmd cmd;

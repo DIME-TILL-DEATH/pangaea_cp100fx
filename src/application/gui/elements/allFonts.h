@@ -61,7 +61,6 @@ extern uint32_t ind_in_p[];
 extern uint32_t ind_out_l[];
 extern uint16_t ind_poin;
 
-extern uint8_t imya_temp;
 extern uint8_t t_po;
 extern volatile uint8_t t_no;
 
@@ -71,6 +70,7 @@ void vol_ind(uint8_t xPos, uint8_t indLength);
 void menu_init(void);
 void main_screen(void);
 void prog_ind(uint32_t val, bool filled = true);
+void checkbox(uint8_t x, uint8_t y, uint8_t val);
 void clear_str(uint8_t col, uint8_t pag, uint8_t font, uint8_t count);
 void Arsys_ef(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs);
 void disp_contr(uint8_t val);

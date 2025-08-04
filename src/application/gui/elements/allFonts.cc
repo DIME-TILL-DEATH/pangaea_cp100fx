@@ -14,8 +14,6 @@
 uint32_t ind_in_p[2];
 uint32_t ind_out_l[2];
 
-uint8_t imya_temp;
-
 uint8_t t_po;
 uint8_t t_po1;
 volatile uint8_t t_no;
@@ -185,10 +183,25 @@ extern uint8_t fsw2_in_fl1;
 extern uint8_t fsw3_in_fl1;
 extern uint8_t contr_kn[];
 extern uint8_t contr_kn1[];
-inline void ind_foot_proc(uint8_t col, uint8_t val)
+void ind_foot_proc(uint8_t col, uint8_t val)
 {
 	Set_Page_Address(3);
 	Set_Column_Address(col);
+	GPIO_ResetBits(GPIOB, CS);
+	for(uint8_t i = 0; i < 7; i++)
+	{
+		if(!i || (i == 6))
+			oled023_1_send_data(0x7c);
+		else
+			oled023_1_send_data((val * 0xfe) | 0x82);
+	}
+	GPIO_SetBits(GPIOB, CS);
+}
+
+void checkbox(uint8_t x, uint8_t y, uint8_t val)
+{
+	Set_Page_Address(y);
+	Set_Column_Address(x);
 	GPIO_ResetBits(GPIOB, CS);
 	for(uint8_t i = 0; i < 7; i++)
 	{
@@ -237,24 +250,7 @@ void ind_foot(uint8_t num, uint8_t val)
 
 const uint8_t inpp[] = "In";
 const uint8_t outt[] = "Out";
-//void main_screen(void)
-//{
-//	oled023_1_disp_clear();
-////	ind_poin = 0;
-//	Arsys_clean(2, 0, (uint8_t*)currentPreset.name);
-//	Arsys_clean(2, 1, (uint8_t*)currentPreset.name);
-//	if(!imya_temp)
-//	{
-//		Arsys_line(2, 0, (uint8_t*)currentPreset.name, 0);
-//		Arsys_line(2, 1, (uint8_t*)currentPreset.comment, 0);
-//	}
-//	else
-//	{
-//		Arsys_line(2, 0, (uint8_t*)imya_t, 0);
-//		Arsys_line(2, 1, (uint8_t*)imya1_t, 0);
-//		imya_temp = 0;
-//	}
-//}
+
 
 void prog_ind(uint32_t val, bool filled)
 {

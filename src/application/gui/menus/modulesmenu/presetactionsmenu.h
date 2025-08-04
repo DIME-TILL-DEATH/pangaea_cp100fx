@@ -34,7 +34,6 @@ private:
 	Preset::TPresetBrief m_selectedPresetBrief;
 
 	void updatePresetData();
-	void copyPreset();
 	void savePreset();
 };
 

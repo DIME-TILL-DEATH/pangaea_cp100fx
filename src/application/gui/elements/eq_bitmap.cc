@@ -181,11 +181,23 @@ void eq_response()
 	Set_Column_Address(0);
 
 	uint8_t graphCenter = 16;
+	uint8_t prevY = graphCenter;
 
 	for(uint8_t i = 0; i<Filter::EqPointsNumber; i++)
 	{
 		uint8_t yPosition = graphCenter - round(Filter::eqResponsePoints[i]);
+		if(abs(prevY - yPosition) > 1)
+		{
+			for(uint8_t a=1; a<abs(prevY - yPosition); a++)
+			{
+				Set_Page_Address((prevY+a)/8);
+				oled023_1_write_data(1 << (prevY+a)%8);
+			}
+
+		}
 		Set_Page_Address(yPosition/8);
 		oled023_1_write_data(1 << yPosition%8);
+
+		prevY = yPosition;
 	}
 }

@@ -39,6 +39,7 @@ public:
 		dcIndicator,
 		dcProg_ind,
 		dcEfIcon,
+		dcCheckBox,
 		dcSetColumn,
 		dcSetPagAdr,
 		dcEqIndic,
@@ -55,15 +56,16 @@ public:
 		dcStart,
 		dcContrast,
 		dcTap_ind,
-		dcLed_Write,
-		dcPot_Write,
 		dcIcStrel,
 		dcTunIni,
 		dcTunStrel,
 		dcInd_foot,
 		dcReset,
 		dcStrel,
-		dcCount
+		dcCount,
+
+		dcLed_Write,
+		dcPot_Write
 	}TCommand;
 
 	typedef struct
@@ -166,6 +168,12 @@ public:
 
 	typedef struct
 	{
+		TPos pos;
+		uint8_t checked;
+	}TCheckBoxParam;
+
+	typedef struct
+	{
 		uint8_t x;
 	}TSetColumnParam;
 
@@ -224,6 +232,7 @@ public:
 			TNumberOutParams NumberOutParams;
 			TProg_indParam Prog_indParam;
 			TEfIconParam EfIconParam;
+			TCheckBoxParam CheckBoxparam;
 			TSetColumnParam SetColumnParam;
 			TSetPagAdrParam SetPagAdrParam;
 			TEqIndicParam EqIndicParam;
@@ -319,6 +328,7 @@ public:
 	void EqInit(void);
 	void EqLH(float num, uint8_t type);
 	void EqResponse();
+	void CheckBox(uint8_t x, uint8_t y, uint8_t checked);
 	void ParamIndic(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data);
 	void ParamIndicNum(uint8_t x, uint8_t y, uint16_t data);

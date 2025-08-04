@@ -25,6 +25,7 @@ public:
 		uint8_t er;
 		uint8_t rv;
 		uint8_t tr;
+		uint8_t pv;
 	}TSelectionMask;
 
 	CopySelectMenu(AbstractMenu* parent);
@@ -35,6 +36,9 @@ public:
 	void encoderPressed() override;
 	void encoderClockwise() override;
 	void encoderCounterClockwise() override;
+
+	void setTargetPreset(uint8_t targetPresetNum) {m_targetPresetNum = targetPresetNum;}
+	static void copyPreset(const TSelectionMask& selectionMask, uint8_t targetPresetNum);
 
 private:
 	typedef enum
@@ -66,6 +70,9 @@ private:
 	TSelectionMask m_selectionMask;
 
 	uint8_t m_elementNum{0};
+
+	uint8_t m_copied;
+	uint8_t m_targetPresetNum;
 
 	void printElement(const SelectionElement& element, uint8_t numOnPage, bool highlight);
 	uint8_t elementIncrementIndex(const SelectionElement& element);
