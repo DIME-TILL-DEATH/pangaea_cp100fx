@@ -392,18 +392,29 @@ void TDisplayTask::EqIndic(uint8_t x, uint8_t y , uint8_t data , uint8_t cur )
 	cmd.EqIndicParam.cur = cur;
 	Command(&cmd);
 }
-void TDisplayTask::EqPar(uint8_t col , uint8_t pag , int16_t num, uint8_t type , uint8_t band)
+void TDisplayTask::EqFreq(uint8_t col , uint8_t pag , int16_t num, uint8_t band)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcEqPar;
 	cmd.EqParParam.pos.x = col;
 	cmd.EqParParam.pos.y = pag;
 	cmd.EqParParam.num = num;
-	cmd.EqParParam.type = type;
+	cmd.EqParParam.type = 0;
 	cmd.EqParParam.band = band;
 	Command(&cmd);
 }
 
+void TDisplayTask::EqQ(uint8_t col , uint8_t pag , int16_t num, uint8_t band)
+{
+	TDisplayCmd cmd;
+	cmd.cmd=dcEqPar;
+	cmd.EqParParam.pos.x = col;
+	cmd.EqParParam.pos.y = pag;
+	cmd.EqParParam.num = num;
+	cmd.EqParParam.type = 1;
+	cmd.EqParParam.band = band;
+	Command(&cmd);
+}
 void TDisplayTask::EqLH(float num , uint8_t type)
 {
 	TDisplayCmd cmd;

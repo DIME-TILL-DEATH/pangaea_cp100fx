@@ -25,7 +25,7 @@ private:
 
 	bool encoderKnobSelected{false};
 
-	static constexpr uint8_t gerz[] = "Hz";
+//	static constexpr uint8_t gerz[] = "Hz";
 	static constexpr uint8_t eq_p_l[][2] = {"F", "Q"};
 	static constexpr uint8_t def_eq_band[][10] = {"F 120Hz ", "F 360Hz ", "F 800Hz ", "F 2000Hz", "F 6000Hz"};
 };

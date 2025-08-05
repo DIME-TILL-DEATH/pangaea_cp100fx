@@ -54,6 +54,7 @@ namespace System
 		TUNER_SPEED,
 
 		TAP_SCREEN_POPUP,
+		EQ_SCREEN_MODE,
 
 		MASTER_EQ_ON = 120,
 		MASTER_EQ_LOW = 121,
@@ -99,7 +100,13 @@ namespace System
 	{
 		TAP_SCREEN_ON,
 		TAP_SCREEN_OFF
-	};
+	}TapScreenMode;
+
+	typedef enum
+	{
+		EQ_SCREEN_GRAPH,
+		EQ_SCREEN_BARS
+	}EqScreenMode;
 
 	void TapTempo(TapDestination tapDst);
 };

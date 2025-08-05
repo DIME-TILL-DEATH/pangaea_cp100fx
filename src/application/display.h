@@ -314,7 +314,7 @@ public:
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const uint8_t *string);
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
 
-	void NumberOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState state, uint32_t val);
+//	void NumberOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState state, uint32_t val);
 
 	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 	void VolIndicatorTask();
@@ -324,7 +324,8 @@ public:
 	void SetColumn(uint8_t x);
 	void SetPagAdr(uint8_t x);
 	void EqIndic(uint8_t x, uint8_t y, uint8_t data, uint8_t cur);
-	void EqPar(uint8_t col, uint8_t pag, int16_t num, uint8_t type, uint8_t band);
+	void EqFreq(uint8_t x, uint8_t y, int16_t val, uint8_t band);
+	void EqQ(uint8_t x, uint8_t y, int16_t val, uint8_t band);
 	void EqInit(void);
 	void EqLH(float num, uint8_t type);
 	void EqResponse();

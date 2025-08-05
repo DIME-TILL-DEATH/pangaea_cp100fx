@@ -4,6 +4,7 @@
 
 #include "abstractmenu.h"
 #include "eqmenu.h"
+#include "eqgraphmenu.h"
 #include "cabbrowsermenu.h"
 #include "paramlistmenu.h"
 
@@ -261,7 +262,8 @@ AbstractMenu* GuiModules::createCab2BrowserMenu(AbstractMenu* parentMenu)
 
 AbstractMenu* GuiModules::createEqMenu(AbstractMenu* parentMenu)
 {
-	return new EqMenu(parentMenu);
+	if(sys_para[System::EQ_SCREEN_MODE] == System::EQ_SCREEN_BARS)return new EqMenu(parentMenu);
+	else return new EqGraphMenu(parentMenu);
 }
 
 // При режиме детюн параметр Rate должен называться Detune

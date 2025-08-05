@@ -262,8 +262,8 @@ void EqMenu::keyDown()
 
 void EqMenu::key3()
 {
-	Filter::calcEqResponse();
-
-	DisplayTask->Clear();
-	DisplayTask->EqResponse();
+//	Filter::calcEqResponse();
+//
+//	DisplayTask->Clear();
+//	DisplayTask->EqResponse();
 }

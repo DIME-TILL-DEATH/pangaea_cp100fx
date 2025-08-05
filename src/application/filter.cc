@@ -19,7 +19,7 @@ float fil_b1;
 
 using namespace Filter;
 
-double Fdiscr = 48000;
+float Fdiscr = 48000;
 
 float Filter::freqPoints[EqPointsNumber];
 float Filter::eqResponsePoints[EqPointsNumber];
@@ -46,7 +46,7 @@ float Filter::filt_lp(float in)
 	return fil_lp_out[0];
 }
 
-void Filter::calcEqResponse()
+void Filter::calcEqPoints()
 {
 	freqPoints[0] = 10;
 	double power = log10(freqPoints[0]);
@@ -58,31 +58,37 @@ void Filter::calcEqResponse()
 		power += powerStep;
 		freqPoints[i] = pow(10, power);
 	}
+}
 
+void Filter::calcEqResponse()
+{
+	for(int i=0; i<EqPointsNumber; i++)
+	{
+		eqResponsePoints[i] = 0;
+	}
 
 	TFilterCoefs bandCoefs;
+	float f;
+	float g;
+	float Q;
 	for(uint8_t bandNum=0; bandNum<5; bandNum++)
 	{
-		double f;
-		double g;
-		double Q;
-
 		switch(bandNum)
 		{
-			case 0:case 1:f = fr_l[bandNum] + currentPreset.modules.rawData[EQ_F0 + bandNum];break;
-			case 2:f = fr_l[bandNum] + currentPreset.modules.rawData[EQ_F0 + bandNum]*2;break;
-			case 3:f = fr_l[bandNum] + currentPreset.modules.rawData[EQ_F0 + bandNum]*10;break;
-			case 4:f = fr_l[bandNum] + currentPreset.modules.rawData[EQ_F0 + bandNum]*50;break;
+			case 0:case 1:f = fr_l[bandNum] + (int8_t)currentPreset.modules.rawData[EQ_F0 + bandNum];break;
+			case 2:f = fr_l[bandNum] + (int8_t)currentPreset.modules.rawData[EQ_F0 + bandNum]*2;break;
+			case 3:f = fr_l[bandNum] + (int8_t)currentPreset.modules.rawData[EQ_F0 + bandNum]*10;break;
+			case 4:f = fr_l[bandNum] + (int8_t)currentPreset.modules.rawData[EQ_F0 + bandNum]*50;break;
 		}
 
 		g = currentPreset.modules.rawData[EQ_G0 + bandNum] - 15;
 
-		if(currentPreset.modules.rawData[EQ_Q0 + bandNum] <= 30)
+		if((int8_t)currentPreset.modules.rawData[EQ_Q0 + bandNum] <= 30)
 		{
-			Q = currentPreset.modules.rawData[EQ_Q0 + bandNum] * 0.01f + 0.701f;
+			Q = (int8_t)currentPreset.modules.rawData[EQ_Q0 + bandNum] * 0.01f + 0.701f;
 		}
 		else {
-			Q = (currentPreset.modules.rawData[EQ_Q0 + bandNum] - 20) * 0.1f + 0.001f;
+			Q = ((int8_t)currentPreset.modules.rawData[EQ_Q0 + bandNum] - 20) * 0.1f + 0.001f;
 		}
 
 		bandCoefs = Filter::calcFilterCoefs(Filter::TFilterType::PEAKING, f, g, Q);
@@ -92,23 +98,37 @@ void Filter::calcEqResponse()
 			eqResponsePoints[i] += calcFilterResponse(freqPoints[i], bandCoefs);
 		}
 	}
+
+	f = currentPreset.modules.rawData[EQ_HPF]*(980.0/127.0)+20.0;
+	bandCoefs = Filter::calcFilterCoefs(Filter::TFilterType::LOW_CUT, f, 0, 1);
+	for(int i=0; i<EqPointsNumber; i++)
+	{
+		eqResponsePoints[i] += calcFilterResponse(freqPoints[i], bandCoefs);
+	}
+
+	f = powf(127-currentPreset.modules.rawData[EQ_LPF], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0;
+	bandCoefs = Filter::calcFilterCoefs(Filter::TFilterType::HIGH_CUT, f, 0, 1);
+	for(int i=0; i<EqPointsNumber; i++)
+	{
+		eqResponsePoints[i] += calcFilterResponse(freqPoints[i], bandCoefs);
+	}
 }
 
-double Filter::calcFilterResponse(double f, TFilterCoefs coefs)
+float Filter::calcFilterResponse(float f, TFilterCoefs coefs)
 {
-	std::complex<double> z = std::polar((double)1.0, 2*vdt::details::VDT_PI_F*f/Fdiscr);
-	std::complex<double> z2 = z*z;
-	std::complex<double> h = (coefs.b0*z2 + coefs.b1*z + coefs.b2) / (coefs.a0*z2 + coefs.a1*z + coefs.a2);
+	std::complex<float> z = std::polar(1.0, 2*vdt::details::VDT_PI_F*f/Fdiscr);
+	std::complex<float> z2 = z*z;
+	std::complex<float> h = (coefs.b0*z2 + coefs.b1*z + coefs.b2) / (coefs.a0*z2 + coefs.a1*z + coefs.a2);
 	return 20*log10(abs(h));
 }
 
-TFilterCoefs Filter::calcFilterCoefs(TFilterType filterType, double freq, double gain, double Q)
+TFilterCoefs Filter::calcFilterCoefs(TFilterType filterType, float freq, float gain, float Q)
 {
 	TFilterCoefs coefs;
 
-    double A = pow(10, gain/40);
-    double w0 = 2 * vdt::details::VDT_PI_F * freq/Fdiscr;
-    double a = sin(w0)/(2*Q);
+	float A = pow(10, gain/40);
+    float w0 = 2 * vdt::details::VDT_PI_F * freq/Fdiscr;
+    float a = sin(w0)/(2*Q);
 
     switch(filterType)
     {

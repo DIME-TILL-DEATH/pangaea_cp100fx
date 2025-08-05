@@ -131,7 +131,7 @@ bool SystemMenu::editingFinished()
 
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 {
-	const uint8_t paramNum = 13;
+	const uint8_t paramNum = 14;
 	BaseParam* params[paramNum];
 
 	params[0] = new StringListParam("Mode", &sys_para[System::CAB_SIM_DISABLED], {"CabSim On ", "CabSim Off"}, 10);
@@ -191,6 +191,9 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	customParam->decreaseCallback = tunerSpeedDescrease;
 	customParam->increaseCallback = tunerSpeedIncrease;
 	params[12] = customParam;
+
+	params[13] = new StringListParam("EQ View", &sys_para[System::EQ_SCREEN_MODE], {"Graph ", "Bar  "}, 5);
+	params[13]->setDisplayPosition(leftPad + 6 * 10);
 
 	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
 	systemMenu->setParams(params, paramNum);
