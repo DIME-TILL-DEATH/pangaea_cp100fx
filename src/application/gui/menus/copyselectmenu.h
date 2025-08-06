@@ -49,25 +49,18 @@ private:
 		ActionReturn
 	}ElementType;
 
-	typedef enum
-	{
-		Unchecked,
-		Checked
-	}ElementState;
-
 	typedef struct
 	{
 		ElementType type;
-		ElementState state;
-		uint8_t* value_ptr;
+		uint8_t* checked_ptr;
 		const char* name;
 	}SelectionElement;
 
-	static constexpr uint8_t ElementsCount = 19;
+	static constexpr uint8_t ElementsCount = 20;
 	static constexpr uint8_t ElementsOnPage = 8;
 	SelectionElement element[ElementsCount];
 
-	TSelectionMask m_selectionMask;
+	static TSelectionMask m_selectionMask;
 
 	uint8_t m_elementNum{0};
 

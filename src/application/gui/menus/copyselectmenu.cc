@@ -4,36 +4,40 @@
 #include "preset.h"
 #include "eepr.h"
 
+CopySelectMenu::TSelectionMask CopySelectMenu::m_selectionMask =
+{
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1
+};
+
 CopySelectMenu::CopySelectMenu(AbstractMenu* parent)
 {
 	topLevelMenu = parent;
 	m_menuType = MENU_COPY_SELECTION;
 
-	element[0] = {ActionReturn, Checked, nullptr, "Return"};
-	element[1] = {ActionOk, Checked, nullptr, "Ok"};
+	element[0] = {ActionReturn, nullptr, "Return"};
+	element[1] = {ActionOk, nullptr, "Ok"};
 
-	element[2] = {StringLong, Checked, &m_selectionMask.name, "Name"};
-	element[3] = {StringLong, Checked, &m_selectionMask.comment, "Comment"};
-	element[4] = {StringLong, Checked, &m_selectionMask.controllers, "Controllers"};
+	element[2] = {StringLong, &m_selectionMask.name, "Name"};
+	element[3] = {StringLong, &m_selectionMask.comment, "Comment"};
+	element[4] = {StringLong, &m_selectionMask.controllers, "Controllers"};
 
-	element[5] = {StringShort, Checked, &m_selectionMask.rf, "RF"};
-	element[6] = {StringShort, Checked, &m_selectionMask.gt, "GT"};
-	element[7] = {StringShort, Checked, &m_selectionMask.cm, "CM"};
-	element[8] = {StringShort, Checked, &m_selectionMask.pr, "PR"};
-	element[9] = {StringShort, Checked, &m_selectionMask.pa, "PA"};
-	element[10] = {StringShort, Checked, &m_selectionMask.ir, "IR"};
-	element[11] = {StringShort, Checked, &m_selectionMask.eq, "EQ"};
+	element[5] = {StringShort, &m_selectionMask.rf, "RF"};
+	element[6] = {StringShort, &m_selectionMask.gt, "GT"};
+	element[7] = {StringShort, &m_selectionMask.cm, "CM"};
+	element[8] = {StringShort, &m_selectionMask.pr, "PR"};
+	element[9] = {StringShort, &m_selectionMask.pa, "PA"};
+	element[10] = {StringShort, &m_selectionMask.ir, "IR"};
+	element[11] = {StringShort, &m_selectionMask.eq, "EQ"};
 
-	element[12] = {StringShort, Checked, &m_selectionMask.fl, "FL"};
-	element[13] = {StringShort, Checked, &m_selectionMask.ph, "PH"};
-	element[14] = {StringShort, Checked, &m_selectionMask.ch, "CH"};
-	element[15] = {StringShort, Checked, &m_selectionMask.dl, "DL"};
-	element[16] = {StringShort, Checked, &m_selectionMask.eq, "ER"};
-	element[17] = {StringShort, Checked, &m_selectionMask.rv, "RV"};
-	element[18] = {StringShort, Checked, &m_selectionMask.tr, "TR"};
-	element[19] = {StringShort, Checked, &m_selectionMask.pv, "PR.VOL"};
-
-	kgp_sdk_libc::memset(&m_selectionMask, 1, sizeof(TSelectionMask));
+	element[12] = {StringShort, &m_selectionMask.fl, "FL"};
+	element[13] = {StringShort, &m_selectionMask.ph, "PH"};
+	element[14] = {StringShort, &m_selectionMask.ch, "CH"};
+	element[15] = {StringShort, &m_selectionMask.dl, "DL"};
+	element[16] = {StringShort, &m_selectionMask.eq, "ER"};
+	element[17] = {StringShort, &m_selectionMask.rv, "RV"};
+	element[18] = {StringShort, &m_selectionMask.tr, "TR"};
+	element[19] = {StringShort, &m_selectionMask.pv, "PR.VOL"};
 }
 
 void CopySelectMenu::show(TShowMode showMode)
@@ -245,8 +249,7 @@ void CopySelectMenu::encoderPressed()
 		case StringShort:
 		case StringLong:
 		{
-			element[m_elementNum].state = element[m_elementNum].state ? ElementState::Unchecked : ElementState::Checked;
-			*element[m_elementNum].value_ptr = element[m_elementNum].state;
+			*element[m_elementNum].checked_ptr = *element[m_elementNum].checked_ptr ? 0 : 1;
 			printPage();
 			break;
 		}
@@ -281,14 +284,14 @@ void CopySelectMenu::printElement(const SelectionElement& element, uint8_t numOn
 		case StringShort:
 		{
 			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)element.name);
-			DisplayTask->CheckBox(numOnPage%2 * 6 * 10 + 6 * 6, numOnPage / 2, element.state);
+			DisplayTask->CheckBox(numOnPage%2 * 6 * 10 + 6 * 6, numOnPage / 2, *element.checked_ptr);
 //			DisplayTask->StringOut((numOnPage%2 + 1) * 6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)"ch");
 			break;
 		}
 		case StringLong:
 		{
 			DisplayTask->StringOut(0, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)element.name);
-			DisplayTask->CheckBox(12 * 8, numOnPage / 2, element.state);
+			DisplayTask->CheckBox(12 * 8, numOnPage / 2, *element.checked_ptr);
 //			DisplayTask->StringOut(6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)"ch");
 			break;
 		}
@@ -336,5 +339,6 @@ uint8_t CopySelectMenu::elementIncrementIndex(const SelectionElement& element)
 		case ActionReturn: return 1;
 		case StringLong: return 2;
 		case StringShort: return 1;
+		default: return 0;
 	}
 }
