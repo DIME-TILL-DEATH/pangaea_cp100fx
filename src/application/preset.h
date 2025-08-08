@@ -240,17 +240,17 @@ typedef union
 	uint8_t rawData[512];
 }UModulesData;
 
-typedef union
+const uint8_t CabNameLength = 63;
+typedef struct
 {
-	char string[64];
 	uint8_t size;
-}UCabName;
+	char string[CabNameLength];
+}TCabName;
 
 typedef struct
 {
 	uint8_t* data;
-//	char name[64];
-	UCabName name;
+	TCabName name;
 }TCabinet;
 
 typedef struct

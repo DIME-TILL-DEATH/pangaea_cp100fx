@@ -136,7 +136,7 @@ void PresetActionsMenu::savePreset()
 	EEPR_writePreset(targetPresetNum);
 
 	send_cab_data(0, targetPresetNum+1, 0);
-	if(cab_type==2)
+	if(cab_type==CAB_CONFIG_STEREO)
 		send_cab_data1(0, targetPresetNum+1);
 
 	targetPresetNum = currentPresetNumber;

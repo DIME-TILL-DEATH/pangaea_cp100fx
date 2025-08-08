@@ -395,8 +395,29 @@ void TFsBrowser::CollapseAbsPath(char *abs_path, emb_string &name, emb_string &l
 //---------------------------------------------------------------
 void TFsBrowser::SelectFile(const fs_object_t &fs_object)
 {
-	*curr_fs_object = fs_object;
+	emb_string fileName = fs_object.name;
+	curr_fs_object = std::find_if(fs_object_list.begin(), fs_object_list.end(),
+			[&fileName](const fs_object_t& obj)
+				{return fileName == obj.name;});
+
+//	*curr_fs_object = fs_object;
 //	out_file_strings(parent.name.c_str());
+}
+//---------------------------------------------------------------
+void TFsBrowser::CreateDir(fs_object_t create_object)
+{
+	FRESULT res;
+	FILINFO fno;
+	DIR dir;
+	char *fn; /* This function is assuming non-Unicode cfg. */
+#if _USE_LFN
+    static char lfn[_MAX_LFN + 1];
+    lfn[0] = 0 ;
+    fno.lfname = lfn;
+    fno.lfsize = sizeof lfn;
+#endif
+
+    res = f_mkdir(create_object.name.c_str());
 }
 //---------------------------------------------------------------
 void TFsBrowser::SelectDir(fs_object_t select_object)
@@ -410,7 +431,7 @@ void TFsBrowser::SelectDir(fs_object_t select_object)
     lfn[0] = 0 ;
     fno.lfname = lfn;
     fno.lfsize = sizeof lfn;
-  #endif
+#endif
 
 	//if ((curr_fs_object->dir == "0:IMPULSE") && (curr_fs_object->name == ".."))
 

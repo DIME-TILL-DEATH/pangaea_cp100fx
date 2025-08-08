@@ -73,6 +73,7 @@ public:
 
 	void PrevObject(fs_object_t &object);
 	void NextObject(fs_object_t &object);
+	void CreateDir(fs_object_t object);
 	void SelectDir(fs_object_t object);
 	void SelectFile(const fs_object_t &object);
 	const fs_object_list_t& List() const {return fs_object_list;}

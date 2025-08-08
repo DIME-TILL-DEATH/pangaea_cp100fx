@@ -109,11 +109,11 @@ void EEPR_writePreset(uint8_t nu)
 	del_t_b[1] = delay_time>>8;
 	f_write(&file, del_t_b, 2, &f_size);
 	f_write(&file, cab1.data, CAB_DATA_SIZE, &f_size);
-	f_write(&file, cab1.name.string, 64, &f_size);
+	f_write(&file, &cab1.name, 64, &f_size);
 	if(cab_type == CAB_CONFIG_STEREO)
 	{
 		f_write(&file, cab2.data, CAB_DATA_SIZE, &f_size);
-		f_write(&file, cab2.name.string, 64, &f_size);
+		f_write(&file, &cab2.name, 64, &f_size);
 		f_lseek(&file, sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE * 3 + 64 * 2); // 38048
 	}
 	else
@@ -158,11 +158,11 @@ void EEPROM_loadPreset(uint8_t nu)
 		delay_time |= del_t_buf[1]<<8;
 
 		f_read(&file, cab1.data, CAB_DATA_SIZE, &f_size);
-		f_read(&file, cab1.name.string, 64, &f_size);
+		f_read(&file, &cab1.name, 64, &f_size);
 		if(cab_type==2)
 		{
 			f_read(&file, cab2.data, CAB_DATA_SIZE, &f_size);
-			f_read(&file, cab2.name.string, 64, &f_size);
+			f_read(&file, &cab2.name, 64, &f_size);
 		}
 		else
 		{
@@ -237,7 +237,7 @@ void EEPROM_loadPreset(uint8_t nu)
 
 	currentPreset.name[14] = 0;
 	currentPreset.comment[14] = 0;
-	cab1.name.string[63] = cab2.name.string[63] = 0;
+	cab1.name.string[62] = cab2.name.string[62] = 0;
 
 	FSTask->Resume();
 }

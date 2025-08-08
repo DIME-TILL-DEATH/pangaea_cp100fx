@@ -29,7 +29,7 @@ void CabNameMenu::task()
 				{
 					DisplayTask->Clear();
 					DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)"2 - ");
-					DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)cab2.name.string+1);
+					DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)cab2.name.string);
 					m_currentShowCab = 0;
 				}
 			}
@@ -41,11 +41,11 @@ void CabNameMenu::task()
 					if(cab_type==2)
 					{
 						DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)"1 - ");
-						DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)cab1.name.string+1);
+						DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)cab1.name.string);
 					}
 					else
 					{
-						DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)cab1.name.string+1);
+						DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)cab1.name.string);
 					}
 					m_currentShowCab = 1;
 				}
@@ -78,16 +78,16 @@ void CabNameMenu::show(TShowMode showMode)
 			if(cab_type == 2)
 			{
 				DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)"1 - ");
-				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab1.name.string + 1);
+				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab1.name.string);
 			}
-			else DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)cab1.name.string + 1);
+			else DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)cab1.name.string);
 		}
 		else
 		{
 			if(cab_type == 2)
 			{
 				DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)"2 - ");
-				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab2.name.string + 1);
+				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab2.name.string);
 			}
 		}
 		tim5_start(0);
