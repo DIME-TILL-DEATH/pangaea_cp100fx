@@ -32,6 +32,9 @@ enum gui_menu_type
 	MENU_FSW_CONTROL,
 	MENU_TUNER_EXT,
 	MENU_USB_SELECT,
+	MENU_TAP_SCREEN,
+	MENU_COPY_SELECTION,
+	MENU_EQ_GRAPH,
 
 	// Menus with icons
 	MENU_DELAY = 128,
@@ -106,7 +109,7 @@ protected:
 
 	gui_menu_type m_menuType{MENU_ABSTRACT};
 
-	StringOutParam* m_runningString{nullptr};
+	StringOutParam* m_runningString = nullptr;
 //	uint8_t m_runningStringsCount{0};
 };
 

@@ -19,24 +19,24 @@
 #include "preset.h"
 #include "footswitch.h"
 
+#include "tunermenu.h"
+
 #include "system.h"
 
-void start_usb();
-
-volatile uint8_t encoder_flag;
-volatile uint8_t k_tuner;
 volatile uint8_t contr_kn[3];
 volatile uint8_t contr_kn1[3];
 volatile uint8_t contr_pr[3];
 volatile uint8_t usb_flag = 0;
-extern uint8_t blinkFlag_fl;
 
 uint8_t k_up = 0;
 uint8_t k_down = 0;
+
 uint8_t k_att = 0;
 uint8_t k_sys = 0;
 uint8_t k_master = 0;
 uint8_t k_master_eq = 0;
+uint8_t k_tuner = 0;
+
 volatile uint16_t key_reg_in;
 volatile uint8_t key_reg_out[2] = {0, 0};
 volatile uint16_t key_reg;
@@ -57,11 +57,11 @@ void tim_start(uint16_t del)
 	TIM_Cmd(TIM3, ENABLE);
 }
 
-void foot_run(uint8_t num)
+void fsw_press_execute(uint8_t num)
 {
-	if(tuner_use)
+	if(currentMenu->menuType() == MENU_TUNER)
 	{
-		k_up = 1;
+		currentMenu->keyUp();
 		CSTask->Give();
 	}
 	else
@@ -152,7 +152,7 @@ void foot_run(uint8_t num)
 			break;
 
 			case Footswitch::Tuner:
-				k_tuner = 1;
+				currentMenu->showChild(new TunerMenu(currentMenu));
 				CSTask->Give();
 			break;
 
@@ -190,30 +190,47 @@ void foot_run(uint8_t num)
 		}
 	}
 }
-void foot_hold_run(uint8_t num)
+void fsw_hold_execute(uint8_t num)
 {
-	if(tuner_use)
+	if(currentMenu->menuType() == MENU_TUNER)
 	{
-		k_up = 1;
+		currentMenu->keyUp();
 		CSTask->Give();
 	}
 	else
 	{
 		switch(sys_para[System::FSW1_HOLD_TYPE + num])
 		{
-			case 0:
+			case Footswitch::Default:
 			{
 				if(currentMenu->menuType() == MENU_MAIN)
 				{
+					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
+
 					switch(num)
 					{
-						MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
-
-						switch(num)
+						case 0:
 						{
-							case 0:
+							mainMenu->presetDown();
+
+							if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
+									|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 							{
-								mainMenu->presetDown();
+								mainMenu->presetConfirm();
+							}
+							CSTask->Give();
+							break;
+						}
+						case 1:
+						{
+							if(!sys_para[System::SWAP_SWITCH])
+							{
+								mainMenu->presetConfirm();
+								CSTask->Give();
+							}
+							else
+							{
+								mainMenu->presetUp();
 
 								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
@@ -221,51 +238,31 @@ void foot_hold_run(uint8_t num)
 									mainMenu->presetConfirm();
 								}
 								CSTask->Give();
-								break;
 							}
-							case 1:
-							{
-								if(!sys_para[System::SWAP_SWITCH])
-								{
-									mainMenu->presetConfirm();
-									CSTask->Give();
-								}
-								else
-								{
-									mainMenu->presetUp();
-
-									if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
-											|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
-									{
-										mainMenu->presetConfirm();
-									}
-									CSTask->Give();
-								}
-							}
-							break;
-							case 2:
-								if(!sys_para[System::SWAP_SWITCH])
-								{
-									mainMenu->presetUp();
-
-									if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
-											|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
-									{
-										mainMenu->presetConfirm();
-									}
-									CSTask->Give();
-								}
-								else
-								{
-									mainMenu->presetConfirm();
-								}
-							break;
 						}
+						break;
+						case 2:
+							if(!sys_para[System::SWAP_SWITCH])
+							{
+								mainMenu->presetUp();
+
+								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
+										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
+								{
+									mainMenu->presetConfirm();
+								}
+								CSTask->Give();
+							}
+							else
+							{
+								mainMenu->presetConfirm();
+							}
+						break;
 					}
 				}
 				break;
 			}
-			case 1:
+			case Footswitch:: Controller:
 			{
 				if(!contr_kn1[num])
 				{
@@ -291,8 +288,8 @@ void foot_hold_run(uint8_t num)
 			break;
 			}
 
-			case 2:
-				k_tuner = 1;
+			case Footswitch::Tuner:
+				currentMenu->showChild(new TunerMenu(currentMenu));
 				CSTask->Give();
 			break;
 
@@ -339,14 +336,10 @@ uint8_t fsw3_in_fl1 = 0;
 
 uint8_t tim3_end_fl = 0;
 
-volatile uint8_t enc_run = 0;
-volatile uint32_t reset_disp_count = 0;
-
-void ADC_process();
-
 void TENCTask::Code()
 {
 	while(!enc_run);
+
 	TIM_Cmd(TIM3, ENABLE);
 	while(1)
 	{
@@ -394,7 +387,7 @@ void TENCTask::Code()
 					fsw1_in_fl = 1;
 					if(sys_para[System::FSW1_MODE] == Footswitch::FswMode::Single)
 					{
-						foot_run(0);
+						fsw_press_execute(0);
 					}
 					else
 					{
@@ -409,7 +402,7 @@ void TENCTask::Code()
 					fsw2_in_fl = 1;
 					if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
 					{
-						foot_run(1);
+						fsw_press_execute(1);
 					}
 					else
 					{
@@ -424,7 +417,7 @@ void TENCTask::Code()
 					fsw3_in_fl = 1;
 					if(!sys_para[System::FSW3_MODE])
 					{
-						foot_run(2);
+						fsw_press_execute(2);
 					}
 					else
 					{
@@ -438,6 +431,7 @@ void TENCTask::Code()
 			}
 			blinkFlag_fl = 1;
 		}
+
 		if(key_reg == 31212)
 		{
 			if(sys_para[System::FSW1_MODE] == Footswitch::Double)
@@ -446,34 +440,37 @@ void TENCTask::Code()
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
-						foot_run(0);
+						fsw_press_execute(0);
 					tim_start(0xf700);
 					fsw1_in_fl = 0;
 				}
 			}
+
 			if(sys_para[System::FSW2_MODE] == Footswitch::Double)
 			{
 				if(fsw2_in_fl)
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
-						foot_run(1);
+						fsw_press_execute(1);
 					tim_start(0xf700);
 					fsw2_in_fl = 0;
 				}
 			}
+
 			if(sys_para[System::FSW3_MODE] == Footswitch::Double)
 			{
 				if(fsw3_in_fl)
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
-						foot_run(2);
+						fsw_press_execute(2);
 					tim_start(0xf700);
 					fsw3_in_fl = 0;
 				}
 			}
 		}
+
 		if(TIM_GetFlagStatus(TIM3, TIM_FLAG_Update))
 		{
 			//TIM_ClearFlag(TIM3,TIM_FLAG_Update);
@@ -481,10 +478,12 @@ void TENCTask::Code()
 				kn2_in_fl = fsw1_in_fl = fsw2_in_fl = fsw3_in_fl = tim3_end_fl = 0;
 		}
 //---------------------------------------------Run string-------------------------------------
-		StringOutParam *runningString = currentMenu->getRunningString();
-		if(runningString)
-			runningString->task();
-
+		if(currentMenu)
+		{
+			StringOutParam *runningString = currentMenu->getRunningString();
+			if(runningString)
+				runningString->task();
+		}
 //----------------------------------------------------LED FX-----------------------------------------------
 		uint8_t a = 0;
 		for(uint8_t i = 0; i < 14; i++)
@@ -507,33 +506,19 @@ void TENCTask::Code()
 			{
 				usb_flag = 1;
 
-//				while(currentMenu->menuType() != MENU_MAIN)
-//				{
-//					currentMenu->keyUp();
-//				}
-//
-//				usbMenu->show();
 			}
 		}
 		else
 		{
 			if(!(GPIOA->IDR & GPIO_Pin_9))
 			{
-//				if(usb_connect_type == TUsbTask::mMSC)
-//				{
 				NVIC_SystemReset();
-//				}
-//				else
-//				{
-//					currentMenu = mainMenu;
-//					currentMenu->show();
-//					usb_flag = 2;
-//				}
 			}
 		}
 //--------------------------------------------------------------------------------------------
 	}
 }
+
 extern "C" void DMA1_Stream5_IRQHandler()
 {
 	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
@@ -557,25 +542,26 @@ extern "C" void TIM3_IRQHandler()
 		{
 			fsw1_in_fl1 = 1;
 			fsw1_in_fl = 0;
-			foot_hold_run(0);
+			fsw_hold_execute(0);
 			fsw1_in_fl1 = 0;
 		}
 		if(fsw2_in_fl)
 		{
 			fsw2_in_fl1 = 1;
 			fsw2_in_fl = 0;
-			foot_hold_run(1);
+			fsw_hold_execute(1);
 			fsw2_in_fl1 = 0;
 		}
 		if(fsw3_in_fl)
 		{
 			fsw3_in_fl1 = 1;
 			fsw3_in_fl = 0;
-			foot_hold_run(2);
+			fsw_hold_execute(2);
 			fsw3_in_fl1 = 0;
 		}
 	}
 }
+
 uint16_t mediann_tap(uint16_t *array, int length)  // массив и его длина
 {
 	uint16_t slit = length / 2;

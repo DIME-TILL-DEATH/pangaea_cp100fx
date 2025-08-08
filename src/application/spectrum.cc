@@ -145,7 +145,7 @@ void SpectrumBuffsUpdate(float u)
 		index++;
 		if(index==N+n)
 		{
-			if(tuner_use)
+			if(currentMenu->menuType() == MENU_TUNER)
 				SpectrumTask->Resume();
 			index = 0;
 		}

@@ -13,7 +13,8 @@ class TENCTask: public TTask
 {
 public:
 	TENCTask();
-	inline void Give()
+
+	void Give()
 	{
 		if(cortex_isr_num())
 		{
@@ -25,7 +26,8 @@ public:
 		else
 			sem->Give();
 	}
-	inline void SetEnc(uint8_t val)
+
+	void SetEnc(uint8_t val)
 	{
 		enc_run = val;
 	}
@@ -33,13 +35,23 @@ private:
 	void Code();
 	TSemaphore *sem;
 
+	uint8_t enc_run = 0;
 };
 
 extern volatile uint8_t encoder_state;
 extern volatile uint8_t encoder_state_updated;
 extern volatile uint8_t encoder_knob_pressed;
-extern volatile uint8_t encoder_flag;
-extern volatile uint8_t k_tuner;
+
+extern uint8_t k_up;
+extern uint8_t k_down;
+
+extern uint8_t k_att;
+extern uint8_t k_master;
+extern uint8_t k_master_eq;
+extern uint8_t k_sys;
+extern uint8_t k_tuner;
+
+
 extern volatile uint8_t contr_kn[];
 extern volatile uint8_t contr_kn1[];
 

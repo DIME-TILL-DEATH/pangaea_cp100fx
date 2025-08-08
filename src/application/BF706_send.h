@@ -53,9 +53,8 @@ enum dsp_indicator_source_t
 	DSP_INDICATOR_IN
 };
 
-extern uint32_t send_buf;
 extern uint8_t spi_stat;
-extern uint8_t __CCM_BSS__ preset_temp[];
+extern uint8_t __CCM_BSS__ presetBuffer[];
 
 void DSP_GuiSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value);
 void DSP_ContrSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value);
@@ -69,8 +68,7 @@ void DSP_EraseSecondaryCab(uint8_t presetNum);
 
 void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl);
 void send_cab_data1(uint8_t val, uint8_t num);
-void gui_send(uint8_t num, uint16_t val);
-void contr_send(uint8_t num, uint16_t val);
+
 void ext_send(uint8_t data);
 
 #endif /* BF706_SEND_H_ */

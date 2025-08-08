@@ -10,7 +10,7 @@
 
 uint32_t sram_point;
 uint32_t sram_point1;
-uint8_t blinkFlag_fl;
+volatile uint8_t blinkFlag_fl;
 uint8_t us2_buf[2];
 uint8_t us2_buf1[2] =
 {0xaa, 0x55};
@@ -464,10 +464,12 @@ void init(void)
 		SPI_I2S_SendData(SPI2, 0);
 	}
 
+	cab1.data = &ccmCommonCabBuffer[0];
+	cab2.data = &ccmCommonCabBuffer[4096 * 3];
 	if(cab_type != CAB_CONFIG_STEREO)
 	{
-		cab1.data = &ccmBuffer[0];
-		cab2.data = nullptr;
+//		cab1.data = &ccmBuffer[0];
+//		cab2.data = nullptr;
 
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_end;
@@ -482,8 +484,8 @@ void init(void)
 	}
 	else
 	{
-		cab1.data = &ccmBuffer[0];
-		cab2.data = &ccmBuffer[4096 * 3];
+//		cab1.data = &ccmBuffer[0];
+//		cab2.data = &ccmBuffer[4096 * 3];
 
 		extern uint8_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_end;
@@ -521,7 +523,6 @@ void init(void)
 		send_codec(fff[i]);
 	}
 
-	void load_mass_imp(void);
 	load_mass_imp();
 }
 //---------------------------------------------------------------------------
@@ -545,9 +546,14 @@ void eepr_init(void)
 		f_closedir(&dir);
 	else
 		f_mkdir("1:PRESETS");
+
 	res = f_open(&file, "1:system.pan", FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
 	if(f_size(&file)==0)
+	{
+		sys_para[System::TUNER_EXTERNAL] = 0x81;
 		f_write(&file, sys_para, 512, &file_size);
+	}
+
 	f_read(&file, sys_para, 512, &file_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
@@ -598,15 +604,4 @@ extern "C" void EXTI15_10_IRQHandler()
 		}
 	}
 }
-const uint16_t bpm_time[] =
-{2727, 2609, 2500, 2400, 2308, 2222, 2143, 2069, 2000, 1935, 1875, 1818, 1765, 1714, 1667, 1622, 1579, 1538, 1500, 1463,
-		1429, 1395, 1364, 1333, 1304, 1277, 1250, 1224, 1200, 1176, 1154, 1132, 1111, 1091, 1071, 1053, 1034, 1017,
-		1000, 984, 968, 952, 938, 923, 909, 896, 882, 870, 857, 845, 833, 822, 811, 800, 789, 779, 769, 759, 750, 741,
-		732, 723, 714, 706, 698, 690, 682, 674, 667, 659, 652, 645, 638, 632, 625, 619, 612, 606, 600, 594, 588, 583,
-		577, 571, 566, 561, 556, 550, 545, 541, 536, 531, 526, 522, 517, 513, 508, 504, 500, 496, 492, 488, 484, 480,
-		476, 472, 469, 465, 462, 458, 455, 451, 448, 444, 441, 438, 435, 432, 429, 426, 423, 420, 417, 414, 411, 408,
-		405, 403, 400, 397, 395, 392, 390, 387, 385, 382, 380, 377, 375, 373, 370, 368, 366, 364, 361, 359, 357, 355,
-		353, 351, 349, 347, 345, 343, 341, 339, 337, 335, 333, 331, 330, 328, 326, 324, 323, 321, 319, 317, 316, 314,
-		313, 311, 309, 308, 306, 305, 303, 302, 300, 299, 297, 296, 294, 293, 291, 290, 288, 287, 286, 284, 283, 282,
-		280, 279, 278, 276, 275, 274, 273, 271, 270, 269, 268, 267, 265, 264, 263, 262, 261, 260, 259, 258, 256, 255,
-		254, 253, 252, 251, 250};
+

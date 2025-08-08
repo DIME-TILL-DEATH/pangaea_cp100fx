@@ -21,10 +21,10 @@ void TunerMenu::show(TShowMode showMode)
 	send_codec(0xa102);
 	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 	tun_base_old = 0.0f;
-	tun_ini();
-	tuner_use = 1;
+//	tun_ini();
 
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
+	DisplayTask->TunerInit();
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_IN);
 }
 
 void TunerMenu::encoderClockwise()
@@ -52,25 +52,25 @@ void TunerMenu::keyUp()
 void TunerMenu::key1()
 {
 	endTunerTask();
-	topLevelMenu->key1();
+	topLevelMenu->returnFromChildMenu();
 }
 
 void TunerMenu::key2()
 {
 	endTunerTask();
-	topLevelMenu->key2();
+	topLevelMenu->returnFromChildMenu();
 }
 
 void TunerMenu::key3()
 {
 	endTunerTask();
-	topLevelMenu->key3();
+	topLevelMenu->returnFromChildMenu();
 }
 
 void TunerMenu::key4()
 {
 	endTunerTask();
-	topLevelMenu->key4();
+	topLevelMenu->returnFromChildMenu();
 }
 
 void TunerMenu::key5()
@@ -82,9 +82,9 @@ void TunerMenu::key5()
 
 void TunerMenu::endTunerTask()
 {
-	tuner_use = 0;
 	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
-	DisplayTask->Clear();
+	DisplayTask->TunerDeinit();
+//	DisplayTask->Clear();
 	CSTask->Give();
 	GPIO_ResetBits(GPIOB, GPIO_Pin_11);
 	send_codec(0xa103);

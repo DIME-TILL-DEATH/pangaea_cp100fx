@@ -12,6 +12,7 @@
 #include "gui_task.h"
 
 #include "system.h"
+#include "fs.h"
 
 #include "console_helpers.h"
 #include "resonance_filter_handlers.h"
@@ -69,17 +70,291 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	currentPreset.modules.rawData[147] = delay_time;
 	currentPreset.modules.rawData[148] = delay_time>>8;
 
-	currentPresetNumber;
-	eepr_write(currentPresetNumber);
+//	currentPresetNumber;
+	EEPR_writePreset(currentPresetNumber);
 
-	DSP_SendPresetData(currentPreset.modules.rawData);
+	// Не работает. Возвращает сохранённое по звуку
+//	DSP_SendPresetData(currentPreset.modules.rawData);
+//
+//	DSP_SendPrimaryCabData(cab1.data, currentPresetNumber+1);
+//	if(cab_type == CAB_CONFIG_STEREO) DSP_SendSecondaryCabData(cab2.data, currentPresetNumber+1);
 
-	DSP_SendPrimaryCabData(cab1.data, currentPresetNumber+1);
-	if(cab_type == CAB_CONFIG_STEREO) DSP_SendSecondaryCabData(cab2.data, currentPresetNumber+1);
+	send_cab_data(0, currentPresetNumber+1, 0);
+	if(cab_type==CAB_CONFIG_STEREO)
+		send_cab_data1(0, currentPresetNumber+1);
 
-	prog_ch();
+	Preset::Change();
 
 	msg_console("%s\r\n", args[0]);
+}
+
+static void ls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+	msg_console("%s\r", args[0]);
+	fs_object_t fsObject;
+	fs_object_list_t dirContent;
+	fileBrowser->Browse(TFsBrowser::bcList, fsObject, dirContent);
+
+	for(auto it = dirContent.begin(); it != dirContent.end(); ++it)
+	{
+		msg_console("%d:%s|", (*it).type, (*it).name.c_str());
+	}
+	msg_console("\n");
+	FSTask->Resume();
+}
+
+static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+
+	consoleBusy = true;
+	char folderName[256];
+	getDataPartFromStream(rl, folderName, 256);
+	consoleBusy = false;
+
+	fs_object_t fsObject;
+	fsObject.name = folderName;
+	fileBrowser->SelectDir(fsObject);
+
+	msg_console("%s\r%s\n", args[0], fileBrowser->CurrDir(false).c_str());
+//	msg_console("%s\r%s\n", args[0], fileBrowser->CurrentObject()->full_dir.c_str());
+	FSTask->Resume();
+}
+
+static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+
+	msg_console("%s ", args[0]);
+
+	uint8_t cabNum = 0;
+
+	if(count > 1)
+	{
+		char *end;
+		cabNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+		msg_console("%d", cabNum);
+	}
+
+	if(count == 2)
+	{
+		if(cabNum==0)
+		{
+			msg_console("\r%s\n", cab1.name.string);
+		}
+		else
+		{
+			msg_console("\r%s\n", cab2.name.string);
+		}
+	}
+
+	if(count == 3)
+	{
+		std::emb_string command = args[2];
+
+		if(command == "set")
+		{
+			consoleBusy = true;
+			char fileName[Preset::CabNameLength];
+			kgp_sdk_libc::memset(fileName, 0, Preset::CabNameLength);
+
+			getDataPartFromStream(rl, fileName, Preset::CabNameLength);
+			consoleBusy = false;
+
+			fs_object_t fsObject;
+			fsObject.name = fileName;
+			fileBrowser->SelectFile(fsObject);
+
+			emb_string errStr;
+			if(!fileBrowser->GetDataFromFile(presetBuffer, errStr))
+			{
+				msg_console(" error\r%s\n", errStr.c_str());
+				FSTask->Resume();
+				return;
+			}
+
+			if(cabNum==0)
+			{
+				kgp_sdk_libc::memcpy(cab1.data, presetBuffer, 4096 * 3);
+				if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memcpy(cab1.data + 4096 * 3, presetBuffer + 4096 * 3, 4096 * 3);
+
+				kgp_sdk_libc::memcpy(cab1.name.string, fileName, Preset::CabNameLength);
+				cab1.name.size = kgp_sdk_libc::strlen(fileName);
+
+				DSP_SendPrimaryCabData(cab1.data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			}
+			else
+			{
+				kgp_sdk_libc::memcpy(cab2.data, presetBuffer, 4096 * 3);
+				kgp_sdk_libc::memcpy(cab2.name.string, fileName, Preset::CabNameLength);
+				cab2.name.size = kgp_sdk_libc::strlen(fileName);
+
+				DSP_SendSecondaryCabData(cab2.data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			}
+
+			msg_console(" set\r%s\n", fileName);
+		}
+	}
+	FSTask->Resume();
+}
+
+static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	msg_console("%s ", args[0]);
+
+	consoleBusy = true;
+	char dirName[64];
+	kgp_sdk_libc::memset(dirName, 0 ,64);
+
+	getDataPartFromStream(rl, dirName, 64);
+	consoleBusy = false;
+
+	fs_object_t fsObject;
+	fsObject.name = dirName;
+	fileBrowser->CreateDir(fsObject);
+}
+
+static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	msg_console("%s ", args[0]);
+	if(count < 2)
+	{
+		msg_console("\r\n");
+		return;
+	}
+
+	std::emb_string command = args[1];
+
+	if(command == "start_upload")
+	{
+		FSTask->Suspend();
+
+		char buffer[128];
+		emb_string fileName;
+		getDataPartFromStream(rl, buffer, 128);
+//
+//		FIL irFile;
+//		FATFS fs;
+//		f_mount(&fs, "0:", 1);
+//		FRESULT res = f_open(&irFile, fileName.c_str(), FA_WRITE | FA_OPEN_ALWAYS);
+//		if (res == FR_OK)
+//		{
+//			f_close(&irFile); // can write to file. Path correct
+//			msg_console("request_part\r\n");
+//		} else {
+//			uploadingIrPath.clear();
+//			msg_console("error\rDST_PATH_INCORRECT\n");
+//		}
+//		f_mount(0, "0:", 1);
+
+		FSTask->Resume();
+	}
+
+	if (command == "part_upload")
+	{
+		if (count > 2)
+		{
+			FSTask->Suspend();
+
+//			char buffer[512];
+//			char *pEnd;
+//			int32_t streamPos = 0;
+//			int32_t bytesToRecieve = kgp_sdk_libc::strtol(args[2], &pEnd, 10);
+//			int c;
+//			do
+//			{
+//				rl->RecvChar(c);
+//				buffer[streamPos++] = c;
+//			} while (streamPos < bytesToRecieve);
+//			rl->RecvChar(c); // get last \n
+//
+//			FIL irFile;
+//			FATFS fs;
+//			f_mount(&fs, "0:", 1);
+//			FRESULT res = f_open(&irFile, uploadingIrPath.c_str(), FA_WRITE | FA_OPEN_EXISTING);
+//			if (res == FR_OK)
+//			{
+//				f_lseek(&irFile, f_size(&irFile));
+//				f_write(&irFile, buffer, bytesToRecieve, 0);
+//				f_close(&irFile); // can write to file. Path correct
+//				msg_console("request_part\r\n");
+//			}
+
+			FSTask->Resume();
+		}
+		else
+		{
+			msg_console("error\rPART_SIZE_INCORRECT\n");
+		}
+	}
+
+//			if(command == "download")
+//			{
+//				char buffer[128];
+//				emb_string filePath;
+//				getDataPartFromStream(rl, buffer, 128);
+//				filePath = buffer;
+//
+//				FATFS fs;
+//				FRESULT res;
+//				FIL file;
+//				res = f_mount(&fs, "0:", 1);
+//
+//				if(res == FR_OK)
+//				{
+//					res = f_open(&file, filePath.c_str(), FA_READ);
+//					if (res == FR_OK)
+//					{
+//						msg_console("download\r%s\r", filePath.c_str());
+//						char hex[3] = { 0, 0, 0 };
+//						UINT br = 0;
+//						char byte;
+//
+//						while (1)
+//						{
+//							res = f_read(&file, &byte, 1, &br);
+//
+//							if (res != FR_OK)
+//							{
+//								msg_console("\nERROR\n");
+//								break;
+//							}
+//							if (br != 1)
+//							{
+//								msg_console("\n");
+//								break;
+//							}
+//
+//							i2hex(byte, hex);
+//							msg_console("%s", hex);
+//							TTask::Delay(1);
+//						}
+//						f_close(&file);
+//					}
+//				}
+//				else
+//				{
+//					msg_console("error\rOPEN_FILE_ERROR\n");
+//				}
+//				f_mount(0, "0:", 0);
+//			}
+
+//			if (command == "delete")
+//			{
+//				getDataPartFromStream(rl, dataBuffer, bufferSize);
+//
+//				if(EEPROM_delete_file(dataBuffer))
+//				{
+//					msg_console("\rOK\n");
+//				}
+//				else
+//				{
+//					msg_console("\rERROR\n");
+//				}
+//			}
 }
 
 static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -90,9 +365,14 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 		currentPresetNumber = kgp_sdk_libc::strtol(args[1], &end, 16);
 
 		sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-		prog_ch();
+		Preset::Change();
+
+		msg_console("%s\r\n", args[0]);
 	}
-	msg_console("%s\r\n", args[0]);
+	else
+	{
+		msg_console("%s\rINCORRECT_ARGUMENT\n", args[0]);
+	}
 }
 
 static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -104,7 +384,36 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	{
 		Preset::TPresetBrief presetData;
 		EEPROM_loadBriefPreset(p, &presetData);
-		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, presetData.cab1Name + 1, presetData.cab2Name + 1);
+
+		char *cab1NameSrc = presetData.cab1Name + 1;
+		char *cab2NameSrc = presetData.cab2Name + 1;
+		char cab1NameDst[64];
+		char cab2NameDst[64];
+
+		uint8_t pos=0;
+
+		while(*cab1NameSrc)
+		{
+			if(*cab1NameSrc != '|' && *cab1NameSrc != '\r' && *cab1NameSrc != '\n')
+			{
+				cab1NameDst[pos] = *cab1NameSrc;
+				pos++;
+			}
+			cab1NameSrc++;
+		}
+
+		pos=0;
+		while(*cab2NameSrc)
+		{
+			if(*cab2NameSrc != '|' && *cab2NameSrc != '\r' && *cab2NameSrc != '\n')
+			{
+				cab2NameDst[pos] = *cab1NameSrc;
+				pos++;
+			}
+			cab2NameSrc++;
+		}
+
+		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
 
 		uint8_t enabled[14];
 		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);
@@ -150,8 +459,7 @@ static void pnum_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr
 {
 	msg_console("%s\r", args[0]);
 
-	char hex[3] =
-	{0, 0, 0};
+	char hex[3] = {0, 0, 0};
 	i2hex(currentPresetNumber, hex);
 	msg_console("%s", hex);
 
@@ -275,6 +583,12 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 
 	rl->AddCommandHandler("amtdev", amtdev_command_handler);
 	rl->AddCommandHandler("amtver", amtver_command_handler);
+
+	rl->AddCommandHandler("cd", cd_command_handler);
+	rl->AddCommandHandler("ls", ls_command_handler);
+	rl->AddCommandHandler("ir", ir_command_handler);
+
+	rl->AddCommandHandler("mkdir", mkdir_command_handler);
 
 	rl->AddCommandHandler("pchange", pchange_command_handler);
 	rl->AddCommandHandler("psave", psave_command_handler);

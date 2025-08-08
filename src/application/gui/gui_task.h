@@ -2,10 +2,10 @@
 #define GU_H_
 
 #include "appdefs.h"
-#include "../modules.h"
-#include "menus/abstractmenu.h"
+#include "modules.h"
+#include "abstractmenu.h"
 
-#include "menus/paramlistmenu/baseparam.h"
+#include "baseparam.h"
 
 #define IN_OUT_STR_SIZE 7
 const uint8_t in_out_strings[][IN_OUT_STR_SIZE] = {"Input ", "Output"};
@@ -16,17 +16,9 @@ typedef union {
 }tr_t;
 
 void tim5_start(uint8_t val);
-//void clean_flag (void);
-
 
 extern const uint8_t expr_menu [][10];
 
-extern uint8_t k_up;
-extern uint8_t k_down;
-extern uint8_t k_sys;
-extern uint8_t k_master;
-
-extern uint8_t tuner_use;
 extern const float tap_time_coefs[];
 extern const float tap_moog[];
 extern bool cab_data_ready;
@@ -39,7 +31,5 @@ void clean_flag (void);
 void adc_proc(void);
 void comp_para(uint32_t val);
 void gate_par(uint32_t val);
-
-void prog_ch(void);
 
 #endif /* GU_H_ */

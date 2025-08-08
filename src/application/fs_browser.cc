@@ -63,6 +63,29 @@ TFsBrowser::~TFsBrowser()
 {
 }
 
+emb_string TFsBrowser::CurrDir(bool collapsedPath) const
+{
+	if(collapsedPath)
+		return curr_dir_level+curr_dir_name;
+	else
+	{
+	#if _USE_LFN
+		FILINFO fno;
+		char *fn; /* This function is assuming non-Unicode cfg. */
+
+	    static char lfn[_MAX_LFN + 1];
+	    lfn[0] = 0 ;
+	    fno.lfname = lfn;
+	    fno.lfsize = sizeof lfn;
+
+		f_getcwd(lfn, _MAX_LFN);
+		return lfn;
+	#else
+		return 0;
+	#endif
+	}
+}
+
 void TFsBrowser::PrevObject(fs_object_t &object)
 {
 	if(curr_fs_object!=fs_object_list.begin())
@@ -213,10 +236,10 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 		response.file.type = object.type;
 
 		emb_string err;
-		if(GetDataFromFile(preset_temp, err))
+		if(GetDataFromFile(presetBuffer, err))
 		{
 			response.responseType = TCSTask::rpFileLoaded;
-			response.file.buffer = &preset_temp[0];
+			response.file.buffer = &presetBuffer[0];
 
 			char nameBuffer[64];
 			uint8_t name_point = 0;
@@ -227,7 +250,7 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 			nameBuffer[++name_point] = 0;
 			nameBuffer[0] = name_point;
 
-			kgp_sdk_libc::memcpy(response.file.name,nameBuffer, 64);
+			kgp_sdk_libc::memcpy(response.file.name, nameBuffer, 64);
 
 			extern bool cab_data_ready;
 			cab_data_ready = true;
@@ -339,11 +362,6 @@ void TFsBrowser::Print(outstr_func_t func)
 
 }
 //---------------------------------------------------------------
-void TFsBrowser::SelectFile(const fs_object_t &parent)
-{
-	out_file_strings(parent.name.c_str());
-}
-//---------------------------------------------------------------
 
 char *file_name;
 size_t slash_count;
@@ -375,6 +393,33 @@ void TFsBrowser::CollapseAbsPath(char *abs_path, emb_string &name, emb_string &l
 	level.assign(slash_count, '/');
 }
 //---------------------------------------------------------------
+void TFsBrowser::SelectFile(const fs_object_t &fs_object)
+{
+	emb_string fileName = fs_object.name;
+	curr_fs_object = std::find_if(fs_object_list.begin(), fs_object_list.end(),
+			[&fileName](const fs_object_t& obj)
+				{return fileName == obj.name;});
+
+//	*curr_fs_object = fs_object;
+//	out_file_strings(parent.name.c_str());
+}
+//---------------------------------------------------------------
+void TFsBrowser::CreateDir(fs_object_t create_object)
+{
+	FRESULT res;
+	FILINFO fno;
+	DIR dir;
+	char *fn; /* This function is assuming non-Unicode cfg. */
+#if _USE_LFN
+    static char lfn[_MAX_LFN + 1];
+    lfn[0] = 0 ;
+    fno.lfname = lfn;
+    fno.lfsize = sizeof lfn;
+#endif
+
+    res = f_mkdir(create_object.name.c_str());
+}
+//---------------------------------------------------------------
 void TFsBrowser::SelectDir(fs_object_t select_object)
 {
 	FRESULT res;
@@ -386,7 +431,7 @@ void TFsBrowser::SelectDir(fs_object_t select_object)
     lfn[0] = 0 ;
     fno.lfname = lfn;
     fno.lfsize = sizeof lfn;
-  #endif
+#endif
 
 	//if ((curr_fs_object->dir == "0:IMPULSE") && (curr_fs_object->name == ".."))
 

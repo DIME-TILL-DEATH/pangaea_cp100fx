@@ -2,13 +2,12 @@
 #define __INIT_H__
 
 #include "appdefs.h"
-//#include "gui/elements/allFonts.h"
 
 extern uint8_t cab_type;
 
 
 extern uint32_t sram_point;
-extern uint8_t blinkFlag_fl;
+extern volatile uint8_t blinkFlag_fl;
 extern uint8_t usart_buf[4];
 
 typedef union
@@ -48,16 +47,11 @@ typedef union
 	};
 } da_data_t;
 
-//ad_data_t& init_get_adc_data();
-//da_data_t& init_get_dac_data();
-
 void send_codec(uint16_t data);
 void init(void);
 void adc_init(uint8_t stat);
 void adc_calib(void);
 void adc_pin_init(void);
-
-extern const uint16_t bpm_time[];
 
 inline void __attribute__ ((always_inline)) dela(uint32_t i)
 {

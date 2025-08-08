@@ -6,6 +6,7 @@
 
 
 TFSTask *FSTask;
+TFsBrowser *fileBrowser;
 //------------------------------------------------------------------------------
 TFSTask::TFSTask() :
 		TTask()
@@ -23,13 +24,13 @@ bool cab_data_ready;
 void TFSTask::Code()
 {
 	TFsBrowser::browse_command_t browse_command;
-	TFsBrowser *fb = new TFsBrowser();
+	fileBrowser = new TFsBrowser();
 
 	while(1)
 	{
 		queue->Receive((void*)&browse_command, portMAX_DELAY);
 
-		fb->Browse(browse_command, object, object_list);
+		fileBrowser->Browse(browse_command, object, object_list);
 	}
 }
 //------------------------------------------------------------------------------

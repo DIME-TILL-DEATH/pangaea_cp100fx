@@ -1,6 +1,5 @@
 #include "gui_task.h"
 
-#include "appdefs.h"
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
@@ -21,26 +20,9 @@
 #include "abstractmenu.h"
 
 const uint8_t expr_menu[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
-
-const uint8_t tap_tim[][6] = {"1/1  ", "1/1.5", "1/2  ", "1/3  ", "1/4  ", "2/1  "};
 const float tap_time_coefs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
 uint16_t midi_clk_send;
-
-
-volatile uint8_t eq_num;
-
-extern uint8_t k_up;
-extern uint8_t k_down;
-extern uint8_t k_att;
-extern uint8_t k_master_eq;
-
-
-volatile uint8_t write_fl = 0;
-
-uint32_t send_buf;
-
-uint8_t tuner_use;
 
 void tim5_start(uint8_t val)
 {
@@ -55,38 +37,11 @@ void clean_flag(void)
 	TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 }
 
-extern volatile uint8_t pc_mute_fl;
-void prog_ch(void)
-{
-	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
-
-	EEPROM_loadPreset(currentPresetNumber);
-	pc_mute_fl = 0;
-
-	MidiSendTask->prog_ch_midi_start();
-	MidiSendTask->Give();
-
-	for(uint8_t i = 0; i<3; i++)
-	{
-		contr_kn[i] = currentPreset.modules.rawData[fo1+i];
-		contr_kn1[i] = currentPreset.modules.rawData[fo11+i];
-	}
-
-	if(sys_para[System::EXPR_STORE_LEVEL])
-		adc_proc();
-
-	pc_mute_fl = 1;
-}
-
 void gui(void)
 {
 	if(usb_flag && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
 	{
-		while(currentMenu->menuType() != MENU_MAIN)
-		{
-			currentMenu->keyUp();
-		}
-		usbMenu->show();
+		currentMenu->showChild(usbMenu);
 	}
 
 	currentMenu->task();
@@ -153,7 +108,7 @@ void gui(void)
 		clean_flag();
 	}
 
-	if(sys_para[System::TAP_TYPE]==2)
+	if(sys_para[System::TAP_TYPE] == System::TAP_TYPE_GLOBAL_MIDI)
 	{
 		extern volatile uint16_t midi_clk_buf[];
 		uint16_t mediann_tap(uint16_t *array, int length);
@@ -176,6 +131,6 @@ extern "C" void TIM4_IRQHandler()
 	else
 		blinkFlag_fl = 1;
 
-	if(!tuner_use)
+	if(!(currentMenu->menuType() == MENU_TUNER))
 		CSTask->Give();
 }

@@ -4,11 +4,11 @@
 #include "fs.h"
 #include "eepr.h"
 #include "allFonts.h"
-#include "icon_bit.h"
 #include "display.h"
 #include "enc.h"
 #include "cc.h"
 
+#include "tapmenu.h"
 #include "stringoutparam.h"
 
 #include "system.h"
@@ -93,7 +93,7 @@ void ParamListMenu::show(TShowMode showMode)
 		m_lastSelectableParam = m_paramsCount - 1;
 	}
 
-	printPage();
+	printPage(true);
 	DisplayTask->SetVolIndicator(m_volIndicatorType, m_indicatorSource, m_indicatorParam_ptr);
 }
 
@@ -205,8 +205,16 @@ void ParamListMenu::encoderCounterClockwise()
 
 void ParamListMenu::keyDown()
 {
-	System::TapTempo(m_tapDst);
-	refresh();
+	if(m_tapDst == System::TapDestination::TAP_OFF) return;
+
+	if(sys_para[System::TAP_SCREEN_POPUP] == System::TAP_SCREEN_ON)
+	{
+		showChild(new TapMenu(this, m_tapDst));
+	}
+	else
+	{
+		System::TapTempo(m_tapDst);
+	}
 }
 
 void ParamListMenu::printPage(bool forceDrawIcon)

@@ -53,6 +53,9 @@ namespace System
 		SWAP_SWITCH,
 		TUNER_SPEED,
 
+		TAP_SCREEN_POPUP,
+		EQ_SCREEN_MODE,
+
 		MASTER_EQ_ON = 120,
 		MASTER_EQ_LOW = 121,
 		MASTER_EQ_MID = 122,
@@ -71,24 +74,46 @@ namespace System
 		MASTER_EQ_FREQ_HI
 	};
 
-	enum
+	typedef enum
 	{
 		TIME_FORMAT_SEC,
 		TIME_FORMAT_BPM
-	};
+	}TimeFormat;
 
 	typedef enum
 	{
 		TAP_OFF,
 		TAP_RFILTER,
 		TAP_DELAY,
-		TAP_TREMOLO
+		TAP_TREMOLO,
+		TAP_GLOBAL
 	}TapDestination;
+
+	typedef enum
+	{
+		TAP_TYPE_PRESET,
+		TAP_TYPE_GLOBAL,
+		TAP_TYPE_GLOBAL_MIDI
+	}TapType;
+
+	typedef enum
+	{
+		TAP_SCREEN_ON,
+		TAP_SCREEN_OFF
+	}TapScreenMode;
+
+	typedef enum
+	{
+		EQ_SCREEN_GRAPH,
+		EQ_SCREEN_BARS
+	}EqScreenMode;
 
 	void TapTempo(TapDestination tapDst);
 };
 
-extern uint32_t tap_global;
-extern uint32_t tap_temp;
+extern const uint16_t bpm_time[];
+
+extern volatile uint32_t tap_global;
+extern volatile uint32_t tap_temp;
 
 #endif /* SRC_APPLICATION_SYSTEM_H_ */

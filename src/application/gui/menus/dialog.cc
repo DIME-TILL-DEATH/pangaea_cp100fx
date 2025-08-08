@@ -114,7 +114,7 @@ void Dialog::encoderPressed()
 
 		break;
 		case 0:
-			prog_ch();
+			Preset::Change();
 
 			currentMenu = m_noMenu;
 			m_noMenu->show();
@@ -135,7 +135,7 @@ void Dialog::encoderPressed()
 					if(cab_type == CAB_CONFIG_STEREO)
 						DSP_EraseSecondaryCab(currentPresetNumber+1);
 
-					prog_ch();
+					Preset::Change();
 					break;
 				}
 				default: break;

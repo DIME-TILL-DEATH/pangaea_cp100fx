@@ -8,6 +8,10 @@
 #include "BF706_send.h"
 #include "allFonts.h"
 
+#include "tunermenu.h"
+#include "tunerextmenu.h"
+#include "controllersmenu.h"
+
 #include "system.h"
 
 #include "preset.h"
@@ -19,6 +23,7 @@ inline void uart_send(uint8_t val)
 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
 	USART_SendData(USART1, val);
 }
+
 inline void send_bank(void)
 {
 	uart_send(0xb0 | sys_para[System::MIDI_CHANNEL]);
@@ -113,22 +118,31 @@ void TMidiSendTask::Code()
 								if((midi_b[1] == (sys_para[System::TUNER_EXTERNAL] & 0x7f))
 										&& (sys_para[System::TUNER_EXTERNAL] & 0x80))
 								{
-									if(currentMenu->menuType() == MENU_TUNER)
+									if(currentMenu->menuType() != MENU_TUNER)
 									{
-										k_tuner = 1;
+										currentMenu->showChild(new TunerMenu(currentMenu));
 										CSTask->Give();
+									}
+									else
+									{
+										currentMenu->keyUp();
 									}
 								}
 								else
 								{
+									if(currentMenu->menuType() == MENU_TUNER_EXT)
+									{
+										TunerExtMenu* tunerExtMenu = static_cast<TunerExtMenu*>(currentMenu);
+										tunerExtMenu->showInputMidiCC(midi_b[1]);
+									}
+
+									if(currentMenu->menuType() == MENU_CONTROLLERS)
+									{
+										ControllersMenu* controllersMenu = static_cast<ControllersMenu*>(currentMenu);
+										controllersMenu->showInputMidiCC(midi_b[1]);
+									}
+
 									CCTask->Give();
-									//  Через menu->refresh()
-//									if((current_menu_type==MENU_CONTROLLERS&&(par_num<3))||(current_menu_type==MENU_TUNER_EXT))
-//									{
-//										uint8_t midi_in_cc[] = "midi in CC#->";
-//										DisplayTask->StringOut(20, 3, Font::fntSystem, 0, (uint8_t*)midi_in_cc);
-//										DisplayTask->ParamIndicNum(100, 3, midi_b[1]);
-//									}
 								}
 							}
 							contr_cont = 0;
@@ -173,9 +187,7 @@ void TMidiSendTask::Code()
 				if(pc_in_fl)
 					pc_in_fl = 0;
 				else
-				{
 					send_bank();
-				}
 
 				uart_send(0xc0 | sys_para[System::MIDI_CHANNEL]);
 				switch(currentPreset.pcOut)

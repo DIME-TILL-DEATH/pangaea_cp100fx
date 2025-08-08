@@ -40,9 +40,11 @@ void StringOutParam::printParam(uint8_t yDisplayPosition)
 
 void StringOutParam::task()
 {
+	if(!m_stringPtr) return;
+
 	if(m_timeCounter++ >= m_timeThreshold)
 	{
-		uint8_t strLength = m_stringPtr[0];
+		uint8_t strLength = kgp_sdk_libc::strlen(m_stringPtr);
 
 		m_timeThreshold = 150000;
 		m_symbolOffset++;
@@ -60,9 +62,9 @@ void StringOutParam::task()
 
 		for(uint8_t i = 0; i<20; i++)
 		{
-			nameBuffer[i] = fullString[m_symbolOffset+i];
+			nameBuffer[i] = fullString[m_symbolOffset+i-1];
 
-			if((m_symbolOffset+i+1) == strLength)
+			if((m_symbolOffset+i) == strLength)
 			{
 				m_symbolOffset = 0;
 				nameBuffer[i+1] = 0;

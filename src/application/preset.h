@@ -4,7 +4,7 @@
 #include "appdefs.h"
 #include "controllers.h"
 
-#define CAB_DATA_SIZE 12288
+#define CAB_DATA_SIZE 4096 * 3//12288
 
 namespace Preset
 {
@@ -240,17 +240,17 @@ typedef union
 	uint8_t rawData[512];
 }UModulesData;
 
-typedef union
+const uint8_t CabNameLength = 63;
+typedef struct
 {
-	char string[64];
 	uint8_t size;
-}UCabName;
+	char string[CabNameLength];
+}TCabName;
 
 typedef struct
 {
 	uint8_t* data;
-//	char name[64];
-	UCabName name;
+	TCabName name;
 }TCabinet;
 
 typedef struct
@@ -280,16 +280,21 @@ typedef struct
 }TPresetBrief;
 
 extern uint8_t impulsePath[];
+
+void Change();
 }
+
 
 extern Preset::TPreset currentPreset;
 extern Preset::TCabinet cab1;
 extern Preset::TCabinet cab2;
 
-extern uint8_t ccmBuffer[];
-extern uint8_t __CCM_BSS__ preset_temp[];
+extern uint8_t __CCM_BSS__ ccmCommonCabBuffer[4096 * 3 * 2];
+extern uint8_t __CCM_BSS__ presetBuffer[];
 
 extern uint16_t delay_time;
+extern uint16_t moog_time;
+extern uint16_t trem_time;
 extern volatile uint8_t currentPresetNumber;
 
 #endif /* SRC_APPLICATION_PRESET_H_ */

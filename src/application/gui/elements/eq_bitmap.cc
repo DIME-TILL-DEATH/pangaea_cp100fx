@@ -148,8 +148,8 @@ void eq_init(void)
 const uint16_t fr_l[5] = {120,360,800,2000,6000};
 void eq_par(uint8_t col , uint8_t pag , int16_t num , uint8_t type , uint8_t band)
 {
-	char q_sym[20];
-	Arsys_clean_(col ,pag , 10);
+	char q_sym[8];
+	Arsys_clean_(col ,pag , 7);
 	if(!type)
 	{
 		switch (band){
@@ -157,8 +157,10 @@ void eq_par(uint8_t col , uint8_t pag , int16_t num , uint8_t type , uint8_t ban
 		case 2:num = fr_l[band] + num*2;break;
 		case 3:num = fr_l[band] + num*10;break;
 		case 4:num = fr_l[band] + num*50;break;
+		case 5: num = num*(980.0/127.0)+20.0;break; //HPF
+		case 6: num = powf(127-num, 2.0)*(19000.0/powf(127.0, 2.0))+1000.0;break; //LPF
 		}
-		ksprintf(q_sym , "%d" , num);
+		ksprintf(q_sym , "%dHz" , num);
 	}
 	else {
 		float a;
@@ -173,19 +175,55 @@ void eq_par(uint8_t col , uint8_t pag , int16_t num , uint8_t type , uint8_t ban
 			ksprintf(q_sym , "%1f" , a);
 		}
 	}
-	Arsys_line(col , pag , (uint8_t*)q_sym , 0);
+	Arsys_line(col, pag, (uint8_t*)q_sym , 0);
 }
 
 void eq_response()
 {
-	Set_Column_Address(0);
-
+	// Response
 	uint8_t graphCenter = 16;
+	uint8_t prevY = graphCenter;
 
 	for(uint8_t i = 0; i<Filter::EqPointsNumber; i++)
 	{
-		uint8_t yPosition = graphCenter - round(Filter::eqResponsePoints[i]);
-		Set_Page_Address(yPosition/8);
-		oled023_1_write_data(1 << yPosition%8);
+		Set_Column_Address(9*6 + i);
+		uint8_t yPosition = graphCenter - std::round(Filter::eqResponsePoints[i]);
+		if(std::abs(prevY - yPosition) > 1)
+		{
+			int8_t sign = (prevY - yPosition) > 0 ? -1 : 1;
+
+			uint8_t pageData[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+
+			for(uint8_t a=0; a<std::abs(prevY - yPosition); a++)
+			{
+				if((prevY+a*sign)/8 > 3 || (prevY+a*sign)/8<0) continue;
+
+				pageData[(prevY+a*sign)/8] |= 1 << (prevY+a*sign)%8;
+			}
+
+			for(uint8_t a=0; a<4; a++)
+			{
+				if(pageData[a] == 0) continue;
+
+				Set_Column_Address(9*6 + i);
+				Set_Page_Address(a);
+				oled023_1_write_data(pageData[a]);
+			}
+		}
+		else
+		{
+			Set_Page_Address(yPosition/8);
+			oled023_1_write_data(1 << yPosition%8);
+		}
+
+		prevY = yPosition;
+	}
+
+	// Delimiter
+	for(uint8_t i=0; i < 4; i++)
+	{
+		Set_Column_Address(9*6);
+		Set_Page_Address(i);
+		oled023_1_write_data(0xFF);
 	}
 }

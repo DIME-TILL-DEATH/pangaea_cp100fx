@@ -19,6 +19,8 @@
 #include "preset.h"
 #include "modules.h"
 
+#include "tapmenu.h"
+
 TCCTask *CCTask;
 
 volatile uint8_t midi_b[3];
@@ -27,9 +29,6 @@ uint8_t ext_fl;
 uint8_t ext_f_fl;
 uint8_t ext_data;
 uint8_t ext_sourc = 255;
-volatile uint8_t tap_del_fl;
-volatile uint8_t tap_trem_fl;
-volatile uint8_t tap_moog_fl;
 
 void controllerSetData(uint8_t adr, uint8_t data)
 {
@@ -83,8 +82,17 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		break;
 
 		case Controller::Dst::DelayTap:
-			System::TapTempo(System::TAP_DELAY);
-			currentMenu->refresh();
+			if(sys_para[System::TAP_SCREEN_POPUP] == System::TAP_SCREEN_ON)
+			{
+				if(currentMenu->menuType() != MENU_TAP_SCREEN)
+					currentMenu->showChild(new TapMenu(currentMenu, System::TapDestination::TAP_DELAY));
+				else
+					currentMenu->keyDown();
+			}
+			else
+			{
+				System::TapTempo(System::TAP_DELAY);
+			}
 		break;
 //-------------------------------------------------Phaser---------------------------------------------
 		case Controller::Dst::PhaserOnOff:
@@ -163,8 +171,17 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		break;
 
 		case Controller::Dst::TremoloTap:
-			System::TapTempo(System::TAP_TREMOLO);
-			currentMenu->refresh();
+			if(sys_para[System::TAP_SCREEN_POPUP] == System::TAP_SCREEN_ON)
+			{
+				if(currentMenu->menuType() != MENU_TAP_SCREEN)
+					currentMenu->showChild(new TapMenu(currentMenu, System::TapDestination::TAP_TREMOLO));
+				else
+					currentMenu->keyDown();
+			}
+			else
+			{
+				System::TapTempo(System::TAP_TREMOLO);
+			}
 		break;
 //---------------------------------------------------------------------------------------------------
 		case Controller::Dst::PresetLevel:
@@ -200,6 +217,21 @@ void controllerSetData(uint8_t adr, uint8_t data)
 			currentPreset.modules.rawData[RFILTER_EXT] = val;
 			DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_EXT_POS, currentPreset.modules.rawData[RFILTER_EXT]);
 		break;
+
+//---------------------------------------------------Moog Tap--------------------------------------------------------
+		case Controller::Dst::RfLFOTAP:
+			if(sys_para[System::TAP_SCREEN_POPUP] == System::TAP_SCREEN_ON)
+			{
+				if(currentMenu->menuType() != MENU_TAP_SCREEN)
+					currentMenu->showChild(new TapMenu(currentMenu, System::TapDestination::TAP_RFILTER));
+				else
+					currentMenu->keyDown();
+			}
+			else
+			{
+				System::TapTempo(System::TAP_RFILTER);
+			}
+		break;
 //--------------------------------------------------Early------------------------------------------------------------
 		case Controller::Dst::EROnOff:
 
@@ -211,12 +243,8 @@ void controllerSetData(uint8_t adr, uint8_t data)
 			currentPreset.modules.rawData[EARLY_MIX] = val * 0.5f;
 			DSP_ContrSendParameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_MIX_POS, currentPreset.modules.rawData[EARLY_MIX]);
 		break;
-//---------------------------------------------------Moog Tap--------------------------------------------------------
-		case Controller::Dst::RfLFOTAP:
-			System::TapTempo(System::TAP_RFILTER);
-			currentMenu->refresh();
-		break;
 
+//-------------------------------------------------------------------------------------------------------------------
 		case Controller::Dst::VolCtrlOnOff:
 				currentPreset.modules.rawData[PRESET_VOLUME_CONTROL] = (val < 64.0f) ? 0 : 1;
 		break;
@@ -311,15 +339,13 @@ void controllerSetData(uint8_t adr, uint8_t data)
 			DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_TYPE_POS, currentPreset.modules.rawData[REVERB_TYPE]);
 		break;
 	}
-
-	currentMenu->refresh();
 }
 //------------------------------------------------------------------------------
 TCCTask::TCCTask() :
 		TTask()
 {
 }
-extern uint8_t tuner_use;
+
 void TCCTask::Code()
 {
 	sem = new TSemaphore(TSemaphore::fstCounting, 8, 0);
@@ -327,7 +353,7 @@ void TCCTask::Code()
 	while(1)
 	{
 		sem->Take(portMAX_DELAY);
-		if(mid_fl && !tuner_use && pc_mute_fl)
+		if(mid_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
@@ -336,9 +362,10 @@ void TCCTask::Code()
 						controllerSetData(i, midi_b[2]);
 			}
 			mid_fl = 0;
+			currentMenu->refresh();
 		}
 
-		if(ext_fl && !tuner_use && pc_mute_fl)
+		if(ext_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
@@ -346,6 +373,7 @@ void TCCTask::Code()
 					controllerSetData(0, ext_data);
 			}
 			ext_fl = 0;
+			currentMenu->refresh();
 		}
 	}
 }

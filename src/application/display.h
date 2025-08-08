@@ -37,9 +37,9 @@ public:
 		dcStringOut,
 		dcNumberOut,
 		dcIndicator,
-//		dcMenu_init,
 		dcProg_ind,
 		dcEfIcon,
+		dcCheckBox,
 		dcSetColumn,
 		dcSetPagAdr,
 		dcEqIndic,
@@ -56,19 +56,16 @@ public:
 		dcStart,
 		dcContrast,
 		dcTap_ind,
-		dcSys_Menu,
-		dcLed_Write,
-		dcPot_Write,
-//		dcMain_scr,
-//		dcPresetPreview,
 		dcIcStrel,
 		dcTunIni,
-		dcTunNote,
 		dcTunStrel,
 		dcInd_foot,
 		dcReset,
 		dcStrel,
-		dcCount
+		dcCount,
+
+		dcLed_Write,
+		dcPot_Write
 	}TCommand;
 
 	typedef struct
@@ -171,6 +168,12 @@ public:
 
 	typedef struct
 	{
+		TPos pos;
+		uint8_t checked;
+	}TCheckBoxParam;
+
+	typedef struct
+	{
 		uint8_t x;
 	}TSetColumnParam;
 
@@ -229,6 +232,7 @@ public:
 			TNumberOutParams NumberOutParams;
 			TProg_indParam Prog_indParam;
 			TEfIconParam EfIconParam;
+			TCheckBoxParam CheckBoxparam;
 			TSetColumnParam SetColumnParam;
 			TSetPagAdrParam SetPagAdrParam;
 			TEqIndicParam EqIndicParam;
@@ -310,7 +314,7 @@ public:
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const uint8_t *string);
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
 
-	void NumberOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState state, uint32_t val);
+//	void NumberOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState state, uint32_t val);
 
 	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 	void VolIndicatorTask();
@@ -320,10 +324,12 @@ public:
 	void SetColumn(uint8_t x);
 	void SetPagAdr(uint8_t x);
 	void EqIndic(uint8_t x, uint8_t y, uint8_t data, uint8_t cur);
-	void EqPar(uint8_t col, uint8_t pag, int16_t num, uint8_t type, uint8_t band);
+	void EqFreq(uint8_t x, uint8_t y, int16_t val, uint8_t band);
+	void EqQ(uint8_t x, uint8_t y, int16_t val, uint8_t band);
 	void EqInit(void);
 	void EqLH(float num, uint8_t type);
 	void EqResponse();
+	void CheckBox(uint8_t x, uint8_t y, uint8_t checked);
 	void ParamIndic(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data);
 	void ParamIndicNum(uint8_t x, uint8_t y, uint16_t data);
@@ -333,14 +339,14 @@ public:
 	void StartScreen(uint8_t data);
 	void Contrast(uint8_t val);
 	void Tap_ind(uint8_t cur);
-	void Sys_Menu(void);
+
 	void Led_Write(void);
 	void Pot_Write(void);
-//	void Main_scr();
+
 	void Icon_Strel(icon_t num, strelka_t strel);
-	void TunIni(void);
-	void TunNote(void);
-	void TunStrel(void);
+	void TunerInit();
+	void TunerDeinit();
+	void TunStrel();
 	void PresetPreview(uint8_t index);
 	void IndFoot(uint8_t num, uint8_t val);
 	void Display_Reset(void);
@@ -353,6 +359,8 @@ private:
 	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
 	uint8_t* m_volIndPar_ptr;
 	uint16_t m_indRefreshCounter;
+
+	bool m_tunerInitiated{false};
 
 	void DrawVolIndicator(uint8_t xPos, uint8_t indLength);
 };
