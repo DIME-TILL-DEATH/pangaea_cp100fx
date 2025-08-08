@@ -51,36 +51,31 @@ public:
 	~TFsBrowser();
 
 	void Browse(browse_command_t browse_command, fs_object_t &object, fs_object_list_t &object_list);
+
+
 	bool GetDataFromFile(uint8_t *cab_data, emb_string &err_msg);
+
+	emb_string CurrDir(bool collapsedPath = true) const;
 	inline const fs_object_list_t::iterator CurrentObject() const
 	{
 		return curr_fs_object;
 	}
+
 	void Print(outstr_func_t func);
-	inline bool SD_Initilized() const
-	{
-		return sd_initialized;
-	}
-	;
-	inline emb_string CurrDir() const
-	{
-		return curr_dir_level+curr_dir_name;
-	}
+	inline bool SD_Initilized() const {return sd_initialized;}
+
+
 	void LoadCab(fs_object_t &object);
 
 	static uint8_t impulseDirExist;
 
-protected:
+//protected:
 
 	void PrevObject(fs_object_t &object);
 	void NextObject(fs_object_t &object);
 	void SelectDir(fs_object_t object);
 	void SelectFile(const fs_object_t &object);
-	inline const fs_object_list_t& List() const
-	{
-		return fs_object_list;
-	}
-	;
+	const fs_object_list_t& List() const {return fs_object_list;}
 	void CollapseAbsPath(char *abs_path, emb_string &name, emb_string &level);
 	FRESULT FsMount(const emb_string &init_dir);
 	FRESULT FsUmount();

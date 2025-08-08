@@ -20,7 +20,7 @@ uint8_t __CCM_BSS__ ccmCommonCabBuffer[4096 * 3 * 2];
 
 uint8_t Preset::impulsePath[512];
 
-uint8_t __CCM_BSS__ preset_temp[38560];
+uint8_t __CCM_BSS__ presetBuffer[38560];
 
 uint16_t __CCM_BSS__ delay_time;
 uint16_t __CCM_BSS__ moog_time;

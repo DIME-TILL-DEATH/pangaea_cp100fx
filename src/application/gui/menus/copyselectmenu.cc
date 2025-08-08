@@ -59,168 +59,168 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 {
 	if(selectionMask.name)
 	{
-		kgp_sdk_libc::memcpy(preset_temp, currentPreset.name, 15);
+		kgp_sdk_libc::memcpy(presetBuffer, currentPreset.name, 15);
 	}
 
 	if(selectionMask.comment)
 	{
-		kgp_sdk_libc::memcpy(preset_temp + 15, currentPreset.comment, 15);
+		kgp_sdk_libc::memcpy(presetBuffer + 15, currentPreset.comment, 15);
 	}
 
 	if(selectionMask.rf)
 	{
 			for(uint8_t i = 0; i<11; i++)
-				preset_temp[30+RFILTER_MIX+i] = currentPreset.modules.rawData[RFILTER_MIX+i];
+				presetBuffer[30+RFILTER_MIX+i] = currentPreset.modules.rawData[RFILTER_MIX+i];
 
-			preset_temp[30+moog] = currentPreset.modules.rawData[moog];
-			preset_temp[30+mog_gen_t] = currentPreset.modules.rawData[mog_gen_t];
+			presetBuffer[30+moog] = currentPreset.modules.rawData[moog];
+			presetBuffer[30+mog_gen_t] = currentPreset.modules.rawData[mog_gen_t];
 	}
 
 	if(selectionMask.gt)
 	{
 		for(uint8_t i = 0; i<3; i++)
-			preset_temp[30+gate_thr+i] = currentPreset.modules.rawData[gate_thr+i];
+			presetBuffer[30+gate_thr+i] = currentPreset.modules.rawData[gate_thr+i];
 
-		preset_temp[30+gate] = currentPreset.modules.rawData[gate];
+		presetBuffer[30+gate] = currentPreset.modules.rawData[gate];
 	}
 
 	if(selectionMask.cm)
 	{
 		for(uint8_t i = 0; i<5; i++)
-			preset_temp[30+comp_thr+i] = currentPreset.modules.rawData[comp_thr+i];
-		preset_temp[30+compr] = currentPreset.modules.rawData[compr];
+			presetBuffer[30+comp_thr+i] = currentPreset.modules.rawData[comp_thr+i];
+		presetBuffer[30+compr] = currentPreset.modules.rawData[compr];
 	}
 
 	if(selectionMask.pr)
 	{
 		for(uint8_t i = 0; i<6; i++)
-			preset_temp[30+pre_gain+i] = currentPreset.modules.rawData[pre_gain+i];
-		preset_temp[30+pream] = currentPreset.modules.rawData[pream];
+			presetBuffer[30+pre_gain+i] = currentPreset.modules.rawData[pre_gain+i];
+		presetBuffer[30+pream] = currentPreset.modules.rawData[pream];
 	}
 
 	if(selectionMask.pa)
 	{
 		for(uint8_t i = 0; i<3; i++)
-			preset_temp[30+am_v+i] = currentPreset.modules.rawData[am_v+i];
-		preset_temp[30+pre_v] = currentPreset.modules.rawData[pre_v];
-		preset_temp[30+amp] = currentPreset.modules.rawData[amp];
+			presetBuffer[30+am_v+i] = currentPreset.modules.rawData[am_v+i];
+		presetBuffer[30+pre_v] = currentPreset.modules.rawData[pre_v];
+		presetBuffer[30+amp] = currentPreset.modules.rawData[amp];
 	}
 
 	if(selectionMask.ir)
 	{
 		for(uint8_t i = 0; i<6; i++)
-			preset_temp[30+vol+i] = currentPreset.modules.rawData[vol+i];
+			presetBuffer[30+vol+i] = currentPreset.modules.rawData[vol+i];
 		for(uint8_t i = 0; i<64; i++)
-			preset_temp[13344+i] = cab1.name.string[i];
+			presetBuffer[13344+i] = cab1.name.string[i];
 		for(uint8_t i = 0; i<64; i++)
-			preset_temp[25696+i] = cab2.name.string[i];
+			presetBuffer[25696+i] = cab2.name.string[i];
 		for(uint16_t i = 0; i<12288; i++)
-			preset_temp[1056+i] = cab1.data[i];
+			presetBuffer[1056+i] = cab1.data[i];
 		if(cab_type==CAB_CONFIG_STEREO)
 			for(uint16_t i = 0; i<12288; i++)
-				preset_temp[13408+i] = cab2.data[i];
+				presetBuffer[13408+i] = cab2.data[i];
 		else
 			for(uint16_t i = 0; i < 4096 * 3; i++)
-				preset_temp[25760+i] = cab1.data[i + 4096 * 3];
+				presetBuffer[25760+i] = cab1.data[i + 4096 * 3];
 		for(uint16_t i = 0; i<512; i++)
-			preset_temp[38048+i] = Preset::impulsePath[i];
+			presetBuffer[38048+i] = Preset::impulsePath[i];
 
 		send_cab_data(0, targetPresetNum+1, 0);
 
 		if(cab_type==2)
 			send_cab_data1(0, targetPresetNum+1);
 
-		preset_temp[30+cab] = currentPreset.modules.rawData[cab];
+		presetBuffer[30+cab] = currentPreset.modules.rawData[cab];
 	}
 
 	if(selectionMask.eq)
 	{
 		for(uint8_t i = 0; i<8; i++)
-			preset_temp[30+eq1+i] = currentPreset.modules.rawData[eq1+i];
+			presetBuffer[30+eq1+i] = currentPreset.modules.rawData[eq1+i];
 		for(uint8_t i = 0; i<10; i++)
-			preset_temp[30+f1+i] = currentPreset.modules.rawData[f1+i];
-		preset_temp[30+eq] = currentPreset.modules.rawData[eq];
-		preset_temp[30+eq_pr_po] = currentPreset.modules.rawData[eq_pr_po];
+			presetBuffer[30+f1+i] = currentPreset.modules.rawData[f1+i];
+		presetBuffer[30+eq] = currentPreset.modules.rawData[eq];
+		presetBuffer[30+eq_pr_po] = currentPreset.modules.rawData[eq_pr_po];
 	}
 
 	if(selectionMask.ph)
 	{
 		for(uint8_t i = 0; i<6; i++)
-			preset_temp[30+phaser_vol+i] = currentPreset.modules.rawData[phaser_vol+i];
-		preset_temp[30+phas] = currentPreset.modules.rawData[phas];
-		preset_temp[30+hpf_ph] = currentPreset.modules.rawData[hpf_ph];
-		preset_temp[30+phas_pos] = currentPreset.modules.rawData[phas_pos];
+			presetBuffer[30+phaser_vol+i] = currentPreset.modules.rawData[phaser_vol+i];
+		presetBuffer[30+phas] = currentPreset.modules.rawData[phas];
+		presetBuffer[30+hpf_ph] = currentPreset.modules.rawData[hpf_ph];
+		presetBuffer[30+phas_pos] = currentPreset.modules.rawData[phas_pos];
 	}
 
 	if(selectionMask.fl)
 	{
 		for(uint8_t i = 0; i<6; i++)
-			preset_temp[30+fl_v+i] = currentPreset.modules.rawData[fl_v+i];
-		preset_temp[30+fl] = currentPreset.modules.rawData[fl];
-		preset_temp[30+hpf_fl] = currentPreset.modules.rawData[hpf_fl];
-		preset_temp[30+flan_pos] = currentPreset.modules.rawData[flan_pos];
+			presetBuffer[30+fl_v+i] = currentPreset.modules.rawData[fl_v+i];
+		presetBuffer[30+fl] = currentPreset.modules.rawData[fl];
+		presetBuffer[30+hpf_fl] = currentPreset.modules.rawData[hpf_fl];
+		presetBuffer[30+flan_pos] = currentPreset.modules.rawData[flan_pos];
 	}
 
 	if(selectionMask.ch)
 	{
 		for(uint8_t i = 0; i<5; i++)
-			preset_temp[30+chor_volum+i] = currentPreset.modules.rawData[chor_volum+i];
-		preset_temp[30+chor] = currentPreset.modules.rawData[chor];
-		preset_temp[30+hpf_ch] = currentPreset.modules.rawData[hpf_ch];
+			presetBuffer[30+chor_volum+i] = currentPreset.modules.rawData[chor_volum+i];
+		presetBuffer[30+chor] = currentPreset.modules.rawData[chor];
+		presetBuffer[30+hpf_ch] = currentPreset.modules.rawData[hpf_ch];
 	}
 
 	if(selectionMask.dl)
 	{
 		for(uint8_t i = 0; i<11; i++)
-			preset_temp[30+d_vol+i] = currentPreset.modules.rawData[d_vol+i];
-		preset_temp[1054] = delay_time;
-		preset_temp[1055] = delay_time>>8;
-		preset_temp[30+delay] = currentPreset.modules.rawData[delay];
-		preset_temp[30+d_tap_t] = currentPreset.modules.rawData[d_tap_t];
-		preset_temp[30+d_tail] = currentPreset.modules.rawData[d_tail];
+			presetBuffer[30+d_vol+i] = currentPreset.modules.rawData[d_vol+i];
+		presetBuffer[1054] = delay_time;
+		presetBuffer[1055] = delay_time>>8;
+		presetBuffer[30+delay] = currentPreset.modules.rawData[delay];
+		presetBuffer[30+d_tap_t] = currentPreset.modules.rawData[d_tap_t];
+		presetBuffer[30+d_tail] = currentPreset.modules.rawData[d_tail];
 	}
 
 	if(selectionMask.er)
 	{
 		for(uint8_t i = 0; i<2; i++)
-			preset_temp[30+early_vol+i] = currentPreset.modules.rawData[early_vol+i];
-		preset_temp[30+early] = currentPreset.modules.rawData[early];
+			presetBuffer[30+early_vol+i] = currentPreset.modules.rawData[early_vol+i];
+		presetBuffer[30+early] = currentPreset.modules.rawData[early];
 	}
 
 	if(selectionMask.rv)
 	{
 		for(uint8_t i = 0; i<7; i++)
-			preset_temp[30+r_vol+i] = currentPreset.modules.rawData[r_vol+i];
-		preset_temp[30+reve] = currentPreset.modules.rawData[reve];
-		preset_temp[30+rev_t] = currentPreset.modules.rawData[rev_t];
-		preset_temp[30+rev_di] = currentPreset.modules.rawData[rev_di];
-		preset_temp[30+r_pre] = currentPreset.modules.rawData[r_pre];
-		preset_temp[30+r_tail] = currentPreset.modules.rawData[r_tail];
+			presetBuffer[30+r_vol+i] = currentPreset.modules.rawData[r_vol+i];
+		presetBuffer[30+reve] = currentPreset.modules.rawData[reve];
+		presetBuffer[30+rev_t] = currentPreset.modules.rawData[rev_t];
+		presetBuffer[30+rev_di] = currentPreset.modules.rawData[rev_di];
+		presetBuffer[30+r_pre] = currentPreset.modules.rawData[r_pre];
+		presetBuffer[30+r_tail] = currentPreset.modules.rawData[r_tail];
 	}
 
 	if(selectionMask.tr)
 	{
 		for(uint8_t i = 0; i<4; i++)
-			preset_temp[30+tr_vol+i] = currentPreset.modules.rawData[tr_vol+i];
+			presetBuffer[30+tr_vol+i] = currentPreset.modules.rawData[tr_vol+i];
 
-		preset_temp[30+trem] = currentPreset.modules.rawData[trem];
-		preset_temp[30+t_tap_t] = currentPreset.modules.rawData[t_tap_t];
-		preset_temp[30+tr_lfo_t] = currentPreset.modules.rawData[tr_lfo_t];
+		presetBuffer[30+trem] = currentPreset.modules.rawData[trem];
+		presetBuffer[30+t_tap_t] = currentPreset.modules.rawData[t_tap_t];
+		presetBuffer[30+tr_lfo_t] = currentPreset.modules.rawData[tr_lfo_t];
 	}
 
 	if(selectionMask.pv)
 	{
-		preset_temp[30 + pres_lev] = currentPreset.modules.paramData.preset_volume;
+		presetBuffer[30 + pres_lev] = currentPreset.modules.paramData.preset_volume;
 	}
 
 	if(selectionMask.controllers)
 	{
 		for(uint16_t i = 0 ; i < 8 ; i += 4)
 		{
-			preset_temp[542 + i] = currentPreset.controller[i].src;
-			preset_temp[542 + i + 1] = currentPreset.controller[i].dst;
-			preset_temp[542 + i + 2] = currentPreset.controller[i].minVal;
-			preset_temp[542 + i + 3] = currentPreset.controller[i].maxVal;
+			presetBuffer[542 + i] = currentPreset.controller[i].src;
+			presetBuffer[542 + i + 1] = currentPreset.controller[i].dst;
+			presetBuffer[542 + i + 2] = currentPreset.controller[i].minVal;
+			presetBuffer[542 + i + 3] = currentPreset.controller[i].maxVal;
 		}
 	}
 

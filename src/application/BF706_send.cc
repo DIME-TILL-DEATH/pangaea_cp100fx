@@ -59,10 +59,10 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 	extern bool cab_data_ready;
 	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY_SELECTION)
 	{
-		kgp_sdk_libc::memset(preset_temp, 0, 24576);
-		preset_temp[0] = 0xff;
-		preset_temp[1] = 0xff;
-		preset_temp[2] = 0x7f;
+		kgp_sdk_libc::memset(presetBuffer, 0, 24576);
+		presetBuffer[0] = 0xff;
+		presetBuffer[1] = 0xff;
+		presetBuffer[2] = 0x7f;
 	}
 
 	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
@@ -91,9 +91,9 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 		{
 			if(!menu_fl)
 			{
-				send_buf = preset_temp[i * 3] << 8;
-				send_buf |= preset_temp[i * 3 + 1] << 16;
-				send_buf |= preset_temp[i * 3 + 2] << 24;
+				send_buf = presetBuffer[i * 3] << 8;
+				send_buf |= presetBuffer[i * 3 + 1] << 16;
+				send_buf |= presetBuffer[i * 3 + 2] << 24;
 			}
 			else
 			{
@@ -101,24 +101,24 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 				{
 					uint8_t offset = 15 + 15 + 512 + 512 + 2;
 
-					send_buf = preset_temp[i * 3 + offset] << 8;
-					send_buf |= preset_temp[i * 3 + 1 + offset] << 16;
-					send_buf |= preset_temp[i * 3 + 2 + offset] << 24;
+					send_buf = presetBuffer[i * 3 + offset] << 8;
+					send_buf |= presetBuffer[i * 3 + 1 + offset] << 16;
+					send_buf |= presetBuffer[i * 3 + 2 + offset] << 24;
 				}
 				else
 				{
 					a = i - 4096;
 					if(cab_type == 2)
 					{
-						send_buf = preset_temp[a * 3 + 13408] << 8;
-						send_buf |= preset_temp[a * 3 + 1 + 13408] << 16;
-						send_buf |= preset_temp[a * 3 + 2 + 13408] << 24;
+						send_buf = presetBuffer[a * 3 + 13408] << 8;
+						send_buf |= presetBuffer[a * 3 + 1 + 13408] << 16;
+						send_buf |= presetBuffer[a * 3 + 2 + 13408] << 24;
 					}
 					else
 					{
-						send_buf = preset_temp[a * 3 + 25760] << 8;
-						send_buf |= preset_temp[a * 3 + 1 + 25760] << 16;
-						send_buf |= preset_temp[a * 3 + 2 + 25760] << 24;
+						send_buf = presetBuffer[a * 3 + 25760] << 8;
+						send_buf |= presetBuffer[a * 3 + 1 + 25760] << 16;
+						send_buf |= presetBuffer[a * 3 + 2 + 25760] << 24;
 					}
 				}
 			}
@@ -160,7 +160,7 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 		if(!menu_fl)
 			SPI_I2S_SendData(SPI2, currentPreset.modules.rawData[i]);
 		else
-			SPI_I2S_SendData(SPI2, preset_temp[i + 30]);
+			SPI_I2S_SendData(SPI2, presetBuffer[i + 30]);
 	}
 
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
@@ -175,10 +175,10 @@ void send_cab_data1(uint8_t val, uint8_t num)
 	extern bool cab_data_ready;
 	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY)
 	{
-		kgp_sdk_libc::memset(preset_temp, 0, 12288);
-		preset_temp[0] = 0xff;
-		preset_temp[1] = 0xff;
-		preset_temp[2] = 0x7f;
+		kgp_sdk_libc::memset(presetBuffer, 0, 12288);
+		presetBuffer[0] = 0xff;
+		presetBuffer[1] = 0xff;
+		presetBuffer[2] = 0x7f;
 	}
 
 	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
@@ -198,9 +198,9 @@ void send_cab_data1(uint8_t val, uint8_t num)
 		EXTI_ClearITPendingBit(EXTI_Line9);
 		if(val)
 		{
-			send_buf = preset_temp[i * 3] << 8;
-			send_buf |= preset_temp[i * 3 + 1] << 16;
-			send_buf |= preset_temp[i * 3 + 2] << 24;
+			send_buf = presetBuffer[i * 3] << 8;
+			send_buf |= presetBuffer[i * 3 + 1] << 16;
+			send_buf |= presetBuffer[i * 3 + 2] << 24;
 		}
 		else
 		{

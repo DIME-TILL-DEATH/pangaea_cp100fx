@@ -34,5 +34,6 @@ private:
 };
 
 extern TFSTask *FSTask;
+extern TFsBrowser *fileBrowser;
 
 #endif /*__FS_H__*/

@@ -12,6 +12,7 @@
 #include "gui_task.h"
 
 #include "system.h"
+#include "fs.h"
 
 #include "console_helpers.h"
 #include "resonance_filter_handlers.h"
@@ -80,6 +81,119 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	Preset::Change();
 
 	msg_console("%s\r\n", args[0]);
+}
+
+static void ls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+	msg_console("%s\r", args[0]);
+	fs_object_t fsObject;
+	fs_object_list_t dirContent;
+	fileBrowser->Browse(TFsBrowser::bcList, fsObject, dirContent);
+
+	for(auto it = dirContent.begin(); it != dirContent.end(); ++it)
+	{
+		msg_console("%d:%s|", (*it).type, (*it).name.c_str());
+	}
+	msg_console("\n");
+	FSTask->Resume();
+}
+
+static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+
+	consoleBusy = true;
+	char folderName[256];
+	getDataPartFromStream(rl, folderName, 256);
+	consoleBusy = false;
+
+	fs_object_t fsObject;
+	fsObject.name = folderName;
+	fileBrowser->SelectDir(fsObject);
+
+	msg_console("%s\r%s\n", args[0], fileBrowser->CurrDir(false).c_str());
+//	msg_console("%s\r%s\n", args[0], fileBrowser->CurrentObject()->full_dir.c_str());
+	FSTask->Resume();
+}
+
+static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+
+	msg_console("%s ", args[0]);
+
+	uint8_t cabNum = 0;
+
+	if(count > 1)
+	{
+		char *end;
+		cabNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+		msg_console("%d", cabNum);
+	}
+
+	if(count == 2)
+	{
+		if(cabNum==0)
+		{
+			msg_console("\r%s\n", &cab1.name.string[1]);
+		}
+		else
+		{
+			msg_console("\r%s\n", &cab2.name.string[1]);
+		}
+	}
+
+	if(count == 3)
+	{
+		std::emb_string command = args[2];
+
+		if(command == "set")
+		{
+			consoleBusy = true;
+			char fileName[64];
+			kgp_sdk_libc::memset(fileName, 0 ,64);
+
+			getDataPartFromStream(rl, fileName, 64);
+			consoleBusy = false;
+
+			fs_object_t fsObject;
+			fsObject.name = fileName;
+			fileBrowser->SelectFile(fsObject);
+
+			emb_string errStr;
+			if(!fileBrowser->GetDataFromFile(presetBuffer, errStr))
+			{
+				msg_console(" error\r%s\n", errStr.c_str());
+				FSTask->Resume();
+				return;
+			}
+
+			if(cabNum==0)
+			{
+				kgp_sdk_libc::memcpy(cab1.data, presetBuffer, 4096 * 3);
+				if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memcpy(cab1.data + 4096 * 3, presetBuffer + 4096 * 3, 4096 * 3);
+
+				kgp_sdk_libc::memcpy(cab1.name.string + 1, fileName, 64);
+				cab1.name.size = kgp_sdk_libc::strlen(fileName);
+
+				DSP_SendPrimaryCabData(cab1.data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			}
+			else
+			{
+				kgp_sdk_libc::memcpy(cab2.data, presetBuffer, 4096 * 3);
+				kgp_sdk_libc::memcpy(cab2.name.string + 1, fileName, 64);
+				cab2.name.size = kgp_sdk_libc::strlen(fileName);
+
+				DSP_SendSecondaryCabData(cab2.data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			}
+
+			msg_console(" set\r%s\n", fileName);
+		}
+	}
+	FSTask->Resume();
 }
 
 static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -308,6 +422,10 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 
 	rl->AddCommandHandler("amtdev", amtdev_command_handler);
 	rl->AddCommandHandler("amtver", amtver_command_handler);
+
+	rl->AddCommandHandler("cd", cd_command_handler);
+	rl->AddCommandHandler("ls", ls_command_handler);
+	rl->AddCommandHandler("ir", ir_command_handler);
 
 	rl->AddCommandHandler("pchange", pchange_command_handler);
 	rl->AddCommandHandler("psave", psave_command_handler);

@@ -290,7 +290,7 @@ extern Preset::TCabinet cab1;
 extern Preset::TCabinet cab2;
 
 extern uint8_t __CCM_BSS__ ccmCommonCabBuffer[4096 * 3 * 2];
-extern uint8_t __CCM_BSS__ preset_temp[];
+extern uint8_t __CCM_BSS__ presetBuffer[];
 
 extern uint16_t delay_time;
 extern uint16_t moog_time;

@@ -54,7 +54,7 @@ enum dsp_indicator_source_t
 };
 
 extern uint8_t spi_stat;
-extern uint8_t __CCM_BSS__ preset_temp[];
+extern uint8_t __CCM_BSS__ presetBuffer[];
 
 void DSP_GuiSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value);
 void DSP_ContrSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value);

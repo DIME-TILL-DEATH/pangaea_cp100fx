@@ -99,9 +99,8 @@ void CabBrowserMenu::encoderPressed()
 
 		if(m_cabNumber==0)
 		{
-			kgp_sdk_libc::memcpy(cab1.data, preset_temp, 4096 * 3);
-			if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memcpy(cab1.data + 4096 * 3, preset_temp + 4096 * 3, 4096 * 3);
-//			if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memset(cab1.data + 4096 * 3, 0, 4096 * 3);
+			kgp_sdk_libc::memcpy(cab1.data, presetBuffer, 4096 * 3);
+			if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memcpy(cab1.data + 4096 * 3, presetBuffer + 4096 * 3, 4096 * 3);
 
 			kgp_sdk_libc::memcpy(cab1.name.string, selectedCabName, 64);
 
@@ -110,7 +109,7 @@ void CabBrowserMenu::encoderPressed()
 		}
 		else
 		{
-			kgp_sdk_libc::memcpy(cab2.data, preset_temp, 4096 * 3);
+			kgp_sdk_libc::memcpy(cab2.data, presetBuffer, 4096 * 3);
 			kgp_sdk_libc::memcpy(cab2.name.string, selectedCabName, 64);
 
 			DSP_SendSecondaryCabData(cab2.data);
