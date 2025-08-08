@@ -87,7 +87,7 @@ void set_resonance_filter_handlers(TReadLine *rl)
 	rl->AddCommandHandler("rf_mx",  rf_mix_command_handler);
 	rl->AddCommandHandler("rf_ft",  rf_filter_type_command_handler);
 	rl->AddCommandHandler("rf_fm",  rf_fmod_command_handler);
-	rl->AddCommandHandler("rf_rt",  rf_rate_command_handler);
+	rl->AddCommandHandler("rf_lr",  rf_rate_command_handler);
 	rl->AddCommandHandler("rf_lp",  rf_lpf_command_handler);
 	rl->AddCommandHandler("rf_hp",  rf_hpf_command_handler);
 	rl->AddCommandHandler("rf_rs",  rf_resonance_command_handler);
