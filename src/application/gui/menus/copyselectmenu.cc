@@ -110,11 +110,8 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 	{
 		for(uint8_t i = 0; i<6; i++)
 			presetBuffer[30+vol+i] = currentPreset.modules.rawData[vol+i];
-//		for(uint8_t i = 0; i<64; i++)
-//			presetBuffer[13344+i] = cab1.name.string[i];
+
 		kgp_sdk_libc::memcpy(&presetBuffer[13344], cab1.name.string, 64);
-//		for(uint8_t i = 0; i<64; i++)
-//			presetBuffer[25696+i] = cab2.name.string[i];
 		kgp_sdk_libc::memcpy(&presetBuffer[25696], cab2.name.string, 64);
 		for(uint16_t i = 0; i<12288; i++)
 			presetBuffer[1056+i] = cab1.data[i];
@@ -127,10 +124,12 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 		for(uint16_t i = 0; i<512; i++)
 			presetBuffer[38048+i] = Preset::impulsePath[i];
 
+		cab_data_ready = true; // Kostyl
 		send_cab_data(0, targetPresetNum+1, 0);
 
 		if(cab_type==2)
 			send_cab_data1(0, targetPresetNum+1);
+		cab_data_ready = false;
 
 		presetBuffer[30+cab] = currentPreset.modules.rawData[cab];
 	}
@@ -226,8 +225,10 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 		}
 	}
 
-	send_cab_data(1, targetPresetNum+1, 1);
 	write_prog_temp(targetPresetNum);
+	cab_data_ready = true; // Kostyl
+	send_cab_data(1, targetPresetNum+1, 1);
+	cab_data_ready = false;
 }
 
 void CopySelectMenu::encoderPressed()

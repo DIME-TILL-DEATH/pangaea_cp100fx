@@ -32,6 +32,8 @@
 
 #include "syssettings_handlers.h"
 
+#include "copyselectmenu.h"
+
 bool consoleBusy = false;
 
 uint16_t getDataPartFromStream(TReadLine *rl, char *buf, int maxSize)
@@ -221,6 +223,60 @@ static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	FSTask->Resume();
 }
 
+static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+	msg_console("%s\r", args[0]);
+
+	consoleBusy = true;
+	char dirName[64];
+	kgp_sdk_libc::memset(dirName, 0, 64);
+
+	getDataPartFromStream(rl, dirName, 64);
+	consoleBusy = false;
+	msg_console("%s\n", dirName);
+	FSTask->Resume();
+}
+
+static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+	msg_console("%s\r", args[0]);
+
+	consoleBusy = true;
+	char srcName[64];
+	kgp_sdk_libc::memset(srcName, 0, 64);
+	getDataPartFromStream(rl, srcName, 64);
+
+	char dstName[64];
+	kgp_sdk_libc::memset(dstName, 0, 64);
+	getDataPartFromStream(rl, dstName, 64);
+	consoleBusy = false;
+	msg_console("%s\r%s\n", srcName, dstName);
+	FSTask->Resume();
+}
+
+static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	char *end;
+	uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+
+	consoleBusy = true;
+	char selectionMaskArray[24];
+	getDataPartFromStream(rl, selectionMaskArray, 24);
+	consoleBusy = false;
+
+	for(uint8_t i=0; i < sizeof(CopySelectMenu::TSelectionMask); i++)
+	{
+		selectionMaskArray[i] -= '0';
+	}
+	CopySelectMenu::TSelectionMask selectionMask;
+	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
+	CopySelectMenu::copyPreset(selectionMask, presetNum);
+
+	msg_console("%s\r\n", args[0]);
+}
+
 emb_string uploadingFileName;
 static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
@@ -270,8 +326,6 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 			} while (streamPos < bytesToRecieve);
 			rl->RecvChar(c); // get last \n
 
-			FIL irFile;
-			FRESULT res = f_open(&irFile, uploadingFileName.c_str(), FA_WRITE | FA_OPEN_EXISTING);
 			if (fileBrowser->AppendDataToFile(buffer, bytesToRecieve))
 			{
 				msg_console("request_part\r\n");
@@ -520,6 +574,10 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("upload", upload_command_handler);
 
 	rl->AddCommandHandler("mkdir", mkdir_command_handler);
+	rl->AddCommandHandler("remove", remove_command_handler);
+	rl->AddCommandHandler("rename", rename_command_handler);
+
+	rl->AddCommandHandler("copy_to", copyto_command_handler);
 
 	rl->AddCommandHandler("pchange", pchange_command_handler);
 	rl->AddCommandHandler("psave", psave_command_handler);
