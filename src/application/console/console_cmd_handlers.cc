@@ -277,7 +277,6 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	msg_console("%s\r\n", args[0]);
 }
 
-emb_string uploadingFileName;
 static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s ", args[0]);
