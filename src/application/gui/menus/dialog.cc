@@ -116,9 +116,21 @@ void Dialog::encoderPressed()
 		case 0:
 			Preset::Change();
 
-			currentMenu = m_noMenu;
-			m_noMenu->show();
 
+			switch(m_dialogType)
+			{
+				case TDialogType::ErasePreset:
+				{
+					m_noMenu->returnFromChildMenu();
+					break;
+				}
+				case TDialogType::SaveChanges:
+				{
+					currentMenu = m_noMenu;
+					m_noMenu->show();
+					break;
+				}
+			}
 		break;
 		case 1:
 			switch(m_dialogType)
@@ -141,8 +153,7 @@ void Dialog::encoderPressed()
 				default: break;
 			}
 
-			currentMenu = topLevelMenu;
-			topLevelMenu->show();
+			m_yesMenu->returnFromChildMenu();
 		break;
 	}
 }

@@ -403,21 +403,45 @@ void TFsBrowser::SelectFile(const fs_object_t &fs_object)
 //	*curr_fs_object = fs_object;
 //	out_file_strings(parent.name.c_str());
 }
+
+bool TFsBrowser::CreateFile(const fs_object_t &object)
+{
+	FIL irFile;
+	FRESULT res = f_open(&irFile, object.name.c_str(), FA_WRITE | FA_OPEN_ALWAYS);
+
+	if (res == FR_OK)
+	{
+		fs_created_file_object = object;
+		f_close(&irFile);
+		UpdateDirList();
+		return true;
+	}
+	else return false;
+}
+
+bool TFsBrowser::AppendDataToFile(char* buffer, uint16_t dataSize)
+{
+	FIL irFile;
+	FRESULT res = f_open(&irFile, fs_created_file_object.name.c_str(), FA_WRITE | FA_OPEN_EXISTING);
+	if (res == FR_OK)
+	{
+		f_lseek(&irFile, f_size(&irFile));
+		f_write(&irFile, buffer, dataSize, 0);
+		f_close(&irFile); // can write to file. Path correct
+		return true;
+	}
+	return false;
+}
+
+void TFsBrowser::RemoveFile(const fs_object_t &object)
+{
+
+}
 //---------------------------------------------------------------
 void TFsBrowser::CreateDir(fs_object_t create_object)
 {
-	FRESULT res;
-	FILINFO fno;
-	DIR dir;
-	char *fn; /* This function is assuming non-Unicode cfg. */
-#if _USE_LFN
-    static char lfn[_MAX_LFN + 1];
-    lfn[0] = 0 ;
-    fno.lfname = lfn;
-    fno.lfsize = sizeof lfn;
-#endif
-
-    res = f_mkdir(create_object.name.c_str());
+	f_mkdir(create_object.name.c_str());
+	UpdateDirList();
 }
 //---------------------------------------------------------------
 void TFsBrowser::SelectDir(fs_object_t select_object)
@@ -450,6 +474,50 @@ void TFsBrowser::SelectDir(fs_object_t select_object)
 	f_getcwd(lfn, _MAX_LFN);
 	CollapseAbsPath(lfn, curr_dir_name, curr_dir_level);
 
+	UpdateDirList();
+
+	if(select_object.name=="..")
+	{
+		//установка текущим объектом директории из которой поднялись
+		for(auto i = fs_object_list.begin(); i!=fs_object_list.end(); i++)
+		{
+			if(i->name==curr_dir_name_tmp)
+			{
+				curr_fs_object = i;
+				break;
+			}
+		}
+	}
+
+	if(select_object.startup.size()) // bsStartup , field have a file name to select to current
+	{
+		for(auto i = fs_object_list.begin(); i!=fs_object_list.end(); i++)
+		{
+			if(i->name==select_object.startup)
+			{
+				curr_fs_object = i;
+				break;
+			}
+		}
+		select_object.startup.clear();
+	}
+}
+
+void TFsBrowser::UpdateDirList()
+{
+	FRESULT res;
+	FILINFO fno;
+	DIR dir;
+	char *fn; /* This function is assuming non-Unicode cfg. */
+#if _USE_LFN
+    static char lfn[_MAX_LFN + 1];
+    lfn[0] = 0 ;
+    fno.lfname = lfn;
+    fno.lfsize = sizeof lfn;
+#endif
+
+	fs_object_list.clear();
+
 	res = f_opendir(&dir, "."); /* Open the directory */
 
 	if(res==FR_OK)
@@ -479,35 +547,5 @@ void TFsBrowser::SelectDir(fs_object_t select_object)
 
 		//установка текущим объектом первого элемента директории в которую зашли
 		curr_fs_object = fs_object_list.begin();
-		if(select_object.name=="..")
-		{
-			//установка текущим объектом директории из которой поднялись
-			for(auto i = fs_object_list.begin(); i!=fs_object_list.end(); i++)
-			{
-				if(i->name==curr_dir_name_tmp)
-				{
-					curr_fs_object = i;
-					break;
-				}
-			}
-		}
-
-		if(select_object.startup.size()) // bsStartup , field have a file name to select to current
-		{
-			for(auto i = fs_object_list.begin(); i!=fs_object_list.end(); i++)
-			{
-				if(i->name==select_object.startup)
-				{
-					curr_fs_object = i;
-					break;
-				}
-			}
-			select_object.startup.clear();
-		}
-
-	}
-	else
-	{
-		//rmsg("walk_dir: FatFS error %s,  path=%s\n",f_err2str(res), select_object.name.c_str());
 	}
 }

@@ -32,6 +32,8 @@
 
 #include "syssettings_handlers.h"
 
+#include "copyselectmenu.h"
+
 bool consoleBusy = false;
 
 uint16_t getDataPartFromStream(TReadLine *rl, char *buf, int maxSize)
@@ -203,18 +205,76 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 
 static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	msg_console("%s ", args[0]);
+	FSTask->Suspend();
+	msg_console("%s\r", args[0]);
 
 	consoleBusy = true;
 	char dirName[64];
-	kgp_sdk_libc::memset(dirName, 0 ,64);
+	kgp_sdk_libc::memset(dirName, 0, 64);
 
 	getDataPartFromStream(rl, dirName, 64);
 	consoleBusy = false;
+	msg_console("%s\n", dirName);
 
 	fs_object_t fsObject;
 	fsObject.name = dirName;
 	fileBrowser->CreateDir(fsObject);
+
+	FSTask->Resume();
+}
+
+static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+	msg_console("%s\r", args[0]);
+
+	consoleBusy = true;
+	char dirName[64];
+	kgp_sdk_libc::memset(dirName, 0, 64);
+
+	getDataPartFromStream(rl, dirName, 64);
+	consoleBusy = false;
+	msg_console("%s\n", dirName);
+	FSTask->Resume();
+}
+
+static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	FSTask->Suspend();
+	msg_console("%s\r", args[0]);
+
+	consoleBusy = true;
+	char srcName[64];
+	kgp_sdk_libc::memset(srcName, 0, 64);
+	getDataPartFromStream(rl, srcName, 64);
+
+	char dstName[64];
+	kgp_sdk_libc::memset(dstName, 0, 64);
+	getDataPartFromStream(rl, dstName, 64);
+	consoleBusy = false;
+	msg_console("%s\r%s\n", srcName, dstName);
+	FSTask->Resume();
+}
+
+static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	char *end;
+	uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+
+	consoleBusy = true;
+	char selectionMaskArray[24];
+	getDataPartFromStream(rl, selectionMaskArray, 24);
+	consoleBusy = false;
+
+	for(uint8_t i=0; i < sizeof(CopySelectMenu::TSelectionMask); i++)
+	{
+		selectionMaskArray[i] -= '0';
+	}
+	CopySelectMenu::TSelectionMask selectionMask;
+	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
+	CopySelectMenu::copyPreset(selectionMask, presetNum);
+
+	msg_console("%s\r\n", args[0]);
 }
 
 static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -228,60 +288,47 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 	std::emb_string command = args[1];
 
-	if(command == "start_upload")
+	if(command == "start")
 	{
 		FSTask->Suspend();
 
 		char buffer[128];
-		emb_string fileName;
 		getDataPartFromStream(rl, buffer, 128);
-//
-//		FIL irFile;
-//		FATFS fs;
-//		f_mount(&fs, "0:", 1);
-//		FRESULT res = f_open(&irFile, fileName.c_str(), FA_WRITE | FA_OPEN_ALWAYS);
-//		if (res == FR_OK)
-//		{
-//			f_close(&irFile); // can write to file. Path correct
-//			msg_console("request_part\r\n");
-//		} else {
-//			uploadingIrPath.clear();
-//			msg_console("error\rDST_PATH_INCORRECT\n");
-//		}
-//		f_mount(0, "0:", 1);
+		fs_object_t fsObject;
+		fsObject.name = buffer;
+
+		if (fileBrowser->CreateFile(fsObject))
+		{
+			msg_console("request_part\r\n");
+		} else {
+			msg_console("error\rCANNOT_CREATE_FILE\n");
+		}
 
 		FSTask->Resume();
 	}
 
-	if (command == "part_upload")
+	if (command == "part")
 	{
 		if (count > 2)
 		{
 			FSTask->Suspend();
 
-//			char buffer[512];
-//			char *pEnd;
-//			int32_t streamPos = 0;
-//			int32_t bytesToRecieve = kgp_sdk_libc::strtol(args[2], &pEnd, 10);
-//			int c;
-//			do
-//			{
-//				rl->RecvChar(c);
-//				buffer[streamPos++] = c;
-//			} while (streamPos < bytesToRecieve);
-//			rl->RecvChar(c); // get last \n
-//
-//			FIL irFile;
-//			FATFS fs;
-//			f_mount(&fs, "0:", 1);
-//			FRESULT res = f_open(&irFile, uploadingIrPath.c_str(), FA_WRITE | FA_OPEN_EXISTING);
-//			if (res == FR_OK)
-//			{
-//				f_lseek(&irFile, f_size(&irFile));
-//				f_write(&irFile, buffer, bytesToRecieve, 0);
-//				f_close(&irFile); // can write to file. Path correct
-//				msg_console("request_part\r\n");
-//			}
+			char buffer[512];
+			char *pEnd;
+			int32_t streamPos = 0;
+			int32_t bytesToRecieve = kgp_sdk_libc::strtol(args[2], &pEnd, 10);
+			int c;
+			do
+			{
+				rl->RecvChar(c);
+				buffer[streamPos++] = c;
+			} while (streamPos < bytesToRecieve);
+			rl->RecvChar(c); // get last \n
+
+			if (fileBrowser->AppendDataToFile(buffer, bytesToRecieve))
+			{
+				msg_console("request_part\r\n");
+			}
 
 			FSTask->Resume();
 		}
@@ -290,71 +337,6 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 			msg_console("error\rPART_SIZE_INCORRECT\n");
 		}
 	}
-
-//			if(command == "download")
-//			{
-//				char buffer[128];
-//				emb_string filePath;
-//				getDataPartFromStream(rl, buffer, 128);
-//				filePath = buffer;
-//
-//				FATFS fs;
-//				FRESULT res;
-//				FIL file;
-//				res = f_mount(&fs, "0:", 1);
-//
-//				if(res == FR_OK)
-//				{
-//					res = f_open(&file, filePath.c_str(), FA_READ);
-//					if (res == FR_OK)
-//					{
-//						msg_console("download\r%s\r", filePath.c_str());
-//						char hex[3] = { 0, 0, 0 };
-//						UINT br = 0;
-//						char byte;
-//
-//						while (1)
-//						{
-//							res = f_read(&file, &byte, 1, &br);
-//
-//							if (res != FR_OK)
-//							{
-//								msg_console("\nERROR\n");
-//								break;
-//							}
-//							if (br != 1)
-//							{
-//								msg_console("\n");
-//								break;
-//							}
-//
-//							i2hex(byte, hex);
-//							msg_console("%s", hex);
-//							TTask::Delay(1);
-//						}
-//						f_close(&file);
-//					}
-//				}
-//				else
-//				{
-//					msg_console("error\rOPEN_FILE_ERROR\n");
-//				}
-//				f_mount(0, "0:", 0);
-//			}
-
-//			if (command == "delete")
-//			{
-//				getDataPartFromStream(rl, dataBuffer, bufferSize);
-//
-//				if(EEPROM_delete_file(dataBuffer))
-//				{
-//					msg_console("\rOK\n");
-//				}
-//				else
-//				{
-//					msg_console("\rERROR\n");
-//				}
-//			}
 }
 
 static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -588,7 +570,13 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("ls", ls_command_handler);
 	rl->AddCommandHandler("ir", ir_command_handler);
 
+	rl->AddCommandHandler("upload", upload_command_handler);
+
 	rl->AddCommandHandler("mkdir", mkdir_command_handler);
+	rl->AddCommandHandler("remove", remove_command_handler);
+	rl->AddCommandHandler("rename", rename_command_handler);
+
+	rl->AddCommandHandler("copy_to", copyto_command_handler);
 
 	rl->AddCommandHandler("pchange", pchange_command_handler);
 	rl->AddCommandHandler("psave", psave_command_handler);

@@ -73,11 +73,18 @@ public:
 
 	void PrevObject(fs_object_t &object);
 	void NextObject(fs_object_t &object);
+
 	void CreateDir(fs_object_t object);
 	void SelectDir(fs_object_t object);
+
 	void SelectFile(const fs_object_t &object);
+	bool CreateFile(const fs_object_t &object);
+	bool AppendDataToFile(char* buffer, uint16_t dataSize);
+	void RemoveFile(const fs_object_t &object);
+
 	const fs_object_list_t& List() const {return fs_object_list;}
 	void CollapseAbsPath(char *abs_path, emb_string &name, emb_string &level);
+
 	FRESULT FsMount(const emb_string &init_dir);
 	FRESULT FsUmount();
 
@@ -86,6 +93,8 @@ private:
 	fs_object_list_t fs_object_list;
 	fs_object_list_t::iterator curr_fs_object;
 
+	fs_object_t fs_created_file_object;
+
 	emb_string curr_dir_name;
 	emb_string curr_dir_level;
 	emb_string global_path;
@@ -93,6 +102,8 @@ private:
 	bool sd_initialized;
 	FATFS fs;
 	FRESULT fs_res;
+
+	void UpdateDirList();
 
 	struct sort_fs_object /*: public std::binary_function<fs_object_t, fs_object_t, bool>*/
 	{
