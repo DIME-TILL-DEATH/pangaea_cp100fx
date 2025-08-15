@@ -19,7 +19,7 @@ void TDisplayTask::Code()
 {
 	TDisplayCmd cmd ;
 
-	queue = new TQueue(40,sizeof(TDisplayCmd));
+	queue = new TQueue(40, sizeof(TDisplayCmd));
 	if (!queue) Suspend();
 
 	if (!queue->IsCreated()) Suspend();
@@ -534,6 +534,7 @@ void TDisplayTask::TunStrel()
 	cmd.cmd=dcTunStrel;
 	Command(&cmd);
 }
+
 void TDisplayTask::Display_Reset(void)
 {
 	TDisplayCmd cmd;

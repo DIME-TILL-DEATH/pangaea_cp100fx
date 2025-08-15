@@ -179,20 +179,23 @@ extern "C" void DMA1_Stream2_IRQHandler()
 //-------------------------------------------------------
 	float in = ccl * 0.000000119f;
 //--------------------Tuner------------------------------
-	if(currentMenu->menuType() == MENU_TUNER)
+	if(currentMenu)
 	{
-		SpectrumBuffsUpdate(COMPR_Out(in));
-		if(tun_del > tun_del_val)
+		if(currentMenu->menuType() == MENU_TUNER)
 		{
-			tun_del = 0;
-//			inline void strel_tun(void);
-//			strel_tun();
-			DisplayTask->TunStrel();
+			SpectrumBuffsUpdate(COMPR_Out(in));
+			if(tun_del > tun_del_val)
+			{
+				tun_del = 0;
+
+				DisplayTask->TunStrel();
+			}
+			tun_del++;
+			return;
 		}
-		tun_del++;
 	}
-	else
-		GPIOB->BSRRH |= GPIO_Pin_11;
+
+	GPIOB->BSRRH |= GPIO_Pin_11;
 
 //---------------------Vol indicator----------------------------
 
