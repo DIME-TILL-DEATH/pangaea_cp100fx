@@ -468,9 +468,6 @@ void init(void)
 	cab2.data = &ccmCommonCabBuffer[4096 * 3];
 	if(cab_type != CAB_CONFIG_STEREO)
 	{
-//		cab1.data = &ccmBuffer[0];
-//		cab2.data = nullptr;
-
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_end;
 
@@ -484,9 +481,6 @@ void init(void)
 	}
 	else
 	{
-//		cab1.data = &ccmBuffer[0];
-//		cab2.data = &ccmBuffer[4096 * 3];
-
 		extern uint8_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_duble_fir_ldr_end;
 

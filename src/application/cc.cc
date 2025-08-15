@@ -352,6 +352,8 @@ void TCCTask::Code()
 	Delay(1000);
 	while(1)
 	{
+		if(!currentMenu) this->Give();
+
 		sem->Take(portMAX_DELAY);
 		if(mid_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
 		{
