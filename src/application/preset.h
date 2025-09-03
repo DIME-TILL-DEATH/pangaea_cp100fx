@@ -282,6 +282,7 @@ typedef struct
 extern uint8_t impulsePath[];
 
 void Change();
+void Erase();
 }
 
 

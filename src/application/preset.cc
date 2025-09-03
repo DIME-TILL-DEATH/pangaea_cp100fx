@@ -51,4 +51,17 @@ void Preset::Change()
 	pc_mute_fl = 1;
 }
 
+void Preset::Erase()
+{
+	preset_erase(currentPresetNumber);
+	kgp_sdk_libc::memcpy(currentPreset.modules.rawData, prog_data_init, 512);
+	currentPreset.modules.rawData[delay_tim_lo] = 0xf4;
+	currentPreset.modules.rawData[delay_tim_hi] = 1;
+
+	DSP_ErasePrimaryCab(currentPresetNumber+1);
+
+	if(cab_type == CAB_CONFIG_STEREO)
+		DSP_EraseSecondaryCab(currentPresetNumber+1);
+}
+
 volatile uint8_t __CCM_BSS__ currentPresetNumber;

@@ -190,6 +190,13 @@ static void swap_conf_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 	write_sys();
 }
 
+static void tuner_speed_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+{
+	default_param_handler(&sys_para[System::TUNER_SPEED], rl, args, count);
+	tun_del_val = (127-sys_para[System::TUNER_SPEED])*(90.0f/127.0f)+10.0f;
+	write_sys();
+}
+
 static void tuner_ctrl_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
@@ -203,13 +210,6 @@ static void tuner_ctrl_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 	{
 		if(!(sys_para[System::TUNER_EXTERNAL] & 0x80)) sys_para[System::TUNER_EXTERNAL] |= 0x80;
 	}
-	write_sys();
-}
-
-static void tuner_speed_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
-{
-	default_param_handler(&sys_para[System::TUNER_SPEED], rl, args, count);
-	tun_del_val = (127-sys_para[System::TUNER_SPEED])*(90.0f/127.0f)+10.0f;
 	write_sys();
 }
 
@@ -291,10 +291,11 @@ static void fsw_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_
 				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
 
 				sys_para[System::FSW1_PRESS_PR1 + fswNum*4 + value] = presetNum;
+				msg_console("\r%d", presetNum);
 			}
 			else
 			{
-				msg_console("incorrect args");
+				msg_console("INCORRECT_ARGS");
 			}
 			goto ending;
 		}
@@ -306,10 +307,11 @@ static void fsw_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_
 				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
 
 				sys_para[System::FSW1_HOLD_PR1 + fswNum*4 + value] = presetNum;
+				msg_console("\r%d", presetNum);
 			}
 			else
 			{
-				msg_console("incorrect args");
+				msg_console("INCORRECT_ARGS");
 			}
 			goto ending;
 		}
@@ -318,7 +320,7 @@ static void fsw_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_
 	}
 	else
 	{
-		msg_console("incorrect args");
+		msg_console("iINCORRECT_ARGS");
 	}
 
 ending:

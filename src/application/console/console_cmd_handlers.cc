@@ -277,6 +277,13 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	msg_console("%s\r\n", args[0]);
 }
 
+static void erase_preset_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	Preset::Erase();
+	Preset::Change();
+	msg_console("%s\r\n", args[0]);
+}
+
 static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s ", args[0]);
@@ -523,7 +530,7 @@ static void controller_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 	}
 	else
 	{
-		msg_console("incorrect args");
+		msg_console("INCORRECT_ARGS");
 	}
 
 ending:
@@ -577,6 +584,7 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("rename", rename_command_handler);
 
 	rl->AddCommandHandler("copy_to", copyto_command_handler);
+	rl->AddCommandHandler("erase_preset", erase_preset_command_handler);
 
 	rl->AddCommandHandler("pchange", pchange_command_handler);
 	rl->AddCommandHandler("psave", psave_command_handler);
