@@ -35,6 +35,7 @@ enum gui_menu_type
 	MENU_TAP_SCREEN,
 	MENU_COPY_SELECTION,
 	MENU_EQ_GRAPH,
+	MENU_RESTART,
 
 	// Menus with icons
 	MENU_DELAY = 128,

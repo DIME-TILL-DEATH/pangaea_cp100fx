@@ -110,18 +110,29 @@ bool SystemMenu::editingFinished()
 {
 	if(m_previousCabConfig == 2)
 	{
-		if(m_previousCabConfig!=sys_para[System::CAB_SIM_CONFIG])
+		if(m_previousCabConfig != sys_para[System::CAB_SIM_CONFIG])
 		{
-			write_sys();
-			NVIC_SystemReset();
+			if(shownChildMenu) delete shownChildMenu;
+
+			shownChildMenu = new Dialog(this, Dialog::RestartDevice);
+			shownChildMenu->show();
+
+			tim5_start(0);
+			return false;
+
 		}
 	}
 	else
 	{
 		if(sys_para[System::CAB_SIM_CONFIG] == 2)
 		{
-			write_sys();
-			NVIC_SystemReset();
+			if(shownChildMenu) delete shownChildMenu;
+
+			shownChildMenu = new Dialog(this, Dialog::RestartDevice);
+			shownChildMenu->show();
+
+			tim5_start(0);
+			return false;
 		}
 	}
 	write_sys();
