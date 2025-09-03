@@ -216,6 +216,10 @@ void EEPROM_loadPreset(uint8_t nu)
 		delay_time = del_tim_init;
 
 		cab1.name.size = cab2.name.size = 0;
+
+		kgp_sdk_libc::memset(cab1.name.string, 0, 63);
+		kgp_sdk_libc::memset(cab2.name.string, 0, 63);
+
 		cab1.data[0] = 0xff;
 		cab1.data[1] = 0xff;
 		cab1.data[2] = 0x7f;

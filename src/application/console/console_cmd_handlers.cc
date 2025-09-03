@@ -124,6 +124,7 @@ static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 	FSTask->Resume();
 }
 
+uint16_t bufPos;
 static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FSTask->Suspend();
@@ -151,7 +152,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		}
 	}
 
-	if(count == 3)
+	if(count == 3 || count == 4)
 	{
 		std::emb_string command = args[2];
 
@@ -198,6 +199,69 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 			}
 
 			msg_console(" set\r%s\n", fileName);
+		}
+
+		if(command == "preview_start")
+		{
+			bufPos = 0;
+			kgp_sdk_libc::memset(presetBuffer, 0, 4096 * 3 * 2);
+			msg_console("%d request_part\r\n", cabNum);
+		}
+
+		if(command == "preview_part")
+		{
+			if (count > 3)
+			{
+				char buffer[512];
+				char *pEnd;
+				int32_t streamPos = 0;
+				int32_t bytesToRecieve = kgp_sdk_libc::strtol(args[3], &pEnd, 10);
+				int c;
+				do
+				{
+					rl->RecvChar(c);
+					buffer[streamPos++] = c;
+				} while (streamPos < bytesToRecieve);
+				rl->RecvChar(c); // get last \n
+
+				kgp_sdk_libc::memcpy(presetBuffer + bufPos, buffer, bytesToRecieve);
+				bufPos += bytesToRecieve;
+				msg_console("%d request_part\r\n", cabNum);
+			}
+			else
+			{
+				msg_console("error\rPART_SIZE_INCORRECT\n");
+			}
+		}
+
+		if(command == "preview_end")
+		{
+			if(cabNum==0)
+			{
+				DSP_SendPrimaryCabData(presetBuffer);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			}
+			else
+			{
+				DSP_SendSecondaryCabData(presetBuffer);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			}
+			msg_console("%d preview_end\r\n", cabNum);
+		}
+
+		if(command == "restore")
+		{
+			if(cabNum==0)
+			{
+				DSP_SendPrimaryCabData(cab1.data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			}
+			else
+			{
+				DSP_SendSecondaryCabData(cab2.data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			}
+			msg_console("%d restore\r\n", cabNum);
 		}
 	}
 	FSTask->Resume();
