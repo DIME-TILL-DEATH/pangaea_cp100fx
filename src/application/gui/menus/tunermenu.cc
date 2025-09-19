@@ -21,7 +21,6 @@ void TunerMenu::show(TShowMode showMode)
 	send_codec(0xa102);
 	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 	tun_base_old = 0.0f;
-//	tun_ini();
 
 	DisplayTask->TunerInit();
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_IN);

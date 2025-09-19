@@ -14,6 +14,8 @@
 #include "system.h"
 #include "fs.h"
 
+#include "spectrum.h"
+
 #include "console_helpers.h"
 #include "resonance_filter_handlers.h"
 #include "gate_handlers.h"
@@ -615,6 +617,71 @@ static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbo
 	currentPreset.set = val | 0x80;
 }
 
+static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	msg_console("%s ", args[0]);
+	if(count == 2)
+	{
+		msg_console("%s\r", args[1]);
+
+		std::emb_string command = args[1];
+
+		if(command == "ref")
+		{
+			msg_console("%d", SpectrumTask->ref_freq);
+		}
+	}
+
+	if(count == 3)
+	{
+		msg_console("%s\r", args[1]);
+		std::emb_string command = args[1];
+		if(command == "ref")
+		{
+			char *end;
+			uint16_t refFreq = kgp_sdk_libc::strtol(args[2], &end, 16);
+			SpectrumTask->ref_freq = refFreq;
+			msg_console("%d", SpectrumTask->ref_freq);
+		}
+
+		if(command == "enable")
+		{
+			char *end;
+			uint8_t on = kgp_sdk_libc::strtol(args[2], &end, 16);
+
+			if(on)
+			{
+				send_codec(0xa102);
+				DSP_ContrSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
+				tun_base_old = 0.0f;
+
+				SpectrumTask->backgroundTunerEnabled = true;
+			}
+			else
+			{
+				SpectrumTask->backgroundTunerEnabled = false;
+
+				DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
+
+				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+				send_codec(0xa103);
+			}
+			msg_console("%d", on);
+		}
+
+		if(command == "get")
+		{
+			char *end;
+			uint16_t count = kgp_sdk_libc::strtol(args[2], &end, 16);
+			SpectrumTask->samplesCount = count;
+
+			// answers in IRQ
+//			msg_console("%d", count);
+		}
+	}
+	msg_console("\n");
+}
+
 static void preset_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.paramData.preset_volume, rl, args, count);
@@ -665,6 +732,8 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("cntrl", controller_command_handler);
 	rl->AddCommandHandler("cntrl_pc", controller_pc_command_handler);
 	rl->AddCommandHandler("cntrl_set", controller_set_command_handler);
+
+	rl->AddCommandHandler("tn", tuner_command_handler);
 
 	rl->AddCommandHandler("vl_pr", preset_volume_command_handler);
 	rl->AddCommandHandler("vl_pr_cntrl", preset_volume_control_command_handler);

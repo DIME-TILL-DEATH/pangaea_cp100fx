@@ -93,9 +93,10 @@ void UsbMenu::start_usb()
 		UsbTask = new TUsbTask(TUsbTask::mCDC);
 
 		ConsoleTask = new TConsoleTask(256);
+		ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
 		ConsoleTask->Echo(false);
 		ConsoleTask->SetIo(&cdc_io);
-		ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
+
 
 		//ConsoleTask->Clear();
 	}

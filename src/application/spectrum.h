@@ -14,29 +14,30 @@ public:
 	virtual ~TSpectrumTask()
 	{
 	}
-	;
+
+	bool backgroundTunerEnabled;
+	float ref_freq;
+	float freq_diff;
+	char const *note_name;
+	int8_t cents;
+	size_t note;
+
+	int16_t samplesCount{0};
 
 	kgp_math::fft& get_fft_0()
 	{
 		return fft_0;
 	}
-	;
+
 	kgp_math::fft& get_fft_1()
 	{
 		return fft_1;
 	}
-	;
 
-	inline void RefFreq(const float val)
+	float inline HalfTone(float index)
 	{
-		ref_freq = val;
+		return ref_freq*vdt::fast_powf(2.0f, (index-57.0f)/12.0f);
 	}
-	inline float RefFreq() const
-	{
-		return ref_freq;
-	}
-
-	float ref_freq;
 
 private:
 	void Code();
@@ -59,10 +60,7 @@ private:
 
 	void PrintBassGuitarTable();
 
-	float inline HalfTone(float index)
-	{
-		return ref_freq*vdt::fast_powf(2.0f, (index-57.0f)/12.0f);
-	}
+
 
 	void inline Tone2NoteAndDiff(float tone, size_t &note, float &freq_diff)
 	{
@@ -83,8 +81,6 @@ private:
 
 	float Kmes;            // измеренный индекс отсчета спектра
 	float tone;
-	char const *note_name;
-	float freq_diff;
 
 	//float ffts_x2_uS , uS_find_tone, note_and_diff_uS ;
 };

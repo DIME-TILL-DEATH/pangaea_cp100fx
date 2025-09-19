@@ -140,6 +140,9 @@ int main(void)
 	MidiSendTask = new TMidiSendTask();
 	MidiSendTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
 
+//	ConsoleTask = new TConsoleTask(256);
+//	ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
+
 	TScheduler::StartScheduler();
 }
 //---------------------------------------------------------------------------
