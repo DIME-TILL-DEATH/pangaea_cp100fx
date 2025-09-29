@@ -433,9 +433,15 @@ bool TFsBrowser::AppendDataToFile(char* buffer, uint16_t dataSize)
 	return false;
 }
 
-void TFsBrowser::RemoveFile(const fs_object_t &object)
+void TFsBrowser::RemoveObject(const fs_object_t &object)
 {
 
+}
+
+void TFsBrowser::RenameObject(const fs_object_t &srcObject, const fs_object_t &dstObject)
+{
+	f_rename(srcObject.name.c_str(), dstObject.name.c_str());
+	UpdateDirList();
 }
 //---------------------------------------------------------------
 void TFsBrowser::CreateDir(fs_object_t create_object)

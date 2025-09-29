@@ -291,17 +291,17 @@ static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
-	msg_console("%s\r", args[0]);
-
-	consoleBusy = true;
-	char dirName[64];
-	kgp_sdk_libc::memset(dirName, 0, 64);
-
-	getDataPartFromStream(rl, dirName, 64);
-	consoleBusy = false;
-	msg_console("%s\n", dirName);
-	FSTask->Resume();
+//	FSTask->Suspend();
+//	msg_console("%s\r", args[0]);
+//
+//	consoleBusy = true;
+//	char dirName[64];
+//	kgp_sdk_libc::memset(dirName, 0, 64);
+//
+//	getDataPartFromStream(rl, dirName, 64);
+//	consoleBusy = false;
+//	msg_console("%s\n", dirName);
+//	FSTask->Resume();
 }
 
 static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -314,10 +314,19 @@ static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	kgp_sdk_libc::memset(srcName, 0, 64);
 	getDataPartFromStream(rl, srcName, 64);
 
+	fs_object_t srcObject;
+	srcObject.name = srcName;
+
 	char dstName[64];
 	kgp_sdk_libc::memset(dstName, 0, 64);
 	getDataPartFromStream(rl, dstName, 64);
 	consoleBusy = false;
+
+	fs_object_t dstObject;
+	dstObject.name = dstName;
+
+	fileBrowser->RenameObject(srcObject, dstObject);
+
 	msg_console("%s\r%s\n", srcName, dstName);
 	FSTask->Resume();
 }
