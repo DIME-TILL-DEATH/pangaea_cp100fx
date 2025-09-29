@@ -135,7 +135,8 @@ void fsw_press_execute(uint8_t num)
 				}
 				else
 				{
-					ext_data = contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 0;
+					contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 0;
+					ext_data = 0;
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
@@ -146,6 +147,7 @@ void fsw_press_execute(uint8_t num)
 					MidiSendTask->key_midi_start(num, contr_kn[num] + 1);
 					MidiSendTask->Give();
 				}
+
 				ext_sourc = num + 2;
 				ext_fl = 1;
 				CCTask->Give();
