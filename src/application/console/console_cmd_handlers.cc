@@ -628,7 +628,8 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 		if(command == "ref")
 		{
-			msg_console("%d", SpectrumTask->ref_freq);
+			uint16_t refFreq = SpectrumTask->ref_freq;
+			msg_console("%d", refFreq);
 		}
 	}
 
@@ -639,9 +640,9 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		if(command == "ref")
 		{
 			char *end;
-			uint16_t refFreq = kgp_sdk_libc::strtol(args[2], &end, 16);
+			uint16_t refFreq = kgp_sdk_libc::strtol(args[2], &end, 10);
 			SpectrumTask->ref_freq = refFreq;
-			msg_console("%d", SpectrumTask->ref_freq);
+			msg_console("%d", refFreq);
 		}
 
 		if(command == "enable")
