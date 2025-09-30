@@ -465,6 +465,13 @@ FRESULT TFsBrowser::DeleteDirectoryRecursive(const char* path)
     DIR dir;
     FILINFO fno;
 
+#if _USE_LFN
+	static char lfn[_MAX_LFN + 1];
+	lfn[0] = 0 ;
+	fno.lfname = lfn;
+	fno.lfsize = sizeof lfn;
+#endif
+
     res = f_opendir(&dir, path);
     if (res != FR_OK)
     {
