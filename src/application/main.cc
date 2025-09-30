@@ -131,6 +131,7 @@ int main(void)
 	SpectrumTask = new TSpectrumTask();
 	SpectrumTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
 
+
 	CCTask = new TCCTask();
 	CCTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
 

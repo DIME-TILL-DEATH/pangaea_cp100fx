@@ -291,17 +291,22 @@ static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-//	FSTask->Suspend();
-//	msg_console("%s\r", args[0]);
-//
-//	consoleBusy = true;
-//	char dirName[64];
-//	kgp_sdk_libc::memset(dirName, 0, 64);
-//
-//	getDataPartFromStream(rl, dirName, 64);
-//	consoleBusy = false;
-//	msg_console("%s\n", dirName);
-//	FSTask->Resume();
+	FSTask->Suspend();
+	msg_console("%s\r", args[0]);
+
+	consoleBusy = true;
+	char objName[64];
+	kgp_sdk_libc::memset(objName, 0, 64);
+
+	getDataPartFromStream(rl, objName, 64);
+	consoleBusy = false;
+	msg_console("%s\n", objName);
+
+	fs_object_t fsObject;
+	fsObject.name = objName;
+
+	fileBrowser->RemoveObject(fsObject);
+	FSTask->Resume();
 }
 
 static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -601,7 +606,7 @@ static void controller_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 		}
 
 
-		msg_console("\rundefined type");
+//		msg_console("\rundefined type");
 	}
 	else
 	{
@@ -721,8 +726,8 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("upload", upload_command_handler);
 
 	rl->AddCommandHandler("mkdir", mkdir_command_handler);
-	rl->AddCommandHandler("remove", remove_command_handler);
 	rl->AddCommandHandler("rename", rename_command_handler);
+	rl->AddCommandHandler("remove", remove_command_handler);
 
 	rl->AddCommandHandler("copy_to", copyto_command_handler);
 	rl->AddCommandHandler("erase_preset", erase_preset_command_handler);

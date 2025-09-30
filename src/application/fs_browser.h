@@ -105,6 +105,7 @@ private:
 	FRESULT fs_res;
 
 	void UpdateDirList();
+	FRESULT DeleteDirectoryRecursive(const char* path);
 
 	struct sort_fs_object /*: public std::binary_function<fs_object_t, fs_object_t, bool>*/
 	{

@@ -113,22 +113,26 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 
 		kgp_sdk_libc::memcpy(&presetBuffer[13344], cab1.name.string, 64);
 		kgp_sdk_libc::memcpy(&presetBuffer[25696], cab2.name.string, 64);
+
 		for(uint16_t i = 0; i<12288; i++)
 			presetBuffer[1056+i] = cab1.data[i];
+
 		if(cab_type==CAB_CONFIG_STEREO)
-			for(uint16_t i = 0; i<12288; i++)
+			for(uint16_t i = 0; i<4096*3; i++)
 				presetBuffer[13408+i] = cab2.data[i];
 		else
-			for(uint16_t i = 0; i < 4096 * 3; i++)
+			for(uint16_t i = 0; i<4096*3; i++)
 				presetBuffer[25760+i] = cab1.data[i + 4096 * 3];
+
 		for(uint16_t i = 0; i<512; i++)
 			presetBuffer[38048+i] = Preset::impulsePath[i];
 
 		cab_data_ready = true; // Kostyl
 		send_cab_data(0, targetPresetNum+1, 0);
 
-		if(cab_type==2)
+		if(cab_type==CAB_CONFIG_STEREO)
 			send_cab_data1(0, targetPresetNum+1);
+
 		cab_data_ready = false;
 
 		presetBuffer[30+cab] = currentPreset.modules.rawData[cab];

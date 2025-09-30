@@ -435,7 +435,73 @@ bool TFsBrowser::AppendDataToFile(char* buffer, uint16_t dataSize)
 
 void TFsBrowser::RemoveObject(const fs_object_t &object)
 {
+	FRESULT res;
+	FILINFO fno;
 
+	res = f_stat(object.name.c_str(), &fno);
+
+	if(res != FR_OK || fno.fname[0] == 0) return;
+	if((fno.fname[0] == '.' && fno.fname[1] == 0) || (fno.fname[1] == '.' && fno.fname[2] == 0)) return;
+
+	if(fno.fattrib & AM_DIR)
+	{
+		res = DeleteDirectoryRecursive(object.name.c_str());
+		if(res == FR_OK)
+		{
+			f_unlink(object.name.c_str());
+		}
+	}
+	else
+	{
+		f_unlink(object.name.c_str());
+	}
+
+	UpdateDirList();
+}
+
+FRESULT TFsBrowser::DeleteDirectoryRecursive(const char* path)
+{
+    FRESULT res;
+    DIR dir;
+    FILINFO fno;
+
+    res = f_opendir(&dir, path);
+    if (res != FR_OK)
+    {
+        return res;
+    }
+
+    while (1)
+    {
+        res = f_readdir(&dir, &fno);
+        if(res != FR_OK || fno.fname[0] == 0) break;
+
+        // Пропускаем . и ..
+        if((fno.fname[0] == '.' && fno.fname[1] == 0) || (fno.fname[1] == '.' && fno.fname[2] == 0)) continue;
+
+
+        std::emb_string fullPath(path);
+        fullPath += "/";
+        fullPath += fno.fname;
+
+        if(fno.fattrib & AM_DIR)
+        {
+            res = DeleteDirectoryRecursive(fullPath.c_str());
+            if(res == FR_OK)
+            {
+                res = f_unlink(fullPath.c_str());
+            }
+        }
+        else
+        {
+            res = f_unlink(fullPath.c_str());
+        }
+
+        if (res != FR_OK) break;
+    }
+
+    f_closedir(&dir);
+    return res;
 }
 
 void TFsBrowser::RenameObject(const fs_object_t &srcObject, const fs_object_t &dstObject)
