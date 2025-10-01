@@ -101,7 +101,7 @@ void PresetActionsMenu::keyDown()
 
 void PresetActionsMenu::updatePresetData()
 {
-	read_prog_temp(targetPresetNum);
+	EEPROM_LoadPresetToBuffer(targetPresetNum, presetBuffer);
 
 	EEPROM_loadBriefPreset(targetPresetNum, &m_selectedPresetBrief);
 

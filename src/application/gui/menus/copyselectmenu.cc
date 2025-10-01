@@ -57,6 +57,8 @@ void CopySelectMenu::task()
 
 void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t targetPresetNum)
 {
+	EEPROM_LoadPresetToBuffer(targetPresetNum, presetBuffer);
+
 	if(selectionMask.name)
 	{
 		kgp_sdk_libc::memcpy(presetBuffer, currentPreset.name, 15);
@@ -69,11 +71,9 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 
 	if(selectionMask.rf)
 	{
-			for(uint8_t i = 0; i<11; i++)
-				presetBuffer[30+RFILTER_MIX+i] = currentPreset.modules.rawData[RFILTER_MIX+i];
-
-			presetBuffer[30+moog] = currentPreset.modules.rawData[moog];
-			presetBuffer[30+mog_gen_t] = currentPreset.modules.rawData[mog_gen_t];
+			kgp_sdk_libc::memcpy(&presetBuffer[PRESET_DATA_OFFSET + RFILTER_MIX], &currentPreset.modules.rawData[RFILTER_MIX], sizeof(Preset::TRfData));
+			presetBuffer[PRESET_DATA_OFFSET + ENABLE_RESONANCE_FILTER] = currentPreset.modules.rawData[ENABLE_RESONANCE_FILTER];
+			presetBuffer[PRESET_DATA_OFFSET + RFILTER_LFO_TYPE] = currentPreset.modules.rawData[RFILTER_LFO_TYPE];
 	}
 
 	if(selectionMask.gt)
@@ -81,7 +81,7 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 		for(uint8_t i = 0; i<3; i++)
 			presetBuffer[30+gate_thr+i] = currentPreset.modules.rawData[gate_thr+i];
 
-		presetBuffer[30+gate] = currentPreset.modules.rawData[gate];
+		presetBuffer[PRESET_DATA_OFFSET + ENABLE_GATE] = currentPreset.modules.rawData[ENABLE_GATE];
 	}
 
 	if(selectionMask.cm)
@@ -178,8 +178,10 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 	{
 		for(uint8_t i = 0; i<11; i++)
 			presetBuffer[30+d_vol+i] = currentPreset.modules.rawData[d_vol+i];
+
 		presetBuffer[1054] = delay_time;
 		presetBuffer[1055] = delay_time>>8;
+
 		presetBuffer[30+delay] = currentPreset.modules.rawData[delay];
 		presetBuffer[30+d_tap_t] = currentPreset.modules.rawData[d_tap_t];
 		presetBuffer[30+d_tail] = currentPreset.modules.rawData[d_tail];
@@ -233,6 +235,8 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 	cab_data_ready = true; // Kostyl
 	send_cab_data(1, targetPresetNum+1, 1);
 	cab_data_ready = false;
+
+	Preset::Change();
 }
 
 void CopySelectMenu::encoderPressed()

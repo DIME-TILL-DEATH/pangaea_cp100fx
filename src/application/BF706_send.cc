@@ -52,10 +52,8 @@ void DSP_ContrSendParameter(dsp_module_address_t module_address, uint8_t paramet
 
 void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 {
-
-	//presetNum == 0; //current
 	uint32_t send_buf;
-	uint32_t a;
+
 	extern bool cab_data_ready;
 	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY_SELECTION)
 	{
@@ -87,58 +85,27 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 	{
 		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
 		EXTI_ClearITPendingBit(EXTI_Line9);
+
+		uint8_t* srcBuffer;
+
 		if(val)
 		{
-			if(!menu_fl)
-			{
-				send_buf = presetBuffer[i * 3] << 8;
-				send_buf |= presetBuffer[i * 3 + 1] << 16;
-				send_buf |= presetBuffer[i * 3 + 2] << 24;
-			}
+			if(i < 4096) srcBuffer = &presetBuffer[i * 3 + CAB1_DATA_OFFSET];
 			else
 			{
-				if(i < 4096)
-				{
-					uint8_t offset = 15 + 15 + 512 + 512 + 2;
-
-					send_buf = presetBuffer[i * 3 + offset] << 8;
-					send_buf |= presetBuffer[i * 3 + 1 + offset] << 16;
-					send_buf |= presetBuffer[i * 3 + 2 + offset] << 24;
-				}
-				else
-				{
-					a = i - 4096;
-					if(cab_type == 2)
-					{
-						send_buf = presetBuffer[a * 3 + 13408] << 8;
-						send_buf |= presetBuffer[a * 3 + 1 + 13408] << 16;
-						send_buf |= presetBuffer[a * 3 + 2 + 13408] << 24;
-					}
-					else
-					{
-						send_buf = presetBuffer[a * 3 + 25760] << 8;
-						send_buf |= presetBuffer[a * 3 + 1 + 25760] << 16;
-						send_buf |= presetBuffer[a * 3 + 2 + 25760] << 24;
-					}
-				}
+				if(cab_type == 2) srcBuffer = &presetBuffer[(i - 4096) * 3 + CAB2_DATA_OFFSET];
+				else srcBuffer = &presetBuffer[(i - 4096) * 3 + CAB1_AUX_DATA_OFFSET];
 			}
 		}
 		else
 		{
-			if(i < 4096)
-			{
-				send_buf = cab1.data[i * 3] << 8;
-				send_buf |= cab1.data[i * 3 + 1] << 16;
-				send_buf |= cab1.data[i * 3 + 2] << 24;
-			}
-			else
-			{
-				a = i - 4096;
-				send_buf = cab2.data[a * 3] << 8;
-				send_buf |= cab2.data[a * 3 + 1] << 16;
-				send_buf |= cab2.data[a * 3 + 2] << 24;
-			}
+			if(i < 4096) srcBuffer = &cab1.data[i * 3];
+			else srcBuffer = &cab2.data[(i - 4096) * 3];
 		}
+
+		send_buf = srcBuffer[0] << 8;
+		send_buf |= srcBuffer[1] << 16;
+		send_buf |= srcBuffer[2] << 24;
 
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE)) {};
 		SPI_I2S_SendData(SPI2, send_buf >> 16);
@@ -208,15 +175,10 @@ void send_cab_data1(uint8_t val, uint8_t num)
 			send_buf |= cab2.data[i * 3 + 1] << 16;
 			send_buf |= cab2.data[i * 3 + 2] << 24;
 		}
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-		{
-		}
-		;
+		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, send_buf >> 16);
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE))
-		{
-		}
-		;
+
+		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, send_buf);
 	}
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));

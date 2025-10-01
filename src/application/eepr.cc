@@ -298,9 +298,9 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 	FSTask->Resume();
 }
 
-void read_prog_temp(uint8_t nu)
+void EEPROM_LoadPresetToBuffer(uint8_t presetNum, uint8_t* buffer)
 {
-	nu++;
+	presetNum++;
 
 	char fna[_MAX_LFN];
 	FRESULT fs_res;
@@ -308,68 +308,75 @@ void read_prog_temp(uint8_t nu)
 	FIL file;
 	UINT f_size;
 	uint16_t pres_po = 0;
-	if(nu<10)
-		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)nu);
+
+	if(presetNum<10)
+		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)presetNum);
 	else
-		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)nu);
+		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)presetNum);
+
 	f_mount(&fs, "1:", 1);
 	fs_res = f_open(&file, fna, FA_READ);
 	if(fs_res==FR_OK)
 	{
-		if(f_size(&file)<=25760)
+		if(f_size(&file) <= CAB1_AUX_DATA_OFFSET) //25760
 		{
-			f_read(&file, presetBuffer, 25760, &f_size);
-			for(uint16_t i = 0; i<12800; i++)
-				presetBuffer[i+25760] = 0;
+			f_read(&file, buffer, CAB1_AUX_DATA_OFFSET, &f_size);
+
+			for(uint16_t i = 0; i < 12800; i++)
+				buffer[i+25760] = 0;
 		}
 		else
 		{
 			if(f_size(&file)<=38048)
 			{
-				f_read(&file, presetBuffer, 38048, &f_size);
+				f_read(&file, buffer, 38048, &f_size);
 				for(uint16_t i = 0; i<512; i++)
-					presetBuffer[i+38048] = 0;
+					buffer[i+38048] = 0;
 			}
 			else
-				f_read(&file, presetBuffer, 38560, &f_size);
+				f_read(&file, buffer, 38560, &f_size);
 		}
 //		prog_sym_cur = 0;
 	}
 	else
 	{
 		for(uint8_t i = 0; i<15; i++)
-			presetBuffer[pres_po++] = nameInit[i];
+			buffer[pres_po++] = nameInit[i];
 		for(uint8_t i = 0; i<15; i++)
-			presetBuffer[pres_po++] = commentInit[i];
+			buffer[pres_po++] = commentInit[i];
 		for(uint16_t i = 0; i<512; i++)
-			presetBuffer[pres_po++] = prog_data_init[i];
+			buffer[pres_po++] = prog_data_init[i];
 		for(uint16_t i = 0; i<512; i++)
-			presetBuffer[pres_po++] = 0;
-		presetBuffer[pres_po++] = del_tim_init;
-		presetBuffer[pres_po++] = del_tim_init>>8;
-		presetBuffer[pres_po++] = 0xff;
-		presetBuffer[pres_po++] = 0xff;
-		presetBuffer[pres_po++] = 0x7f;
+			buffer[pres_po++] = 0;
+		buffer[pres_po++] = del_tim_init;
+		buffer[pres_po++] = del_tim_init>>8;
+
+		buffer[pres_po++] = 0xff;
+		buffer[pres_po++] = 0xff;
+		buffer[pres_po++] = 0x7f;
 		for(uint16_t i = 0; i<12285; i++)
-			presetBuffer[pres_po++] = 0;
+			buffer[pres_po++] = 0;
+
 		for(uint16_t i = 0; i<64; i++)
-			presetBuffer[pres_po++] = 0;
-		presetBuffer[pres_po++] = 0xff;
-		presetBuffer[pres_po++] = 0xff;
-		presetBuffer[pres_po++] = 0x7f;
+			buffer[pres_po++] = 0;
+
+		buffer[pres_po++] = 0xff;
+		buffer[pres_po++] = 0xff;
+		buffer[pres_po++] = 0x7f;
 		for(uint16_t i = 0; i<12285; i++)
-			presetBuffer[pres_po++] = 0;
+			buffer[pres_po++] = 0;
 		for(uint16_t i = 0; i<64; i++)
-			presetBuffer[pres_po++] = 0;
+			buffer[pres_po++] = 0;
 		for(uint16_t i = 0; i<12288; i++)
-			presetBuffer[pres_po++] = 0;
+			buffer[pres_po++] = 0;
 		for(uint16_t i = 0; i<512; i++)
-			presetBuffer[pres_po++] = 0;
+			buffer[pres_po++] = 0;
 //		prog_sym_cur = 1;
 	}
 	f_close(&file);
 	f_mount(0, "1:", 0);
 }
+
 void write_prog_temp(uint8_t nu)
 {
 	nu++;
