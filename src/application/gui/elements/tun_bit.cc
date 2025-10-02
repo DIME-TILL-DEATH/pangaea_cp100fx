@@ -40,14 +40,17 @@ void note_tun(void)
 		for(uint8_t f = 0; f < 13 ; f++)oled023_1_send_data(0);
 		GPIO_SetBits(GPIOB,CS);
 	}
+
 	for(uint8_t i = 0 ; i < 2 ; i++)
 	{
 		Set_Column_Address(56);
 		Set_Page_Address(i);
 		GPIO_ResetBits(GPIOB,CS);
-		if(ind_out_l[1] > 1500)for(uint8_t f = 0; f < 15 ; f++)oled023_1_send_data(not_tun[f*2 + i + not_ind[t_no]*30]);
-		else for(uint8_t f = 0; f < 15 ; f++)oled023_1_send_data(tire[f*2 + i]);
-		if(((t_no == 1) || (t_no == 3) || (t_no == 6) || (t_no == 8) || (t_no == 10)) && (ind_out_l[1] > 500))diez_tun();
+
+		if(ind_out_l[1] > 1500) for(uint8_t f = 0; f < 15 ; f++) oled023_1_send_data(not_tun[f*2 + i + not_ind[t_no]*30]);
+		else for(uint8_t f = 0; f < 15 ; f++) oled023_1_send_data(tire[f*2 + i]);
+
+		if(((t_no == 1) || (t_no == 3) || (t_no == 6) || (t_no == 8) || (t_no == 10)) && (ind_out_l[1] > 500)) diez_tun();
 		GPIO_SetBits(GPIOB,CS);
 	}
 	ind_out_l[1] = 0;
@@ -58,13 +61,34 @@ float tun_base_old;
 const uint8_t strelk_tun[] = {0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80};
 void strel_tun(void)
 {
+	int aa = SpectrumTask->freq_diff*1000.0f;
+	float bb = aa/1000.0f;
+
+//	extern uint8_t t_po;
+	if(SpectrumTask->freq_diff<0)
+	{
+		float a = SpectrumTask->HalfTone(SpectrumTask->note-1);
+		float b = SpectrumTask->HalfTone(SpectrumTask->note);
+		float c = (b-a)*0.5f;
+		t_po = (uint8_t)((64.0-(fabsf(bb)*(64.0/c))));
+	}
+	else
+	{
+		float a = SpectrumTask->HalfTone(SpectrumTask->note+1);
+		float b = SpectrumTask->HalfTone(SpectrumTask->note);
+		float c = (a-b)*0.5f;
+		t_po = (uint8_t)(((bb*(64.0/c)))+64.0);
+	}
+
 	if(t_po1 != t_po)
 	{
 		Set_Page_Address(3);
 		Set_Column_Address(t_po1 - 8);
-		GPIO_ResetBits(GPIOB,CS);
-		for(uint8_t i = 0 ; i < 15 ; i++)oled023_1_send_data(0);
-		GPIO_SetBits(GPIOB,CS);
+
+		GPIO_ResetBits(GPIOB, CS);
+		for(uint8_t i = 0 ; i < 15 ; i++) oled023_1_send_data(0);
+		GPIO_SetBits(GPIOB, CS);
+
 		if(ind_out_l[1] < 1500)t_po = 64;
 
 		if(t_po1 < t_po)t_po1 += ( t_po - t_po1)/4 + 1;
@@ -77,18 +101,20 @@ void strel_tun(void)
 		for(uint8_t i = 0 ; i < 15 ; i++)oled023_1_send_data(strelk_tun[i]);
 		GPIO_SetBits(GPIOB,CS);
 	}
+
 	if(notee)
 	{
 		notee = 0;
 		note_tun();
 	}
+
 	if(tun_base_old != SpectrumTask->ref_freq)
 	{
 		tun_base_old = SpectrumTask->ref_freq;
 		inline void par_ind_num_(uint8_t col , uint8_t pag , uint16_t val);
 		inline void Arsys_line(uint8_t col , uint8_t pag , uint8_t* adr ,uint8_t curs);
 		par_ind_num_(10,0,(uint16_t)SpectrumTask->ref_freq);
-		Arsys_line(30,0,(uint8_t*)"Hz",0);
+		Arsys_line(30, 0, (uint8_t*)"Hz", 0);
 	}
 }
 const  uint8_t scale_tun[] = {

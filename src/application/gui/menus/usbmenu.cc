@@ -57,8 +57,8 @@ void UsbMenu::encoderPressed()
 			DisplayTask->StringOut(34, 2, Font::fntSystem, 0, (uint8_t*)"serial port");
 
 			// Memory leak
-//			currentMenu = mainMenu;
-//			mainMenu->show();
+			currentMenu = mainMenu;
+			mainMenu->show();
 			break;
 		}
 	}
@@ -93,9 +93,9 @@ void UsbMenu::start_usb()
 		UsbTask = new TUsbTask(TUsbTask::mCDC);
 
 		ConsoleTask = new TConsoleTask(256);
-		ConsoleTask->Echo(false);
-		ConsoleTask->SetIo(&cdc_io);
 		ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
+		ConsoleTask->SetIo(&cdc_io);
+		ConsoleTask->Echo(false);
 
 		//ConsoleTask->Clear();
 	}

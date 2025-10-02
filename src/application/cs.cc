@@ -19,6 +19,8 @@
 
 #include "system.h"
 
+#include "console_handlers.h"
+
 TCSTask *CSTask;
 
 void oled023_1_disp_init(void);
@@ -178,6 +180,16 @@ extern "C" void DMA1_Stream2_IRQHandler()
 	ccr = ccr >> 8;
 //-------------------------------------------------------
 	float in = ccl * 0.000000119f;
+
+//---------------------Vol indicator----------------------------
+
+	ind_out_l[0] = abs(ccl);
+	if(ind_out_l[0] > ind_out_l[1])
+		ind_out_l[1] = ind_out_l[0];
+
+
+	DisplayTask->VolIndicatorTask();
+
 //--------------------Tuner------------------------------
 	if(currentMenu)
 	{
@@ -195,17 +207,45 @@ extern "C" void DMA1_Stream2_IRQHandler()
 		}
 	}
 
+	if(SpectrumTask)
+	{
+		if(SpectrumTask->backgroundTunerEnabled)
+		{
+			SpectrumBuffsUpdate(COMPR_Out(in));
+			if(tun_del > tun_del_val)
+			{
+				tun_del = 0;
+//				if(!consoleBusy){
+//					BaseType_t HigherPriorityTaskWoken;
+//					char cmd[] = "tn get\r\n";
+//					for (size_t i = 0; i < 8; i++)
+//						ConsoleTask->WriteToInputBuffFromISR(cmd + i, &HigherPriorityTaskWoken);
+//
+//					portYIELD_FROM_ISR(HigherPriorityTaskWoken);
+//				}
+				if(SpectrumTask->samplesCount > 0)
+				{
+					SpectrumTask->samplesCount--;
+					if(ind_out_l[0] > 1500)
+						ConsoleTask->UnsafePrintF("tn get\r%s\r%d\n", SpectrumTask->note_name, SpectrumTask->cents);
+					else
+						ConsoleTask->UnsafePrintF("tn get\r-\r0\n");
+				}
+				else
+				{
+					SpectrumTask->backgroundTunerEnabled = false;
+
+					DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
+					GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+					send_codec(0xa103);
+				}
+			}
+			tun_del++;
+			return;
+		}
+	}
+
 	GPIOB->BSRRH |= GPIO_Pin_11;
-
-//---------------------Vol indicator----------------------------
-
-	ind_out_l[0] = abs(ccl);
-	if(ind_out_l[0] > ind_out_l[1])
-		ind_out_l[1] = ind_out_l[0];
-
-
-	DisplayTask->VolIndicatorTask();
-
 
 	dac_data[dma_ht_fl].left.sample = ror16(cr);
 	dac_data[dma_ht_fl].right.sample = ror16(cr);

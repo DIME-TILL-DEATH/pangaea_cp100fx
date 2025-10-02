@@ -4,7 +4,7 @@
 enum {
 	amp = 0, cab, eq, delay, phas, fl, chor, early, reve, trem, pream, gate, compr, moog,
 	cab_m = 41,
-	vol,cab1_pan,cab1_del,cab2_vol,cab2_pan,cab2_del,
+	vol, cab1_pan, cab1_del, cab2_vol, cab2_pan, cab2_del,
 	eq1,eq2,eq3,eq4,eq5,
 	hpf_v,lpf_v,pre_v,
 	phaser_vol,phaser_rate,phaser_wdt,phaser_cnt,phaser_feedback,phaser_type,

@@ -14,6 +14,8 @@
 #include "system.h"
 #include "fs.h"
 
+#include "spectrum.h"
+
 #include "console_helpers.h"
 #include "resonance_filter_handlers.h"
 #include "gate_handlers.h"
@@ -124,6 +126,7 @@ static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 	FSTask->Resume();
 }
 
+uint16_t bufPos;
 static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FSTask->Suspend();
@@ -151,7 +154,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		}
 	}
 
-	if(count == 3)
+	if(count == 3 || count == 4)
 	{
 		std::emb_string command = args[2];
 
@@ -199,6 +202,69 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 
 			msg_console(" set\r%s\n", fileName);
 		}
+
+		if(command == "preview_start")
+		{
+			bufPos = 0;
+			kgp_sdk_libc::memset(presetBuffer, 0, 4096 * 3 * 2);
+			msg_console("%d request_part\r\n", cabNum);
+		}
+
+		if(command == "preview_part")
+		{
+			if (count > 3)
+			{
+				char buffer[512];
+				char *pEnd;
+				int32_t streamPos = 0;
+				int32_t bytesToRecieve = kgp_sdk_libc::strtol(args[3], &pEnd, 10);
+				int c;
+				do
+				{
+					rl->RecvChar(c);
+					buffer[streamPos++] = c;
+				} while (streamPos < bytesToRecieve);
+				rl->RecvChar(c); // get last \n
+
+				kgp_sdk_libc::memcpy(presetBuffer + bufPos, buffer, bytesToRecieve);
+				bufPos += bytesToRecieve;
+				msg_console("%d request_part\r\n", cabNum);
+			}
+			else
+			{
+				msg_console("error\rPART_SIZE_INCORRECT\n");
+			}
+		}
+
+		if(command == "preview_end")
+		{
+			if(cabNum==0)
+			{
+				DSP_SendPrimaryCabData(presetBuffer);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			}
+			else
+			{
+				DSP_SendSecondaryCabData(presetBuffer);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			}
+			msg_console("%d preview_end\r\n", cabNum);
+		}
+
+		if(command == "restore")
+		{
+			if(cabNum==0)
+			{
+				DSP_SendPrimaryCabData(cab1.data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			}
+			else
+			{
+				DSP_SendSecondaryCabData(cab2.data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			}
+			msg_console("%d restore\r\n", cabNum);
+		}
 	}
 	FSTask->Resume();
 }
@@ -229,12 +295,17 @@ static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	msg_console("%s\r", args[0]);
 
 	consoleBusy = true;
-	char dirName[64];
-	kgp_sdk_libc::memset(dirName, 0, 64);
+	char objName[64];
+	kgp_sdk_libc::memset(objName, 0, 64);
 
-	getDataPartFromStream(rl, dirName, 64);
+	getDataPartFromStream(rl, objName, 64);
 	consoleBusy = false;
-	msg_console("%s\n", dirName);
+	msg_console("%s\n", objName);
+
+	fs_object_t fsObject;
+	fsObject.name = objName;
+
+	fileBrowser->RemoveObject(fsObject);
 	FSTask->Resume();
 }
 
@@ -248,10 +319,19 @@ static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	kgp_sdk_libc::memset(srcName, 0, 64);
 	getDataPartFromStream(rl, srcName, 64);
 
+	fs_object_t srcObject;
+	srcObject.name = srcName;
+
 	char dstName[64];
 	kgp_sdk_libc::memset(dstName, 0, 64);
 	getDataPartFromStream(rl, dstName, 64);
 	consoleBusy = false;
+
+	fs_object_t dstObject;
+	dstObject.name = dstName;
+
+	fileBrowser->RenameObject(srcObject, dstObject);
+
 	msg_console("%s\r%s\n", srcName, dstName);
 	FSTask->Resume();
 }
@@ -274,6 +354,13 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
 	CopySelectMenu::copyPreset(selectionMask, presetNum);
 
+	msg_console("%s\r\n", args[0]);
+}
+
+static void erase_preset_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	Preset::Erase();
+	Preset::Change();
 	msg_console("%s\r\n", args[0]);
 }
 
@@ -519,11 +606,11 @@ static void controller_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 		}
 
 
-		msg_console("\rundefined type");
+//		msg_console("\rundefined type");
 	}
 	else
 	{
-		msg_console("incorrect args");
+		msg_console("INCORRECT_ARGS");
 	}
 
 ending:
@@ -542,6 +629,72 @@ static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbo
 	default_param_handler(&val, rl, args, count);
 
 	currentPreset.set = val | 0x80;
+}
+
+static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+	msg_console("%s ", args[0]);
+	if(count == 2)
+	{
+		msg_console("%s\r", args[1]);
+
+		std::emb_string command = args[1];
+
+		if(command == "ref")
+		{
+			uint16_t refFreq = SpectrumTask->ref_freq;
+			msg_console("%d", refFreq);
+		}
+	}
+
+	if(count == 3)
+	{
+		msg_console("%s\r", args[1]);
+		std::emb_string command = args[1];
+		if(command == "ref")
+		{
+			char *end;
+			uint16_t refFreq = kgp_sdk_libc::strtol(args[2], &end, 10);
+			SpectrumTask->ref_freq = refFreq;
+			msg_console("%d", refFreq);
+		}
+
+		if(command == "enable")
+		{
+			char *end;
+			uint8_t on = kgp_sdk_libc::strtol(args[2], &end, 16);
+
+			if(on)
+			{
+				send_codec(0xa102);
+				DSP_ContrSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
+				tun_base_old = 0.0f;
+
+				SpectrumTask->backgroundTunerEnabled = true;
+			}
+			else
+			{
+				SpectrumTask->backgroundTunerEnabled = false;
+
+				DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
+
+				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+				send_codec(0xa103);
+			}
+			msg_console("%d", on);
+		}
+
+		if(command == "get")
+		{
+			char *end;
+			uint16_t count = kgp_sdk_libc::strtol(args[2], &end, 16);
+			SpectrumTask->samplesCount = count;
+
+			// answers in IRQ
+//			msg_console("%d", count);
+		}
+	}
+	msg_console("\n");
 }
 
 static void preset_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -573,10 +726,11 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("upload", upload_command_handler);
 
 	rl->AddCommandHandler("mkdir", mkdir_command_handler);
-	rl->AddCommandHandler("remove", remove_command_handler);
 	rl->AddCommandHandler("rename", rename_command_handler);
+	rl->AddCommandHandler("remove", remove_command_handler);
 
 	rl->AddCommandHandler("copy_to", copyto_command_handler);
+	rl->AddCommandHandler("erase_preset", erase_preset_command_handler);
 
 	rl->AddCommandHandler("pchange", pchange_command_handler);
 	rl->AddCommandHandler("psave", psave_command_handler);
@@ -593,6 +747,8 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("cntrl", controller_command_handler);
 	rl->AddCommandHandler("cntrl_pc", controller_pc_command_handler);
 	rl->AddCommandHandler("cntrl_set", controller_set_command_handler);
+
+	rl->AddCommandHandler("tn", tuner_command_handler);
 
 	rl->AddCommandHandler("vl_pr", preset_volume_command_handler);
 	rl->AddCommandHandler("vl_pr_cntrl", preset_volume_control_command_handler);

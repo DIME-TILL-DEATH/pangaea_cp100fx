@@ -4,7 +4,11 @@
 #include "appdefs.h"
 #include "controllers.h"
 
-#define CAB_DATA_SIZE 4096 * 3//12288
+#define PRESET_NAME_STRING_SIZE 15
+#define PRESET_COMMENT_STRING_SIZE 15
+
+#define CAB_NAME_STRING_SIZE 64
+#define CAB_DATA_SIZE 4096 * 3	// =12288
 
 namespace Preset
 {
@@ -240,7 +244,7 @@ typedef union
 	uint8_t rawData[512];
 }UModulesData;
 
-const uint8_t CabNameLength = 63;
+const uint8_t CabNameLength = CAB_NAME_STRING_SIZE - 1;
 typedef struct
 {
 	uint8_t size;
@@ -255,8 +259,8 @@ typedef struct
 
 typedef struct
 {
-	uint8_t name[15];
-	uint8_t comment[15];
+	uint8_t name[PRESET_NAME_STRING_SIZE];
+	uint8_t comment[PRESET_COMMENT_STRING_SIZE];
 
 	UModulesData modules;
 
@@ -267,6 +271,11 @@ typedef struct
 	uint8_t pcOut;
 	uint8_t set;
 }TPreset;
+
+#define PRESET_DATA_OFFSET PRESET_NAME_STRING_SIZE + PRESET_COMMENT_STRING_SIZE
+#define CAB1_DATA_OFFSET PRESET_DATA_OFFSET + 1024 + 2
+#define CAB2_DATA_OFFSET CAB1_DATA_OFFSET + CAB_NAME_STRING_SIZE + CAB_DATA_SIZE
+#define CAB1_AUX_DATA_OFFSET CAB2_DATA_OFFSET + CAB_NAME_STRING_SIZE + CAB_DATA_SIZE
 
 typedef struct
 {
@@ -282,6 +291,7 @@ typedef struct
 extern uint8_t impulsePath[];
 
 void Change();
+void Erase();
 }
 
 

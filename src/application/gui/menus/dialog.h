@@ -9,7 +9,8 @@ public:
 	enum TDialogType
 	{
 		SaveChanges,
-		ErasePreset
+		ErasePreset,
+		RestartDevice
 	};
 
 	Dialog(AbstractMenu* parent, TDialogType dialogType = SaveChanges);
@@ -43,6 +44,8 @@ private:
 	char** m_btnNames;
 	uint8_t m_btnCount{3};
 	uint8_t m_nameLenght{7};
+
+	uint8_t strPos{10};
 };
 
 #endif /* DIALOG_H_ */

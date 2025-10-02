@@ -433,9 +433,88 @@ bool TFsBrowser::AppendDataToFile(char* buffer, uint16_t dataSize)
 	return false;
 }
 
-void TFsBrowser::RemoveFile(const fs_object_t &object)
+void TFsBrowser::RemoveObject(const fs_object_t &object)
 {
+	FRESULT res;
+	FILINFO fno;
 
+	res = f_stat(object.name.c_str(), &fno);
+
+	if(res != FR_OK || fno.fname[0] == 0) return;
+	if((fno.fname[0] == '.' && fno.fname[1] == 0) || (fno.fname[1] == '.' && fno.fname[2] == 0)) return;
+
+	if(fno.fattrib & AM_DIR)
+	{
+		res = DeleteDirectoryRecursive(object.name.c_str());
+		if(res == FR_OK)
+		{
+			f_unlink(object.name.c_str());
+		}
+	}
+	else
+	{
+		f_unlink(object.name.c_str());
+	}
+
+	UpdateDirList();
+}
+
+FRESULT TFsBrowser::DeleteDirectoryRecursive(const char* path)
+{
+    FRESULT res;
+    DIR dir;
+    FILINFO fno;
+
+#if _USE_LFN
+	static char lfn[_MAX_LFN + 1];
+	lfn[0] = 0 ;
+	fno.lfname = lfn;
+	fno.lfsize = sizeof lfn;
+#endif
+
+    res = f_opendir(&dir, path);
+    if (res != FR_OK)
+    {
+        return res;
+    }
+
+    while (1)
+    {
+        res = f_readdir(&dir, &fno);
+        if(res != FR_OK || fno.fname[0] == 0) break;
+
+        // Пропускаем . и ..
+        if((fno.fname[0] == '.' && fno.fname[1] == 0) || (fno.fname[1] == '.' && fno.fname[2] == 0)) continue;
+
+
+        std::emb_string fullPath(path);
+        fullPath += "/";
+        fullPath += fno.fname;
+
+        if(fno.fattrib & AM_DIR)
+        {
+            res = DeleteDirectoryRecursive(fullPath.c_str());
+            if(res == FR_OK)
+            {
+                res = f_unlink(fullPath.c_str());
+            }
+        }
+        else
+        {
+            res = f_unlink(fullPath.c_str());
+        }
+
+        if (res != FR_OK) break;
+    }
+
+    f_closedir(&dir);
+    return res;
+}
+
+void TFsBrowser::RenameObject(const fs_object_t &srcObject, const fs_object_t &dstObject)
+{
+	f_rename(srcObject.name.c_str(), dstObject.name.c_str());
+	UpdateDirList();
 }
 //---------------------------------------------------------------
 void TFsBrowser::CreateDir(fs_object_t create_object)

@@ -372,7 +372,7 @@ void TCCTask::Code()
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
 				if(currentPreset.controller[i].src == ext_sourc)
-					controllerSetData(0, ext_data);
+					controllerSetData(i, ext_data);
 			}
 			ext_fl = 0;
 			currentMenu->refresh();

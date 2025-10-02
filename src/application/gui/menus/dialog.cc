@@ -63,6 +63,30 @@ Dialog::Dialog(AbstractMenu *parent, TDialogType dialogType)
 			m_btnPositions[1] = 78;
 			break;
 		}
+		case TDialogType::RestartDevice:
+		{
+			m_menuType = MENU_RESTART;
+
+			m_yesMenu = m_noMenu = parent;
+
+			m_btnCount = 2;
+			m_nameLenght = 7;
+
+			m_btnNames = new char*[m_btnCount];
+			for(int i = 0; i<m_btnCount; i++)
+				m_btnNames[i] = new char[m_nameLenght];
+
+			kgp_sdk_libc::strcpy(m_btnNames[0], "Cancel ");
+			kgp_sdk_libc::strcpy(m_btnNames[1], "Restart");
+
+			kgp_sdk_libc::strcpy(m_questionString1, "Changing cab config");
+			kgp_sdk_libc::strcpy(m_questionString2, " needs device reset ");
+
+			strPos = 6;
+			m_btnPositions[0] = 6;
+			m_btnPositions[1] = 78;
+			break;
+		}
 	}
 }
 
@@ -89,8 +113,8 @@ void Dialog::show(TShowMode showMode)
 	m_paramNum = m_btnCount - 1;
 
 	DisplayTask->Clear();
-	DisplayTask->StringOut(10, 2, Font::fntSystem, 0, (uint8_t*)m_questionString1);
-	DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)m_questionString2);
+	DisplayTask->StringOut(strPos, 2, Font::fntSystem, 0, (uint8_t*)m_questionString1);
+	DisplayTask->StringOut(strPos, 3, Font::fntSystem, 0, (uint8_t*)m_questionString2);
 
 	for(uint8_t i = 0; i<m_btnCount; i++)
 		DisplayTask->StringOut(m_btnPositions[i], 0, Font::fntSystem, 0, (uint8_t*)m_btnNames[i]);
@@ -107,53 +131,58 @@ void Dialog::encoderPressed()
 {
 	switch(m_paramNum)
 	{
-		case 2:
-
-			currentMenu = m_yesMenu;
-			m_yesMenu->show();
-
-		break;
 		case 0:
 			Preset::Change();
 
 
 			switch(m_dialogType)
 			{
-				case TDialogType::ErasePreset:
-				{
-					m_noMenu->returnFromChildMenu();
-					break;
-				}
 				case TDialogType::SaveChanges:
 				{
 					currentMenu = m_noMenu;
 					m_noMenu->show();
 					break;
 				}
+				case TDialogType::ErasePreset:
+				{
+					m_noMenu->returnFromChildMenu();
+					break;
+				}
+				case TDialogType::RestartDevice:
+				{
+					write_sys();
+					m_noMenu->returnFromChildMenu();
+					break;
+				}
 			}
 		break;
+
 		case 1:
 			switch(m_dialogType)
 			{
 				case TDialogType::ErasePreset:
 				{
-					preset_erase(currentPresetNumber);
-					kgp_sdk_libc::memcpy(currentPreset.modules.rawData, prog_data_init, 512);
-					currentPreset.modules.rawData[delay_tim_lo] = 0xf4;
-					currentPreset.modules.rawData[delay_tim_hi] = 1;
-
-					DSP_ErasePrimaryCab(currentPresetNumber+1);
-
-					if(cab_type == CAB_CONFIG_STEREO)
-						DSP_EraseSecondaryCab(currentPresetNumber+1);
-
+					Preset::Erase();
 					Preset::Change();
+					break;
+				}
+				case TDialogType::RestartDevice:
+				{
+					write_sys();
+					NVIC_SystemReset();
 					break;
 				}
 				default: break;
 			}
 
 			m_yesMenu->returnFromChildMenu();
+		break;
+
+		case 2:
+
+			currentMenu = m_yesMenu;
+			m_yesMenu->show();
+
 		break;
 	}
 }

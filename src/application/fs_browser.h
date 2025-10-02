@@ -80,7 +80,8 @@ public:
 	void SelectFile(const fs_object_t &object);
 	bool CreateFile(const fs_object_t &object);
 	bool AppendDataToFile(char* buffer, uint16_t dataSize);
-	void RemoveFile(const fs_object_t &object);
+	void RemoveObject(const fs_object_t &object);
+	void RenameObject(const fs_object_t &srcObject, const fs_object_t &dstObject);
 
 	const fs_object_list_t& List() const {return fs_object_list;}
 	void CollapseAbsPath(char *abs_path, emb_string &name, emb_string &level);
@@ -104,6 +105,7 @@ private:
 	FRESULT fs_res;
 
 	void UpdateDirList();
+	FRESULT DeleteDirectoryRecursive(const char* path);
 
 	struct sort_fs_object /*: public std::binary_function<fs_object_t, fs_object_t, bool>*/
 	{

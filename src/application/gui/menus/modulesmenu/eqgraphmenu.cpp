@@ -11,7 +11,7 @@
 #include "preset.h"
 
 const uint8_t EqGraphMenu::paramNames[][3];
-const uint8_t EqGraphMenu::bandNames[][4];
+const uint8_t EqGraphMenu::bandNames[][6];
 
 EqGraphMenu::EqGraphMenu(AbstractMenu *parent)
 {
@@ -27,8 +27,13 @@ EqGraphMenu::EqGraphMenu(AbstractMenu *parent)
 
 	eqFreq_ptr[5] = (int8_t*)&currentPreset.modules.paramData.hpf;
 	eqFreq_ptr[6] = (int8_t*)&currentPreset.modules.paramData.lpf;
+	eqFreq_ptr[7] = (int8_t*)&currentPreset.modules.paramData.eq_pre_post;
+
 	minParamVal[5]=minParamVal[6] = 0;
 	maxParamVal[5]=maxParamVal[6] = 127;
+
+	minParamVal[7] = 0;
+	maxParamVal[7] = 1;
 }
 
 void EqGraphMenu::show(TShowMode showMode)
@@ -92,7 +97,7 @@ void EqGraphMenu::encoderClockwise()
 	{
 		switch(paramNum)
 		{
-			case 0: if(bandNum < 6) bandNum++; break;
+			case 0: if(bandNum < 7) bandNum++; break;
 			case 1:
 			{
 				int8_t a = *eqFreq_ptr[bandNum];
@@ -108,13 +113,12 @@ void EqGraphMenu::encoderClockwise()
 
 				*eqFreq_ptr[bandNum] = a;
 
-				if(bandNum < 5)
+				switch(bandNum)
 				{
-					DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]);
-				}
-				else
-				{
-					DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, *eqFreq_ptr[bandNum]);
+					default: DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]); break;
+					case 5: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, *eqFreq_ptr[bandNum]); break;
+					case 6: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, *eqFreq_ptr[bandNum]); break;
+					case 7: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, *eqFreq_ptr[bandNum]); break;
 				}
 				break;
 			}
@@ -171,14 +175,14 @@ void EqGraphMenu::encoderCounterClockwise()
 				}
 
 				*eqFreq_ptr[bandNum] = a;
-				if(bandNum < 5)
+				switch(bandNum)
 				{
-					DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]);
+					default: DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]); break;
+					case 5: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, *eqFreq_ptr[bandNum]); break;
+					case 6: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, *eqFreq_ptr[bandNum]); break;
+					case 7: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, *eqFreq_ptr[bandNum]); break;
 				}
-				else
-				{
-					DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, *eqFreq_ptr[bandNum]);
-				}
+				break;
 				break;
 			}
 			case 2:
@@ -247,8 +251,19 @@ void EqGraphMenu::printPage()
 	DisplayTask->StringOut(0, 0, Font::fntSystem, (paramNum==0)*2, (uint8_t*)&paramNames[0]);
 	DisplayTask->StringOut(paramXPos, 0, Font::fntSystem, 0, (uint8_t*)&bandNames[bandNum]);
 
-	DisplayTask->StringOut(0, 1, Font::fntSystem, (paramNum==1)*2, (uint8_t*)&paramNames[1]);
-	DisplayTask->EqFreq(paramXPos, 1, *eqFreq_ptr[bandNum], bandNum);
+	if(bandNum == 7)
+	{
+		DisplayTask->StringOut(0, 1, Font::fntSystem, (paramNum==1)*2, (uint8_t*)&"P:");
+
+		if(*eqFreq_ptr[bandNum]) DisplayTask->StringOut(paramXPos, 1, Font::fntSystem, 0, (uint8_t*)&" PRE");
+		else DisplayTask->StringOut(paramXPos, 1, Font::fntSystem, 0, (uint8_t*)&" POST");
+
+	}
+	else
+	{
+		DisplayTask->StringOut(0, 1, Font::fntSystem, (paramNum==1)*2, (uint8_t*)&paramNames[1]);
+		DisplayTask->EqFreq(paramXPos, 1, *eqFreq_ptr[bandNum], bandNum);
+	}
 
 	if(bandNum<5)
 	{
