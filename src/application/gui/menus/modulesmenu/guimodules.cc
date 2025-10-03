@@ -482,7 +482,7 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 	params[0] = customParam;
 
 	params[1] = new StringListParam("TAP", &currentPreset.modules.rawData[DELAY_TAP],
-			{"1/1  ", "1/1.5" ,"1/2  " ,"1/3  " ,"1/4  " ,"2/1  "}, 6);
+			{"1/4 ", "1/8." ,"1/8 " ,"1/8t" ,"1/16" ,"1/2 "}, 5);
 	params[1]->setDspAddress(DSP_ADDRESS_DELAY, NOT_SEND_POS);
 
 	params[2] = new StringListParam("Tail", &currentPreset.modules.rawData[DELAY_TAIL], {"On ", "Off"}, 3);
@@ -557,7 +557,7 @@ AbstractMenu* GuiModules::createTremoloMenu(AbstractMenu* parentMenu)
 	params[4]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_MS_POS);
 
 	params[5] = new StringListParam("TAP", &currentPreset.modules.rawData[TREMOLO_TAP],
-			{"1    ", "1/1.5", "1/2  ", "1/3  ", "1/4  "}, 6);
+			{"1/4 ", "1/8." ,"1/8 " ,"1/8t" ,"1/16"}, 5);
 	params[5]->setDspAddress(DSP_ADDRESS_TREMOLO, NOT_SEND_POS);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_TREMOLO);
