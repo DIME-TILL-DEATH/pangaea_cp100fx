@@ -346,6 +346,8 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	getDataPartFromStream(rl, selectionMaskArray, 24);
 	consoleBusy = false;
 
+	msg_console("%s\r\n", args[0]);
+
 	for(uint8_t i=0; i < sizeof(CopySelectMenu::TSelectionMask); i++)
 	{
 		selectionMaskArray[i] -= '0';
@@ -354,7 +356,7 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
 	CopySelectMenu::copyPreset(selectionMask, presetNum);
 
-	msg_console("%s\r\n", args[0]);
+//	msg_console("%s\r\n", args[0]);
 }
 
 static void erase_preset_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -493,6 +495,8 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
+	currentPreset.modules.paramData.delay_time = delay_time;
+
 	msg_console("%s\r", args[0]);
 	for(size_t i = 0; i < 512; i++)
 	{

@@ -102,6 +102,7 @@ void EEPR_writePreset(uint8_t nu)
 	f_mount(&fs, "1:", 1);
 	f_open(&file, fna, FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
 
+	currentPreset.modules.paramData.delay_time = delay_time; // actual data
 	f_write(&file, &currentPreset, sizeof(Preset::TPreset), &f_size);
 
 	uint8_t del_t_b[2];
