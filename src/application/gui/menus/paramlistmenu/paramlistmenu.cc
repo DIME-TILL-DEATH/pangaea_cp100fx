@@ -80,7 +80,10 @@ void ParamListMenu::show(TShowMode showMode)
 				uint8_t* valDisableMask = strParam->getDisableMask();
 				for(int a=0; a<m_paramsCount; a++)
 				{
-					m_paramsList[a]->setDisabled(m_paramsList[a]->disabled() | valDisableMask[a]);
+					uint8_t disableByMask = 0;
+					if(valDisableMask) disableByMask = valDisableMask[a];
+
+					m_paramsList[a]->setDisabled(m_paramsList[a]->disabled() | disableByMask);
 				}
 			}
 		}
