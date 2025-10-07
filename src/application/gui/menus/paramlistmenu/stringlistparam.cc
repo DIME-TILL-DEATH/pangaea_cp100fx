@@ -9,6 +9,8 @@ StringListParam::StringListParam(const char* name, uint8_t* paramValuePtr,
 	m_stringCount = stringList.size();
 	m_maxStringLength = maxStringLength;
 
+
+
 	m_strings = new char*[m_stringCount];
 	for(int i = 0; i<m_stringCount; i++)
 		m_strings[i] = new char[m_maxStringLength];
@@ -20,6 +22,12 @@ StringListParam::StringListParam(const char* name, uint8_t* paramValuePtr,
 		strCounter++;
 	}
 
+//	m_disableMask = new uint8_t*[m_stringCount];
+//	for(int i = 0; i<m_stringCount; i++)
+//		m_disableMask[i] = new uint8_t[16]; // max affected params count
+//
+//	kgp_sdk_libc::memset(m_disableMask, 0, m_stringCount * 16);
+
 	m_maxValue = m_stringCount - 1;
 }
 
@@ -29,6 +37,12 @@ StringListParam::~StringListParam()
 	{
 		for(int i = 0; i<m_stringCount; i++)
 				delete[] m_strings[i];
+	}
+
+	if(m_disableMask)
+	{
+		for(int i = 0; i<m_stringCount; i++)
+				delete[] m_disableMask[i];
 	}
 }
 
@@ -49,7 +63,17 @@ void StringListParam::setAffectedParamsList(BaseParam** affectedParamList, uint8
 
 void StringListParam::setDisableMask(uint8_t stringNum, std::initializer_list<uint8_t> disableMask)
 {
-//	kgp_sdk_libc::memcpy(m_disableMask[stringNum], disableMask, 16);
+	if(!m_disableMask)
+	{
+		m_disableMask = new uint8_t*[m_stringCount];
+
+		for(int i = 0; i<m_stringCount; i++)
+		{
+			m_disableMask[i] = new uint8_t[maxAffectedParamsCount]; // max affected params count
+			kgp_sdk_libc::memset(m_disableMask[i], 0, maxAffectedParamsCount);
+		}
+	}
+
 	uint8_t i = 0;
 	for (auto val = disableMask.begin(); val != disableMask.end() && i!=16; ++val)
 	{
@@ -58,13 +82,10 @@ void StringListParam::setDisableMask(uint8_t stringNum, std::initializer_list<ui
 	}
 }
 
-uint8_t* StringListParam::getDisableMask(uint8_t stringNum)
-{
-	return m_disableMask[stringNum];
-}
-
 uint8_t* StringListParam::getDisableMask()
 {
+	if(!m_disableMask) return nullptr;
+
 	return m_disableMask[value()];
 }
 

@@ -23,6 +23,8 @@
 
 TCSTask *CSTask;
 
+volatile uint8_t usb_flag = 0;
+
 void oled023_1_disp_init(void);
 void led_disp_write(void);
 extern uint8_t led_buf[];
@@ -132,6 +134,23 @@ void TCSTask::Code()
 		if(DisplayAccess())
 		{
 			gui();
+		}
+
+		//----------------------------------------------------USB-----------------------------------
+		if(usb_flag == 0)
+		{
+			if(GPIOA->IDR & GPIO_Pin_9)
+			{
+				usb_flag = 1;
+
+			}
+		}
+		else
+		{
+			if(!(GPIOA->IDR & GPIO_Pin_9))
+			{
+				NVIC_SystemReset();
+			}
 		}
 	}
 }

@@ -31,11 +31,16 @@ public:
 
 private:
 	uint8_t m_parNum{0};
+
+	uint8_t m_countOff{20};
+
 	TUsbTask::TMode usb_connect_type;
 	bool usbConnected{false};
 
-	static constexpr uint8_t strUsbMenu[][12] = {"Serial port", "Usb drive"};
-	static constexpr uint8_t strPositions[2] = {30, 36};
+	bool autoconnectOn{true};
+
+	static constexpr uint8_t strUsbMenu[][19] = {"Serial port", "Usb drive", "Autoconnect after:"};
+	static constexpr uint8_t strPositions[3] = {30, 36, 6};
 
 	void start_usb();
 };

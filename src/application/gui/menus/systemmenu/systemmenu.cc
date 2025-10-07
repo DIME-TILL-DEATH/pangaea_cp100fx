@@ -142,7 +142,7 @@ bool SystemMenu::editingFinished()
 
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 {
-	const uint8_t paramNum = 14;
+	const uint8_t paramNum = 16;
 	BaseParam* params[paramNum];
 
 	params[0] = new StringListParam("Mode", &sys_para[System::CAB_SIM_DISABLED], {"CabSim On ", "CabSim Off"}, 10);
@@ -204,7 +204,13 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[12] = customParam;
 
 	params[13] = new StringListParam("EQ View", &sys_para[System::EQ_SCREEN_MODE], {"Graph ", "Bar  "}, 5);
-	params[13]->setDisplayPosition(leftPad + 6 * 10);
+	params[13]->setDisplayPosition(leftPad + 6 * 12);
+
+	params[14] = new StringListParam("Master EQ", &sys_para[System::MASTER_EQ_ON], {"Off", "On "}, 4);
+	params[14]->setDisplayPosition(leftPad + 6 * 12);
+
+	params[15] = new StringListParam("Att. source", &sys_para[System::ATTENUATOR_MODE], {"Global ", "Preset"}, 7);
+	params[15]->setDisplayPosition(leftPad + 6 * 12);
 
 	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
 	systemMenu->setParams(params, paramNum);

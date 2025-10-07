@@ -19,7 +19,7 @@ class ParamListMenu : public AbstractMenu
 {
 public:
 	ParamListMenu(AbstractMenu* parent, gui_menu_type menuType);
-	~ParamListMenu();
+	~ParamListMenu() override;
 
 	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount);
 	void setVolumeIndicator(TDisplayTask::TVolIndicatorType indicatorType,

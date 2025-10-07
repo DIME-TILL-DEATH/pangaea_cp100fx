@@ -48,6 +48,9 @@ void Preset::Change()
 	if(sys_para[System::EXPR_STORE_LEVEL])
 		adc_proc();
 
+	if(sys_para[System::ATTENUATOR_MODE])
+		DisplayTask->Pot_Write();
+
 	pc_mute_fl = 1;
 }
 
