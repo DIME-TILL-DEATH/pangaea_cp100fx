@@ -35,6 +35,13 @@ static void attenuator_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 	write_sys();
 }
 
+static void attenuator_mode_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+{
+	default_param_handler(&sys_para[System::ATTENUATOR_MODE], rl, args, count);
+	DisplayTask->Pot_Write();
+	write_sys();
+}
+
 static void master_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_VOLUME], rl, args, count);
@@ -355,6 +362,7 @@ void set_syssettings_handlers(TReadLine *rl)
 	rl->AddCommandHandler("midi_map", midi_map_command_handler);
 
 	rl->AddCommandHandler("vl_at", attenuator_command_handler);
+	rl->AddCommandHandler("vl_at_mode", attenuator_mode_handler);
 	rl->AddCommandHandler("vl_ms", master_volume_command_handler);
 	rl->AddCommandHandler("vl_ph", phones_volume_command_handler);
 

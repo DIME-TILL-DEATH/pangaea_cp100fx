@@ -19,6 +19,9 @@ public:
 	void key3() override;
 	void key4() override;
 	void key5() override;
+
+private:
+	void exitMenu();
 };
 #endif /* SRC_APPLICATION_GUI_MENUS_ATTENUATORMENU_H_ */
 
