@@ -8,8 +8,8 @@
 
 #include "BF706_send.h"
 
-const uint8_t UsbMenu::strUsbMenu[][12];
-const uint8_t UsbMenu::strPositions[2];
+const uint8_t UsbMenu::strUsbMenu[][19];
+const uint8_t UsbMenu::strPositions[3];
 
 UsbMenu::UsbMenu()
 {
@@ -21,15 +21,38 @@ void UsbMenu::show(TShowMode showMode)
 	currentMenu = this;
 
 	DisplayTask->Clear();
-	DisplayTask->StringOut(strPositions[0], 1, Font::fntSystem, 0, &strUsbMenu[0][0]);
-	DisplayTask->StringOut(strPositions[1], 2, Font::fntSystem, 0, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, 0, &strUsbMenu[0][0]);
+	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, 0, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[2], 3, Font::fntSystem, 0, &strUsbMenu[2][0]);
+	DisplayTask->ParamIndicNum(strPositions[2] + 18*6, 3, m_countOff);
 }
 
 void UsbMenu::task()
 {
 	if(usbConnected) return;
 
-	DisplayTask->StringOut(strPositions[m_parNum], m_parNum + 1, Font::fntSystem, 2 * blinkFlag_fl, &strUsbMenu[m_parNum][0]);
+	DisplayTask->StringOut(strPositions[m_parNum], m_parNum, Font::fntSystem, 2 * blinkFlag_fl, &strUsbMenu[m_parNum][0]);
+
+	if(autoconnectOn)
+	{
+		if(blinkFlag_fl)
+		{
+			if(m_countOff > 0)
+			{
+				m_countOff--;
+				DisplayTask->ParamIndicNum(strPositions[2] + 18*6, 3, m_countOff/2);
+			}
+			else
+			{
+				encoderPressed();
+			}
+		}
+	}
+	else
+	{
+		DisplayTask->Clear_str(0, 3, Font::fntSystem, 22*6);
+	}
+
 }
 
 void UsbMenu::encoderPressed()
@@ -72,8 +95,10 @@ void UsbMenu::encoderClockwise()
 
 	if(m_parNum < 1) m_parNum++;
 
-	DisplayTask->StringOut(strPositions[0], 1, Font::fntSystem, 0, &strUsbMenu[0][0]);
+	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, 0, &strUsbMenu[0][0]);
 	tim5_start(0);
+
+	autoconnectOn = false;
 }
 
 void UsbMenu::encoderCounterClockwise()
@@ -82,8 +107,10 @@ void UsbMenu::encoderCounterClockwise()
 
 	if(m_parNum > 0) m_parNum--;
 
-	DisplayTask->StringOut(strPositions[1], 2, Font::fntSystem, 0, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, 0, &strUsbMenu[1][0]);
 	tim5_start(0);
+
+	autoconnectOn = false;
 }
 
 void UsbMenu::start_usb()

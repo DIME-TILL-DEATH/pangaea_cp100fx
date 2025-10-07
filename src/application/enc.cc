@@ -26,7 +26,7 @@
 volatile uint8_t contr_kn[3];
 volatile uint8_t contr_kn1[3];
 volatile uint8_t contr_pr[3];
-volatile uint8_t usb_flag = 0;
+//volatile uint8_t usb_flag = 0;
 
 uint8_t k_up = 0;
 uint8_t k_down = 0;
@@ -345,6 +345,25 @@ void TENCTask::Code()
 	TIM_Cmd(TIM3, ENABLE);
 	while(1)
 	{
+//		//----------------------------------------------------USB-----------------------------------
+//		if(usb_flag == 0)
+//		{
+//			if(GPIOA->IDR & GPIO_Pin_9)
+//			{
+//				usb_flag = 1;
+//
+//			}
+//		}
+//		else
+//		{
+//			if(!(GPIOA->IDR & GPIO_Pin_9))
+//			{
+//				NVIC_SystemReset();
+//			}
+//		}
+		//--------------------------------------------------------------------------------------------
+
+
 		if((key_reg != 31212) && (!kn2_in_fl) && (!fsw1_in_fl) && (!fsw2_in_fl) && (!fsw3_in_fl))
 		{
 			tim_start(0xf700);
@@ -501,23 +520,6 @@ void TENCTask::Code()
 			EXTI_ClearITPendingBit(EXTI_Line8);
 			SD_TESTTask->Give();
 		}
-//----------------------------------------------------Test USB-----------------------------------
-		if(usb_flag == 0)
-		{
-			if(GPIOA->IDR & GPIO_Pin_9)
-			{
-				usb_flag = 1;
-
-			}
-		}
-		else
-		{
-			if(!(GPIOA->IDR & GPIO_Pin_9))
-			{
-				NVIC_SystemReset();
-			}
-		}
-//--------------------------------------------------------------------------------------------
 	}
 }
 
