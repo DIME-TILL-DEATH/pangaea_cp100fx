@@ -35,6 +35,12 @@ TUsbTask::TUsbTask(TMode val) :
 			&USR_cb, false);
 }
 
+TUsbTask::~TUsbTask()
+{
+	delete rx_queue;
+}
+
+
 void TUsbTask::Code()
 {
 	bool configured = false;

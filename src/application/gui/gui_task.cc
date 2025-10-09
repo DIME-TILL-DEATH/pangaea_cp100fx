@@ -39,7 +39,7 @@ void clean_flag(void)
 
 void gui(void)
 {
-	if(usb_flag && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
+	if((GPIOA->IDR & GPIO_Pin_9) && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
 	{
 		currentMenu->showChild(usbMenu);
 	}

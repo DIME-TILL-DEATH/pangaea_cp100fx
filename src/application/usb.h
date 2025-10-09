@@ -17,10 +17,8 @@ public:
 	};
 
 	TUsbTask();
-	virtual ~TUsbTask()
-	{
-	}
-	;
+	virtual ~TUsbTask();
+
 	TUsbTask(TMode val);
 
 	void SendDataCDC(uint8_t *data, size_t len);

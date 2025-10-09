@@ -450,7 +450,7 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 {
 //	msg_console("plist");
 
-	msg_console("%s\r", args[0]);
+	msg_console("%s", args[0]);
 	for (int p = 0; p < 99; p++)
 	{
 		Preset::TPresetBrief presetData;
@@ -460,6 +460,9 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		char *cab2NameSrc = presetData.cab2Name + 1;
 		char cab1NameDst[64];
 		char cab2NameDst[64];
+
+		kgp_sdk_libc::memset(cab1NameDst, 0, 64);
+		kgp_sdk_libc::memset(cab2NameDst, 0, 64);
 
 		uint8_t pos=0;
 

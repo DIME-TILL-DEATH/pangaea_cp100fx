@@ -438,6 +438,13 @@ void TFsBrowser::RemoveObject(const fs_object_t &object)
 	FRESULT res;
 	FILINFO fno;
 
+#if _USE_LFN
+	static char lfn[_MAX_LFN + 1];
+	lfn[0] = 0 ;
+	fno.lfname = lfn;
+	fno.lfsize = sizeof lfn;
+#endif
+
 	res = f_stat(object.name.c_str(), &fno);
 
 	if(res != FR_OK || fno.fname[0] == 0) return;

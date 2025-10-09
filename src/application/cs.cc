@@ -122,7 +122,7 @@ void TCSTask::Code()
 	if(DisplayAccess())
 	{
 		mainMenu = new MainMenu();
-		usbMenu = new UsbMenu();
+		usbMenu = new UsbMenu(mainMenu);
 
 		currentMenu = mainMenu;
 		mainMenu->show();
@@ -135,23 +135,6 @@ void TCSTask::Code()
 		{
 			gui();
 		}
-
-		//----------------------------------------------------USB-----------------------------------
-		if(usb_flag == 0)
-		{
-			if(GPIOA->IDR & GPIO_Pin_9)
-			{
-				usb_flag = 1;
-
-			}
-		}
-		else
-		{
-			if(!(GPIOA->IDR & GPIO_Pin_9))
-			{
-				NVIC_SystemReset();
-			}
-		}
 	}
 }
 
@@ -159,7 +142,6 @@ void TCSTask::Restart(void)
 {
 	currentMenu = mainMenu;
 	clean_flag();
-	//DisplayTask->Menu_init(1,0,prog_data,prog1);
 }
 
 //------------------------------------------------------------------------------------
