@@ -30,7 +30,10 @@ static void sys_settings_command_handler(TReadLine *rl, TReadLine::const_symbol_
 
 static void attenuator_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::ATTENUATOR], rl, args, count);
+	uint8_t* value_ptr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.modules.paramData.attenuator
+															: &sys_para[System::ATTENUATOR];
+
+	default_param_handler(value_ptr, rl, args, count);
 	DisplayTask->Pot_Write();
 	write_sys();
 }

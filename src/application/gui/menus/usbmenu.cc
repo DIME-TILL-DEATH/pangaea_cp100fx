@@ -98,8 +98,8 @@ void UsbMenu::encoderPressed()
 			DisplayTask->StringOut(34, 2, Font::fntSystem, 0, (uint8_t*)"serial port");
 
 			// Memory leak
-//			currentMenu = mainMenu;
-//			mainMenu->show();
+			currentMenu = mainMenu;
+			mainMenu->show();
 			break;
 		}
 	}
