@@ -21,6 +21,9 @@ void UsbMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
+	m_countOff = 20;
+	autoconnectOn = true;
+
 	DisplayTask->Clear();
 	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, 0, &strUsbMenu[0][0]);
 	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, 0, &strUsbMenu[1][0]);
@@ -32,20 +35,24 @@ void UsbMenu::task()
 {
 	if(!(GPIOA->IDR & GPIO_Pin_9))
 	{
+		switch(usb_connect_type)
+		{
+			case TUsbTask::mMSC:
+			{
+				NVIC_SystemReset();
+				break;
+			}
 
-
-		//				usbMenu->stopUsb();
-		NVIC_SystemReset();
+			case TUsbTask::mCDC:
+			{
+				usbMenu->stopUsb();
+				return;
+			}
+		}
 	}
 
 	if(usbConnected)
 	{
-//		char buf[16];
-//		uint32_t pinState = 0;
-//		pinState = (GPIOA->IDR & GPIO_Pin_9);
-//
-//		ksprintf(buf, "Pin9 state: %d    ", (uint32_t)pinState);
-//		DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)buf);
 		return;
 	}
 
@@ -70,7 +77,6 @@ void UsbMenu::task()
 	{
 		DisplayTask->Clear_str(0, 3, Font::fntSystem, 22*6);
 	}
-
 }
 
 void UsbMenu::encoderPressed()
@@ -98,8 +104,8 @@ void UsbMenu::encoderPressed()
 			DisplayTask->StringOut(34, 2, Font::fntSystem, 0, (uint8_t*)"serial port");
 
 			// Memory leak
-			currentMenu = mainMenu;
-			mainMenu->show();
+//			currentMenu = mainMenu;
+//			mainMenu->show();
 			break;
 		}
 	}
@@ -142,7 +148,7 @@ void UsbMenu::startUsb()
 		ConsoleTask->SetIo(&cdc_io);
 		ConsoleTask->Echo(false);
 
-		ConsoleTask->Clear();
+//		ConsoleTask->Clear();
 	}
 	else
 	{

@@ -36,6 +36,10 @@ void Preset::Change()
 	EEPROM_loadPreset(currentPresetNumber);
 	pc_mute_fl = 0;
 
+	// DSP binary not set this params?
+	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modules.rawData[PHASER_CENTER]);
+	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modules.rawData[PHASER_WIDTH]);
+
 	MidiSendTask->prog_ch_midi_start();
 	MidiSendTask->Give();
 

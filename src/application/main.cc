@@ -112,8 +112,8 @@ void pin_usb_init(void)
 
 int main(void)
 {
-	pin_usb_init();
 	init();
+	pin_usb_init();
 	sysclock = GetCpuClock();
 
 	FSTask = new TFSTask();
