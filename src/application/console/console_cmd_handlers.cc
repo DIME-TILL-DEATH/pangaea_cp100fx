@@ -342,8 +342,8 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
 
 	consoleBusy = true;
-	char selectionMaskArray[24];
-	getDataPartFromStream(rl, selectionMaskArray, 24);
+	char selectionMaskArray[sizeof(CopySelectMenu::TSelectionMask)];
+	getDataPartFromStream(rl, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
 	consoleBusy = false;
 
 	msg_console("%s\r\n", args[0]);

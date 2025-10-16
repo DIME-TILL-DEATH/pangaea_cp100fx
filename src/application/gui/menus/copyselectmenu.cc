@@ -7,7 +7,7 @@
 CopySelectMenu::TSelectionMask CopySelectMenu::m_selectionMask =
 {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1
+	1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
 CopySelectMenu::CopySelectMenu(AbstractMenu* parent)
@@ -38,6 +38,7 @@ CopySelectMenu::CopySelectMenu(AbstractMenu* parent)
 	element[17] = {StringShort, &m_selectionMask.rv, "RV"};
 	element[18] = {StringShort, &m_selectionMask.tr, "TR"};
 	element[19] = {StringShort, &m_selectionMask.pv, "PR.VOL"};
+	element[20] = {StringShort, &m_selectionMask.att, "ATT"};
 }
 
 void CopySelectMenu::show(TShowMode showMode)
@@ -220,6 +221,11 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 		presetBuffer[30 + pres_lev] = currentPreset.modules.paramData.preset_volume;
 	}
 
+	if(selectionMask.att)
+	{
+		presetBuffer[PRESET_DATA_OFFSET + preset_att] = currentPreset.modules.paramData.attenuator;
+	}
+
 	if(selectionMask.controllers)
 	{
 		for(uint16_t i = 0 ; i < 8 ; i += 4)
@@ -331,7 +337,7 @@ void CopySelectMenu::printPage()
 
 	i = 0;
 	uint8_t elementOnPageNum = 0;
-	while(elementOnPageNum < std::min((int)ElementsOnPage, 20 - startElementNumber))
+	while(elementOnPageNum < std::min((int)ElementsOnPage, ElementsCount - startElementNumber))
 	{
 		bool highlighElement = false;
 		if(m_elementNum == startElementNumber + i) highlighElement = true;
