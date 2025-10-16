@@ -82,7 +82,7 @@ void fsw_press_execute(uint8_t num)
 							if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
 									|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 							{
-								mainMenu->presetConfirm();
+								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 							}
 							CSTask->Give();
 							break;
@@ -91,7 +91,7 @@ void fsw_press_execute(uint8_t num)
 						{
 							if(!sys_para[System::SWAP_SWITCH])
 							{
-								mainMenu->presetConfirm();
+								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 								CSTask->Give();
 							}
 							else
@@ -101,7 +101,7 @@ void fsw_press_execute(uint8_t num)
 								if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
-									mainMenu->presetConfirm();
+									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 								}
 								CSTask->Give();
 							}
@@ -115,13 +115,13 @@ void fsw_press_execute(uint8_t num)
 								if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
-									mainMenu->presetConfirm();
+									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 								}
 								CSTask->Give();
 							}
 							else
 							{
-								mainMenu->presetConfirm();
+								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 							}
 						break;
 					}
@@ -174,11 +174,11 @@ void fsw_press_execute(uint8_t num)
 					{
 						if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
 						{
-							mainMenu->presetConfirm();
+							encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 						}
 						else
 						{
-							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default) mainMenu->presetConfirm();
+							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default) encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 							else mainMenu->refresh();
 						}
 					}
@@ -218,7 +218,7 @@ void fsw_hold_execute(uint8_t num)
 							if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
 									|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 							{
-								mainMenu->presetConfirm();
+								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 							}
 							CSTask->Give();
 							break;
@@ -227,7 +227,7 @@ void fsw_hold_execute(uint8_t num)
 						{
 							if(!sys_para[System::SWAP_SWITCH])
 							{
-								mainMenu->presetConfirm();
+								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 								CSTask->Give();
 							}
 							else
@@ -237,7 +237,7 @@ void fsw_hold_execute(uint8_t num)
 								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
-									mainMenu->presetConfirm();
+									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 								}
 								CSTask->Give();
 							}
@@ -251,13 +251,13 @@ void fsw_hold_execute(uint8_t num)
 								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
-									mainMenu->presetConfirm();
+									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 								}
 								CSTask->Give();
 							}
 							else
 							{
-								mainMenu->presetConfirm();
+								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 							}
 						break;
 					}
@@ -308,11 +308,11 @@ void fsw_hold_execute(uint8_t num)
 					{
 						if(sys_para[System::FSW2_MODE] == Footswitch::Single)
 						{
-							mainMenu->presetConfirm();
+							encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 						}
 						else
 						{
-							if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default) mainMenu->presetConfirm();
+							if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default) encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
 							else mainMenu->refresh();
 						}
 					}

@@ -7,7 +7,7 @@
 class UsbMenu: public AbstractMenu
 {
 public:
-	UsbMenu();
+	UsbMenu(AbstractMenu* parent);
 
 	void show(TShowMode showMode = FirstShow) override;
 	void task() override;
@@ -29,6 +29,8 @@ public:
 
 	bool isConnected() {return usbConnected;};
 
+	void stopUsb();
+
 private:
 	uint8_t m_parNum{0};
 
@@ -42,7 +44,7 @@ private:
 	static constexpr uint8_t strUsbMenu[][19] = {"Serial port", "Usb drive", "Autoconnect after:"};
 	static constexpr uint8_t strPositions[3] = {30, 36, 6};
 
-	void start_usb();
+	void startUsb();
 };
 
 #endif /* SRC_APPLICATION_GUI_MENUS_USBMENU_H_ */

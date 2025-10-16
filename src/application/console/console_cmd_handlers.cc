@@ -342,8 +342,8 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
 
 	consoleBusy = true;
-	char selectionMaskArray[24];
-	getDataPartFromStream(rl, selectionMaskArray, 24);
+	char selectionMaskArray[sizeof(CopySelectMenu::TSelectionMask)];
+	getDataPartFromStream(rl, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
 	consoleBusy = false;
 
 	msg_console("%s\r\n", args[0]);
@@ -450,7 +450,7 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 {
 //	msg_console("plist");
 
-	msg_console("%s\r", args[0]);
+	msg_console("%s", args[0]);
 	for (int p = 0; p < 99; p++)
 	{
 		Preset::TPresetBrief presetData;
@@ -460,6 +460,9 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		char *cab2NameSrc = presetData.cab2Name + 1;
 		char cab1NameDst[64];
 		char cab2NameDst[64];
+
+		kgp_sdk_libc::memset(cab1NameDst, 0, 64);
+		kgp_sdk_libc::memset(cab2NameDst, 0, 64);
 
 		uint8_t pos=0;
 
@@ -491,6 +494,60 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
 	}
 	msg_console("\n");
+}
+
+static void pbrief_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+{
+//	msg_console("plist");
+	if(count > 1)
+	{
+		char *end;
+		uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+
+		msg_console("%s", args[0]);
+
+		Preset::TPresetBrief presetData;
+		EEPROM_loadBriefPreset(presetNum, &presetData);
+
+		char *cab1NameSrc = presetData.cab1Name + 1;
+		char *cab2NameSrc = presetData.cab2Name + 1;
+		char cab1NameDst[64];
+		char cab2NameDst[64];
+
+		kgp_sdk_libc::memset(cab1NameDst, 0, 64);
+		kgp_sdk_libc::memset(cab2NameDst, 0, 64);
+
+		uint8_t pos=0;
+
+		while(*cab1NameSrc)
+		{
+			if(*cab1NameSrc != '|' && *cab1NameSrc != '\r' && *cab1NameSrc != '\n')
+			{
+				cab1NameDst[pos] = *cab1NameSrc;
+				pos++;
+			}
+			cab1NameSrc++;
+		}
+
+		pos=0;
+		while(*cab2NameSrc)
+		{
+			if(*cab2NameSrc != '|' && *cab2NameSrc != '\r' && *cab2NameSrc != '\n')
+			{
+				cab2NameDst[pos] = *cab1NameSrc;
+				pos++;
+			}
+			cab2NameSrc++;
+		}
+
+		msg_console("\r%d|%s|%s|%s|%s|", presetNum, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
+
+		uint8_t enabled[14];
+		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);
+		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
+
+		msg_console("\n");
+	}
 }
 
 static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -743,6 +800,7 @@ void ConsoleSetCmdHandlers(TReadLine *rl)
 	rl->AddCommandHandler("cntrls", cntrls_command_handler);
 
 	rl->AddCommandHandler("plist", plist_command_handler);
+	rl->AddCommandHandler("pbrief", pbrief_command_handler);
 
 	rl->AddCommandHandler("pnum", pnum_command_handler);
 	rl->AddCommandHandler("pname", pname_command_handler);

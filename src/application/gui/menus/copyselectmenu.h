@@ -26,6 +26,7 @@ public:
 		uint8_t rv;
 		uint8_t tr;
 		uint8_t pv;
+		uint8_t att;
 	}TSelectionMask;
 
 	CopySelectMenu(AbstractMenu* parent);
@@ -56,7 +57,7 @@ private:
 		const char* name;
 	}SelectionElement;
 
-	static constexpr uint8_t ElementsCount = 20;
+	static constexpr uint8_t ElementsCount = 21;
 	static constexpr uint8_t ElementsOnPage = 8;
 	SelectionElement element[ElementsCount];
 

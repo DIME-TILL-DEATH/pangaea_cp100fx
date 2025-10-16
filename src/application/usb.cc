@@ -35,6 +35,12 @@ TUsbTask::TUsbTask(TMode val) :
 			&USR_cb, false);
 }
 
+TUsbTask::~TUsbTask()
+{
+	delete rx_queue;
+}
+
+
 void TUsbTask::Code()
 {
 	bool configured = false;
@@ -43,17 +49,15 @@ void TUsbTask::Code()
 
 		USBD_OTG_ISR_Handler((USB_OTG_CORE_HANDLE*)USB_OTG_dev);
 
-		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status==USB_OTG_CONFIGURED&&configured==false)
+		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status==USB_OTG_CONFIGURED && configured==false)
 		{
 			configured = true;
 		}
 
-		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status!=USB_OTG_CONFIGURED&&configured==true)
+		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status!=USB_OTG_CONFIGURED && configured==true)
 		{
-#if 0
-                       NVIC_SystemReset();
-                       configured = false ;
-#endif
+		   NVIC_SystemReset();
+		   configured = false ;
 		}
 
 	}

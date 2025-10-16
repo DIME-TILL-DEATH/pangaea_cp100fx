@@ -11,14 +11,18 @@
 const uint8_t UsbMenu::strUsbMenu[][19];
 const uint8_t UsbMenu::strPositions[3];
 
-UsbMenu::UsbMenu()
+UsbMenu::UsbMenu(AbstractMenu* parent)
 {
+	topLevelMenu = parent;
 	m_menuType = MENU_USB_SELECT;
 }
 
 void UsbMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
+
+	m_countOff = 20;
+	autoconnectOn = true;
 
 	DisplayTask->Clear();
 	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, 0, &strUsbMenu[0][0]);
@@ -29,7 +33,33 @@ void UsbMenu::show(TShowMode showMode)
 
 void UsbMenu::task()
 {
-	if(usbConnected) return;
+	// only if input pin not floating, else reset in USB task
+	if(!(GPIOA->IDR & GPIO_Pin_9))
+	{
+		NVIC_SystemReset();
+//		break;
+//		switch(usb_connect_type)
+//		{
+//			case TUsbTask::mMSC:
+//			{
+//				NVIC_SystemReset();
+//				break;
+//			}
+//
+//			case TUsbTask::mCDC:
+//			{
+////				usbMenu->stopUsb();
+////				return;
+//				NVIC_SystemReset();
+//				break;
+//			}
+//		}
+	}
+
+	if(usbConnected)
+	{
+		return;
+	}
 
 	DisplayTask->StringOut(strPositions[m_parNum], m_parNum, Font::fntSystem, 2 * blinkFlag_fl, &strUsbMenu[m_parNum][0]);
 
@@ -52,7 +82,6 @@ void UsbMenu::task()
 	{
 		DisplayTask->Clear_str(0, 3, Font::fntSystem, 22*6);
 	}
-
 }
 
 void UsbMenu::encoderPressed()
@@ -86,7 +115,7 @@ void UsbMenu::encoderPressed()
 		}
 	}
 
-	start_usb();
+	startUsb();
 }
 
 void UsbMenu::encoderClockwise()
@@ -113,7 +142,7 @@ void UsbMenu::encoderCounterClockwise()
 	autoconnectOn = false;
 }
 
-void UsbMenu::start_usb()
+void UsbMenu::startUsb()
 {
 	if(usb_connect_type == TUsbTask::mCDC)
 	{
@@ -124,12 +153,23 @@ void UsbMenu::start_usb()
 		ConsoleTask->SetIo(&cdc_io);
 		ConsoleTask->Echo(false);
 
-		//ConsoleTask->Clear();
+//		ConsoleTask->Clear();
 	}
 	else
 	{
 		UsbTask = new TUsbTask(TUsbTask::mMSC);
 	}
 
-	UsbTask->Create("USB", 10*configMINIMAL_STACK_SIZE, 0);
+	UsbTask->Create("USB", 20*configMINIMAL_STACK_SIZE, 0);
+}
+
+void UsbMenu::stopUsb()
+{
+	delete ConsoleTask;
+	delete UsbTask;
+
+	usbConnected = false;
+
+	currentMenu = topLevelMenu;
+	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 }

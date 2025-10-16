@@ -37,6 +37,7 @@ enum {
 	/*+++trem lfo type*/tr_lfo_t,
 	d_tail,
 	r_tail,
+	preset_att = 510,
 	bpm_del = 511
 };
 

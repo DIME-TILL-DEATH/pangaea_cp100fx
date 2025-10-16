@@ -75,7 +75,7 @@ public:
 		DeleteChild
 	};
 
-	AbstractMenu() {};
+//	AbstractMenu() {};
 	virtual ~AbstractMenu() {};
 
 	virtual void show(TShowMode swhoMode = FirstShow) {};

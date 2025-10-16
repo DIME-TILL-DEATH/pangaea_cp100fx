@@ -185,16 +185,34 @@ void EEPROM_loadPreset(uint8_t nu)
 			kgp_sdk_libc::memcpy(Preset::impulsePath, tmp, _MAX_LFN);
 			FSTask->Object().name = emb_string(tmp);
 			f_read(&file, tmp, _MAX_LFN, &f_size);
+			f_close(&file);
+
 			kgp_sdk_libc::memcpy(Preset::impulsePath+255, tmp, _MAX_LFN);
 			FSTask->Object().startup = emb_string(tmp);
 
-			emb_string startup = FSTask->Object().name+emb_string("/")+FSTask->Object().startup;
-			if(FR_OK==f_open(&file, startup.c_str(), FA_READ))
+			emb_string startup = FSTask->Object().name + emb_string("/") + FSTask->Object().startup;
+//			if(FR_OK==f_open(&file, startup.c_str(), FA_READ))
+//			{
+//				FSTask->SendCommand(TFsBrowser::bcStartup);
+//				f_close(&file);
+//			}
+
+			FILINFO fno;
+		#if _USE_LFN
+			static char lfn[_MAX_LFN + 1];
+			lfn[0] = 0 ;
+			fno.lfname = lfn;
+			fno.lfsize = sizeof lfn;
+		#endif
+
+			fs_res = f_stat(startup.c_str(), &fno);
+			if(fs_res == FR_OK)
 			{
-				f_close(&file);
 				FSTask->SendCommand(TFsBrowser::bcStartup);
 			}
+
 		}
+
 		delete tmp;
 	}
 	else
