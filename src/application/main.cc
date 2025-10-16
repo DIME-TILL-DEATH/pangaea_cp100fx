@@ -126,7 +126,7 @@ int main(void)
 	ENCTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 0);
 
 	CSTask = new TCSTask();
-	CSTask->Create("CS", 40*configMINIMAL_STACK_SIZE, 0);
+	CSTask->Create("CS", 30*configMINIMAL_STACK_SIZE, 0);
 
 	SpectrumTask = new TSpectrumTask();
 	SpectrumTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
