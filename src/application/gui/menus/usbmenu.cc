@@ -36,20 +36,24 @@ void UsbMenu::task()
 	// only if input pin not floating, else reset in USB task
 	if(!(GPIOA->IDR & GPIO_Pin_9))
 	{
-		switch(usb_connect_type)
-		{
-			case TUsbTask::mMSC:
-			{
-				NVIC_SystemReset();
-				break;
-			}
-
-			case TUsbTask::mCDC:
-			{
-				usbMenu->stopUsb();
-				return;
-			}
-		}
+		NVIC_SystemReset();
+//		break;
+//		switch(usb_connect_type)
+//		{
+//			case TUsbTask::mMSC:
+//			{
+//				NVIC_SystemReset();
+//				break;
+//			}
+//
+//			case TUsbTask::mCDC:
+//			{
+////				usbMenu->stopUsb();
+////				return;
+//				NVIC_SystemReset();
+//				break;
+//			}
+//		}
 	}
 
 	if(usbConnected)
@@ -156,7 +160,7 @@ void UsbMenu::startUsb()
 		UsbTask = new TUsbTask(TUsbTask::mMSC);
 	}
 
-	UsbTask->Create("USB", 10*configMINIMAL_STACK_SIZE, 0);
+	UsbTask->Create("USB", 20*configMINIMAL_STACK_SIZE, 0);
 }
 
 void UsbMenu::stopUsb()
