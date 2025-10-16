@@ -33,6 +33,7 @@ void UsbMenu::show(TShowMode showMode)
 
 void UsbMenu::task()
 {
+	// only if input pin not floating, else reset in USB task
 	if(!(GPIOA->IDR & GPIO_Pin_9))
 	{
 		switch(usb_connect_type)
