@@ -105,13 +105,13 @@ static void eq_position_command_handler(TReadLine* rl, TReadLine::const_symbol_t
 static void lpf_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modules.rawData[EQ_LPF], rl, args, count);
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_LPF_POS, currentPreset.modules.rawData[EQ_LPF]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, currentPreset.modules.rawData[EQ_LPF]);
 }
 
 static void hpf_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[hpf_v], rl, args, count);
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_HPF_POS, currentPreset.modules.rawData[EQ_HPF]);
+	default_param_handler(&currentPreset.modules.rawData[EQ_HPF], rl, args, count);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, currentPreset.modules.rawData[EQ_HPF]);
 }
 
 void set_eq_handlers(TReadLine *rl)
