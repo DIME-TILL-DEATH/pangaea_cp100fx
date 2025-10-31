@@ -11,6 +11,9 @@
 
 #include "preset.h"
 
+// TODO: refactor, returnFromChildWithAnswer(don't show parent case)
+// delete always
+
 Dialog::Dialog(AbstractMenu *parent, TDialogType dialogType)
 {
 	topLevelMenu = parent;
@@ -164,18 +167,24 @@ void Dialog::encoderPressed()
 				{
 					Preset::Erase();
 					Preset::Change();
+					m_yesMenu->returnFromChildMenu();
 					break;
 				}
 				case TDialogType::RestartDevice:
 				{
 					write_sys();
 					NVIC_SystemReset();
+					m_yesMenu->returnFromChildMenu(); //dummy
 					break;
 				}
-				default: break;
+				case TDialogType::SaveChanges:
+				{
+					topLevelMenu->returnFromChildMenu();
+					break;
+				}
 			}
 
-			m_yesMenu->returnFromChildMenu();
+
 		break;
 
 		case 2:

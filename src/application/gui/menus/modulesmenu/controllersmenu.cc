@@ -142,16 +142,15 @@ void ControllersMenu::encoderClockwise()
 					else if(currentPreset.controller[m_controllerNum].src >= Controller::Src::CC1)
 					{
 						DisplayTask->StringOut(45, 1, Font::fntSystem, 0, "CC#");
-						DisplayTask->ParamIndicNum(69, 1, currentPreset.controller[m_controllerNum].src - 5);
+						DisplayTask->ParamIndicNum(69, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::CC1);
 					}
 					else
 					{
 						DisplayTask->StringOut(45, 1, Font::fntSystem, 0, &strControllerExt[currentPreset.controller[m_controllerNum].src - 1][0]);
 					}
 
-					DisplayTask->StringOut(45, 2, Font::fntSystem, 0, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
-
 					m_controllerDst = dest_tabl_start[currentPreset.controller[m_controllerNum].dst];
+					DisplayTask->StringOut(45, 2, Font::fntSystem, 0, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
 				}
 			break;
 
@@ -317,12 +316,13 @@ void ControllersMenu::encoderCounterClockwise()
 					else if(currentPreset.controller[m_controllerNum].src >= Controller::Src::CC1)
 					{
 						DisplayTask->StringOut(45, 1, Font::fntSystem, 0, "CC#");
-						DisplayTask->ParamIndicNum(69, 1, currentPreset.controller[m_controllerNum].dst - Controller::Src::CC1);
+						DisplayTask->ParamIndicNum(69, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::CC1);
 					}
 					else
 					{
 						DisplayTask->StringOut(45, 1, Font::fntSystem, 0, &strControllerExt[currentPreset.controller[m_controllerNum].src - 1][0]);
 					}
+
 					m_controllerDst = dest_tabl_start[currentPreset.controller[m_controllerNum].dst];
 					DisplayTask->StringOut(45, 2, Font::fntSystem, 0, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
 				}
