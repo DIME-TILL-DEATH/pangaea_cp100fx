@@ -48,8 +48,8 @@ volatile uint8_t int_contr_buf[256];
 volatile uint8_t int_contr_po = 0;
 volatile uint8_t trans_midi_po = 0;
 volatile uint8_t trans_contr_po = 0;
-volatile uint8_t trans_po = 0;
-volatile uint16_t trans_po1; //?
+//volatile uint8_t trans_po = 0;
+//volatile uint16_t trans_po1; //?
 volatile uint8_t contr_hader = 0;
 volatile uint8_t pc_hader = 0;
 volatile uint8_t contr_cont = 0;
@@ -64,12 +64,12 @@ void TMidiSendTask::Code()
 {
 	sem = new TSemaphore(TSemaphore::fstCounting, 8, 0);
 
-	volatile uint8_t data[2];
+	volatile uint8_t data[2] = {0, 0};
 
 	while(1)
 	{
 		sem->Take(portMAX_DELAY);
-		trans_po = 0;
+//		trans_po = 0;
 		uint8_t tmp;
 
 		while((trans_midi_po != midi_in_po) || (trans_contr_po != int_contr_po))
@@ -77,18 +77,21 @@ void TMidiSendTask::Code()
 //---------------------------------------------Midi event----------------------------------------
 			if(trans_midi_po != midi_in_po)
 			{
-				trans_po++;
-				if(trans_po1 < trans_po)
-					trans_po1 = trans_po;
+//				trans_po++;
+//				if(trans_po1 < trans_po)
+//					trans_po1 = trans_po;
 
 				tmp = midi_in_buf[trans_midi_po++];
+
 				if(tmp & 0x80)
 				{
 					data[0] = tmp;
+
 					if(tmp != (sys_para[System::MIDI_CHANNEL] | 0xc0))
 						uart_send(tmp);
 					else
 						pc_in_fl = 1;
+
 					if(((tmp & 0xf0) != 0xc0) && ((tmp & 0xf0) != 0xd0))
 					{
 						contr_hader = 1;
@@ -115,6 +118,7 @@ void TMidiSendTask::Code()
 								midi_b[1] = data[1];
 								midi_b[2] = tmp;
 								mid_fl = 1;
+
 								if((midi_b[1] == (sys_para[System::TUNER_EXTERNAL] & 0x7f))
 										&& (sys_para[System::TUNER_EXTERNAL] & 0x80))
 								{
@@ -174,8 +178,9 @@ void TMidiSendTask::Code()
 					uart_send(0xb0 | sys_para[System::MIDI_CHANNEL]);
 					uart_send(sys_para[System::EXPR_CCN] - 1);
 					uart_send(int_contr_buf[trans_contr_po++]);
-					if((data[0] & 0xf0) != 0xb0)
-						uart_send(data[0]);
+
+//					if((data[0] & 0xf0) != Midi::MIDI_STATUS_CC)
+//						uart_send(data[0]);
 				}
 			}
 		}
@@ -189,7 +194,7 @@ void TMidiSendTask::Code()
 				else
 					send_bank();
 
-				uart_send(0xc0 | sys_para[System::MIDI_CHANNEL]);
+				uart_send(Midi::MIDI_STATUS_PC | sys_para[System::MIDI_CHANNEL]);
 				switch(currentPreset.pcOut)
 				{
 					case Preset::PcOutType::MidiIn:
@@ -208,8 +213,8 @@ void TMidiSendTask::Code()
 					break;
 				}
 
-				if((data[0] & 0xf0) != 0xc0)
-					uart_send(data[0]);
+//				if((data[0] & 0xf0) != 0xc0)
+//					uart_send(data[0]);
 
 				program_change_midi = 0;
 				midi_f1 = 0;
@@ -226,8 +231,8 @@ void TMidiSendTask::Code()
 					uart_send(127);
 				else
 					uart_send(0);
-				if((data[0] & 0xf0) != 0xb0)
-					uart_send(data[0]);
+//				if((data[0] & 0xf0) != 0xb0)
+//					uart_send(data[0]);
 				key_midi[0] = 0;
 			}
 		}
@@ -242,8 +247,8 @@ void TMidiSendTask::Code()
 					uart_send(127);
 				else
 					uart_send(0);
-				if((data[0] & 0xf0) != 0xb0)
-					uart_send(data[0]);
+//				if((data[0] & 0xf0) != 0xb0)
+//					uart_send(data[0]);
 				key_midi[1] = 0;
 			}
 		}
@@ -258,8 +263,8 @@ void TMidiSendTask::Code()
 					uart_send(127);
 				else
 					uart_send(0);
-				if((data[0] & 0xf0) != 0xb0)
-					uart_send(data[0]);
+//				if((data[0] & 0xf0) != 0xb0)
+//					uart_send(data[0]);
 				key_midi[2] = 0;
 			}
 		}
@@ -274,8 +279,8 @@ void TMidiSendTask::Code()
 					uart_send(127);
 				else
 					uart_send(0);
-				if((data[0] & 0xf0) != 0xb0)
-					uart_send(data[0]);
+//				if((data[0] & 0xf0) != 0xb0)
+//					uart_send(data[0]);
 				key_midi1[0] = 0;
 			}
 		}
@@ -290,8 +295,8 @@ void TMidiSendTask::Code()
 					uart_send(127);
 				else
 					uart_send(0);
-				if((data[0] & 0xf0) != 0xb0)
-					uart_send(data[0]);
+//				if((data[0] & 0xf0) != 0xb0)
+//					uart_send(data[0]);
 				key_midi1[1] = 0;
 			}
 		}
@@ -306,8 +311,8 @@ void TMidiSendTask::Code()
 					uart_send(127);
 				else
 					uart_send(0);
-				if((data[0] & 0xf0) != 0xb0)
-					uart_send(data[0]);
+//				if((data[0] & 0xf0) != 0xb0)
+//					uart_send(data[0]);
 				key_midi1[2] = 0;
 			}
 		}
