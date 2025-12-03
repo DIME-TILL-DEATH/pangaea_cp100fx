@@ -74,7 +74,6 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	currentPreset.modules.rawData[147] = delay_time;
 	currentPreset.modules.rawData[148] = delay_time>>8;
 
-//	currentPresetNumber;
 	EEPR_writePreset(currentPresetNumber);
 
 	// Не работает. Возвращает сохранённое по звуку
@@ -686,10 +685,28 @@ static void controller_pc_command_handler(TReadLine* rl, TReadLine::const_symbol
 
 static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	uint8_t val;
-	default_param_handler(&val, rl, args, count);
+	uint8_t answer;
 
-	currentPreset.set = val | 0x80;
+	char hex[3] = {0, 0, 0};
+	if (count > 0)
+	{
+		if(count > 1)
+		{
+			char *end;
+			uint8_t val = kgp_sdk_libc::strtol(args[1], &end, 16);
+			currentPreset.set = val;
+			currentPreset.set |= 0x80;
+			answer = val;
+		}
+		else
+		{
+			if(currentPreset.set & 0x80) answer = currentPreset.set & 0x7F;
+			else answer = currentPresetNumber;
+		}
+
+		i2hex(answer, hex);
+		msg_console("%s\r%s\n", args[0], hex);
+	}
 }
 
 static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
