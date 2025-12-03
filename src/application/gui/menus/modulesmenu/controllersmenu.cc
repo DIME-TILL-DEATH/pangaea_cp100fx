@@ -430,7 +430,7 @@ void ControllersMenu::key2()
 
 void ControllersMenu::key3()
 {
-	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+	topLevelMenu->returnFromChildMenu();
 }
 
 void ControllersMenu::key4()

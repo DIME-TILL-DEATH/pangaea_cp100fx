@@ -38,7 +38,6 @@ void PresetActionsMenu::task()
 {
 	if(blinkFlag_fl==0)
 	{
-
 		bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab1Name[0];
 		DisplayTask->Prog_ind(targetPresetNum, filled);
 	}
@@ -61,7 +60,8 @@ void PresetActionsMenu::encoderPressed()
 	else
 	{
 		savePreset();
-		topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+		topLevelMenu->subMenusToRoot = 2;
+		topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
 	}
 }
 
@@ -139,8 +139,7 @@ void PresetActionsMenu::savePreset()
 	if(cab_type==CAB_CONFIG_STEREO)
 		send_cab_data1(0, targetPresetNum+1);
 
-	targetPresetNum = currentPresetNumber;
+//	targetPresetNum = currentPresetNumber;
+	currentPresetNumber = targetPresetNum;
 	Preset::Change();
-
-//	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 }

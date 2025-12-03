@@ -52,7 +52,7 @@ void CopySelectMenu::task()
 {
 	if(blinkFlag_fl && m_copied)
 	{
-		topLevelMenu->returnFromChildMenu();
+		topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
 	}
 }
 

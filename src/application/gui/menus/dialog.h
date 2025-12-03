@@ -23,15 +23,10 @@ public:
 	void encoderClockwise() override;
 	void encoderCounterClockwise() override;
 
-	void setYesMenu(AbstractMenu* yesMenu);
-	void setNoMenu(AbstractMenu* noMenu);
-
 	void keyUp() override {};
 	void keyDown() override {};
 
 private:
-	AbstractMenu* m_yesMenu{nullptr};
-	AbstractMenu* m_noMenu{nullptr};
 
 	TDialogType m_dialogType;
 

@@ -22,6 +22,7 @@
 #include "stringlistparam.h"
 #include "stringoutparam.h"
 
+uint8_t ModulesMenu::m_numMenu = 0;
 
 ModulesMenu::ModulesMenu(AbstractMenu* parent)
 {
@@ -135,14 +136,12 @@ void ModulesMenu::keyUp()
 {
 	if(presetEdited == 1)
 	{
-		confirmSaveMenu.setTopLevelMenu(topLevelMenu);
-		saveDialog.setYesMenu(&confirmSaveMenu);
-		saveDialog.setNoMenu(topLevelMenu);
-		saveDialog.show();
+		shownChildMenu = new Dialog(this, Dialog::SaveChanges);
+		shownChildMenu->show();
 	}
 	else
 	{
-		topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+		topLevelMenu->returnFromChildMenu();
 	}
 	tim5_start(0);
 }
@@ -175,7 +174,6 @@ void ModulesMenu::key2()
 {
 	currentMenu = this;
 
-	// было своё copyMenu
 	if(shownChildMenu) delete shownChildMenu;
 
 	const uint8_t paramCount = 3;
@@ -203,7 +201,6 @@ void ModulesMenu::key2()
 
 void ModulesMenu::key3()
 {
-	// было своё copyMenu
 	if(shownChildMenu) delete shownChildMenu;
 
 	presetEdited = true;
@@ -215,7 +212,6 @@ void ModulesMenu::key4()
 {
 	currentMenu = this;
 
-	// было своё copyMenu
 	if(shownChildMenu) delete shownChildMenu;
 
 	shownChildMenu = new NameEditMenu(this);

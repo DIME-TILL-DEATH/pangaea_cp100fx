@@ -80,11 +80,8 @@ public:
 	static constexpr uint8_t modulesCount = 14;
 
 private:
-	uint8_t m_numMenu = 0;
+	static uint8_t m_numMenu;
 	bool presetEdited{false};
-
-	PresetActionsMenu confirmSaveMenu{this, PresetActionsMenu::Save};
-	Dialog saveDialog{this, Dialog::SaveChanges};
 
 	void iconRefresh(uint8_t num);
 

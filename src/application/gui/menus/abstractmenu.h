@@ -72,7 +72,8 @@ public:
 	enum TReturnMode
 	{
 		KeepChild,
-		DeleteChild
+		DeleteChild,
+		ReturnToRoot
 	};
 
 //	AbstractMenu() {};
@@ -111,7 +112,8 @@ protected:
 	gui_menu_type m_menuType{MENU_ABSTRACT};
 
 	StringOutParam* m_runningString = nullptr;
-//	uint8_t m_runningStringsCount{0};
+
+	static uint8_t subMenusToRoot;
 };
 
 extern AbstractMenu* currentMenu;
