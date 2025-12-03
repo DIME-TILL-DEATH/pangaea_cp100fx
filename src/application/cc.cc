@@ -359,11 +359,12 @@ void TCCTask::Code()
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
-				if(currentPreset.controller[i].src)
-					if(midi_b[1] == currentPreset.controller[0].src - 5)
-						controllerSetData(i, midi_b[2]);
+				if(midi_b[1] == currentPreset.controller[i].src - 5)
+					controllerSetData(i, midi_b[2]);
 			}
 			mid_fl = 0;
+
+
 			currentMenu->refresh();
 		}
 

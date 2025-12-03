@@ -28,6 +28,13 @@ public:
 
 	TMidiSendTask();
 
+	enum MidiState
+	{
+		WAIT_STATUS_BYTE,
+		WAIT_BYTE1,
+		WAIT_BYTE2
+	};
+
 	inline void Give()
 	{
 		if(cortex_isr_num())
@@ -58,6 +65,11 @@ private:
 	void Code();
 
 	TSemaphore *sem;
+
+	MidiState midiState = WAIT_STATUS_BYTE;
+	uint8_t statusByte;
+	uint8_t dataByte[2];
+	uint8_t rcvChannel;
 };
 
 extern volatile uint8_t pc_mute_fl;

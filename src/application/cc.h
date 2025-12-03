@@ -33,7 +33,7 @@ extern uint8_t ext_f_fl;
 extern uint8_t ext_data;
 extern uint8_t ext_sourc;
 extern volatile uint8_t midi_in_buf[];
-extern volatile uint8_t midi_in_po;
+extern volatile uint8_t midi_buf_wr_pos;
 extern volatile uint16_t adc_bu;
 extern TCCTask *CCTask;
 
