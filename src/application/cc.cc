@@ -49,6 +49,8 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		case Controller::Dst::AmpVolume:
 			currentPreset.modules.rawData[AMP_MASTER] = val;
 			DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_MASTER_POS, currentPreset.modules.rawData[AMP_MASTER]);
+
+//			ConsoleTask->WriteToInputBuff("pa_ms 5\r\n");
 		break;
 
 		case Controller::Dst::AmpSlave:

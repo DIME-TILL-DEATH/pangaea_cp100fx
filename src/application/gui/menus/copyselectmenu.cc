@@ -34,7 +34,7 @@ CopySelectMenu::CopySelectMenu(AbstractMenu* parent)
 	element[13] = {StringShort, &m_selectionMask.ph, "PH"};
 	element[14] = {StringShort, &m_selectionMask.ch, "CH"};
 	element[15] = {StringShort, &m_selectionMask.dl, "DL"};
-	element[16] = {StringShort, &m_selectionMask.eq, "ER"};
+	element[16] = {StringShort, &m_selectionMask.er, "ER"};
 	element[17] = {StringShort, &m_selectionMask.rv, "RV"};
 	element[18] = {StringShort, &m_selectionMask.tr, "TR"};
 	element[19] = {StringShort, &m_selectionMask.pv, "PR.VOL"};
