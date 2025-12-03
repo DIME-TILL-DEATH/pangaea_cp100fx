@@ -11,8 +11,7 @@
 
 #include "preset.h"
 
-// TODO: refactor, returnFromChildWithAnswer(don't show parent case)
-// delete always
+// TODO: common Dialog to subtypes
 
 Dialog::Dialog(AbstractMenu *parent, TDialogType dialogType)
 {
@@ -47,8 +46,6 @@ Dialog::Dialog(AbstractMenu *parent, TDialogType dialogType)
 		{
 			m_menuType = MENU_ERASE;
 
-			m_yesMenu = m_noMenu = parent;
-
 			m_btnCount = 2;
 			m_nameLenght = 4;
 
@@ -69,8 +66,6 @@ Dialog::Dialog(AbstractMenu *parent, TDialogType dialogType)
 		case TDialogType::RestartDevice:
 		{
 			m_menuType = MENU_RESTART;
-
-			m_yesMenu = m_noMenu = parent;
 
 			m_btnCount = 2;
 			m_nameLenght = 7;
@@ -97,16 +92,6 @@ Dialog::~Dialog()
 {
 	for(int i = 0; i<m_btnCount; i++)
 		delete[] m_btnNames[i];
-}
-
-void Dialog::setYesMenu(AbstractMenu* yesMenu)
-{
-	m_yesMenu = yesMenu;
-}
-
-void Dialog::setNoMenu(AbstractMenu* noMenu)
-{
-	m_noMenu = noMenu;
 }
 
 void Dialog::show(TShowMode showMode)
@@ -142,19 +127,18 @@ void Dialog::encoderPressed()
 			{
 				case TDialogType::SaveChanges:
 				{
-					currentMenu = m_noMenu;
-					m_noMenu->show();
+					topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
 					break;
 				}
 				case TDialogType::ErasePreset:
 				{
-					m_noMenu->returnFromChildMenu();
+					topLevelMenu->returnFromChildMenu();
 					break;
 				}
 				case TDialogType::RestartDevice:
 				{
 					write_sys();
-					m_noMenu->returnFromChildMenu();
+					topLevelMenu->returnFromChildMenu();
 					break;
 				}
 			}
@@ -167,14 +151,14 @@ void Dialog::encoderPressed()
 				{
 					Preset::Erase();
 					Preset::Change();
-					m_yesMenu->returnFromChildMenu();
+					topLevelMenu->returnFromChildMenu();
 					break;
 				}
 				case TDialogType::RestartDevice:
 				{
 					write_sys();
 					NVIC_SystemReset();
-					m_yesMenu->returnFromChildMenu(); //dummy
+					topLevelMenu->returnFromChildMenu(); //dummy
 					break;
 				}
 				case TDialogType::SaveChanges:
@@ -188,10 +172,8 @@ void Dialog::encoderPressed()
 		break;
 
 		case 2:
-
-			currentMenu = m_yesMenu;
-			m_yesMenu->show();
-
+			shownChildMenu = new PresetActionsMenu(this, PresetActionsMenu::Save);
+			shownChildMenu->show();
 		break;
 	}
 }

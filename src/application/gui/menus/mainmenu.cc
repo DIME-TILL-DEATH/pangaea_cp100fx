@@ -102,8 +102,11 @@ void MainMenu::keyDown()
 {
 	if(m_preselectedPresetNum != currentPresetNumber) return;
 
-	shownChildMenu = &modulesMenu;
-	modulesMenu.show();
+//	shownChildMenu = &modulesMenu;
+//	modulesMenu.show();
+
+	shownChildMenu = new ModulesMenu(this);
+	shownChildMenu->show();
 
 	tim5_start(0);
 }

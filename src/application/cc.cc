@@ -49,6 +49,8 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		case Controller::Dst::AmpVolume:
 			currentPreset.modules.rawData[AMP_MASTER] = val;
 			DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_MASTER_POS, currentPreset.modules.rawData[AMP_MASTER]);
+
+//			ConsoleTask->WriteToInputBuff("pa_ms 5\r\n");
 		break;
 
 		case Controller::Dst::AmpSlave:
@@ -355,19 +357,20 @@ void TCCTask::Code()
 		if(!currentMenu) this->Give();
 
 		sem->Take(portMAX_DELAY);
-		if(mid_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
+		if(mid_fl && pc_mute_fl)
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
-				if(currentPreset.controller[i].src)
-					if(midi_b[1] == currentPreset.controller[0].src - 5)
-						controllerSetData(i, midi_b[2]);
+				if(midi_b[1] == currentPreset.controller[i].src - 5)
+					controllerSetData(i, midi_b[2]);
 			}
 			mid_fl = 0;
-			currentMenu->refresh();
+
+			if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
+				currentMenu->refresh();
 		}
 
-		if(ext_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
+		if(ext_fl && pc_mute_fl)
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
@@ -375,7 +378,9 @@ void TCCTask::Code()
 					controllerSetData(i, ext_data);
 			}
 			ext_fl = 0;
-			currentMenu->refresh();
+
+			if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
+				currentMenu->refresh();
 		}
 	}
 }

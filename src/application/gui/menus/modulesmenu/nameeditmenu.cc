@@ -161,7 +161,7 @@ void NameEditMenu::encoderCounterClockwise()
 
 void NameEditMenu::keyUp()
 {
-	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+	topLevelMenu->returnFromChildMenu();
 }
 
 void NameEditMenu::keyDown()
@@ -217,7 +217,7 @@ void NameEditMenu::key3()
 
 void NameEditMenu::key4()
 {
-	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+	topLevelMenu->returnFromChildMenu();
 }
 
 void NameEditMenu::key5()

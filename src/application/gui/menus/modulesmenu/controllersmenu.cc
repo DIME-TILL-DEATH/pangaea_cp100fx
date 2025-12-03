@@ -239,7 +239,7 @@ void ControllersMenu::encoderClockwise()
 				{
 					a = BaseParam::encSpeedInc(a, 127);
 					DisplayTask->ParamIndicNum(45, 3, a + 1);
-					currentPreset.set = a | 0x80;
+					currentPreset.set = (currentPreset.set & 0x80);
 				}
 			break;
 		}
@@ -430,7 +430,7 @@ void ControllersMenu::key2()
 
 void ControllersMenu::key3()
 {
-	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+	topLevelMenu->returnFromChildMenu();
 }
 
 void ControllersMenu::key4()

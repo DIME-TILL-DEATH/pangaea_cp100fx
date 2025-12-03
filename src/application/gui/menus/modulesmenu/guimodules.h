@@ -2,22 +2,12 @@
 #define GUIMODULE_H_
 
 #include "../abstractmenu.h"
-#include "modulesmenu.h"
+//#include "modulesmenu.h"
 
 #include "modules.h"
 
 namespace GuiModules
 {
-
-typedef struct
-{
-	const char* name;
-	uint8_t* enablePtr;
-	AbstractMenu* (*createMenu)(AbstractMenu* parent);
-	void (*enableFunction)(ModulesMenu* parent);
-	dsp_enable_pos_t dspEnablePosition;
-}TModule;
-
 AbstractMenu* createRfMenu(AbstractMenu* parentMenu);
 AbstractMenu* createGateMenu(AbstractMenu* parentMenu);
 AbstractMenu* createCompressorMenu(AbstractMenu* parentMenu);

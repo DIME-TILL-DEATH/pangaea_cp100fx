@@ -18,27 +18,30 @@ CopySelectMenu::CopySelectMenu(AbstractMenu* parent)
 	element[0] = {ActionReturn, nullptr, "Return"};
 	element[1] = {ActionOk, nullptr, "Ok"};
 
-	element[2] = {StringLong, &m_selectionMask.name, "Name"};
-	element[3] = {StringLong, &m_selectionMask.comment, "Comment"};
-	element[4] = {StringLong, &m_selectionMask.controllers, "Controllers"};
+	element[2] = {ActionSelectAll, nullptr, "Sel.all"};
+	element[3] = {ActionDeselectAll, nullptr, "Clr.all"};
 
-	element[5] = {StringShort, &m_selectionMask.rf, "RF"};
-	element[6] = {StringShort, &m_selectionMask.gt, "GT"};
-	element[7] = {StringShort, &m_selectionMask.cm, "CM"};
-	element[8] = {StringShort, &m_selectionMask.pr, "PR"};
-	element[9] = {StringShort, &m_selectionMask.pa, "PA"};
-	element[10] = {StringShort, &m_selectionMask.ir, "IR"};
-	element[11] = {StringShort, &m_selectionMask.eq, "EQ"};
+	element[4] = {StringLong, &m_selectionMask.name, "Name"};
+	element[5] = {StringLong, &m_selectionMask.comment, "Comment"};
+	element[6] = {StringLong, &m_selectionMask.controllers, "Controllers"};
 
-	element[12] = {StringShort, &m_selectionMask.fl, "FL"};
-	element[13] = {StringShort, &m_selectionMask.ph, "PH"};
-	element[14] = {StringShort, &m_selectionMask.ch, "CH"};
-	element[15] = {StringShort, &m_selectionMask.dl, "DL"};
-	element[16] = {StringShort, &m_selectionMask.eq, "ER"};
-	element[17] = {StringShort, &m_selectionMask.rv, "RV"};
-	element[18] = {StringShort, &m_selectionMask.tr, "TR"};
-	element[19] = {StringShort, &m_selectionMask.pv, "PR.VOL"};
-	element[20] = {StringShort, &m_selectionMask.att, "ATT"};
+	element[7] = {StringShort, &m_selectionMask.rf, "RF"};
+	element[8] = {StringShort, &m_selectionMask.gt, "GT"};
+	element[9] = {StringShort, &m_selectionMask.cm, "CM"};
+	element[10] = {StringShort, &m_selectionMask.pr, "PR"};
+	element[11] = {StringShort, &m_selectionMask.pa, "PA"};
+	element[12] = {StringShort, &m_selectionMask.ir, "IR"};
+	element[13] = {StringShort, &m_selectionMask.eq, "EQ"};
+
+	element[14] = {StringShort, &m_selectionMask.fl, "FL"};
+	element[15] = {StringShort, &m_selectionMask.ph, "PH"};
+	element[16] = {StringShort, &m_selectionMask.ch, "CH"};
+	element[17] = {StringShort, &m_selectionMask.dl, "DL"};
+	element[18] = {StringShort, &m_selectionMask.er, "ER"};
+	element[19] = {StringShort, &m_selectionMask.rv, "RV"};
+	element[20] = {StringShort, &m_selectionMask.tr, "TR"};
+	element[21] = {StringShort, &m_selectionMask.pv, "PR.VOL"};
+	element[22] = {StringShort, &m_selectionMask.att, "ATT"};
 }
 
 void CopySelectMenu::show(TShowMode showMode)
@@ -52,7 +55,7 @@ void CopySelectMenu::task()
 {
 	if(blinkFlag_fl && m_copied)
 	{
-		topLevelMenu->returnFromChildMenu();
+		topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
 	}
 }
 
@@ -263,6 +266,18 @@ void CopySelectMenu::encoderPressed()
 			topLevelMenu->returnFromChildMenu();
 			break;
 		}
+		case ActionSelectAll:
+		{
+			kgp_sdk_libc::memset(&m_selectionMask, 1, sizeof(TSelectionMask));
+			printPage();
+			break;
+		}
+		case ActionDeselectAll:
+		{
+			kgp_sdk_libc::memset(&m_selectionMask, 0, sizeof(TSelectionMask));
+			printPage();
+			break;
+		}
 		case StringShort:
 		case StringLong:
 		{
@@ -294,6 +309,8 @@ void CopySelectMenu::printElement(const SelectionElement& element, uint8_t numOn
 	{
 		case ActionOk:
 		case ActionReturn:
+		case ActionSelectAll:
+		case ActionDeselectAll:
 		{
 			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)element.name);
 			break;
@@ -354,8 +371,10 @@ uint8_t CopySelectMenu::elementIncrementIndex(const SelectionElement& element)
 	{
 		case ActionOk: return 1;
 		case ActionReturn: return 1;
+		case ActionSelectAll: return 1;
+		case ActionDeselectAll: return 1;
 		case StringLong: return 2;
 		case StringShort: return 1;
-		default: return 0;
+		default: return 1;
 	}
 }

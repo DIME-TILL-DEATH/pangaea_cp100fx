@@ -34,7 +34,7 @@ public:
 	void presetConfirm();
 
 private:
-	ModulesMenu modulesMenu{this};
+//	ModulesMenu modulesMenu{this};
 
 	Preset::TPresetBrief m_selectedPresetBrief;
 	uint8_t m_preselectedPresetNum;
