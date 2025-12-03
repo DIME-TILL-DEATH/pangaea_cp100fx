@@ -355,7 +355,7 @@ void TCCTask::Code()
 		if(!currentMenu) this->Give();
 
 		sem->Take(portMAX_DELAY);
-		if(mid_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
+		if(mid_fl && pc_mute_fl)
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
@@ -364,11 +364,11 @@ void TCCTask::Code()
 			}
 			mid_fl = 0;
 
-
-			currentMenu->refresh();
+			if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
+				currentMenu->refresh();
 		}
 
-		if(ext_fl && !(currentMenu->menuType() == MENU_TUNER) && pc_mute_fl)
+		if(ext_fl && pc_mute_fl)
 		{
 			for(uint8_t i=0; i < controllersCount; i++)
 			{
@@ -376,7 +376,9 @@ void TCCTask::Code()
 					controllerSetData(i, ext_data);
 			}
 			ext_fl = 0;
-			currentMenu->refresh();
+
+			if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
+				currentMenu->refresh();
 		}
 	}
 }

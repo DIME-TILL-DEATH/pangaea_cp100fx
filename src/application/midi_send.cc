@@ -216,9 +216,6 @@ void TMidiSendTask::Code()
 					uart_send(Midi::MIDI_STATUS_CC | sys_para[System::MIDI_CHANNEL]);
 					uart_send(sys_para[System::EXPR_CCN] - 1);
 					uart_send(int_contr_buf[trans_contr_po++]);
-
-//					if((data[0] & 0xf0) != Midi::MIDI_STATUS_CC)
-//						uart_send(data[0]);
 				}
 			}
 		}

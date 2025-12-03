@@ -1,7 +1,5 @@
 #include "modulesmenu.h"
 
-#include "guimodules.h"
-
 #include "appdefs.h"
 #include "cs.h"
 #include "fs.h"
@@ -15,7 +13,6 @@
 #include "sd_test.h"
 #include "fs_browser.h"
 
-#include "modules.h"
 #include "preset.h"
 
 #include "paramlistmenu.h"
@@ -24,23 +21,6 @@
 
 #include "stringlistparam.h"
 #include "stringoutparam.h"
-
-GuiModules::TModule modules[ModulesMenu::modulesCount];
-
-GuiModules::TModule RF = {"RF", &currentPreset.modules.rawData[ENABLE_RESONANCE_FILTER], &GuiModules::createRfMenu, nullptr, ENABLE_RESONANCE_FILTER};
-GuiModules::TModule GT = {"GT", &currentPreset.modules.rawData[ENABLE_GATE], &GuiModules::createGateMenu, nullptr, ENABLE_GATE};
-GuiModules::TModule CM = {"CM", &currentPreset.modules.rawData[ENABLE_COMPRESSOR], &GuiModules::createCompressorMenu, nullptr, ENABLE_COMPRESSOR};
-GuiModules::TModule PR = {"PR", &currentPreset.modules.rawData[ENABLE_PREAMP], &GuiModules::createPreampMenu, nullptr, ENABLE_PREAMP};
-GuiModules::TModule PA = {"PA", &currentPreset.modules.rawData[ENABLE_AMP], &GuiModules::createAmpMenu, nullptr, ENABLE_AMP};
-GuiModules::TModule IR = {"IR", &currentPreset.modules.rawData[ENABLE_CAB], &GuiModules::createIrMenu, &ModulesMenu::enableCab, ENABLE_CAB};
-GuiModules::TModule EQ = {"EQ", &currentPreset.modules.rawData[ENABLE_EQ], &GuiModules::createEqMenu, nullptr, ENABLE_EQ};
-GuiModules::TModule PH = {"PH", &currentPreset.modules.rawData[ENABLE_PHASER], &GuiModules::createPhaserMenu, nullptr, ENABLE_PHASER};
-GuiModules::TModule FL = {"FL", &currentPreset.modules.rawData[ENABLE_FLANGER], &GuiModules::createFlangerMenu, nullptr, ENABLE_FLANGER};
-GuiModules::TModule CH = {"CH", &currentPreset.modules.rawData[ENABLE_CHORUS], &GuiModules::createChorusMenu, nullptr, ENABLE_CHORUS};
-GuiModules::TModule DL = {"DL", &currentPreset.modules.rawData[ENABLE_DELAY], &GuiModules::createDelayMenu, nullptr, ENABLE_DELAY};
-GuiModules::TModule ER = {"ER", &currentPreset.modules.rawData[ENABLE_EARLY_REFLECTIONS], &GuiModules::createEarlyMenu, nullptr, ENABLE_EARLY_REFLECTIONS};
-GuiModules::TModule RV = {"RV", &currentPreset.modules.rawData[ENABLE_REVERB], &GuiModules::createReverbMenu, nullptr, ENABLE_REVERB};
-GuiModules::TModule TR = {"TR", &currentPreset.modules.rawData[ENABLE_TREMOLO], &GuiModules::createTremoloMenu, nullptr, ENABLE_TREMOLO};
 
 
 ModulesMenu::ModulesMenu(AbstractMenu* parent)
@@ -66,11 +46,17 @@ ModulesMenu::ModulesMenu(AbstractMenu* parent)
 
 void ModulesMenu::show(TShowMode showMode)
 {
+	for(uint8_t i=0; i<modulesCount; i++)
+	{
+		modulesPrevState[i] = TModule("" , &prevEnabledState[i]);
+	}
+
 	currentMenu = this;
 
 	if(showMode == TShowMode::FirstShow) presetEdited = false;
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->Clear();
 	refresh();
 
 	tim5_start(0);
@@ -80,10 +66,15 @@ void ModulesMenu::refresh()
 {
 	arrangeModules();
 
-	DisplayTask->Clear();
 	for(uint8_t i=0; i<modulesCount; i++)
 	{
-		iconRefresh(i);
+		if(modulesPrevState[i] != modules[i])
+		{
+			iconRefresh(i);
+			modulesPrevState[i] = modules[i];
+			prevEnabledState[i] = *(modules[i].enablePtr);
+			modulesPrevState[i].enablePtr = &prevEnabledState[i];
+		}
 	}
 }
 
@@ -112,6 +103,8 @@ void ModulesMenu::encoderPressed()
 
 	*modules[m_numMenu].enablePtr = !((bool)*modules[m_numMenu].enablePtr);
 	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, modules[m_numMenu].dspEnablePosition, *modules[m_numMenu].enablePtr);
+
+	*(modulesPrevState[m_numMenu].enablePtr) = *(modules[m_numMenu].enablePtr);
 
 	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction(this);
 
@@ -244,7 +237,7 @@ void ModulesMenu::iconRefresh(uint8_t num)
 	DisplayTask->EfIcon(2 + (num%7) * 18, (num/7) * 2,(uint8_t*)modules[num].name, *modules[num].enablePtr);
 }
 
-void ModulesMenu::enableCab(ModulesMenu* parent)
+void ModulesMenu::enableCab(AbstractMenu* parent)
 {
 	if(cab1.name.size == 0)
 	{
