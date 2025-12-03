@@ -47,7 +47,9 @@ private:
 		StringLong,
 		StringShort,
 		ActionOk,
-		ActionReturn
+		ActionReturn,
+		ActionSelectAll,
+		ActionDeselectAll
 	}ElementType;
 
 	typedef struct
@@ -57,7 +59,7 @@ private:
 		const char* name;
 	}SelectionElement;
 
-	static constexpr uint8_t ElementsCount = 21;
+	static constexpr uint8_t ElementsCount = 23;
 	static constexpr uint8_t ElementsOnPage = 8;
 	SelectionElement element[ElementsCount];
 
