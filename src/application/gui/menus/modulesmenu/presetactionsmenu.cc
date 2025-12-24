@@ -87,11 +87,15 @@ void PresetActionsMenu::encoderCounterClockwise()
 
 void PresetActionsMenu::keyUp()
 {
-	if(m_actionType==TActionType::Save) return;
-
-	topLevelMenu->returnFromChildMenu();
-
-	tim5_start(0);
+	if(m_actionType==TActionType::Save)
+	{
+		topLevelMenu->subMenusToRoot = 1;
+		topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
+	}
+	else
+	{
+		topLevelMenu->returnFromChildMenu();
+	}
 }
 
 void PresetActionsMenu::keyDown()

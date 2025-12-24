@@ -23,7 +23,7 @@ public:
 	void encoderClockwise() override;
 	void encoderCounterClockwise() override;
 
-	void keyUp() override {};
+	void keyUp() override;
 	void keyDown() override {};
 
 private:
