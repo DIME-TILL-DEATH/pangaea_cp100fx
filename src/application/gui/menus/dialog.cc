@@ -110,6 +110,11 @@ void Dialog::show(TShowMode showMode)
 	tim5_start(1);
 }
 
+void Dialog::keyUp()
+{
+	topLevelMenu->returnFromChildMenu();
+}
+
 void Dialog::task()
 {
 	DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, 3*blinkFlag_fl, (uint8_t*)m_btnNames[m_paramNum]);

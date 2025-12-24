@@ -193,6 +193,7 @@ void ModulesMenu::key2()
 		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
 	}
 
+	presetEdited = true;
 	shownChildMenu = menu;
 	shownChildMenu->show();
 
@@ -214,6 +215,7 @@ void ModulesMenu::key4()
 
 	if(shownChildMenu) delete shownChildMenu;
 
+	presetEdited = true;
 	shownChildMenu = new NameEditMenu(this);
 	shownChildMenu->show();
 }
