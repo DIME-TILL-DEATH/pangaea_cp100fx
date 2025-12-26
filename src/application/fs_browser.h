@@ -39,7 +39,6 @@ public:
 		bcDown,
 		bcAction,
 		bcPwd,
-		bcList,
 		bcFsMount,
 		bcFsUmount,
 		bcLoadImp,
@@ -50,7 +49,7 @@ public:
 	TFsBrowser();
 	~TFsBrowser();
 
-	void Browse(browse_command_t browse_command, fs_object_t &object, fs_object_list_t &object_list);
+	void Browse(browse_command_t browse_command, fs_object_t &object);
 
 
 	bool GetDataFromFile(uint8_t *cab_data, emb_string &err_msg);
@@ -94,6 +93,7 @@ private:
 	fs_object_list_t fs_object_list;
 	fs_object_list_t::iterator curr_fs_object;
 
+
 	fs_object_t fs_created_file_object;
 
 	emb_string curr_dir_name;
@@ -104,6 +104,7 @@ private:
 	FATFS fs;
 	FRESULT fs_res;
 
+	static constexpr uint8_t maxDisaplyObjects = 64;
 	void UpdateDirList();
 	FRESULT DeleteDirectoryRecursive(const char* path);
 

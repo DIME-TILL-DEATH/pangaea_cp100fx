@@ -243,7 +243,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 		{
 		  if(TFsBrowser::impulseDirExist)
 		  {
-			  parent->showChild(new CabBrowserMenu(parent, 1));
+			  parent->showChild(new CabBrowserMenu(parent, 0));
 		  }
 		  else
 		  {

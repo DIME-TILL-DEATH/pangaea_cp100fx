@@ -28,6 +28,8 @@ void CabBrowserMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
+	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+
 	if(TSD_TESTTask::sdInitState == 1)
 	{
 

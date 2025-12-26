@@ -95,11 +95,8 @@ static void ls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 {
 	FSTask->Suspend();
 	msg_console("%s\r", args[0]);
-	fs_object_t fsObject;
-	fs_object_list_t dirContent;
-	fileBrowser->Browse(TFsBrowser::bcList, fsObject, dirContent);
 
-	for(auto it = dirContent.begin(); it != dirContent.end(); ++it)
+	for(auto it = fileBrowser->List().begin(); it != fileBrowser->List().end(); ++it)
 	{
 		msg_console("%d:%s|", (*it).type, (*it).name.c_str());
 	}

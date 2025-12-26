@@ -30,7 +30,7 @@ void TFSTask::Code()
 	{
 		queue->Receive((void*)&browse_command, portMAX_DELAY);
 
-		fileBrowser->Browse(browse_command, object, object_list);
+		fileBrowser->Browse(browse_command, object);
 	}
 }
 //------------------------------------------------------------------------------

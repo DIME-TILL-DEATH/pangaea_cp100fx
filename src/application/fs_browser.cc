@@ -267,7 +267,7 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 	CSTask->SendResponse(response);
 
 }
-void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t &object, fs_object_list_t &object_list)
+void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& object)
 {
 	emb_string tmp;
 	switch(browse_command)
@@ -340,9 +340,6 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t &obje
 			f_getcwd(pwd, _MAX_LFN);
 			object.name = pwd;
 			object.type = fotDir;
-		break;
-		case bcList:
-			object_list = fs_object_list;
 		break;
 		case bcFsMount:
 			tmp = "0:IMPULSE";
@@ -544,7 +541,6 @@ void TFsBrowser::SelectDir(fs_object_t select_object)
 #endif
 
 	//if ((curr_fs_object->dir == "0:IMPULSE") && (curr_fs_object->name == ".."))
-
 	fs_object_list.clear();
 
 	res = f_chdir(select_object.name.c_str());
@@ -608,9 +604,10 @@ void TFsBrowser::UpdateDirList()
 
 	if(res==FR_OK)
 	{
-		for(;;)
+		for(uint16_t i=0;;i++)
 		{
 			res = f_readdir(&dir, &fno); /* Read a directory item */
+
 			if(res!=FR_OK||fno.fname[0]==0)
 				break; /* Break on error or end of dir */
 			if((fno.fname[0]=='.'&&fno.fname[1]==0))
@@ -625,8 +622,12 @@ void TFsBrowser::UpdateDirList()
 			object.name = fn;
 			object.dir = CurrDir();
 			//if (object.name==".." && curr_dir_name=="IMPULSE") continue ; // пропуск элемента .. в директори IMPULSE
-			object.type = fno.fattrib&AM_DIR ? fotDir : fotFile;
+			object.type = fno.fattrib & AM_DIR ? fotDir : fotFile;
+
+
 			fs_object_list.push_back(object);
+
+			if(fs_object_list.size() > maxDisaplyObjects) break;
 		}
 
 		sort(fs_object_list.begin(), fs_object_list.end(), sort_fs_object());
