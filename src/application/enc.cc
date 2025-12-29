@@ -345,24 +345,15 @@ void TENCTask::Code()
 	TIM_Cmd(TIM3, ENABLE);
 	while(1)
 	{
-//		//----------------------------------------------------USB-----------------------------------
-//		if(usb_flag == 0)
-//		{
-//			if(GPIOA->IDR & GPIO_Pin_9)
-//			{
-//				usb_flag = 1;
-//
-//			}
-//		}
-//		else
-//		{
-//			if(!(GPIOA->IDR & GPIO_Pin_9))
-//			{
-//				NVIC_SystemReset();
-//			}
-//		}
-		//--------------------------------------------------------------------------------------------
+		//---------------------------------------------Run string-------------------------------------
+				if(currentMenu)
+				{
 
+					StringOutParam *runningString = currentMenu->getRunningString();
+					if(runningString)
+						runningString->task();
+				}
+		//------------------------------------------Keys------------------------------------------------
 
 		if((key_reg != 31212) && (!kn2_in_fl) && (!fsw1_in_fl) && (!fsw2_in_fl) && (!fsw3_in_fl))
 		{
@@ -498,19 +489,17 @@ void TENCTask::Code()
 			if(key_reg == 31212)
 				kn2_in_fl = fsw1_in_fl = fsw2_in_fl = fsw3_in_fl = tim3_end_fl = 0;
 		}
-//---------------------------------------------Run string-------------------------------------
-		if(currentMenu)
-		{
-			StringOutParam *runningString = currentMenu->getRunningString();
-			if(runningString)
-				runningString->task();
-		}
 //----------------------------------------------------LED FX-----------------------------------------------
-		uint8_t a = 0;
+		uint8_t isLedOn = 0;
+		uint16_t enabledMask = 0;
+		enabledMask = (1 << ENABLE_AMP) | (1 << ENABLE_PREAMP) | (1 << ENABLE_CAB);
 		for(uint8_t i = 0; i < 14; i++)
-			if(i != 0 && i != 1 && i != 10)
-				a += currentPreset.modules.rawData[i];
-		if(a)
+		{
+			if(!((enabledMask >> i) & 0x1))
+				isLedOn += currentPreset.modules.rawData[i];
+		}
+
+		if(isLedOn)
 			GPIO_SetBits(GPIOB, GPIO_Pin_14);
 		else
 			GPIO_ResetBits(GPIOB, GPIO_Pin_14);

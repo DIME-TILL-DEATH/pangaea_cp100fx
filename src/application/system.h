@@ -69,6 +69,10 @@ namespace System
 
 		MIDI_MAP_START,
 
+		FX_LED_MODE = 256,
+		FX_LED_MAP_LO,
+		FX_LED_MAP_HI,
+
 		MASTER_EQ_FREQ_VAL_LO = 508,
 		MASTER_EQ_FREQ_VAL_HI,
 
@@ -109,6 +113,12 @@ namespace System
 		EQ_SCREEN_GRAPH,
 		EQ_SCREEN_BARS
 	}EqScreenMode;
+
+	typedef enum
+	{
+		FX_LED_MODE_DEFAULT = 0,
+		FX_LED_MODE_CUSTOM
+	};
 
 	void TapTempo(TapDestination tapDst);
 };

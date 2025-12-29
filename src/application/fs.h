@@ -28,7 +28,6 @@ private:
 	void Code();
 	TQueue *queue;
 	fs_object_t object;
-	fs_object_list_t object_list;
 
 	bool impulseDirectoryExist;
 };
