@@ -49,7 +49,7 @@ void MainMenu::task()
 	{
 		if(blinkFlag_fl == 0)
 		{
-			bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab1Name[0];
+			bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
 			DisplayTask->Prog_ind(m_preselectedPresetNum, filled);
 		}
 		else
