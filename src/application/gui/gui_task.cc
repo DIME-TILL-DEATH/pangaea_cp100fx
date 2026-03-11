@@ -7,14 +7,14 @@
 #include "enc.h"
 #include "cc.h"
 #include "BF706_send.h"
-#include "midi_send.h"
+#include "midi.h"
 #include "init.h"
 
 #include "system.h"
 
 #include "modules.h"
 #include "footswitch.h"
-#include "controllers.h"
+#include "controller.h"
 #include "preset.h"
 
 #include "abstractmenu.h"
@@ -108,20 +108,46 @@ void gui(void)
 		clean_flag();
 	}
 
-	if(sys_para[System::TAP_TYPE] == System::TAP_TYPE_GLOBAL_MIDI)
-	{
-		extern volatile uint16_t midi_clk_buf[];
-		uint16_t mediann_tap(uint16_t *array, int length);
-		uint16_t c = mediann_tap((uint16_t*)midi_clk_buf, 64);
-		c >>= 4;
-		if((c<(midi_clk_send-7))||(c>(midi_clk_send+7)))
-		{
-			midi_clk_send = c;
-			void send_midi_temp(uint16_t *c);
-			send_midi_temp(&c);
-		}
-	}
+//	if(sys_para[System::TAP_TYPE] == System::TAP_TYPE_GLOBAL_MIDI)
+//	{
+//		extern volatile uint16_t midi_clk_buf[];
+//		uint16_t mediann_tap(uint16_t *array, int length);
+//		uint16_t c = mediann_tap((uint16_t*)midi_clk_buf, 64);
+//		c >>= 4;
+//		if((c<(midi_clk_send-7))||(c>(midi_clk_send+7)))
+//		{
+//			midi_clk_send = c;
+//			void send_midi_temp(uint16_t *c);
+//			send_midi_temp(&c);
+//		}
+//	}
 }
+
+//uint16_t mediann_tap(uint16_t *array, int length)  // массив и его длина
+//{
+//	uint16_t slit = length / 2;
+//	for(uint16_t i = 0; i < length; i++)
+//	{
+//		uint16_t s1 = 0, s2 = 0;
+//		uint16_t val = array[i];
+//		for(int j = 0; j < length; j++)
+//		{
+//			if(array[j] < val)
+//			{
+//				if(++s1 > slit)
+//					goto aaa;
+//			}
+//			else if(array[j] > val)
+//			{
+//				if(++s2 > slit)
+//					goto aaa;
+//			}
+//		}
+//		return val;
+//aaa:	;
+//	}
+//	return 0;  // чистая формальность, досюда исполнение никогда не доходит
+//}
 //---------------------------------------------------------------------------------
 extern "C" void TIM4_IRQHandler()
 {

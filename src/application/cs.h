@@ -73,23 +73,61 @@ public:
 
 	void SendResponse(const TResponse &response)
 	{
-		queue->SendToBack((void*)&response, portMAX_DELAY);
+		responseQueue->SendToBack((void*)&response, portMAX_DELAY);
 	}
 
 	TResponse GetResponseBlocking()
 	{
 		TResponse response;
-		queue->Receive((void*)&response, portMAX_DELAY);
+		responseQueue->Receive((void*)&response, portMAX_DELAY);
 		return response;
+	}
+
+	typedef enum{
+		CS_REFRESH_MENU,
+		CS_RUNNING_STRING
+	}TCSCmdType;
+
+	typedef struct{
+		TCSCmdType type;
+	}TCSCmd;
+
+	void refreshMenu(){
+		TCSCmd cmd;
+		cmd.type = CS_REFRESH_MENU;
+		Command(&cmd);
+		Give();
 	}
 
 private:
 	void Code();
 
-	TQueue *queue;
+	TQueue::TQueueSendResult Command(TCSCmd *cmd)
+		{
+			if(cortex_isr_num())
+			{
+				// send comand from ISR
+				BaseType_t HigherPriorityTaskWoken;
+				TQueue::TQueueSendResult result;
+				result = cmdQueue->SendToBackFromISR(cmd, &HigherPriorityTaskWoken);
+				if(HigherPriorityTaskWoken)
+					TScheduler::Yeld();
+				return result;
+			}
+			else
+			{
+				// thread mode
+				return cmdQueue->SendToBack(cmd, 0);
+			}
+		}
+
+	TQueue *responseQueue;
+	TQueue *cmdQueue;
 
 	TSemaphore *sem;
 	bool DispalyAccess;
+
+
 };
 
 extern TCSTask *CSTask;

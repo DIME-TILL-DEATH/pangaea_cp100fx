@@ -123,7 +123,7 @@ namespace System
 	void TapTempo(TapDestination tapDst);
 };
 
-extern const uint16_t bpm_time[];
+//extern const uint16_t bpm_time[];
 
 extern volatile uint32_t tap_global;
 extern volatile uint32_t tap_temp;

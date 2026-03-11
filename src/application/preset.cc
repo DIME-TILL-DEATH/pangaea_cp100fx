@@ -7,7 +7,7 @@
 #include "enc.h"
 #include "cc.h"
 #include "BF706_send.h"
-#include "midi_send.h"
+#include "midi.h"
 #include "init.h"
 
 #include "system.h"

@@ -19,6 +19,9 @@ namespace Midi{
 	  MIDI_STATUS_PC 		 = 0xC0,
 	  MIDI_STATUS_CHANNEL_AT = 0xD0, // after touch
 	  MIDI_STATUS_PITCH_BEND = 0xE0,
+	  MIDI_STATUS_TIMING_CLOCK = 0xF8,
+	  MIDI_STATUS_SYSEX_START = 0xF0,
+	  MIDI_STATUS_SYSEX_STOP = 0xF7
 	};
 };
 
@@ -30,7 +33,7 @@ public:
 
 	enum MidiState
 	{
-		WAIT_STATUS_BYTE,
+		PROCESS_STATUS_BYTE,
 		WAIT_BYTE1,
 		WAIT_BYTE2
 	};
@@ -60,13 +63,15 @@ public:
 	{
 		key_midi1[num] = val;
 	}
+
+	static constexpr uint16_t midiInBufferSize = 256;
 	//----------------------------------------------------------------------------------------
 private:
 	void Code();
 
 	TSemaphore *sem;
 
-	MidiState midiState = WAIT_STATUS_BYTE;
+	MidiState midiState = PROCESS_STATUS_BYTE;
 	uint8_t statusByte;
 	uint8_t dataByte[2];
 	uint8_t rcvChannel;

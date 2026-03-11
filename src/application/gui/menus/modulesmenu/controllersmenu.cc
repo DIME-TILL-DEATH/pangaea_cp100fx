@@ -8,7 +8,7 @@
 #include "eepr.h"
 
 #include "footswitch.h"
-#include "controllers.h"
+#include "controller.h"
 #include "preset.h"
 
 #include "system.h"

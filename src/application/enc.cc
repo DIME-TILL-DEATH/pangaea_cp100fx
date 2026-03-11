@@ -7,7 +7,6 @@
 #include "fs.h"
 #include "display.h"
 #include "sd_test.h"
-#include "midi_send.h"
 #include "allFonts.h"
 
 #include "system.h"
@@ -18,6 +17,7 @@
 
 #include "preset.h"
 #include "footswitch.h"
+#include "midi.h"
 
 #include "tunermenu.h"
 
@@ -131,12 +131,12 @@ void fsw_press_execute(uint8_t num)
 				if(!contr_kn[num])
 				{
 					contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 1;
-					ext_data = 127;
+					ControllersTask->extCommand(num + 2, 127);
 				}
 				else
 				{
 					contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 0;
-					ext_data = 0;
+					ControllersTask->extCommand(num + 2, 0);
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
@@ -148,9 +148,6 @@ void fsw_press_execute(uint8_t num)
 					MidiSendTask->Give();
 				}
 
-				ext_sourc = num + 2;
-				ext_fl = 1;
-				CCTask->Give();
 			break;
 
 			case Footswitch::Tuner:
@@ -269,11 +266,12 @@ void fsw_hold_execute(uint8_t num)
 				if(!contr_kn1[num])
 				{
 					contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 1;
-					ext_data = 127;
+					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 127);
 				}
 				else
 				{
-					ext_data = contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 0;
+					contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 0;
+					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 0);
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
@@ -284,9 +282,6 @@ void fsw_hold_execute(uint8_t num)
 					MidiSendTask->key_midi_start1(num, contr_kn1[num] + 1);
 					MidiSendTask->Give();
 				}
-				ext_sourc = sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4;
-				ext_fl = 1;
-				CCTask->Give();
 			break;
 			}
 
@@ -346,13 +341,13 @@ void TENCTask::Code()
 	while(1)
 	{
 		//---------------------------------------------Run string-------------------------------------
-				if(currentMenu)
-				{
+		if(currentMenu)
+		{
 
-					StringOutParam *runningString = currentMenu->getRunningString();
-					if(runningString)
-						runningString->task();
-				}
+			StringOutParam *runningString = currentMenu->getRunningString();
+			if(runningString)
+				runningString->task();
+		}
 		//------------------------------------------Keys------------------------------------------------
 
 		if((key_reg != 31212) && (!kn2_in_fl) && (!fsw1_in_fl) && (!fsw2_in_fl) && (!fsw3_in_fl))
@@ -553,30 +548,4 @@ extern "C" void TIM3_IRQHandler()
 			fsw3_in_fl1 = 0;
 		}
 	}
-}
-
-uint16_t mediann_tap(uint16_t *array, int length)  // массив и его длина
-{
-	uint16_t slit = length / 2;
-	for(uint16_t i = 0; i < length; i++)
-	{
-		uint16_t s1 = 0, s2 = 0;
-		uint16_t val = array[i];
-		for(int j = 0; j < length; j++)
-		{
-			if(array[j] < val)
-			{
-				if(++s1 > slit)
-					goto aaa;
-			}
-			else if(array[j] > val)
-			{
-				if(++s2 > slit)
-					goto aaa;
-			}
-		}
-		return val;
-aaa:	;
-	}
-	return 0;  // чистая формальность, досюда исполнение никогда не доходит
 }

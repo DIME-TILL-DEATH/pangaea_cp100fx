@@ -9,7 +9,7 @@
 #include "enc.h"
 #include "cc.h"
 #include "BF706_send.h"
-#include "midi_send.h"
+#include "midi.h"
 
 #include "midimapmenu.h"
 #include "expressionmenu.h"

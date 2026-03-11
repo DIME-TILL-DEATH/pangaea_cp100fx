@@ -13,7 +13,7 @@
 #include "enc.h"
 #include "errno.h"
 #include "spectrum.h"
-#include "midi_send.h"
+#include "midi.h"
 
 #include "usb.h"
 
@@ -132,8 +132,8 @@ int main(void)
 	SpectrumTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
 
 
-	CCTask = new TCCTask();
-	CCTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
+	ControllersTask = new TCCTask();
+	ControllersTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
 
 	SD_TESTTask = new TSD_TESTTask();
 	SD_TESTTask->Create("SD_TEST", configMINIMAL_STACK_SIZE, 0);

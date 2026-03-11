@@ -408,6 +408,7 @@ void init(void)
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
 
+	// MIDI Timing clock timer
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;
 	TIM_TimeBaseStructure.TIM_Prescaler = 219;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
@@ -466,6 +467,19 @@ void init(void)
 
 	cab1.data = &ccmCommonCabBuffer[0];
 	cab2.data = &ccmCommonCabBuffer[4096 * 3];
+
+#ifdef __STEREO_MOD__
+	extern uint8_t _binary_Pangaea_CP100FX_stereo_ldr_start;
+	extern uint8_t _binary_Pangaea_CP100FX_stereo_ldr_end;
+
+	size_t _binary_Pangaea_CP100FX_1_ldr_size = (size_t)(
+			&_binary_Pangaea_CP100FX_1_ldr_end-&_binary_Pangaea_CP100FX_1_ldr_start);
+	for(size_t i = 0; i<_binary_Pangaea_CP100FX_1_ldr_size; i++)
+	{
+		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+		SPI_I2S_SendData(SPI2, (&_binary_Pangaea_CP100FX_1_ldr_start)[i]);
+	}
+#else
 	if(cab_type != CAB_CONFIG_STEREO)
 	{
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_start;
@@ -492,6 +506,7 @@ void init(void)
 			SPI_I2S_SendData(SPI2, (&_binary_Pangaea_CP100FX_1_duble_fir_ldr_start)[i]);
 		}
 	}
+#endif
 
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;

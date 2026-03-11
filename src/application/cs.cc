@@ -36,12 +36,14 @@ UsbMenu *usbMenu = nullptr;
 TCSTask::TCSTask() :
 		TTask()
 {
-	queue = new TQueue(4, sizeof(TResponse));
+	responseQueue = new TQueue(4, sizeof(TResponse));
+	cmdQueue = new TQueue(8, sizeof(TCSCmd));
 }
 
 TCSTask::~TCSTask()
 {
-	delete queue;
+	delete responseQueue;
+	delete cmdQueue;
 }
 
 void TCSTask::Code()
@@ -128,12 +130,28 @@ void TCSTask::Code()
 		mainMenu->show();
 	}
 
+	TCSCmd cmd;
 	while(1)
 	{
 		sem->Take(portMAX_DELAY);
 		if(DisplayAccess())
 		{
-			gui();
+
+			if(cmdQueue->Receive(&cmd, 0) == pdTRUE)
+			{
+				switch(cmd.type)
+				{
+					case CS_REFRESH_MENU:
+					{
+						currentMenu->refresh();
+						break;
+					}
+				}
+			}
+			else
+			{
+				gui();
+			}
 		}
 	}
 }

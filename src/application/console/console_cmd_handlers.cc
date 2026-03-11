@@ -8,7 +8,7 @@
 #include "BF706_send.h"
 #include "init.h"
 
-#include "controllers.h"
+#include "controller.h"
 #include "gui_task.h"
 
 #include "system.h"
@@ -60,7 +60,7 @@ static void amtdev_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 {
 	char hex[3] =
 	{0, 0, 0};
-	i2hex(5, hex);
+	i2hex(AMT_DEV_ID, hex);
 	msg_console("%s\r%s\n", args[0], hex);
 }
 

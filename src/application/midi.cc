@@ -1,4 +1,5 @@
-#include "midi_send.h"
+#include "midi.h"
+
 #include "cc.h"
 #include "display.h"
 #include "enc.h"
@@ -41,24 +42,22 @@ volatile uint8_t pc_mute_fl;
 volatile uint8_t midi_f1 = 0;
 volatile uint8_t midi_f2;
 volatile uint8_t us_buf;
-volatile uint8_t ex_fl = 0;
-volatile uint8_t midi_in_buf[256];
+volatile uint8_t sysEx_fl = 0;
+volatile uint8_t midi_in_buf[TMidiSendTask::midiInBufferSize];
 volatile uint8_t midi_buf_wr_pos = 0;
+volatile uint8_t midi_buf_rd_pos = 0;
+
 volatile uint8_t int_contr_buf[256];
 volatile uint8_t int_contr_po = 0;
-volatile uint8_t midi_buf_rd_pos = 0;
+
 volatile uint8_t trans_contr_po = 0;
-//volatile uint8_t trans_po = 0;
-//volatile uint16_t trans_po1; //?
 volatile uint8_t contr_hader = 0;
-volatile uint8_t pc_hader = 0;
 volatile uint8_t contr_cont = 0;
 volatile uint8_t program_change_midi = 0;
 volatile uint8_t key_midi[3];
 volatile uint8_t key_midi1[3];
 volatile uint8_t pc_in_fl = 0;
 volatile uint8_t pc_in = 0;
-volatile uint8_t old_pc = 0xff;
 
 void TMidiSendTask::Code()
 {
@@ -75,25 +74,27 @@ void TMidiSendTask::Code()
 //---------------------------------------------Midi event----------------------------------------
 			if(midi_buf_rd_pos != midi_buf_wr_pos)
 			{
-				uint8_t recievedByte = midi_in_buf[midi_buf_rd_pos++];
+				uint8_t recievedByte = midi_in_buf[midi_buf_rd_pos];
+				midi_buf_rd_pos++;
+				if(midi_buf_rd_pos == midiInBufferSize) midi_buf_rd_pos = 0;
+				uart_send(recievedByte);
+
+				if(recievedByte & 0x80)
+					midiState = PROCESS_STATUS_BYTE;
+
 				switch(midiState)
 				{
-					case WAIT_STATUS_BYTE:
+					case PROCESS_STATUS_BYTE:
 					{
-						if(recievedByte & 0x80)
+						statusByte = recievedByte & 0xF0;
+						rcvChannel = recievedByte & 0x0F;
+						if((statusByte == Midi::MIDI_STATUS_PC || statusByte == Midi::MIDI_STATUS_CC)
+								&& rcvChannel == sys_para[System::MIDI_CHANNEL])
 						{
-							statusByte = recievedByte & 0xF0;
-							rcvChannel = recievedByte & 0x0F;
-							if((statusByte == Midi::MIDI_STATUS_PC || statusByte == Midi::MIDI_STATUS_CC) && rcvChannel == sys_para[System::MIDI_CHANNEL])
-							{
-								midiState = WAIT_BYTE1;
-								break;
-							}
+							midiState = WAIT_BYTE1;
 						}
-						uart_send(recievedByte);
 						break;
 					}
-
 					case WAIT_BYTE1:
 					{
 						dataByte[0] = recievedByte;
@@ -108,10 +109,9 @@ void TMidiSendTask::Code()
 								mainMenu->presetConfirm();
 
 								midi_f1 = 1;
-								CSTask->Give();
+//								CSTask->Give();
 							}
 							pc_in_fl = 1;
-							midiState = WAIT_STATUS_BYTE;
 							break;
 						}
 
@@ -120,8 +120,6 @@ void TMidiSendTask::Code()
 							midiState = WAIT_BYTE2;
 							break;
 						}
-
-						midiState = WAIT_STATUS_BYTE;
 						break;
 					}
 
@@ -129,16 +127,13 @@ void TMidiSendTask::Code()
 					{
 						dataByte[1] = recievedByte;
 
-						midi_b[1] = dataByte[0];
-						midi_b[2] = dataByte[1];
-						mid_fl = 1;
+						ControllersTask->midiCommand(dataByte[0], dataByte[1]);
 
 						if((dataByte[0] == (sys_para[System::TUNER_EXTERNAL] & 0x7f)) && (sys_para[System::TUNER_EXTERNAL] & 0x80))
 						{
 							if(currentMenu->menuType() != MENU_TUNER)
 							{
 								currentMenu->showChild(new TunerMenu(currentMenu));
-								CSTask->Give();
 							}
 							else
 							{
@@ -158,17 +153,10 @@ void TMidiSendTask::Code()
 								ControllersMenu* controllersMenu = static_cast<ControllersMenu*>(currentMenu);
 								controllersMenu->showInputMidiCC(midi_b[1]);
 							}
-
-							CCTask->Give();
 						}
-						uart_send(statusByte);
-						uart_send(dataByte[0]);
-						uart_send(dataByte[1]);
-						midiState = WAIT_STATUS_BYTE;
+						midiState = WAIT_BYTE1;
 						break;
 					}
-
-					default: midiState = WAIT_STATUS_BYTE;
 				}
 			}
 		}
@@ -313,43 +301,58 @@ void TMidiSendTask::Code()
 }
 
 volatile uint16_t midi_clk_buf[64];
-uint8_t midi_clk_po;
+uint8_t midi_clk_pos;
 
 extern "C" void USART1_IRQHandler()
 {
+	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 	us_buf = USART1->DR;
-	if(us_buf == 0xf8)
+
+	if(sysEx_fl) // retranslate while SysEx not end
+	{
+		if(us_buf == Midi::MIDI_STATUS_SYSEX_STOP) sysEx_fl = 0;
+
+		while(!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
+		USART_SendData(USART1, us_buf);
+		return;
+	}
+
+	if(us_buf == Midi::MIDI_STATUS_TIMING_CLOCK)
 	{
 		TIM14->CR1 &= (uint16_t)~TIM_CR1_CEN;
-		midi_clk_buf[midi_clk_po++] = TIM14->CNT;
-		midi_clk_po &= 0x3f;
+		midi_clk_buf[midi_clk_pos++] = TIM14->CNT;
+		midi_clk_pos &= 0x3f;
 		TIM14->CNT = 0;
 		TIM14->CR1 |= TIM_CR1_CEN;
+
+		//							if(recievedByte == Midi::MIDI_STATUS_TIMING_CLOCK
+		//									&& sys_para[System::TAP_TYPE] == System::TapType::TAP_TYPE_GLOBAL_MIDI)
+		//							{
+		//								System::TapTempo(System::TapDestination::TAP_GLOBAL);
+		//								CSTask->refreshMenu();
+		//								break;
+		//							}
+		return;
 	}
-	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-	if(!ex_fl)
+
+
+	if(us_buf == Midi::MIDI_STATUS_SYSEX_START)
 	{
-		if((us_buf & 0xf0) != 0xf0)
-		{
-			midi_in_buf[midi_buf_wr_pos++] = us_buf;
-			MidiSendTask->Give();
-		}
-		else
-		{
-			if(us_buf == 0xf0)
-				ex_fl = 1;
-			while(!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
-			USART_SendData(USART1, us_buf);
-		}
-	}
-	else
-	{
-		if(us_buf == 0xf7)
-			ex_fl = 0;
+		sysEx_fl = 1;
+
 		while(!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
 		USART_SendData(USART1, us_buf);
 	}
+	else
+	{
+		midi_in_buf[midi_buf_wr_pos] = us_buf;
+		midi_buf_wr_pos++;
+		if(midi_buf_wr_pos == TMidiSendTask::midiInBufferSize) midi_buf_wr_pos = 0;
+
+		MidiSendTask->Give();
+	}
 }
+
 uint16_t mediann(uint16_t *array, int length)  // массив и его длина
 {
 	uint16_t slit = length / 2;
@@ -383,6 +386,7 @@ uint16_t adc_buff[32];
 volatile uint8_t adc_po;
 volatile uint8_t adc_point = 0;
 volatile uint8_t adc_inv_fl = 0;
+
 void adc_proc(void)
 {
 	if(sys_para[System::EXPR_CCN])
@@ -397,14 +401,12 @@ void adc_proc(void)
 	}
 	else
 	{
-		ext_data = adc_bu2;
-		ext_sourc = 1;
-		ext_fl = 1;
-		CCTask->Give();
+		ControllersTask->extCommand(1, adc_bu2);
 	}
 	adc_bu1[1] = adc_bu1[0];
 	adc_bu1[0] = adc_bu2;
 }
+
 extern "C" void ADC_IRQHandler()
 {
 	ADC_ClearITPendingBit(ADC1, ADC_IT_EOC);
@@ -442,14 +444,15 @@ extern "C" void ADC_IRQHandler()
 		ADC_RegularChannelConfig(ADC1, 11, 1, ADC_SampleTime_480Cycles);
 	ADC_SoftwareStartConv (ADC1);
 }
-void send_midi_temp(uint16_t *c)
-{
-	tap_global = *c * 48;
-	delay_time = *c;
 
-	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, *c >> 8);
-	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, *c);
-
-	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, *c >> 8);
-	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, *c);
-}
+//void send_midi_temp(uint16_t *c)
+//{
+//	tap_global = *c * 48;
+//	delay_time = *c;
+//
+//	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, *c >> 8);
+//	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, *c);
+//
+//	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, *c >> 8);
+//	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, *c);
+//}

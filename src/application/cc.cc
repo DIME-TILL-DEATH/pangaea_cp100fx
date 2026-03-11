@@ -7,26 +7,25 @@
 #include "display.h"
 
 #include "BF706_send.h"
-#include "midi_send.h"
-
 #include "system.h"
 
 #include "allFonts.h"
 #include "gui_task.h"
 #include "modulesmenu.h"
 
-#include "controllers.h"
+#include "controller.h"
+#include "midi.h"
 #include "preset.h"
 #include "modules.h"
 
 #include "tapmenu.h"
 
-TCCTask *CCTask;
+TCCTask *ControllersTask;
 
 volatile uint8_t midi_b[3];
 uint8_t mid_fl;
 uint8_t ext_fl;
-uint8_t ext_f_fl;
+//uint8_t ext_f_fl;
 uint8_t ext_data;
 uint8_t ext_sourc = 255;
 
@@ -348,40 +347,67 @@ TCCTask::TCCTask() :
 {
 }
 
+void TCCTask::midiCommand(uint8_t source, uint8_t data)
+{
+	TControllerCmd cmd;
+	cmd.type = CONTROLLER_MIDI;
+	cmd.midiCmd.source = source;
+	cmd.midiCmd.data = data;
+	Command(&cmd);
+}
+
+void TCCTask::extCommand(uint8_t source, uint8_t data)
+{
+	TControllerCmd cmd;
+	cmd.type = CONTROLLER_EXTERNAL;
+	cmd.extCmd.source = source;
+	cmd.extCmd.data = data;
+	Command(&cmd);
+}
+
 void TCCTask::Code()
 {
-	sem = new TSemaphore(TSemaphore::fstCounting, 8, 0);
-	Delay(1000);
+	queue = new TQueue(32, sizeof(TControllerCmd));
+	if(!queue) Suspend();
+	if(!queue->IsCreated()) Suspend();
+
+	TControllerCmd cmd;
+
 	while(1)
 	{
-		if(!currentMenu) this->Give();
+		queue->Receive(&cmd, portMAX_DELAY);
+		while(!pc_mute_fl);
 
-		sem->Take(portMAX_DELAY);
-		if(mid_fl && pc_mute_fl)
+		switch(cmd.type)
 		{
-			for(uint8_t i=0; i < controllersCount; i++)
+			case CONTROLLER_MIDI:
 			{
-				if(midi_b[1] == currentPreset.controller[i].src - 5)
-					controllerSetData(i, midi_b[2]);
+				for(uint8_t i=0; i < controllersCount; i++)
+				{
+					if(cmd.midiCmd.source == currentPreset.controller[i].src - 5)
+						controllerSetData(i, cmd.midiCmd.data);
+				}
+				break;
 			}
-			mid_fl = 0;
 
-			if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
-				currentMenu->refresh();
+			case CONTROLLER_EXTERNAL:
+			{
+				for(uint8_t i=0; i < controllersCount; i++)
+				{
+					if(currentPreset.controller[i].src == cmd.extCmd.source)
+						controllerSetData(i, cmd.extCmd.data);
+				}
+				break;
+			}
+
+			case CONTROLLER_TEMPO:
+			{
+				break;
+			}
 		}
 
-		if(ext_fl && pc_mute_fl)
-		{
-			for(uint8_t i=0; i < controllersCount; i++)
-			{
-				if(currentPreset.controller[i].src == ext_sourc)
-					controllerSetData(i, ext_data);
-			}
-			ext_fl = 0;
-
-			if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
-				currentMenu->refresh();
-		}
+		if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
+			CSTask->refreshMenu();
 	}
 }
 
