@@ -9,6 +9,7 @@ public:
 
 	void midiCommand(uint8_t source, uint8_t data);
 	void extCommand(uint8_t source, uint8_t data);
+	void midiCalcTempo(uint16_t* data, uint8_t size);
 
 private:
 	void Code();
@@ -30,7 +31,8 @@ private:
 	}TExternalCmd;
 
 	typedef struct{
-
+		uint16_t* data;
+		uint8_t size;
 	}TTempoCmd;
 
 	typedef struct{
@@ -68,11 +70,6 @@ private:
 void controllerSetData(uint8_t adr, uint8_t data);
 
 extern volatile uint8_t midi_b[3];
-//extern uint8_t mid_fl;
-//extern uint8_t ext_fl;
-//extern uint8_t ext_f_fl;
-//extern uint8_t ext_data;
-//extern uint8_t ext_sourc;
 
 extern volatile uint16_t adc_bu;
 extern TCCTask *ControllersTask;

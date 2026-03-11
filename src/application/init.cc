@@ -410,7 +410,7 @@ void init(void)
 
 	// MIDI Timing clock timer
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;
-	TIM_TimeBaseStructure.TIM_Prescaler = 219;
+	TIM_TimeBaseStructure.TIM_Prescaler = 840-1; //219; // tick = 10us
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM14, &TIM_TimeBaseStructure);

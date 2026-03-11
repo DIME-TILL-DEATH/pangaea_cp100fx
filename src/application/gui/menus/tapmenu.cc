@@ -27,14 +27,14 @@ void TapMenu::refresh()
 	DisplayTask->Clear();
 
 	char string[24];
-	if(moog_time != 0) ksprintf(string, "RF LFO: %d", moog_time);
+	if(Preset::moog_time != 0) ksprintf(string, "RF LFO: %d", Preset::moog_time);
 	else ksprintf(string, "RF LFO: --");
 	DisplayTask->StringOut(12, 0, Font::fntSystem, 0, (uint8_t*)string);
 
-	ksprintf(string, "Delay time: %d", delay_time);
+	ksprintf(string, "Delay time: %d", Preset::delay_time);
 	DisplayTask->StringOut(12, 1, Font::fntSystem, 0, (uint8_t*)string);
 
-	if(trem_time !=0) ksprintf(string, "Tremolo time: %d", trem_time);
+	if(Preset::trem_time !=0) ksprintf(string, "Tremolo time: %d", Preset::trem_time);
 	else ksprintf(string, "Tremolo time: --");
 	DisplayTask->StringOut(12, 2, Font::fntSystem, 0, (uint8_t*)string);
 }

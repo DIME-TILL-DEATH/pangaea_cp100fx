@@ -183,8 +183,8 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 		for(uint8_t i = 0; i<11; i++)
 			presetBuffer[30+d_vol+i] = currentPreset.modules.rawData[d_vol+i];
 
-		presetBuffer[1054] = delay_time;
-		presetBuffer[1055] = delay_time>>8;
+		presetBuffer[1054] = Preset::delay_time;
+		presetBuffer[1055] = Preset::delay_time>>8;
 
 		presetBuffer[30+delay] = currentPreset.modules.rawData[delay];
 		presetBuffer[30+d_tap_t] = currentPreset.modules.rawData[d_tap_t];

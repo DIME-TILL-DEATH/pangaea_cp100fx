@@ -120,12 +120,15 @@ namespace System
 		FX_LED_MODE_CUSTOM
 	};
 
+	void setMoogTime(float quarterInterval);
+	void setDelayTime(float quarterInterval);
+	void setTremoloTime(float quarterInterval);
 	void TapTempo(TapDestination tapDst);
+
+	const uint8_t minBpm = 25;
+	const uint8_t maxBpm = 240;
 };
 
-//extern const uint16_t bpm_time[];
-
-extern volatile uint32_t tap_global;
 extern volatile uint32_t tap_temp;
 
 #endif /* SRC_APPLICATION_SYSTEM_H_ */

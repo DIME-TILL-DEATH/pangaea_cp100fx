@@ -40,9 +40,9 @@ TMidiSendTask::TMidiSendTask() :
 }
 volatile uint8_t pc_mute_fl;
 volatile uint8_t midi_f1 = 0;
-volatile uint8_t midi_f2;
+//volatile uint8_t midi_f2;
 volatile uint8_t us_buf;
-volatile uint8_t sysEx_fl = 0;
+
 volatile uint8_t midi_in_buf[TMidiSendTask::midiInBufferSize];
 volatile uint8_t midi_buf_wr_pos = 0;
 volatile uint8_t midi_buf_rd_pos = 0;
@@ -51,7 +51,6 @@ volatile uint8_t int_contr_buf[256];
 volatile uint8_t int_contr_po = 0;
 
 volatile uint8_t trans_contr_po = 0;
-volatile uint8_t contr_hader = 0;
 volatile uint8_t contr_cont = 0;
 volatile uint8_t program_change_midi = 0;
 volatile uint8_t key_midi[3];
@@ -300,9 +299,11 @@ void TMidiSendTask::Code()
 	}
 }
 
-volatile uint16_t midi_clk_buf[64];
-uint8_t midi_clk_pos;
-
+const uint8_t clk_data_size = 24;
+uint16_t midi_clk_buf[32];
+uint16_t midi_clk_data[clk_data_size];
+uint8_t midi_clk_pos = 0;
+volatile uint8_t sysEx_fl = 0;
 extern "C" void USART1_IRQHandler()
 {
 	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
@@ -319,19 +320,26 @@ extern "C" void USART1_IRQHandler()
 
 	if(us_buf == Midi::MIDI_STATUS_TIMING_CLOCK)
 	{
-		TIM14->CR1 &= (uint16_t)~TIM_CR1_CEN;
-		midi_clk_buf[midi_clk_pos++] = TIM14->CNT;
-		midi_clk_pos &= 0x3f;
-		TIM14->CNT = 0;
-		TIM14->CR1 |= TIM_CR1_CEN;
+		if(sys_para[System::TAP_TYPE] == System::TAP_TYPE_GLOBAL_MIDI)
+		{
+			TIM14->CR1 &= (uint16_t)~TIM_CR1_CEN;
 
-		//							if(recievedByte == Midi::MIDI_STATUS_TIMING_CLOCK
-		//									&& sys_para[System::TAP_TYPE] == System::TapType::TAP_TYPE_GLOBAL_MIDI)
-		//							{
-		//								System::TapTempo(System::TapDestination::TAP_GLOBAL);
-		//								CSTask->refreshMenu();
-		//								break;
-		//							}
+			if((TIM14->CNT < 60000 * 100 / System::minBpm / 24) &&
+					(TIM14->CNT > 60000 * 100 / System::maxBpm / 24))
+			midi_clk_buf[midi_clk_pos++] = TIM14->CNT;
+			TIM14->CNT = 0;
+			TIM14->CR1 |= TIM_CR1_CEN;
+
+			if(midi_clk_pos == clk_data_size)
+			{
+				midi_clk_pos = 0;
+				kgp_sdk_libc::memcpy(midi_clk_data, midi_clk_buf, clk_data_size * sizeof(uint16_t));
+				ControllersTask->midiCalcTempo(midi_clk_data, clk_data_size);
+			}
+		}
+
+		while(!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
+		USART_SendData(USART1, us_buf);
 		return;
 	}
 
@@ -444,15 +452,3 @@ extern "C" void ADC_IRQHandler()
 		ADC_RegularChannelConfig(ADC1, 11, 1, ADC_SampleTime_480Cycles);
 	ADC_SoftwareStartConv (ADC1);
 }
-
-//void send_midi_temp(uint16_t *c)
-//{
-//	tap_global = *c * 48;
-//	delay_time = *c;
-//
-//	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, *c >> 8);
-//	DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, *c);
-//
-//	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, *c >> 8);
-//	DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, *c);
-//}

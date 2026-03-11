@@ -78,6 +78,7 @@ private:
 };
 
 extern volatile uint8_t pc_mute_fl;
+uint16_t mediann(uint16_t *array, int length);
 
 extern TMidiSendTask *MidiSendTask;
 

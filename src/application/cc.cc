@@ -365,6 +365,15 @@ void TCCTask::extCommand(uint8_t source, uint8_t data)
 	Command(&cmd);
 }
 
+void TCCTask::midiCalcTempo(uint16_t* data, uint8_t size)
+{
+	TControllerCmd cmd;
+	cmd.type = CONTROLLER_TEMPO;
+	cmd.tempoCmd.data = data;
+	cmd.tempoCmd.size = size;
+	Command(&cmd);
+}
+
 void TCCTask::Code()
 {
 	queue = new TQueue(32, sizeof(TControllerCmd));
@@ -402,6 +411,21 @@ void TCCTask::Code()
 
 			case CONTROLLER_TEMPO:
 			{
+				uint16_t buf[32];
+				kgp_sdk_libc::memcpy(buf, cmd.tempoCmd.data, cmd.tempoCmd.size * sizeof(uint16_t));
+
+//				float roundedInterval = buf[0];
+//				for(int i=1; i<cmd.tempoCmd.size; i++)
+//				{
+//					roundedInterval = (roundedInterval + buf[i])/2;
+//				}
+				float roundedInterval = mediann(buf, cmd.tempoCmd.size);
+				roundedInterval = roundedInterval * 24 / 100;
+
+				System::setMoogTime(roundedInterval);
+				System::setDelayTime(roundedInterval);
+				System::setTremoloTime(roundedInterval);
+				CSTask->refreshMenu();
 				break;
 			}
 		}

@@ -102,12 +102,12 @@ void EEPR_writePreset(uint8_t nu)
 	f_mount(&fs, "1:", 1);
 	f_open(&file, fna, FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
 
-	currentPreset.modules.paramData.delay_time = delay_time; // actual data
+	currentPreset.modules.paramData.delay_time = Preset::delay_time; // actual data
 	f_write(&file, &currentPreset, sizeof(Preset::TPreset), &f_size);
 
 	uint8_t del_t_b[2];
-	del_t_b[0] = delay_time;
-	del_t_b[1] = delay_time>>8;
+	del_t_b[0] = Preset::delay_time;
+	del_t_b[1] = Preset::delay_time>>8;
 	f_write(&file, del_t_b, 2, &f_size);
 	f_write(&file, cab1.data, CAB_DATA_SIZE, &f_size);
 	f_write(&file, &cab1.name, 64, &f_size);
@@ -155,8 +155,8 @@ void EEPROM_loadPreset(uint8_t nu)
 		uint8_t del_t_buf[2];
 		f_read(&file, del_t_buf, 2, &f_size);
 
-		delay_time = del_t_buf[0];
-		delay_time |= del_t_buf[1]<<8;
+		Preset::delay_time = del_t_buf[0];
+		Preset::delay_time |= del_t_buf[1]<<8;
 
 		f_read(&file, cab1.data, CAB_DATA_SIZE, &f_size);
 		f_read(&file, &cab1.name, 64, &f_size);
@@ -232,7 +232,7 @@ void EEPROM_loadPreset(uint8_t nu)
 		for(uint8_t i = 0; i<128; i++)
 			currentPreset.controller[i].maxVal = 127;
 
-		delay_time = del_tim_init;
+		Preset::delay_time = del_tim_init;
 
 		cab1.name.size = cab2.name.size = 0;
 

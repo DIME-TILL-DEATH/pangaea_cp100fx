@@ -291,6 +291,9 @@ typedef struct
 }TPresetBrief;
 
 extern uint8_t impulsePath[];
+extern uint16_t delay_time;
+extern uint16_t moog_time;
+extern uint16_t trem_time;
 
 void Change();
 void Erase();
@@ -304,9 +307,7 @@ extern Preset::TCabinet cab2;
 extern uint8_t __CCM_BSS__ ccmCommonCabBuffer[4096 * 3 * 2];
 extern uint8_t __CCM_BSS__ presetBuffer[];
 
-extern uint16_t delay_time;
-extern uint16_t moog_time;
-extern uint16_t trem_time;
+
 extern volatile uint8_t currentPresetNumber;
 
 #endif /* SRC_APPLICATION_PRESET_H_ */

@@ -22,16 +22,16 @@ uint8_t Preset::impulsePath[512];
 
 uint8_t __CCM_BSS__ presetBuffer[38560];
 
-uint16_t __CCM_BSS__ delay_time;
-uint16_t __CCM_BSS__ moog_time;
-uint16_t __CCM_BSS__ trem_time;
+uint16_t __CCM_BSS__ Preset::delay_time;
+uint16_t __CCM_BSS__ Preset::moog_time;
+uint16_t __CCM_BSS__ Preset::trem_time;
 
 void Preset::Change()
 {
 	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
 
-	moog_time = 0;
-	trem_time = 0;
+//	moog_time = 0;
+//	trem_time = 0;
 
 	EEPROM_loadPreset(currentPresetNumber);
 	pc_mute_fl = 0;

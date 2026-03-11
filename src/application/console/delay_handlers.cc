@@ -45,15 +45,15 @@ static void delay_time_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 		if (count == 2)
 		{
 			char *end;
-			delay_time = kgp_sdk_libc::strtol(args[1], &end, 16);
-			currentPreset.modules.rawData[delay_tim_lo] = delay_time >> 8;
-			currentPreset.modules.rawData[delay_tim_hi] = delay_time & 0xFF;
+			Preset::delay_time = kgp_sdk_libc::strtol(args[1], &end, 16);
+			currentPreset.modules.rawData[delay_tim_lo] = Preset::delay_time >> 8;
+			currentPreset.modules.rawData[delay_tim_hi] = Preset::delay_time & 0xFF;
 		}
 
-		hex[0] = delay_time >> 12;
-		hex[1] = delay_time >> 8;
-		hex[2] = delay_time >> 4;
-		hex[3] = delay_time & 0xF;
+		hex[0] = Preset::delay_time >> 12;
+		hex[1] = Preset::delay_time >> 8;
+		hex[2] = Preset::delay_time >> 4;
+		hex[3] = Preset::delay_time & 0xF;
 
 		msg_console("%s\r%s\n", args[0], hex);
 	}

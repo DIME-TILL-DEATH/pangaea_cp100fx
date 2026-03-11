@@ -71,8 +71,8 @@ static void amtver_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	currentPreset.modules.rawData[147] = delay_time;
-	currentPreset.modules.rawData[148] = delay_time>>8;
+	currentPreset.modules.rawData[147] = Preset::delay_time;
+	currentPreset.modules.rawData[148] = Preset::delay_time>>8;
 
 	EEPR_writePreset(currentPresetNumber);
 
@@ -548,7 +548,7 @@ static void pbrief_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	currentPreset.modules.paramData.delay_time = delay_time;
+	currentPreset.modules.paramData.delay_time = Preset::delay_time;
 
 	msg_console("%s\r", args[0]);
 	for(size_t i = 0; i < 512; i++)
