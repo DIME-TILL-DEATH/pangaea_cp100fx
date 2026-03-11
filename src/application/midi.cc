@@ -76,7 +76,6 @@ void TMidiSendTask::Code()
 				uint8_t recievedByte = midi_in_buf[midi_buf_rd_pos];
 				midi_buf_rd_pos++;
 				if(midi_buf_rd_pos == midiInBufferSize) midi_buf_rd_pos = 0;
-				uart_send(recievedByte);
 
 				if(recievedByte & 0x80)
 					midiState = PROCESS_STATUS_BYTE;
@@ -87,11 +86,12 @@ void TMidiSendTask::Code()
 					{
 						statusByte = recievedByte & 0xF0;
 						rcvChannel = recievedByte & 0x0F;
-						if((statusByte == Midi::MIDI_STATUS_PC || statusByte == Midi::MIDI_STATUS_CC)
+						if((statusByte == Midi::MIDI_STATUS_PC || statusByte == Midi::MIDI_STATUS_CC || statusByte == Midi::MIDI_STATUS_NOTE_ON)
 								&& rcvChannel == sys_para[System::MIDI_CHANNEL])
 						{
 							midiState = WAIT_BYTE1;
 						}
+						else uart_send(recievedByte);
 						break;
 					}
 					case WAIT_BYTE1:
@@ -108,13 +108,15 @@ void TMidiSendTask::Code()
 								mainMenu->presetConfirm();
 
 								midi_f1 = 1;
-//								CSTask->Give();
 							}
 							pc_in_fl = 1;
+
+							uart_send(statusByte | rcvChannel);
+							uart_send(dataByte[0]);
 							break;
 						}
 
-						if(statusByte == Midi::MIDI_STATUS_CC)
+						if(statusByte == Midi::MIDI_STATUS_CC || statusByte == Midi::MIDI_STATUS_NOTE_ON)
 						{
 							midiState = WAIT_BYTE2;
 							break;
@@ -126,7 +128,12 @@ void TMidiSendTask::Code()
 					{
 						dataByte[1] = recievedByte;
 
-						ControllersTask->midiCommand(dataByte[0], dataByte[1]);
+						if(statusByte == Midi::MIDI_STATUS_CC)
+							ControllersTask->midiCommand(dataByte[0] + Controller::Src::CC1, dataByte[1]);
+
+						if(statusByte == Midi::MIDI_STATUS_NOTE_ON
+							&& dataByte[0] <= (Controller::Src::LAST_CONTROLLER - Controller::Src::NOTE))
+							ControllersTask->midiCommand(dataByte[0] + Controller::Src::NOTE, dataByte[1]);
 
 						if((dataByte[0] == (sys_para[System::TUNER_EXTERNAL] & 0x7f)) && (sys_para[System::TUNER_EXTERNAL] & 0x80))
 						{
@@ -153,6 +160,9 @@ void TMidiSendTask::Code()
 								controllersMenu->showInputMidiCC(midi_b[1]);
 							}
 						}
+						uart_send(statusByte | rcvChannel);
+						uart_send(dataByte[0]);
+						uart_send(dataByte[1]);
 						midiState = WAIT_BYTE1;
 						break;
 					}
@@ -326,7 +336,9 @@ extern "C" void USART1_IRQHandler()
 
 			if((TIM14->CNT < 60000 * 100 / System::minBpm / 24) &&
 					(TIM14->CNT > 60000 * 100 / System::maxBpm / 24))
-			midi_clk_buf[midi_clk_pos++] = TIM14->CNT;
+			{
+				midi_clk_buf[midi_clk_pos++] = TIM14->CNT;
+			}
 			TIM14->CNT = 0;
 			TIM14->CR1 |= TIM_CR1_CEN;
 
