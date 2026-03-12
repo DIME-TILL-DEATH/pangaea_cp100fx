@@ -19,6 +19,8 @@ LIB_FLAGS=	-I$(READLINE_SRC_DIR) \
 			-I$(SRC_DIR)/libusb/device \
 			-I$(SRC_DIR)/libusb/otg \
 			-I$(SRC_DIR)/application/gui\
+			-I$(SRC_DIR)/application/tasks\
+			-I$(SRC_DIR)/application/gui/dialogs\
 			-I$(SRC_DIR)/application/gui/elements\
 			-I$(SRC_DIR)/application/gui/menus\
 			-I$(SRC_DIR)/application/gui/menus/paramlistmenu\

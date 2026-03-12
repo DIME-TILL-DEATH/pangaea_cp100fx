@@ -1,5 +1,6 @@
 #include "mainmenu.h"
 
+#include "controllerstask.h"
 #include "appdefs.h"
 #include "cs.h"
 #include "fs.h"
@@ -7,7 +8,6 @@
 #include "allFonts.h"
 #include "display.h"
 #include "enc.h"
-#include "cc.h"
 #include "BF706_send.h"
 #include "midi.h"
 

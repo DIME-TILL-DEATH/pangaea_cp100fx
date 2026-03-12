@@ -112,7 +112,25 @@ void Dialog::show(TShowMode showMode)
 
 void Dialog::keyUp()
 {
-	topLevelMenu->returnFromChildMenu();
+	switch(m_dialogType)
+	{
+		case TDialogType::SaveChanges:
+		{
+			topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
+			break;
+		}
+		case TDialogType::ErasePreset:
+		{
+			topLevelMenu->returnFromChildMenu();
+			break;
+		}
+		case TDialogType::RestartDevice:
+		{
+			write_sys();
+			topLevelMenu->returnFromChildMenu();
+			break;
+		}
+	}
 }
 
 void Dialog::task()

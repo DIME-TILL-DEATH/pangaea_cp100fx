@@ -1,7 +1,6 @@
 #include "appdefs.h"
 #include "eepr.h"
 #include "display.h"
-#include "cc.h"
 #include "cs.h"
 #include "enc.h"
 #include "display.h"
@@ -14,13 +13,14 @@
 #include "modulesmenu.h"
 
 #include "controller.h"
+#include "controllerstask.h"
 #include "midi.h"
 #include "preset.h"
 #include "modules.h"
 
 #include "tapmenu.h"
 
-TCCTask *ControllersTask;
+TControllersTask *ControllersTask;
 
 volatile uint8_t midi_b[3];
 uint8_t mid_fl;
@@ -342,12 +342,12 @@ void controllerSetData(uint8_t adr, uint8_t data)
 	}
 }
 //------------------------------------------------------------------------------
-TCCTask::TCCTask() :
+TControllersTask::TControllersTask() :
 		TTask()
 {
 }
 
-void TCCTask::midiCommand(uint8_t source, uint8_t data)
+void TControllersTask::midiCommand(uint8_t source, uint8_t data)
 {
 	TControllerCmd cmd;
 	cmd.type = CONTROLLER_MIDI;
@@ -356,7 +356,7 @@ void TCCTask::midiCommand(uint8_t source, uint8_t data)
 	Command(&cmd);
 }
 
-void TCCTask::extCommand(uint8_t source, uint8_t data)
+void TControllersTask::extCommand(uint8_t source, uint8_t data)
 {
 	TControllerCmd cmd;
 	cmd.type = CONTROLLER_EXTERNAL;
@@ -365,7 +365,7 @@ void TCCTask::extCommand(uint8_t source, uint8_t data)
 	Command(&cmd);
 }
 
-void TCCTask::midiCalcTempo(uint16_t* data, uint8_t size)
+void TControllersTask::midiCalcTempo(uint16_t* data, uint8_t size)
 {
 	TControllerCmd cmd;
 	cmd.type = CONTROLLER_TEMPO;
@@ -374,7 +374,7 @@ void TCCTask::midiCalcTempo(uint16_t* data, uint8_t size)
 	Command(&cmd);
 }
 
-void TCCTask::Code()
+void TControllersTask::Code()
 {
 	queue = new TQueue(32, sizeof(TControllerCmd));
 	if(!queue) Suspend();

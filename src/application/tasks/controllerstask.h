@@ -2,10 +2,10 @@
 
 #include "appdefs.h"
 
-class TCCTask: public TTask
+class TControllersTask: public TTask
 {
 public:
-	TCCTask();
+	TControllersTask();
 
 	void midiCommand(uint8_t source, uint8_t data);
 	void extCommand(uint8_t source, uint8_t data);
@@ -72,6 +72,6 @@ void controllerSetData(uint8_t adr, uint8_t data);
 extern volatile uint8_t midi_b[3];
 
 extern volatile uint16_t adc_bu;
-extern TCCTask *ControllersTask;
+extern TControllersTask *ControllersTask;
 
 #endif /* CC_H_ */

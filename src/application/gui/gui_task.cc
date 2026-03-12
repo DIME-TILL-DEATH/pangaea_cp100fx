@@ -1,11 +1,11 @@
 #include "gui_task.h"
 
+#include "controllerstask.h"
 #include "cs.h"
 #include "fs.h"
 #include "eepr.h"
 #include "display.h"
 #include "enc.h"
-#include "cc.h"
 #include "BF706_send.h"
 #include "midi.h"
 #include "init.h"

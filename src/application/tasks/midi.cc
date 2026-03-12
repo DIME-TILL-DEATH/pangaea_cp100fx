@@ -1,6 +1,5 @@
 #include "midi.h"
 
-#include "cc.h"
 #include "display.h"
 #include "enc.h"
 #include "gui_task.h"
@@ -12,6 +11,7 @@
 #include "tunermenu.h"
 #include "tunerextmenu.h"
 #include "controllersmenu.h"
+#include "controllerstask.h"
 
 #include "system.h"
 

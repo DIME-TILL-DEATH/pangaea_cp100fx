@@ -3,11 +3,11 @@
 #include "eepr.h"
 #include "BF706_send.h"
 #include "cs.h"
-#include "cc.h"
 #include "fs.h"
 #include "display.h"
 #include "sd_test.h"
 #include "allFonts.h"
+#include "controllerstask.h"
 
 #include "system.h"
 
@@ -26,7 +26,6 @@
 volatile uint8_t contr_kn[3];
 volatile uint8_t contr_kn1[3];
 volatile uint8_t contr_pr[3];
-//volatile uint8_t usb_flag = 0;
 
 uint8_t k_up = 0;
 uint8_t k_down = 0;
@@ -498,6 +497,7 @@ void TENCTask::Code()
 			GPIO_SetBits(GPIOB, GPIO_Pin_14);
 		else
 			GPIO_ResetBits(GPIOB, GPIO_Pin_14);
+
 //----------------------------------------------------Test SD------------------------------------------------
 		if(EXTI_GetITStatus (EXTI_Line8))
 		{

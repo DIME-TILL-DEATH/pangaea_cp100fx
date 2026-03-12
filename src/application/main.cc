@@ -1,21 +1,20 @@
+
 #define __KLIBC_WRAPS_IMPL__
 
 #include "appdefs.h"
-#include "debug_led.h"
 #include "mmgr.h"
 #include "usb.h"
 #include "display.h"
 #include "storage.h"
 #include "fs.h"
 #include "cs.h"
-#include "cc.h"
+#include "controllerstask.h"
 #include "sd_test.h"
 #include "enc.h"
 #include "errno.h"
 #include "spectrum.h"
 #include "midi.h"
 
-#include "usb.h"
 
 extern void (*__preinit_array_start__[])(void);
 extern void (*__preinit_array_end__[])(void);
@@ -132,7 +131,7 @@ int main(void)
 	SpectrumTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
 
 
-	ControllersTask = new TCCTask();
+	ControllersTask = new TControllersTask();
 	ControllersTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
 
 	SD_TESTTask = new TSD_TESTTask();

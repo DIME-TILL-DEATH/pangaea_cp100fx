@@ -1,7 +1,6 @@
 #include "cs.h"
 
 #include "appdefs.h"
-#include "cc.h"
 #include "init.h"
 #include "allFonts.h"
 #include "fs.h"
@@ -20,6 +19,7 @@
 #include "system.h"
 
 #include "console_handlers.h"
+#include "controllerstask.h"
 
 TCSTask *CSTask;
 
