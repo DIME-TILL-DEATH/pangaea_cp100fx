@@ -231,8 +231,7 @@ uint8_t midi_clk_pos = 0;
 volatile uint8_t sysEx_fl = 0;
 extern "C" void USART1_IRQHandler()
 {
-	uint8_t uart_buf = USART1->DR;
-	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+	uint8_t uart_buf = USART1->DR; // auto drop USART_IT_RXNE
 
 	if(sysEx_fl) // retranslate while SysEx not end
 	{

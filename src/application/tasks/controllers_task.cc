@@ -383,6 +383,8 @@ void TControllersTask::Code()
 
 	TControllerCmd cmd;
 
+	for(int i =0; i < maBufSize; i++) maMidiClockBuf[i] = 500;
+
 	while(1)
 	{
 		queue->Receive(&cmd, portMAX_DELAY);
@@ -415,17 +417,23 @@ void TControllersTask::Code()
 				uint16_t buf[32];
 				kgp_sdk_libc::memcpy(buf, cmd.tempoCmd.data, cmd.tempoCmd.size * sizeof(uint16_t));
 
-//				float roundedInterval = buf[0];
-//				for(int i=1; i<cmd.tempoCmd.size; i++)
-//				{
-//					roundedInterval = (roundedInterval + buf[i])/2;
-//				}
-				float roundedInterval = mediann(buf, cmd.tempoCmd.size);
-				roundedInterval = roundedInterval * 24 / 100;
+				float roundedInterval = 0;
+				for(int i=0; i<cmd.tempoCmd.size; i++)
+				{
+					roundedInterval += buf[i];
+				}
+				roundedInterval = roundedInterval/cmd.tempoCmd.size;
 
-				System::setMoogTime(roundedInterval);
-				System::setDelayTime(roundedInterval);
-				System::setTremoloTime(roundedInterval);
+				maMidiClockBuf[maMidiClockBufPos++] = roundedInterval * 24 / 100;
+				if(maMidiClockBufPos == maBufSize) maMidiClockBufPos = 0;
+
+				float result = 0;
+				for(int i =0; i < maBufSize; i++) result += maMidiClockBuf[i];
+				result = result / maBufSize;
+
+				System::setMoogTime(result);
+				System::setDelayTime(result);
+				System::setTremoloTime(result);
 				CSTask->refreshMenu();
 				break;
 			}

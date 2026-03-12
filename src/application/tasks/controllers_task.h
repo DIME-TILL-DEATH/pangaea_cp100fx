@@ -64,6 +64,10 @@ private:
 	}
 
 	TQueue *queue;
+
+	static constexpr uint8_t maBufSize = 4;
+	float maMidiClockBuf[maBufSize] = {500};
+	uint8_t maMidiClockBufPos = 0;
 };
 
 void controllerSetData(uint8_t adr, uint8_t data);

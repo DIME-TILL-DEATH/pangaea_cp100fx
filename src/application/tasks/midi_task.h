@@ -31,6 +31,7 @@ public:
 	}TPcType;
 
 	void uartRcv(uint8_t data);
+	void uartSend(uint8_t data);
 	void pcSend(TPcType pcType, uint8_t presetNumber);
 	void exprSend(uint8_t data);
 	void fswPressed(uint8_t data, uint8_t state);
