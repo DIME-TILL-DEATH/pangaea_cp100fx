@@ -228,15 +228,7 @@ void EEPROM_loadPreset(uint8_t nu)
 		kgp_sdk_libc::memset(cab1.data, 0, CAB_DATA_SIZE * 2);
 		kgp_sdk_libc::memset(cab2.data, 0, CAB_DATA_SIZE);
 
-//		kgp_sdk_libc::memset(currentPreset.controller, 0, Controller::controllersCount * sizeof(Controller::TController));
-//		for(uint8_t i = 0; i<128; i++)
-//			currentPreset.controller[i].maxVal = 127;
-//
-//		Controller defaultController;
-//			defaultController
-//			defaultController
-//			defaultController.min = 0;
-//			defaultController.max = 255;
+
 		for(uint8_t i=0; i<Controller::controllersCount; i++)
 		{
 			currentPreset.controller[i].src = 0;

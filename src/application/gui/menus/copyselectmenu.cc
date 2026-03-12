@@ -231,12 +231,12 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 
 	if(selectionMask.controllers)
 	{
-		for(uint16_t i = 0 ; i < 8 ; i += 4)
+		for(uint16_t i = 0 ; i < Controller::controllersCount ; i++)
 		{
-			presetBuffer[542 + i] = currentPreset.controller[i].src;
-			presetBuffer[542 + i + 1] = currentPreset.controller[i].dst;
-			presetBuffer[542 + i + 2] = currentPreset.controller[i].minVal;
-			presetBuffer[542 + i + 3] = currentPreset.controller[i].maxVal;
+			presetBuffer[542 + i*sizeof(Controller::TController)] = currentPreset.controller[i].src;
+			presetBuffer[542 + i*sizeof(Controller::TController) + 1] = currentPreset.controller[i].dst;
+			presetBuffer[542 + i*sizeof(Controller::TController) + 2] = currentPreset.controller[i].minVal;
+			presetBuffer[542 + i*sizeof(Controller::TController) + 3] = currentPreset.controller[i].maxVal;
 		}
 	}
 
