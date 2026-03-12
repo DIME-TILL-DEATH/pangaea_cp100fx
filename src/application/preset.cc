@@ -6,11 +6,11 @@
 #include "display.h"
 #include "enc.h"
 #include "BF706_send.h"
-#include "controllerstask.h"
-#include "midi.h"
 #include "init.h"
 
 #include "system.h"
+#include "tasks/controllers_task.h"
+#include "tasks/midi_task.h"
 
 Preset::TPreset __CCM_BSS__ currentPreset;
 
@@ -37,10 +37,6 @@ void Preset::Change()
 	// DSP binary not set this params?
 	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modules.rawData[PHASER_CENTER]);
 	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modules.rawData[PHASER_WIDTH]);
-
-	MidiSendTask->prog_ch_midi_start();
-	MidiSendTask->Give();
-
 
 	if(sys_para[System::EXPR_STORE_LEVEL])
 		adc_proc();

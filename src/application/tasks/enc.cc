@@ -7,8 +7,7 @@
 #include "display.h"
 #include "sd_test.h"
 #include "allFonts.h"
-#include "controllerstask.h"
-
+#include "controllers_task.h"
 #include "system.h"
 
 #include "usb.h"
@@ -17,8 +16,7 @@
 
 #include "preset.h"
 #include "footswitch.h"
-#include "midi.h"
-
+#include "midi_task.h"
 #include "tunermenu.h"
 
 #include "system.h"
@@ -140,10 +138,7 @@ void fsw_press_execute(uint8_t num)
 					DisplayTask->IndFoot(num); // refresh в конце
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
-				{
-					MidiSendTask->key_midi_start(num, currentPreset.modules.paramData.foot_ind_press[num] + 1);
-					MidiSendTask->Give();
-				}
+					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.modules.paramData.foot_ind_press[num]);
 
 			break;
 
@@ -276,10 +271,8 @@ void fsw_hold_execute(uint8_t num)
 					DisplayTask->IndFoot(num);
 
 				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
-				{
-					MidiSendTask->key_midi_start1(num, currentPreset.modules.paramData.foot_ind_hold[num] + 1);
-					MidiSendTask->Give();
-				}
+					MidiTask->fswPressed(System::FSW1_CTRL_HOLD_CC + num, currentPreset.modules.paramData.foot_ind_hold[num]);
+
 			break;
 			}
 

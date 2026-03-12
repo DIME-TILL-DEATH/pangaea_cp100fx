@@ -1,7 +1,7 @@
 #include "systemmenu.h"
 
-#include "controllerstask.h"
-
+#include "../../../tasks/controllers_task.h"
+#include "../../../tasks/midi_task.h"
 #include "appdefs.h"
 #include "cs.h"
 #include "eepr.h"
@@ -9,8 +9,6 @@
 #include "display.h"
 #include "enc.h"
 #include "BF706_send.h"
-#include "midi.h"
-
 #include "midimapmenu.h"
 #include "expressionmenu.h"
 #include "fswtypemenu.h"

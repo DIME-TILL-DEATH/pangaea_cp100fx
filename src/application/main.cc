@@ -8,12 +8,12 @@
 #include "storage.h"
 #include "fs.h"
 #include "cs.h"
-#include "controllerstask.h"
+#include "tasks/controllers_task.h"
 #include "sd_test.h"
 #include "enc.h"
 #include "errno.h"
 #include "spectrum.h"
-#include "midi.h"
+#include "tasks/midi_task.h"
 
 
 extern void (*__preinit_array_start__[])(void);
@@ -137,8 +137,8 @@ int main(void)
 	SD_TESTTask = new TSD_TESTTask();
 	SD_TESTTask->Create("SD_TEST", configMINIMAL_STACK_SIZE, 0);
 
-	MidiSendTask = new TMidiSendTask();
-	MidiSendTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
+	MidiTask = new TMidiTask();
+	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
 
 //	ConsoleTask = new TConsoleTask(256);
 //	ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);

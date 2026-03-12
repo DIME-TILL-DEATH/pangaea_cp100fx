@@ -1,6 +1,7 @@
 #include "mainmenu.h"
 
-#include "controllerstask.h"
+#include "../../tasks/controllers_task.h"
+#include "../../tasks/midi_task.h"
 #include "appdefs.h"
 #include "cs.h"
 #include "fs.h"
@@ -9,8 +10,6 @@
 #include "display.h"
 #include "enc.h"
 #include "BF706_send.h"
-#include "midi.h"
-
 #include "system.h"
 
 #include "modules.h"
@@ -231,6 +230,7 @@ void MainMenu::presetConfirm()
 
 	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
 	Preset::Change();
+	MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
 
 	show();
 	tim5_start(1);

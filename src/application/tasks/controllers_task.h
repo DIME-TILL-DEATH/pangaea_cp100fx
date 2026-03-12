@@ -64,7 +64,6 @@ private:
 	}
 
 	TQueue *queue;
-	TSemaphore *sem;
 };
 
 void controllerSetData(uint8_t adr, uint8_t data);

@@ -10,6 +10,7 @@
 
 #include "controller.h"
 #include "gui_task.h"
+#include "midi_task.h"
 
 #include "system.h"
 #include "fs.h"
@@ -433,6 +434,7 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 
 		sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
 		Preset::Change();
+		MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
 
 		msg_console("%s\r\n", args[0]);
 	}

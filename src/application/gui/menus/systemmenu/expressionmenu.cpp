@@ -11,7 +11,7 @@
 
 #include "BF706_send.h"
 
-#include "midi.h"
+#include "midi_task.h"
 
 
 const uint8_t ExpressionMenu::strOk[];

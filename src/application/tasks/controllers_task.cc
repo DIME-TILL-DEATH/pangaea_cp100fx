@@ -13,8 +13,9 @@
 #include "modulesmenu.h"
 
 #include "controller.h"
-#include "controllerstask.h"
-#include "midi.h"
+#include "controllers_task.h"
+
+#include "midi_task.h"
 #include "preset.h"
 #include "modules.h"
 
