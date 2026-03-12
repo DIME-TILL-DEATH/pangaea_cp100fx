@@ -391,7 +391,7 @@ void TCCTask::Code()
 		{
 			case CONTROLLER_MIDI:
 			{
-				for(uint8_t i=0; i < controllersCount; i++)
+				for(uint8_t i=0; i < Controller::controllersCount; i++)
 				{
 					if(cmd.midiCmd.source == currentPreset.controller[i].src)
 						controllerSetData(i, cmd.midiCmd.data);
@@ -401,7 +401,7 @@ void TCCTask::Code()
 
 			case CONTROLLER_EXTERNAL:
 			{
-				for(uint8_t i=0; i < controllersCount; i++)
+				for(uint8_t i=0; i < Controller::controllersCount; i++)
 				{
 					if(currentPreset.controller[i].src == cmd.extCmd.source)
 						controllerSetData(i, cmd.extCmd.data);

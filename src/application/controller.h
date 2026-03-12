@@ -53,8 +53,9 @@ typedef struct
 	uint8_t maxVal;
 }TController;
 
+const uint8_t controllersCount = 32; // Массив был 512 байт, те 128 контроллеров
 }
 
-const uint8_t controllersCount = 32; // Массив был 512 байт, те 128 контроллеров
+
 
 #endif /* SRC_APPLICATION_CONTROLLERS_H_ */

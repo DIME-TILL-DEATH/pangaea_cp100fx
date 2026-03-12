@@ -266,9 +266,9 @@ typedef struct
 
 	UModulesData modules;
 
-	Controller::TController controller[controllersCount];
+	Controller::TController controller[Controller::controllersCount];
 
-	uint8_t dummyFill[512 - sizeof(Controller::TController) * controllersCount - 2];
+	uint8_t dummyFill[512 - sizeof(Controller::TController) * Controller::controllersCount - 2];
 
 	uint8_t pcOut;
 	uint8_t set;

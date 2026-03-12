@@ -564,7 +564,7 @@ static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 static void cntrls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
-	for(size_t i = 0; i < controllersCount; i++)
+	for(size_t i = 0; i < Controller::controllersCount; i++)
 	{
 		char hex[3] =
 		{0, 0, 0};

@@ -129,7 +129,7 @@ void ControllersMenu::encoderClockwise()
 		switch(m_parNum)
 		{
 			case ControllerMenuParams::Controller:
-				if(m_controllerNum < controllersCount-1)
+				if(m_controllerNum < Controller::controllersCount-1)
 				{
 					DisplayTask->ParamIndicNum(45, 0, ++m_controllerNum + 1);
 					DisplayTask->Clear_str(45, 1, Font::fntSystem, 13);

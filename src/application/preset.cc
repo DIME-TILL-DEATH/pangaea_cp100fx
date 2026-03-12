@@ -65,6 +65,14 @@ void Preset::Erase()
 	currentPreset.modules.rawData[delay_tim_lo] = 0xf4;
 	currentPreset.modules.rawData[delay_tim_hi] = 1;
 
+	for(uint8_t i=0; i<Controller::controllersCount; i++)
+	{
+		currentPreset.controller[i].src = 0;
+		currentPreset.controller[i].dst = Controller::PresetLevel;
+		currentPreset.controller[i].minVal = 0;
+		currentPreset.controller[i].maxVal = 127;
+	}
+
 	DSP_ErasePrimaryCab(currentPresetNumber+1);
 
 	if(cab_type == CAB_CONFIG_STEREO)
