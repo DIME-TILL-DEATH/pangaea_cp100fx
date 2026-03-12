@@ -30,8 +30,6 @@ void Preset::Change()
 {
 	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
 
-//	moog_time = 0;
-//	trem_time = 0;
 
 	EEPROM_loadPreset(currentPresetNumber);
 	pc_mute_fl = 0;
@@ -43,11 +41,6 @@ void Preset::Change()
 	MidiSendTask->prog_ch_midi_start();
 	MidiSendTask->Give();
 
-	for(uint8_t i = 0; i<3; i++)
-	{
-		contr_kn[i] = currentPreset.modules.rawData[fo1+i];
-		contr_kn1[i] = currentPreset.modules.rawData[fo11+i];
-	}
 
 	if(sys_para[System::EXPR_STORE_LEVEL])
 		adc_proc();

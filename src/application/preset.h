@@ -224,8 +224,8 @@ typedef struct
 
     uint8_t reverb_predelay;
 
-    uint8_t foot_ind1[3]; // /*foot ind*/fo1,fo2,fo3
-    uint8_t foot_ind2[3]; // /*foot ind*/fo11,fo12,fo13
+    uint8_t foot_ind_press[3]; // /*foot ind*/fo1,fo2,fo3
+    uint8_t foot_ind_hold[3]; // /*foot ind*/fo11,fo12,fo13
 
     uint8_t tremolo_lfo_type;
 

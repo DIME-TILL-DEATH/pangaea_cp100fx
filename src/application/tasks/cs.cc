@@ -111,12 +111,6 @@ void TCSTask::Code()
 	Delay(500);
 	Preset::Change();
 
-	for(uint8_t i = 0; i < 3; i++)
-	{
-		contr_kn[i] = currentPreset.modules.rawData[fo1 + i];
-		contr_kn1[i] = currentPreset.modules.rawData[fo11 + i];
-	}
-
 	send_codec(0xa301);
 	ENCTask->SetEnc(1);
 

@@ -51,12 +51,6 @@ extern uint8_t k_master_eq;
 extern uint8_t k_sys;
 extern uint8_t k_tuner;
 
-
-extern volatile uint8_t contr_kn[];
-extern volatile uint8_t contr_kn1[];
-
-extern volatile uint8_t usb_flag;
-
 extern TENCTask *ENCTask;
 
 #endif /*__ENC_H__*/

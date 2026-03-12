@@ -23,8 +23,6 @@
 
 #include "system.h"
 
-volatile uint8_t contr_kn[3];
-volatile uint8_t contr_kn1[3];
 volatile uint8_t contr_pr[3];
 
 uint8_t k_up = 0;
@@ -127,23 +125,23 @@ void fsw_press_execute(uint8_t num)
 				}
 			break;
 			case Footswitch::Controller:
-				if(!contr_kn[num])
+				if(!currentPreset.modules.paramData.foot_ind_press[num])
 				{
-					contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 1;
+					currentPreset.modules.paramData.foot_ind_press[num] = 1;
 					ControllersTask->extCommand(num + 2, 127);
 				}
 				else
 				{
-					contr_kn[num] = currentPreset.modules.rawData[fo1 + num] = 0;
+					currentPreset.modules.paramData.foot_ind_press[num] = 0;
 					ControllersTask->extCommand(num + 2, 0);
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num, contr_kn[num]); // refresh в конце
+					DisplayTask->IndFoot(num); // refresh в конце
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
 				{
-					MidiSendTask->key_midi_start(num, contr_kn[num] + 1);
+					MidiSendTask->key_midi_start(num, currentPreset.modules.paramData.foot_ind_press[num] + 1);
 					MidiSendTask->Give();
 				}
 
@@ -262,23 +260,24 @@ void fsw_hold_execute(uint8_t num)
 			}
 			case Footswitch:: Controller:
 			{
-				if(!contr_kn1[num])
+				if(!currentPreset.modules.paramData.foot_ind_hold[num])
 				{
-					contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 1;
+
+					currentPreset.modules.paramData.foot_ind_hold[num] = 1;
 					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 127);
 				}
 				else
 				{
-					contr_kn1[num] = currentPreset.modules.rawData[fo11 + num] = 0;
+					currentPreset.modules.paramData.foot_ind_hold[num] = 0;
 					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 0);
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num, contr_kn1[num]);
+					DisplayTask->IndFoot(num);
 
 				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
 				{
-					MidiSendTask->key_midi_start1(num, contr_kn1[num] + 1);
+					MidiSendTask->key_midi_start1(num, currentPreset.modules.paramData.foot_ind_hold[num] + 1);
 					MidiSendTask->Give();
 				}
 			break;
@@ -323,12 +322,12 @@ void fsw_hold_execute(uint8_t num)
 
 uint8_t kn2_in_fl = 0;
 
-uint8_t fsw1_in_fl = 0;
-uint8_t fsw2_in_fl = 0;
-uint8_t fsw3_in_fl = 0;
-uint8_t fsw1_in_fl1 = 0;
-uint8_t fsw2_in_fl1 = 0;
-uint8_t fsw3_in_fl1 = 0;
+uint8_t fsw1_in_press_fl = 0;
+uint8_t fsw2_in_press_fl = 0;
+uint8_t fsw3_in_press_fl = 0;
+uint8_t fsw1_in_hold_fl = 0;
+uint8_t fsw2_in_hold_fl = 0;
+uint8_t fsw3_in_hold_fl = 0;
 
 uint8_t tim3_end_fl = 0;
 
@@ -349,7 +348,7 @@ void TENCTask::Code()
 		}
 		//------------------------------------------Keys------------------------------------------------
 
-		if((key_reg != 31212) && (!kn2_in_fl) && (!fsw1_in_fl) && (!fsw2_in_fl) && (!fsw3_in_fl))
+		if((key_reg != 31212) && (!kn2_in_fl) && (!fsw1_in_press_fl) && (!fsw2_in_press_fl) && (!fsw3_in_press_fl))
 		{
 			tim_start(0xf700);
 			switch(key_reg)
@@ -390,7 +389,7 @@ void TENCTask::Code()
 					kn2_in_fl = 1;
 				break;
 				case 30956:
-					fsw1_in_fl = 1;
+					fsw1_in_press_fl = 1;
 					if(sys_para[System::FSW1_MODE] == Footswitch::FswMode::Single)
 					{
 						fsw_press_execute(0);
@@ -405,7 +404,7 @@ void TENCTask::Code()
 					}
 				break;    //--------------------DOWN-----------------
 				case 31084:
-					fsw2_in_fl = 1;
+					fsw2_in_press_fl = 1;
 					if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
 					{
 						fsw_press_execute(1);
@@ -420,7 +419,7 @@ void TENCTask::Code()
 					}
 				break;    //----------------CONFIRM----------
 				case 31208:
-					fsw3_in_fl = 1;
+					fsw3_in_press_fl = 1;
 					if(!sys_para[System::FSW3_MODE])
 					{
 						fsw_press_execute(2);
@@ -442,37 +441,37 @@ void TENCTask::Code()
 		{
 			if(sys_para[System::FSW1_MODE] == Footswitch::Double)
 			{
-				if(fsw1_in_fl)
+				if(fsw1_in_press_fl)
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
 						fsw_press_execute(0);
 					tim_start(0xf700);
-					fsw1_in_fl = 0;
+					fsw1_in_press_fl = 0;
 				}
 			}
 
 			if(sys_para[System::FSW2_MODE] == Footswitch::Double)
 			{
-				if(fsw2_in_fl)
+				if(fsw2_in_press_fl)
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
 						fsw_press_execute(1);
 					tim_start(0xf700);
-					fsw2_in_fl = 0;
+					fsw2_in_press_fl = 0;
 				}
 			}
 
 			if(sys_para[System::FSW3_MODE] == Footswitch::Double)
 			{
-				if(fsw3_in_fl)
+				if(fsw3_in_press_fl)
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
 						fsw_press_execute(2);
 					tim_start(0xf700);
-					fsw3_in_fl = 0;
+					fsw3_in_press_fl = 0;
 				}
 			}
 		}
@@ -481,7 +480,7 @@ void TENCTask::Code()
 		{
 			//TIM_ClearFlag(TIM3,TIM_FLAG_Update);
 			if(key_reg == 31212)
-				kn2_in_fl = fsw1_in_fl = fsw2_in_fl = fsw3_in_fl = tim3_end_fl = 0;
+				kn2_in_fl = fsw1_in_press_fl = fsw2_in_press_fl = fsw3_in_press_fl = tim3_end_fl = 0;
 		}
 //----------------------------------------------------LED FX-----------------------------------------------
 		uint8_t isLedOn = 0;
@@ -524,28 +523,28 @@ extern "C" void TIM3_IRQHandler()
 	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 	tim3_end_fl = 1;
-	if(fsw1_in_fl || fsw2_in_fl || fsw3_in_fl)
+	if(fsw1_in_press_fl || fsw2_in_press_fl || fsw3_in_press_fl)
 	{
-		if(fsw1_in_fl)
+		if(fsw1_in_press_fl)
 		{
-			fsw1_in_fl1 = 1;
-			fsw1_in_fl = 0;
+			fsw1_in_hold_fl = 1;
+			fsw1_in_press_fl = 0;
 			fsw_hold_execute(0);
-			fsw1_in_fl1 = 0;
+			fsw1_in_hold_fl = 0;
 		}
-		if(fsw2_in_fl)
+		if(fsw2_in_press_fl)
 		{
-			fsw2_in_fl1 = 1;
-			fsw2_in_fl = 0;
+			fsw2_in_hold_fl = 1;
+			fsw2_in_press_fl = 0;
 			fsw_hold_execute(1);
-			fsw2_in_fl1 = 0;
+			fsw2_in_hold_fl = 0;
 		}
-		if(fsw3_in_fl)
+		if(fsw3_in_press_fl)
 		{
-			fsw3_in_fl1 = 1;
-			fsw3_in_fl = 0;
+			fsw3_in_hold_fl = 1;
+			fsw3_in_press_fl = 0;
 			fsw_hold_execute(2);
-			fsw3_in_fl1 = 0;
+			fsw3_in_hold_fl = 0;
 		}
 	}
 }

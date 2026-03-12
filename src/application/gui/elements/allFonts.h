@@ -78,7 +78,7 @@ void mode_ind(uint8_t val);
 void tap_ind(uint8_t cur);
 void pot32x32_(uint8_t col, uint8_t pag, uint16_t sym);
 void tun_ini(void);
-void ind_foot(uint8_t num, uint8_t val);
+void ind_foot(uint8_t num);
 void strel_print(uint8_t col, uint8_t pag, uint8_t dir);
 
 void del_sec_ind(uint8_t col, uint8_t pag, uint32_t d);

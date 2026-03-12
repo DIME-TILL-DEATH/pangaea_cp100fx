@@ -72,7 +72,6 @@ public:
 	typedef struct
 	{
 		uint8_t num;
-		uint8_t val;
 	}TInd_footParam;
 
 	typedef struct
@@ -357,7 +356,7 @@ public:
 	void TunerDeinit();
 	void TunStrel();
 	void PresetPreview(uint8_t index);
-	void IndFoot(uint8_t num, uint8_t val);
+	void IndFoot(uint8_t num);
 	void Display_Reset(void);
 	void Strel(uint8_t x, uint8_t y, uint32_t dir);
 
