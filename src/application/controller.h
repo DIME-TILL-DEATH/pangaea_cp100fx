@@ -13,6 +13,8 @@ enum Src
 	FswConfirm,
 	FswUp,
 	CC1,
+	NOTE = CC1 + 128,
+	LAST_CONTROLLER = NOTE + 119, // From C-2 to B7
 	External = 255
 };
 

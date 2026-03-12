@@ -89,6 +89,8 @@ private:
 			/*44*/"Preamp Gain  ", "Preamp Volume", "Preamp Low   ", "Preamp Mid   ", "Preamp High  ",
 			/*49*/"Eq Band1 Lev ", "Eq Band2 Lev ", "Eq Band3 Lev ", "Eq Band4 Lev ", "Eq Band5 Lev ",
 			/*54*/"Reverb Type  "};
+
+	void printSources();
 };
 
 #endif /* SRC_APPLICATION_GUI_MENUS_MODULESMENU_CONTROLLERSMENU_H_ */

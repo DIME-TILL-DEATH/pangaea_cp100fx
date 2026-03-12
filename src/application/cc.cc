@@ -393,7 +393,7 @@ void TCCTask::Code()
 			{
 				for(uint8_t i=0; i < controllersCount; i++)
 				{
-					if(cmd.midiCmd.source == currentPreset.controller[i].src - 5)
+					if(cmd.midiCmd.source == currentPreset.controller[i].src)
 						controllerSetData(i, cmd.midiCmd.data);
 				}
 				break;

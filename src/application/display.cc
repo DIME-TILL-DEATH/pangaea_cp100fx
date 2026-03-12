@@ -166,6 +166,11 @@ void TDisplayTask::Code()
 						cmd.ParamIndicNumParam.data);
 			break;
 
+			case dcParamIndicNote:
+				par_ind_note(cmd.ParamIndicNumParam.pos.x, cmd.ParamIndicNumParam.pos.y,
+						cmd.ParamIndicNumParam.data);
+			break;
+
 			case dcParamIndicPan:
 				par_ind_pan(cmd.ParamIndicPanParam.pos.x, cmd.ParamIndicPanParam.pos.y,
 						cmd.ParamIndicPanParam.data);
@@ -453,6 +458,14 @@ void TDisplayTask::ParamIndicNum(uint8_t x, uint8_t y , uint16_t data)
 	cmd.cmd=dcParamIndicNum;
 	cmd.ParamIndicNumParam.pos = {x,y};
 	cmd.ParamIndicNumParam.data = data;
+	Command(&cmd);
+}
+void TDisplayTask::ParamIndicNote(uint8_t x, uint8_t y , uint16_t data)
+{
+	TDisplayCmd cmd;
+	cmd.cmd=dcParamIndicNote;
+	cmd.ParamIndicNoteParam.pos = {x,y};
+	cmd.ParamIndicNoteParam.data = data;
 	Command(&cmd);
 }
 void TDisplayTask::ParamIndicPan(uint8_t x, uint8_t y , uint8_t data)

@@ -52,6 +52,33 @@ void par_ind_num_(uint8_t col, uint8_t pag, uint16_t val)
 		col = Arsys_sym(col, pag, prog_num[i]+48, 0);
 }
 
+void par_ind_note(uint8_t col, uint8_t pag, uint8_t note)
+{
+//	kgp_sdk_libc::memset(str, 0, 8);
+
+	const char* note_list[12] =
+	{ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+	const char* noteChar = note_list[note % 12];
+	int8_t noteNum;
+
+	std::emb_string str;
+
+	if(note < 12)
+		noteNum = -2;
+	else if(note >= 12 && note < 24)
+		noteNum = -1;
+	else
+		noteNum = note / 12 - 2;
+
+	char noteStr[6];
+	ksprintf(noteStr, "%s%d", noteChar, noteNum);
+
+	uint8_t i = 0;
+	while(noteStr[i])
+		col = Arsys_sym(col, pag, noteStr[i++], 0);
+}
+
 uint8_t ind_num_pan(uint8_t col, uint8_t pag, uint8_t val)
 {
 	uint8_t prog_num[2];

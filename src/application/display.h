@@ -50,6 +50,7 @@ public:
 		dcParamIndic,
 		dcParamIndicTransparent,
 		dcParamIndicNum,
+		dcParamIndicNote,
 		dcParamIndicPan,
 		dcParamIndicMix,
 		dcDelayTimeInd,
@@ -118,6 +119,12 @@ public:
 		TPos pos;
 		uint16_t data;
 	}TParamIndicNumParam;
+
+	typedef struct
+	{
+		TPos pos;
+		uint16_t data;
+	}TParamIndicNoteParam;
 
 	typedef struct
 	{
@@ -240,6 +247,7 @@ public:
 			TEqLHParam EqLHParam;
 			TParamIndicParam ParamIndicParam;
 			TParamIndicNumParam ParamIndicNumParam;
+			TParamIndicNoteParam ParamIndicNoteParam;
 			TParamIndicPanParam ParamIndicPanParam;
 			TParamIndicMixParam ParamIndicMixParam;
 			TDelayTimeIndParam DelayTimeIndParam;
@@ -333,6 +341,7 @@ public:
 	void ParamIndic(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data);
 	void ParamIndicNum(uint8_t x, uint8_t y, uint16_t data);
+	void ParamIndicNote(uint8_t x, uint8_t y, uint16_t data);
 	void ParamIndicPan(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndicMix(uint8_t x, uint8_t y, uint8_t data);
 	void DelayTimeInd(uint8_t x, uint8_t y, uint32_t data);
