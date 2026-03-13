@@ -90,7 +90,7 @@ void CabNameMenu::show(TShowMode showMode)
 				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab2.name.string);
 			}
 		}
-		tim5_start(0);
+		restartBlinking(0);
 		m_delay = 1;
 	}
 }

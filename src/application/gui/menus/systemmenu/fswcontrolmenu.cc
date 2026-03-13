@@ -37,7 +37,7 @@ void FswControlMenu::task()
 	{
 		if(!m_parNum)
 		{
-			DisplayTask->StringOut(3, 0, Font::fntSystem, 2 * blinkFlag_fl, &expr_menu[0][0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, 2 * blinkFlag_fl, &Footswitch::expr_menu_str[0][0]);
 		}
 		else
 		{
@@ -69,7 +69,7 @@ void FswControlMenu::encoderPressed()
 	if(m_encoderKnobSelected) m_encoderKnobSelected = 0;
 	else m_encoderKnobSelected = 1;
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void FswControlMenu::encoderClockwise()
@@ -80,7 +80,7 @@ void FswControlMenu::encoderClockwise()
 		{
 			if(!m_parNum)
 			{
-				DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &expr_menu[0][0]);
+				DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &Footswitch::expr_menu_str[0][0]);
 			}
 			if(m_parNum<(*(m_fswControls.fs)-2))
 			{
@@ -92,7 +92,7 @@ void FswControlMenu::encoderClockwise()
 				str_temp[(m_parNum-1)*4+1] |= 0x80;
 				DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, Font::fntSystem, 0, &str_temp[0]);
 			}
-			tim5_start(0);
+			restartBlinking(0);
 		}
 
 		if(*(m_fswControls.fs)==1)
@@ -100,9 +100,9 @@ void FswControlMenu::encoderClockwise()
 			if(!m_parNum)
 			{
 				m_parNum++;
-				DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &expr_menu[0][0]);
+				DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &Footswitch::expr_menu_str[0][0]);
 				DisplayTask->StringOut(52, 2, Font::fntSystem, 2, "CC#");
-				tim5_start(0);
+				restartBlinking(0);
 			}
 		}
 	}
@@ -167,9 +167,9 @@ void FswControlMenu::encoderCounterClockwise()
 			str_temp[(m_parNum-1)*4+1] |= 0x80;
 			DisplayTask->StringOut(presetNumPos[*(m_fswControls.fs)-3], 2, Font::fntSystem, 0, &str_temp[0]);
 
-			if(!m_parNum) DisplayTask->StringOut(3, 0, Font::fntSystem, 2, &expr_menu[0][0]);
+			if(!m_parNum) DisplayTask->StringOut(3, 0, Font::fntSystem, 2, &Footswitch::expr_menu_str[0][0]);
 
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else if(!m_parNum)

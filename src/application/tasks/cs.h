@@ -39,8 +39,6 @@ public:
 		return DispalyAccess;
 	}
 
-	void Restart(void);
-
 	inline void CS_del(uint32_t del)
 	{
 		Delay(del);
@@ -129,6 +127,8 @@ private:
 
 
 };
+
+extern uint8_t tun_del_val;
 
 extern TCSTask *CSTask;
 

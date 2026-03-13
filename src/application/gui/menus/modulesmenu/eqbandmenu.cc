@@ -60,7 +60,7 @@ void EqBandMenu::encoderPressed()
 		encoderKnobSelected = 0;
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void EqBandMenu::encoderClockwise()
@@ -71,7 +71,7 @@ void EqBandMenu::encoderClockwise()
 		{
 			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 0, (uint8_t*)&eq_p_l[m_paramNum++]);
 			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 2, (uint8_t*)&eq_p_l[m_paramNum]);
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -109,7 +109,7 @@ void EqBandMenu::encoderCounterClockwise()
 		{
 			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 0, (uint8_t*)&eq_p_l[m_paramNum--]);
 			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 2, (uint8_t*)&eq_p_l[m_paramNum]);
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -132,7 +132,6 @@ void EqBandMenu::encoderCounterClockwise()
 				a = BaseParam::encSpeedDec(a, -100);
 				currentPreset.modules.rawData[EQ_F0 + m_bandNum] = a;
 				DisplayTask->EqFreq(40, 0, a, m_bandNum);
-//				DisplayTask->StringOut(80, m_paramNum, Font::fntSystem, 0, (uint8_t*)gerz);
 				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modules.rawData[EQ_F0 + m_bandNum]);
 			}
 		}

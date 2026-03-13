@@ -70,7 +70,7 @@ void EqMenu::encoderPressed()
 			DisplayTask->StringOut(6, bandNum-5, Font::fntSystem, 2, (uint8_t*)lpf_hpf+(bandNum-5)*9);
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void EqMenu::encoderClockwise()
@@ -103,7 +103,7 @@ void EqMenu::encoderClockwise()
 			DisplayTask->Icon_Strel(ICON_EQ, STRELKA_UP);
 			DisplayTask->StringOut(6, 3, Font::fntSystem, 0, (uint8_t*)&lpf_hpf[3]);
 			DisplayTask->StringOut(65, 3, Font::fntSystem, 0, (uint8_t*)&eq_pre_post[currentPreset.modules.rawData[eq_pr_po]]);
-			tim5_start(0);
+			restartBlinking(0);
 		}
 		else
 		{
@@ -111,14 +111,14 @@ void EqMenu::encoderClockwise()
 			{
 				DisplayTask->StringOut(6, bandNum-5, Font::fntSystem, 0, (uint8_t*)&lpf_hpf[bandNum++-5]);
 				DisplayTask->StringOut(6, bandNum-5, Font::fntSystem, 2, (uint8_t*)&lpf_hpf[bandNum-5]);
-				tim5_start(0);
+				restartBlinking(0);
 			}
 		}
 		if(bandNum<4)
 		{
 			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum++], 0);
 			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], 1);
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -181,7 +181,7 @@ void EqMenu::encoderCounterClockwise()
 			DisplayTask->Icon_Strel(ICON_EQ, STRELKA_DOWN);
 			bandNum--;
 			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], 1);
-			tim5_start(0);
+			restartBlinking(0);
 		}
 		else
 		{
@@ -189,14 +189,14 @@ void EqMenu::encoderCounterClockwise()
 			{
 				DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[EQ_G0+bandNum--], 0);
 				DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[EQ_G0+bandNum], 1);
-				tim5_start(0);
+				restartBlinking(0);
 			}
 		}
 		if(bandNum>5)
 		{
 			DisplayTask->StringOut(6, bandNum-5, Font::fntSystem, 0, (uint8_t*)&lpf_hpf[bandNum-- - 5]);
 			DisplayTask->StringOut(6, bandNum-5, Font::fntSystem, 2, (uint8_t*)&lpf_hpf[bandNum-5]);
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -257,13 +257,10 @@ void EqMenu::keyDown()
 		shownChildMenu->show();
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void EqMenu::key3()
 {
-//	Filter::calcEqResponse();
-//
-//	DisplayTask->Clear();
-//	DisplayTask->EqResponse();
+
 }

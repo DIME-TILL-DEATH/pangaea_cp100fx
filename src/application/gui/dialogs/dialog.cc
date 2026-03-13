@@ -107,7 +107,7 @@ void Dialog::show(TShowMode showMode)
 	for(uint8_t i = 0; i<m_btnCount; i++)
 		DisplayTask->StringOut(m_btnPositions[i], 0, Font::fntSystem, 0, (uint8_t*)m_btnNames[i]);
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void Dialog::keyUp()
@@ -206,7 +206,7 @@ void Dialog::encoderClockwise()
 	if(m_paramNum < m_btnCount-1)
 		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, 0, (uint8_t*)m_btnNames[m_paramNum++]);
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void Dialog::encoderCounterClockwise()
@@ -214,5 +214,5 @@ void Dialog::encoderCounterClockwise()
 	if(m_paramNum > 0)
 		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, 0, (uint8_t*)m_btnNames[m_paramNum--]);
 
-	tim5_start(0);
+	restartBlinking(0);
 }

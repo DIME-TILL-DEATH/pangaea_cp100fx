@@ -61,7 +61,7 @@ void AttenuatorMenu::encoderClockwise()
 		if(m_currentParamNum < m_paramsCount - 1) m_currentParamNum++;
 
 		refresh();
-		tim5_start(0);
+		restartBlinking(0);
 	}
 }
 
@@ -90,7 +90,7 @@ void AttenuatorMenu::encoderCounterClockwise()
 		if(m_currentParamNum > 0) m_currentParamNum--;
 
 		refresh();
-		tim5_start(0);
+		restartBlinking(0);
 	}
 }
 

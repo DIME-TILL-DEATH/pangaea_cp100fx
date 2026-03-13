@@ -110,7 +110,7 @@ private:
 
 extern volatile uint16_t adc_bu;
 extern volatile uint8_t pc_mute_fl;
-uint16_t mediann(uint16_t *array, int length);
+void adc_proc(void);
 
 extern TMidiTask *MidiTask;
 

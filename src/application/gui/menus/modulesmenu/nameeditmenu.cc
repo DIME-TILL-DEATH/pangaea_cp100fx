@@ -91,7 +91,7 @@ void NameEditMenu::encoderPressed()
 		DisplayTask->SymbolOut((symbolCursorPos % chartStringLength)*6, 2 + (symbolCursorPos / chartStringLength),
 										Font::fntSystem, 0, symbolChart[symbolCursorPos]);
 	}
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void NameEditMenu::encoderClockwise()
@@ -123,7 +123,7 @@ void NameEditMenu::encoderClockwise()
 		symbol = symbolChart[symbolCursorPos];
 	}
 
-    tim5_start(0);
+    restartBlinking(0);
 }
 
 void NameEditMenu::encoderCounterClockwise()
@@ -155,7 +155,7 @@ void NameEditMenu::encoderCounterClockwise()
 		symbol = symbolChart[symbolCursorPos];
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void NameEditMenu::keyUp()
@@ -196,7 +196,7 @@ void NameEditMenu::keyDown()
 		}
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void NameEditMenu::key1()

@@ -121,7 +121,7 @@ void ControllersMenu::encoderClockwise()
 				else
 					DisplayTask->ParamIndicNum(45, 3, currentPresetNumber + 1);
 			}
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -277,7 +277,7 @@ void ControllersMenu::encoderCounterClockwise()
 					}
 				}
 			}
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else

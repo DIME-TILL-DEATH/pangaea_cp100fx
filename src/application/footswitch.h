@@ -21,5 +21,7 @@ enum FswType
 	PresetMap3,
 	PresetMap4
 };
+
+const uint8_t expr_menu_str[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
 }
 #endif /* SRC_APPLICATION_FOOTSWITCH_H_ */

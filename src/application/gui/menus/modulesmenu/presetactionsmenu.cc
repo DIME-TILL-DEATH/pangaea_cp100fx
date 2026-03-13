@@ -47,7 +47,7 @@ void PresetActionsMenu::task()
 
 void PresetActionsMenu::encoderPressed()
 {
-	tim5_start(0);
+	restartBlinking(0);
 
 	if(m_actionType==TActionType::Copy)
 	{
@@ -125,7 +125,7 @@ void PresetActionsMenu::updatePresetData()
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	TIM_Cmd(TIM6, ENABLE);
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void PresetActionsMenu::savePreset()

@@ -6,6 +6,7 @@
 #include "enc.h"
 #include "eepr.h"
 #include "fswcontrolmenu.h"
+#include "footswitch.h"
 
 #include "system.h"
 
@@ -38,7 +39,7 @@ void FswModeMenu::show(TShowMode showMode)
 		DisplayTask->StringOut(80, 2, Font::fntSystem, 0, &strReleaseHold[1][0]);
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void FswModeMenu::task()
@@ -79,7 +80,7 @@ void FswModeMenu::encoderPressed()
 		else
 		{
 			DisplayTask->Clear();
-			DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &expr_menu[0][0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &Footswitch::expr_menu_str[0][0]);
 
 			TFswControls fswControls;
 			if(m_parNum == 1)
@@ -99,7 +100,7 @@ void FswModeMenu::encoderPressed()
 		}
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void FswModeMenu::encoderClockwise()
@@ -121,7 +122,7 @@ void FswModeMenu::encoderClockwise()
 				}
 				m_parNum++;
 
-				tim5_start(0);
+				restartBlinking(0);
 			}
 		}
 		else
@@ -137,7 +138,7 @@ void FswModeMenu::encoderClockwise()
 				{
 					DisplayTask->StringOut(40, 0, Font::fntSystem, 2, &strModeType[0][0]);
 				}
-				tim5_start(0);
+				restartBlinking(0);
 			}
 		}
 	}
@@ -152,7 +153,7 @@ void FswModeMenu::encoderClockwise()
 		}
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void FswModeMenu::encoderCounterClockwise()
@@ -165,7 +166,7 @@ void FswModeMenu::encoderCounterClockwise()
 			{
 				DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, 0, &strReleaseHold[m_parNum-1][0]);
 				m_parNum--;
-				tim5_start(0);
+				restartBlinking(0);
 			}
 		}
 		else
@@ -174,7 +175,7 @@ void FswModeMenu::encoderCounterClockwise()
 			{
 				m_parNum--;
 				DisplayTask->StringOut(40, 0, Font::fntSystem, 0, (uint8_t*)&strModeType[m_parNum]);
-				tim5_start(0);
+				restartBlinking(0);
 			}
 		}
 	}
@@ -188,5 +189,5 @@ void FswModeMenu::encoderCounterClockwise()
 		}
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }

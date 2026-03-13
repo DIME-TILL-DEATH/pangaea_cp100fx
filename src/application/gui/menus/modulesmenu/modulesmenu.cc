@@ -60,7 +60,7 @@ void ModulesMenu::show(TShowMode showMode)
 	DisplayTask->Clear();
 	refresh();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void ModulesMenu::refresh()
@@ -109,7 +109,7 @@ void ModulesMenu::encoderPressed()
 
 	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction(this);
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void ModulesMenu::encoderClockwise()
@@ -119,7 +119,7 @@ void ModulesMenu::encoderClockwise()
 	if(m_numMenu < 13) m_numMenu++;
 	else m_numMenu = 0;
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void ModulesMenu::encoderCounterClockwise()
@@ -129,7 +129,7 @@ void ModulesMenu::encoderCounterClockwise()
 	if(m_numMenu > 0) m_numMenu--;
 	else m_numMenu = 13;
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void ModulesMenu::keyUp()
@@ -143,7 +143,7 @@ void ModulesMenu::keyUp()
 	{
 		topLevelMenu->returnFromChildMenu();
 	}
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void ModulesMenu::keyDown()
@@ -155,7 +155,7 @@ void ModulesMenu::keyDown()
 		shownChildMenu->show();
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void ModulesMenu::key1()
@@ -167,7 +167,7 @@ void ModulesMenu::key1()
 	shownChildMenu = new Dialog(this, Dialog::ErasePreset);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void ModulesMenu::key2()
@@ -197,7 +197,7 @@ void ModulesMenu::key2()
 	shownChildMenu = menu;
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void ModulesMenu::key3()

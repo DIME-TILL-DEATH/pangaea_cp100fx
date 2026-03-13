@@ -5,6 +5,7 @@ extern volatile uint8_t t_no;
 extern uint8_t t_po;
 extern uint8_t t_po1;
 extern volatile uint8_t notee;
+extern float tun_base_old;
 
 void scal_tun(void);
 void strel_tun(void);

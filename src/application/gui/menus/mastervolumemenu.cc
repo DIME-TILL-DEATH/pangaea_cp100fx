@@ -29,7 +29,7 @@ void MasterVolumeMenu::encoderClockwise()
 		{
 			m_currentParamNum++;
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -51,7 +51,7 @@ void MasterVolumeMenu::encoderCounterClockwise()
 		{
 			m_currentParamNum--;
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else

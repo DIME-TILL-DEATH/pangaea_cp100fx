@@ -19,7 +19,7 @@ void TapMenu::show(TShowMode showMode)
 	currentMenu = this;
 	System::TapTempo(System::TAP_RFILTER);
 	m_delay = 4;
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void TapMenu::refresh()
@@ -66,5 +66,5 @@ void TapMenu::keyDown()
 {
 	System::TapTempo(m_tapDst);
 	m_delay = 4;
-	tim5_start(0);
+	restartBlinking(0);
 }

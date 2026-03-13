@@ -143,7 +143,7 @@ void ParamListMenu::encoderPressed()
 		}
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void ParamListMenu::encoderClockwise()
@@ -158,7 +158,7 @@ void ParamListMenu::encoderClockwise()
 					|| m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_STRING_OUT)
 					&& m_currentParamNum < m_lastSelectableParam);
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -188,7 +188,7 @@ void ParamListMenu::encoderCounterClockwise()
 					|| m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_STRING_OUT)
 					&& m_currentParamNum > m_firstSelectableParam);
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else

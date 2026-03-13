@@ -94,7 +94,7 @@ void MainMenu::keyUp()
 		shownChildMenu->show();
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::keyDown()
@@ -107,7 +107,7 @@ void MainMenu::keyDown()
 	shownChildMenu = new ModulesMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key1()
@@ -119,7 +119,7 @@ void MainMenu::key1()
 	shownChildMenu = new AttenuatorMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key2()
@@ -131,7 +131,7 @@ void MainMenu::key2()
 	shownChildMenu = new MasterVolumeMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key3()
@@ -143,7 +143,7 @@ void MainMenu::key3()
 	shownChildMenu = new MasterEqMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key4()
@@ -155,7 +155,7 @@ void MainMenu::key4()
 	shownChildMenu = SystemMenu::create(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key5()
@@ -167,7 +167,7 @@ void MainMenu::key5()
 	shownChildMenu = new TunerMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::refresh()
@@ -197,7 +197,7 @@ void MainMenu::presetUp()
 
 	refresh();
 
-	tim5_start(0);
+	restartBlinking(0);
 	TIM_SetCounter(TIM6, 0x8000);
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	TIM_Cmd(TIM6, ENABLE);
@@ -210,7 +210,7 @@ void MainMenu::presetDown()
 
 	refresh();
 
-	tim5_start(0);
+	restartBlinking(0);
 	TIM_SetCounter(TIM6,0xa000);
 	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
 	TIM_Cmd(TIM6,ENABLE);
@@ -233,5 +233,5 @@ void MainMenu::presetConfirm()
 	MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
 
 	show();
-	tim5_start(1);
+	restartBlinking(1);
 }

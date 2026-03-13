@@ -111,7 +111,7 @@ void MasterEqMenu::encoderPressed()
 								0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void MasterEqMenu::encoderClockwise()
@@ -129,7 +129,7 @@ void MasterEqMenu::encoderClockwise()
 			m_currentParamNum++; // Порядок важен!
 
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -151,7 +151,7 @@ void MasterEqMenu::encoderCounterClockwise()
 			m_currentParamNum--; // Порядок важен!
 
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else

@@ -75,7 +75,7 @@ void TunerMenu::key4()
 void TunerMenu::key5()
 {
 	endTunerTask();
-	tim5_start(0);
+	restartBlinking(0);
 	topLevelMenu->returnFromChildMenu();
 }
 
@@ -83,8 +83,8 @@ void TunerMenu::endTunerTask()
 {
 	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 	DisplayTask->TunerDeinit();
-//	DisplayTask->Clear();
-	CSTask->Give();
+
+//	CSTask->Give();
 	GPIO_ResetBits(GPIOB, GPIO_Pin_11);
 	send_codec(0xa103);
 }

@@ -64,7 +64,6 @@ void strel_tun(void)
 	int aa = SpectrumTask->freq_diff*1000.0f;
 	float bb = aa/1000.0f;
 
-//	extern uint8_t t_po;
 	if(SpectrumTask->freq_diff<0)
 	{
 		float a = SpectrumTask->HalfTone(SpectrumTask->note-1);

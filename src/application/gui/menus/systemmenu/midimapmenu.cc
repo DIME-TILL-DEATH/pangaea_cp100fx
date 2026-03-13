@@ -54,7 +54,7 @@ void MidiMapMenu::encoderPressed()
 		DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
 		m_encoderKnobSelected = 0;
 	}
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MidiMapMenu::encoderClockwise()
@@ -77,7 +77,7 @@ void MidiMapMenu::encoderClockwise()
 		}
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void MidiMapMenu::encoderCounterClockwise()
@@ -100,5 +100,5 @@ void MidiMapMenu::encoderCounterClockwise()
 		}
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }

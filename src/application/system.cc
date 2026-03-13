@@ -7,7 +7,7 @@
 
 #include "preset.h"
 
-float tapCoeffs[6] = {1.0f,1.5f,2.0f,3.0f,4.0f,0.5f};
+float tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
 const uint16_t bpm_time[] =
 		{2727, 2609, 2500, 2400, 2308, 2222, 2143, 2069, 2000, 1935, 1875, 1818, 1765, 1714, 1667, 1622, 1579, 1538, 1500, 1463,
@@ -36,7 +36,7 @@ void System::setMoogTime(float quarterInterval)
 
 void System::setDelayTime(float quarterInterval)
 {
-	Preset::delay_time = round((float)(quarterInterval/tap_time_coefs[currentPreset.modules.rawData[DELAY_TAP]]));
+	Preset::delay_time = round((float)(quarterInterval/tapCoeffs[currentPreset.modules.rawData[DELAY_TAP]]));
 	if(Preset::delay_time < 2731)
 	{
 		if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
@@ -63,7 +63,7 @@ void System::setDelayTime(float quarterInterval)
 
 void System::setTremoloTime(float quarterInterval)
 {
-	Preset::trem_time = round((float)(quarterInterval/tap_time_coefs[currentPreset.modules.rawData[TREMOLO_TAP]]));
+	Preset::trem_time = round((float)(quarterInterval/tapCoeffs[currentPreset.modules.rawData[TREMOLO_TAP]]));
 
 	if(Preset::trem_time < 2731)
 	{

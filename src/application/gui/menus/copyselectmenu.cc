@@ -131,13 +131,13 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 		for(uint16_t i = 0; i<512; i++)
 			presetBuffer[38048+i] = Preset::impulsePath[i];
 
-		cab_data_ready = true; // Kostyl
+		Preset::cab_data_ready = true; // Kostyl
 		send_cab_data(0, targetPresetNum+1, 0);
 
 		if(cab_type==CAB_CONFIG_STEREO)
 			send_cab_data1(0, targetPresetNum+1);
 
-		cab_data_ready = false;
+		Preset::cab_data_ready = false;
 
 		presetBuffer[30+cab] = currentPreset.modules.rawData[cab];
 	}
@@ -241,9 +241,9 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 	}
 
 	write_prog_temp(targetPresetNum);
-	cab_data_ready = true; // Kostyl
+	Preset::cab_data_ready = true; // Kostyl
 	send_cab_data(1, targetPresetNum+1, 1);
-	cab_data_ready = false;
+	Preset::cab_data_ready = false;
 
 	Preset::Change();
 }
@@ -258,7 +258,7 @@ void CopySelectMenu::encoderPressed()
 			DisplayTask->StringOut(38, 2, Font::fnt12x13, 0, (uint8_t*)"Copy OK!");
 			copyPreset(m_selectionMask, m_targetPresetNum);
 			m_copied = 1;
-			tim5_start(0);
+			restartBlinking(0);
 			break;
 		}
 		case ActionReturn:

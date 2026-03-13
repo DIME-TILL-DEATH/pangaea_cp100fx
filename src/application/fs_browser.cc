@@ -252,8 +252,8 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 
 			kgp_sdk_libc::memcpy(response.file.name, nameBuffer, 64);
 
-			extern bool cab_data_ready;
-			cab_data_ready = true;
+
+			Preset::cab_data_ready = true;
 		}
 		else
 		{

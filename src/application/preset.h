@@ -294,6 +294,7 @@ extern uint8_t impulsePath[];
 extern uint16_t delay_time;
 extern uint16_t moog_time;
 extern uint16_t trem_time;
+extern bool cab_data_ready;
 
 void Change();
 void Erase();

@@ -30,7 +30,7 @@ void FswTypeMenu::show(TShowMode showMode)
 		DisplayTask->StringOut(3, i, Font::fntSystem, 0, (uint8_t*)&strFswMenu[i]);
 	DisplayTask->ParamIndic(58, 3, sys_para[System::FSW_SPEED]);
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void FswTypeMenu::task()
@@ -62,7 +62,7 @@ void FswTypeMenu::encoderPressed()
 			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&strFswMenu[m_parNum]);
 		}
 	}
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void FswTypeMenu::encoderClockwise()
@@ -83,7 +83,7 @@ void FswTypeMenu::encoderClockwise()
 		}
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void FswTypeMenu::encoderCounterClockwise()
@@ -104,5 +104,5 @@ void FswTypeMenu::encoderCounterClockwise()
 		}
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }

@@ -140,6 +140,11 @@ void TCSTask::Code()
 						currentMenu->refresh();
 						break;
 					}
+
+					case CS_RUNNING_STRING:
+					{
+						break;
+					}
 				}
 			}
 			else
@@ -148,12 +153,6 @@ void TCSTask::Code()
 			}
 		}
 	}
-}
-
-void TCSTask::Restart(void)
-{
-	currentMenu = mainMenu;
-	clean_flag();
 }
 
 //------------------------------------------------------------------------------------

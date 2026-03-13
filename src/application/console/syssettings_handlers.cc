@@ -11,6 +11,10 @@
 
 #include "system.h"
 
+#include "tun_bit.h"
+
+#include "cs.h"
+
 static void sys_settings_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);

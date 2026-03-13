@@ -54,8 +54,7 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 {
 	uint32_t send_buf;
 
-	extern bool cab_data_ready;
-	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY_SELECTION)
+	if(Preset::cab_data_ready != true && currentMenu->menuType() != MENU_COPY_SELECTION)
 	{
 		kgp_sdk_libc::memset(presetBuffer, 0, 24576);
 		presetBuffer[0] = 0xff;
@@ -139,8 +138,8 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 void send_cab_data1(uint8_t val, uint8_t num)
 {
 	uint32_t send_buf;
-	extern bool cab_data_ready;
-	if(cab_data_ready != true && currentMenu->menuType() != MENU_COPY)
+
+	if(Preset::cab_data_ready != true && currentMenu->menuType() != MENU_COPY)
 	{
 		kgp_sdk_libc::memset(presetBuffer, 0, 12288);
 		presetBuffer[0] = 0xff;

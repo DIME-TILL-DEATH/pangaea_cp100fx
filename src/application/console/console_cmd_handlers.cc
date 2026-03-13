@@ -37,6 +37,8 @@
 
 #include "copyselectmenu.h"
 
+#include "tun_bit.h"
+
 bool consoleBusy = false;
 
 uint16_t getDataPartFromStream(TReadLine *rl, char *buf, int maxSize)
@@ -663,9 +665,6 @@ static void controller_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 			currentPreset.controller[cntrlNum].maxVal = value;
 			goto ending;
 		}
-
-
-//		msg_console("\rundefined type");
 	}
 	else
 	{
@@ -767,8 +766,6 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 			uint16_t count = kgp_sdk_libc::strtol(args[2], &end, 16);
 			SpectrumTask->samplesCount = count;
 
-			// answers in IRQ
-//			msg_console("%d", count);
 		}
 	}
 	msg_console("\n");

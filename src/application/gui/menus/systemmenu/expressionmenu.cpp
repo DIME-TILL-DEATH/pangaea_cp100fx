@@ -8,6 +8,7 @@
 #include "eepr.h"
 
 #include "system.h"
+#include "footswitch.h"
 
 #include "BF706_send.h"
 
@@ -34,7 +35,7 @@ void ExpressionMenu::show(TShowMode swhoMode)
 	DisplayTask->Clear();
 	for(uint8_t i = 0; i<4; i++)
 	{
-		DisplayTask->StringOut(3, i, Font::fntSystem, 0, (uint8_t*)&expr_menu[i]);
+		DisplayTask->StringOut(3, i, Font::fntSystem, 0, (uint8_t*)&Footswitch::expr_menu_str[i]);
 	}
 
 	DisplayTask->StringOut(60, 0, Font::fntSystem, 0, (uint8_t*)&strExprType[sys_para[System::EXPR_TYPE] & 0x7f]);
@@ -55,7 +56,7 @@ void ExpressionMenu::task()
 	switch(m_menuState)
 	{
 		case ParamChoice:
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2*blinkFlag_fl, (uint8_t*)&expr_menu[m_parNum]);
+			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2*blinkFlag_fl, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
 		break;
 
 		case ParamTuning: break;
@@ -115,7 +116,7 @@ void ExpressionMenu::encoderPressed()
 		break;
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void ExpressionMenu::encoderClockwise()
@@ -125,9 +126,9 @@ void ExpressionMenu::encoderClockwise()
 		case ParamChoice:
 			if(m_parNum<3)
 			{
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&expr_menu[m_parNum++]);
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2, (uint8_t*)&expr_menu[m_parNum]);
-				tim5_start(0);
+				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&Footswitch::expr_menu_str[m_parNum++]);
+				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
+				restartBlinking(0);
 			}
 		break;
 
@@ -178,9 +179,9 @@ void ExpressionMenu::encoderCounterClockwise()
 		case ParamChoice:
 			if(m_parNum>0)
 			{
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&expr_menu[m_parNum--]);
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2, (uint8_t*)&expr_menu[m_parNum]);
-				tim5_start(0);
+				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&Footswitch::expr_menu_str[m_parNum--]);
+				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
+				restartBlinking(0);
 			}
 		break;
 

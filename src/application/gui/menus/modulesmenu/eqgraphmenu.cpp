@@ -81,7 +81,7 @@ void EqGraphMenu::encoderPressed()
 		encoderKnobSelected = 0;
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void EqGraphMenu::encoderClockwise()

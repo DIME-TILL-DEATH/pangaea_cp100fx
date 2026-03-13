@@ -54,7 +54,7 @@ void SystemMenu::encoderPressed()
 		}
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void SystemMenu::keyUp()
@@ -115,7 +115,7 @@ bool SystemMenu::editingFinished()
 			shownChildMenu = new Dialog(this, Dialog::RestartDevice);
 			shownChildMenu->show();
 
-			tim5_start(0);
+			restartBlinking(0);
 			return false;
 
 		}
@@ -129,7 +129,7 @@ bool SystemMenu::editingFinished()
 			shownChildMenu = new Dialog(this, Dialog::RestartDevice);
 			shownChildMenu->show();
 
-			tim5_start(0);
+			restartBlinking(0);
 			return false;
 		}
 	}

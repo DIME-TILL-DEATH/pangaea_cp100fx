@@ -125,7 +125,7 @@ void UsbMenu::encoderClockwise()
 	if(m_parNum < 1) m_parNum++;
 
 	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, 0, &strUsbMenu[0][0]);
-	tim5_start(0);
+	restartBlinking(0);
 
 	autoconnectOn = false;
 }
@@ -137,7 +137,7 @@ void UsbMenu::encoderCounterClockwise()
 	if(m_parNum > 0) m_parNum--;
 
 	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, 0, &strUsbMenu[1][0]);
-	tim5_start(0);
+	restartBlinking(0);
 
 	autoconnectOn = false;
 }
