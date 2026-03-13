@@ -1,16 +1,16 @@
 #include "modulesmenu.h"
 
 #include "../../../tasks/controllers_task.h"
+#include "../../../tasks/display_task.h"
+#include "../../../tasks/filesystem_task.h"
+#include "../../../tasks/io_task.h"
+#include "../../../tasks/sdtest_task.h"
+#include "../../../tasks/ui_task.h"
 #include "appdefs.h"
-#include "cs.h"
-#include "fs.h"
 #include "eepr.h"
 #include "allFonts.h"
-#include "display.h"
-#include "enc.h"
 #include "BF706_send.h"
 
-#include "sd_test.h"
 #include "fs_browser.h"
 
 #include "preset.h"
@@ -239,7 +239,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 {
 	if(cab1.name.size == 0)
 	{
-		if(TSD_TESTTask::sdInitState == 1)
+		if(TSDTestTask::sdInitState == 1)
 		{
 		  if(TFsBrowser::impulseDirExist)
 		  {
@@ -250,7 +250,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			  DisplayTask->Clear();
 			  DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "There is no directory");
 			  DisplayTask->StringOut(42, 3, Font::fntSystem, 0, "IMPULSE");
-			  CSTask->CS_del(1000);
+			  UITask->CS_del(1000);
 			  currentPreset.modules.rawData[cab] = 0;
 
 			  parent->refresh();
@@ -259,9 +259,9 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 		else
 		{
 			DisplayTask->Clear();
-			if(!TSD_TESTTask::sdInitState) DisplayTask->StringOut(6, 1, Font::fntSystem, 0, "MicroSD is not ready");
+			if(!TSDTestTask::sdInitState) DisplayTask->StringOut(6, 1, Font::fntSystem, 0, "MicroSD is not ready");
 			else DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "MicroSD is loading..");
-			CSTask->CS_del(1000);
+			UITask->CS_del(1000);
 
 			currentPreset.modules.rawData[cab] = 0;
 

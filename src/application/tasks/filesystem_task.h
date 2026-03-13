@@ -4,11 +4,11 @@
 #include "appdefs.h"
 #include "fs_browser.h"
 
-class TFSTask: public TTask
+class TFileSystemTask: public TTask
 {
 public:
-	TFSTask();
-	virtual ~TFSTask();
+	TFileSystemTask();
+	virtual ~TFileSystemTask();
 
 	void SendCommand(TFsBrowser::browse_command_t browse_command)
 	{
@@ -32,7 +32,7 @@ private:
 	bool impulseDirectoryExist;
 };
 
-extern TFSTask *FSTask;
+extern TFileSystemTask *FileSystemTask;
 extern TFsBrowser *fileBrowser;
 
 #endif /*__FS_H__*/

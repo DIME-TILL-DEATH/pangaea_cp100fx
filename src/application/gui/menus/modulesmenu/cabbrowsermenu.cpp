@@ -1,20 +1,18 @@
 #include "cabbrowsermenu.h"
 
+#include "../../../tasks/display_task.h"
+#include "../../../tasks/filesystem_task.h"
+#include "../../../tasks/sdtest_task.h"
+#include "../../../tasks/ui_task.h"
 #include "appdefs.h"
 #include "init.h"
 
-#include "cs.h"
-#include "fs.h"
-
 #include "allFonts.h"
-#include "display.h"
-
 #include "BF706_send.h"
 
 #include "preset.h"
 
 #include "fs_browser.h"
-#include "sd_test.h"
 
 CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 {
@@ -30,16 +28,16 @@ void CabBrowserMenu::show(TShowMode showMode)
 
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
-	if(TSD_TESTTask::sdInitState == 1)
+	if(TSDTestTask::sdInitState == 1)
 	{
 
 		DisplayTask->Clear();
 
 		if(TFsBrowser::impulseDirExist)
 		{
-			FSTask->SendCommand(TFsBrowser::bcCurrent);
-			FSTask->SendCommand(TFsBrowser::bcLoadImp);
-			CSTask->Give();
+			FileSystemTask->SendCommand(TFsBrowser::bcCurrent);
+			FileSystemTask->SendCommand(TFsBrowser::bcLoadImp);
+			UITask->Give();
 
 			processBrowserResponse();
 			refresh();
@@ -48,7 +46,7 @@ void CabBrowserMenu::show(TShowMode showMode)
 		{
 			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"There is no directory"); //imp_dir_n
 			DisplayTask->StringOut(42, 3, Font::fntSystem, 0, (uint8_t*)"IMPULSE");	//imp_dir_no
-			CSTask->CS_del(1000);
+			UITask->CS_del(1000);
 			DisplayTask->Clear();
 
 			topLevelMenu->returnFromChildMenu();
@@ -58,12 +56,12 @@ void CabBrowserMenu::show(TShowMode showMode)
 	{
 		DisplayTask->Clear();
 
-		if(!TSD_TESTTask::sdInitState)
+		if(!TSDTestTask::sdInitState)
 			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is not ready"); //sd_nr
 		else
 			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is loading..");  //sd_lo
 
-		CSTask->CS_del(1000);
+		UITask->CS_del(1000);
 		DisplayTask->Clear();
 
 		topLevelMenu->returnFromChildMenu();
@@ -89,13 +87,13 @@ void CabBrowserMenu::keyUp()
 
 void CabBrowserMenu::encoderPressed()
 {
-	FSTask->SendCommand(TFsBrowser::bcAction);
-	CSTask->Give();
+	FileSystemTask->SendCommand(TFsBrowser::bcAction);
+	UITask->Give();
 
-	TCSTask::TResponse browserResponse;
-	browserResponse = CSTask->GetResponseBlocking();
+	TUITask::TResponse browserResponse;
+	browserResponse = UITask->GetResponseBlocking();
 
-	if(browserResponse.responseType == TCSTask::TResponseType::rpFileSelected)
+	if(browserResponse.responseType == TUITask::TResponseType::rpFileSelected)
 	{
 		DisplayTask->Clear();
 
@@ -128,8 +126,8 @@ void CabBrowserMenu::encoderPressed()
 
 void CabBrowserMenu::encoderCounterClockwise()
 {
-	FSTask->SendCommand(TFsBrowser::bcUp);
-	CSTask->Give();
+	FileSystemTask->SendCommand(TFsBrowser::bcUp);
+	UITask->Give();
 
 	processBrowserResponse();
 	refresh();
@@ -137,8 +135,8 @@ void CabBrowserMenu::encoderCounterClockwise()
 
 void CabBrowserMenu::encoderClockwise()
 {
-	FSTask->SendCommand(TFsBrowser::bcDown);
-	CSTask->Give();
+	FileSystemTask->SendCommand(TFsBrowser::bcDown);
+	UITask->Give();
 
 	processBrowserResponse();
 	refresh();
@@ -146,12 +144,12 @@ void CabBrowserMenu::encoderClockwise()
 
 void CabBrowserMenu::processBrowserResponse()
 {
-	TCSTask::TResponse browserResponse;
-	browserResponse = CSTask->GetResponseBlocking();
+	TUITask::TResponse browserResponse;
+	browserResponse = UITask->GetResponseBlocking();
 
 	switch(browserResponse.responseType)
 	{
-		case TCSTask::rpFileLoaded:
+		case TUITask::rpFileLoaded:
 		{
 			kgp_sdk_libc::memcpy(selectedCabName, browserResponse.file.name, 64);
 
@@ -166,7 +164,7 @@ void CabBrowserMenu::processBrowserResponse()
 			break;
 		}
 
-		case TCSTask::rpFileInvalid:
+		case TUITask::rpFileInvalid:
 		{
 			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]/2);
 			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]/2);
@@ -183,7 +181,7 @@ void CabBrowserMenu::refresh()
 	//	Delay(10);
 		DisplayTask->Clear();
 		DisplayTask->StringOut(4, 0, Font::fntSystem, Font::fnsBlack,
-				(uint8_t*)FSTask->Object().dir.c_str());
+				(uint8_t*)FileSystemTask->Object().dir.c_str());
 		DisplayTask->StringOut(4, 1, Font::fntSystem, Font::fnsBlack,
-				(uint8_t*)FSTask->Object().name.c_str());
+				(uint8_t*)FileSystemTask->Object().name.c_str());
 }

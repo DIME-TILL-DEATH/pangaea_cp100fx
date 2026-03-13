@@ -1,6 +1,6 @@
-#include "../paramlistmenu/realparam.h"
+#include "realparam.h"
 
-#include "display.h"
+#include "display_task.h"
 
 
 RealParam::RealParam(const char* name, void* paramValuePtr)

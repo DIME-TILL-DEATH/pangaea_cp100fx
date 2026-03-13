@@ -1,9 +1,9 @@
 #include "midimapmenu.h"
 
-#include "cs.h"
+#include "../../../tasks/display_task.h"
+#include "../../../tasks/io_task.h"
+#include "../../../tasks/ui_task.h"
 #include "allFonts.h"
-#include "display.h"
-#include "enc.h"
 #include "eepr.h"
 
 #include "system.h"

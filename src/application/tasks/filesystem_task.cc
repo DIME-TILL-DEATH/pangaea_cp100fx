@@ -1,26 +1,27 @@
-#include "fs.h"
-#include "cs.h"
+#include "filesystem_task.h"
+
 #include "format.h"
 #include "allFonts.h"
-#include "display.h"
+#include "display_task.h"
+#include "ui_task.h"
 
 
-TFSTask *FSTask;
+TFileSystemTask *FileSystemTask;
 TFsBrowser *fileBrowser;
 //------------------------------------------------------------------------------
-TFSTask::TFSTask() :
+TFileSystemTask::TFileSystemTask() :
 		TTask()
 {
 	queue = new TQueue(4, sizeof(TFsBrowser::browse_command_t));
 }
 
-TFSTask::~TFSTask()
+TFileSystemTask::~TFileSystemTask()
 {
 	delete queue;
 }
 
 //-----------------------------------------------------------------------------------------------------
-void TFSTask::Code()
+void TFileSystemTask::Code()
 {
 	TFsBrowser::browse_command_t browse_command;
 	fileBrowser = new TFsBrowser();

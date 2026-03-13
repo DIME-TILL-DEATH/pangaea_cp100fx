@@ -1,10 +1,9 @@
 #include "usbmenu.h"
 
-#include "display.h"
-#include "usb.h"
+#include "../../tasks/display_task.h"
+#include "../../tasks/ui_task.h"
+#include "../../tasks/usb_task.h"
 #include "init.h"
-
-#include "cs.h"
 
 #include "BF706_send.h"
 

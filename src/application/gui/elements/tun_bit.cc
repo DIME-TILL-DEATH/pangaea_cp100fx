@@ -1,7 +1,8 @@
 #include "appdefs.h"
 #include "tun_bit.h"
+
+#include "../../tasks/spectrum_task.h"
 #include "ER_OLEDM023-1B.h"
-#include "spectrum.h"
 
 
 const uint8_t di_tun[] = {

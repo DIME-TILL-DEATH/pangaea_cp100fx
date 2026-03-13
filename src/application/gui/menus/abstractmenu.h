@@ -1,11 +1,11 @@
 #ifndef ABSTRACTMENU_H_
 #define ABSTRACTMENU_H_
 
+#include "../../tasks/io_task.h"
 #include "appdefs.h"
 
 #include "stringoutparam.h"
 
-#include "enc.h"
 
 enum gui_menu_type
 {

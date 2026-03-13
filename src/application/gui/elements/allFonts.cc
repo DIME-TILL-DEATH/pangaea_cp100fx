@@ -1,9 +1,9 @@
 #include "appdefs.h"
 #include "allFonts.h"
 
-#include "fs.h"
+#include "../../tasks/filesystem_task.h"
+#include "../../tasks/ui_task.h"
 #include "eepr.h"
-#include "cs.h"
 #include "amt.h"
 
 #include "preset.h"

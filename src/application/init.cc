@@ -2,18 +2,17 @@
 #include "init.h"
 #include "eepr.h"
 #include "allFonts.h"
-#include "fs.h"
-#include "cs.h"
 #include "AT45DB321.h"
-
-#include "sd_test.h"
 
 #include "system.h"
 
 #include "midi_task.h"
 
-#include "spectrum.h"
 #include "compressor.h"
+#include "tasks/filesystem_task.h"
+#include "tasks/sdtest_task.h"
+#include "tasks/spectrum_task.h"
+#include "tasks/ui_task.h"
 
 
 uint8_t cab_type = 0;
@@ -606,7 +605,7 @@ extern "C" void EXTI15_10_IRQHandler()
 	{
 		EXTI_ClearITPendingBit(EXTI_Line8);
 
-		if(SD_TESTTask) SD_TESTTask->Give();
+		if(SDTestTask) SDTestTask->Give();
 	}
 
 	ISR_encoder_read();
@@ -726,6 +725,9 @@ extern "C" void DMA1_Stream2_IRQHandler()
 
 extern "C" void TIM3_IRQHandler()
 {
+	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+	TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
+
 	ISR_fsw_hold_timer();
 }
 
@@ -734,15 +736,14 @@ extern "C" void TIM4_IRQHandler()
 	TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
 
 	AbstractMenu::blinkRoutine();
-
-	CSTask->task();
+	UITask->task();
 }
 
 extern "C" void TIM5_IRQHandler()
 {
 	TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
 
-	CSTask->runningString();
+	UITask->runningString();
 }
 
 //==============================ISR USART================================

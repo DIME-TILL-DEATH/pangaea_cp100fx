@@ -1,6 +1,6 @@
-#include "../paramlistmenu/stringlistparam.h"
+#include "stringlistparam.h"
 
-#include "display.h"
+#include "display_task.h"
 
 StringListParam::StringListParam(const char* name, uint8_t* paramValuePtr,
 		std::initializer_list<const char*>stringList, uint8_t maxStringLength)

@@ -1,18 +1,11 @@
 #include "footswitch.h"
 
 #include "appdefs.h"
-#include "enc.h"
 #include "eepr.h"
 #include "BF706_send.h"
-#include "cs.h"
-#include "fs.h"
-#include "display.h"
-#include "sd_test.h"
 #include "allFonts.h"
 #include "controllers_task.h"
 #include "system.h"
-
-#include "usb.h"
 
 #include "preset.h"
 #include "footswitch.h"
@@ -20,7 +13,13 @@
 #include "tunermenu.h"
 
 #include "system.h"
-#include "enc.h"
+#include "tasks/display_task.h"
+#include "tasks/filesystem_task.h"
+#include "tasks/io_task.h"
+#include "tasks/io_task.h"
+#include "tasks/sdtest_task.h"
+#include "tasks/ui_task.h"
+#include "tasks/usb_task.h"
 
 volatile uint8_t num_key_prog;
 volatile uint8_t contr_pr[3];
@@ -34,7 +33,7 @@ void Footswitch::press_execute(uint8_t num)
 	if(currentMenu->menuType() == MENU_TUNER)
 	{
 		currentMenu->keyUp();
-		CSTask->Give();
+		UITask->Give();
 	}
 	else
 	{
@@ -55,7 +54,7 @@ void Footswitch::press_execute(uint8_t num)
 									|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 							{
 								encEvents.pressed = 1;
-								CSTask->encoderEvents(encEvents);
+								UITask->encoderEvents(encEvents);
 							}
 							break;
 						}
@@ -63,8 +62,8 @@ void Footswitch::press_execute(uint8_t num)
 						{
 							if(!sys_para[System::SWAP_SWITCH])
 							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-								CSTask->Give();
+								encEvents.pressed = 1;
+								UITask->encoderEvents(encEvents);
 							}
 							else
 							{
@@ -74,7 +73,7 @@ void Footswitch::press_execute(uint8_t num)
 										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
 									encEvents.pressed = 1;
-									CSTask->encoderEvents(encEvents);
+									UITask->encoderEvents(encEvents);
 								}
 							}
 						}
@@ -88,13 +87,13 @@ void Footswitch::press_execute(uint8_t num)
 										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
 									encEvents.pressed = 1;
-									CSTask->encoderEvents(encEvents);
+									UITask->encoderEvents(encEvents);
 								}
 							}
 							else
 							{
 								encEvents.pressed = 1;
-								CSTask->encoderEvents(encEvents);
+								UITask->encoderEvents(encEvents);
 							}
 						break;
 					}
@@ -122,7 +121,7 @@ void Footswitch::press_execute(uint8_t num)
 
 			case Footswitch::Tuner:
 				currentMenu->showChild(new TunerMenu(currentMenu));
-				CSTask->task();
+				UITask->task();
 			break;
 
 			default: // Preset maps
@@ -142,23 +141,23 @@ void Footswitch::press_execute(uint8_t num)
 						if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
 						{
 							encEvents.pressed = 1;
-							CSTask->encoderEvents(encEvents);
+							UITask->encoderEvents(encEvents);
 						}
 						else
 						{
 							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
 							{
 								encEvents.pressed = 1;
-								CSTask->encoderEvents(encEvents);
+								UITask->encoderEvents(encEvents);
 							}
-							else CSTask->refreshMenu();
+							else UITask->refreshMenu();
 						}
 					}
 					else
 					{
-						CSTask->refreshMenu();
+						UITask->refreshMenu();
 					}
-					CSTask->Give();
+					UITask->Give();
 				}
 			break;
 		}
@@ -174,7 +173,7 @@ void Footswitch::hold_execute(uint8_t num)
 	if(currentMenu->menuType() == MENU_TUNER)
 	{
 		currentMenu->keyUp();
-		CSTask->task();
+		UITask->task();
 	}
 	else
 	{
@@ -196,7 +195,7 @@ void Footswitch::hold_execute(uint8_t num)
 									|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 							{
 								encEvents.pressed = 1;
-								CSTask->encoderEvents(encEvents);
+								UITask->encoderEvents(encEvents);
 							}
 							break;
 						}
@@ -205,7 +204,7 @@ void Footswitch::hold_execute(uint8_t num)
 							if(!sys_para[System::SWAP_SWITCH])
 							{
 								encEvents.pressed = 1;
-								CSTask->encoderEvents(encEvents);
+								UITask->encoderEvents(encEvents);
 							}
 							else
 							{
@@ -215,7 +214,7 @@ void Footswitch::hold_execute(uint8_t num)
 										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
 									encEvents.pressed = 1;
-									CSTask->encoderEvents(encEvents);
+									UITask->encoderEvents(encEvents);
 								}
 							}
 						}
@@ -229,13 +228,13 @@ void Footswitch::hold_execute(uint8_t num)
 										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
 									encEvents.pressed = 1;
-									CSTask->encoderEvents(encEvents);
+									UITask->encoderEvents(encEvents);
 								}
 							}
 							else
 							{
 								encEvents.pressed = 1;
-								CSTask->encoderEvents(encEvents);
+								UITask->encoderEvents(encEvents);
 							}
 						break;
 					}
@@ -267,7 +266,7 @@ void Footswitch::hold_execute(uint8_t num)
 
 			case Footswitch::Tuner:
 				currentMenu->showChild(new TunerMenu(currentMenu));
-				CSTask->Give();
+				UITask->Give();
 			break;
 
 			default:
@@ -284,21 +283,21 @@ void Footswitch::hold_execute(uint8_t num)
 						if(sys_para[System::FSW2_MODE] == Footswitch::Single)
 						{
 							encEvents.pressed = 1;
-							CSTask->encoderEvents(encEvents);
+							UITask->encoderEvents(encEvents);
 						}
 						else
 						{
 							if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default)
 							{
 								encEvents.pressed = 1;
-								CSTask->encoderEvents(encEvents);
+								UITask->encoderEvents(encEvents);
 							}
-							else CSTask->refreshMenu();
+							else UITask->refreshMenu();
 						}
 					}
 					else
 					{
-						CSTask->refreshMenu();
+						UITask->refreshMenu();
 					}
 				}
 			break;

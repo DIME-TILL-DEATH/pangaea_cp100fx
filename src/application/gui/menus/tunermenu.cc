@@ -1,12 +1,12 @@
 #include "tunermenu.h"
 
+#include "../../tasks/display_task.h"
+#include "../../tasks/io_task.h"
+#include "../../tasks/spectrum_task.h"
+#include "../../tasks/ui_task.h"
 #include "appdefs.h"
-#include "cs.h"
 #include "eepr.h"
 #include "gui/elements/allFonts.h"
-#include "display.h"
-#include "enc.h"
-#include "spectrum.h"
 #include "BF706_send.h"
 
 TunerMenu::TunerMenu(AbstractMenu *parent)

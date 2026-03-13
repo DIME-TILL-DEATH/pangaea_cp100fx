@@ -1,24 +1,25 @@
+#include "sdtest_task.h"
+
 #include "appdefs.h"
-#include "sd_test.h"
+#include "filesystem_task.h"
 #include "sdio_sd.h"
-#include "fs.h"
 
 
-uint8_t TSD_TESTTask::sdInitState = 0;
+uint8_t TSDTestTask::sdInitState = 0;
 
-TSD_TESTTask *SD_TESTTask;
+TSDTestTask *SDTestTask;
 
 //------------------------------------------------------------------------------
-TSD_TESTTask::TSD_TESTTask() :
+TSDTestTask::TSDTestTask() :
 		TTask()
 {
 }
 
-void TSD_TESTTask::Code()
+void TSDTestTask::Code()
 {
 	sem = new TSemaphore(TSemaphore::fstCounting, 4, 0);
 	Delay(10);
-	SD_TESTTask->Give();
+	SDTestTask->Give();
 
 	while(1)
 	{
@@ -32,12 +33,12 @@ void TSD_TESTTask::Code()
 				{
 					SD_DeInit();
 					sdInitState = 0;
-					SD_TESTTask->Give();
+					SDTestTask->Give();
 				}
 				else
 				{
 					sdInitState = 1;
-					FSTask->SendCommand(TFsBrowser::bcFsMount);
+					FileSystemTask->SendCommand(TFsBrowser::bcFsMount);
 				}
 			}
 		}
@@ -45,7 +46,7 @@ void TSD_TESTTask::Code()
 		{
 			if(sdInitState)
 			{
-				FSTask->SendCommand(TFsBrowser::bcFsUmount);
+				FileSystemTask->SendCommand(TFsBrowser::bcFsUmount);
 				SD_DeInit();
 				sdInitState = 0;
 			}

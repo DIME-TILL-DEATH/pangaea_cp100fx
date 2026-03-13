@@ -8,11 +8,11 @@
 #include "mainmenu.h"
 #include "usbmenu.h"
 
-class TCSTask: public TTask
+class TUITask: public TTask
 {
 public:
-	TCSTask();
-	~TCSTask();
+	TUITask();
+	~TUITask();
 
 	inline void Give()
 	{
@@ -82,11 +82,11 @@ public:
 	}
 
 	typedef enum{
-		CS_REFRESH_MENU,
-		CS_RUNNING_STRING,
-		CS_TASK,
-		CS_KEYS_EVENTS,
-		CS_ENCODER_EVENTS
+		UI_REFRESH_MENU,
+		UI_RUNNING_STRING,
+		UI_TASK,
+		UI_KEYS_EVENTS,
+		UI_ENCODER_EVENTS
 	}TCSCmdType;
 
 	typedef struct{
@@ -100,32 +100,32 @@ public:
 
 	void refreshMenu(){
 		TCSCmd cmd;
-		cmd.type = CS_REFRESH_MENU;
+		cmd.type = UI_REFRESH_MENU;
 		Command(&cmd);
 	}
 
 	void runningString(){
 		TCSCmd cmd;
-		cmd.type = CS_RUNNING_STRING;
+		cmd.type = UI_RUNNING_STRING;
 		Command(&cmd);
 	}
 
 	void task(){
 		TCSCmd cmd;
-		cmd.type = CS_TASK;
+		cmd.type = UI_TASK;
 		Command(&cmd);
 	}
 
 	void keysEvents(const TKeysEvents& events){
 		TCSCmd cmd;
-		cmd.type = CS_KEYS_EVENTS;
+		cmd.type = UI_KEYS_EVENTS;
 		cmd.keysEvents = events;
 		Command(&cmd);
 	}
 
 	void encoderEvents(const TEncoderEvents& events){
 		TCSCmd cmd;
-		cmd.type = CS_ENCODER_EVENTS;
+		cmd.type = UI_ENCODER_EVENTS;
 		cmd.encoderEvents = events;
 		Command(&cmd);
 	}
@@ -162,7 +162,7 @@ private:
 };
 extern uint8_t tun_del_val;
 
-extern TCSTask *CSTask;
+extern TUITask *UITask;
 
 extern AbstractMenu *currentMenu;
 extern MainMenu *mainMenu;

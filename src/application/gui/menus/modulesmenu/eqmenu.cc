@@ -1,11 +1,12 @@
 #include "eqmenu.h"
+
+#include "../../../tasks/display_task.h"
+#include "../../../tasks/io_task.h"
 #include "eqbandmenu.h"
 
 #include "appdefs.h"
 #include "eepr.h"
 #include "allFonts.h"
-#include "display.h"
-#include "enc.h"
 #include "BF706_send.h"
 #include "filter.h"
 

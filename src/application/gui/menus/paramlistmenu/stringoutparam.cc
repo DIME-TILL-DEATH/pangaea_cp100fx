@@ -1,7 +1,7 @@
 #include "stringoutparam.h"
 
+#include "../../../tasks/display_task.h"
 #include "abstractmenu.h"
-#include "display.h"
 
 StringOutParam::StringOutParam(const char* stringPtr)
 	:BaseParam(BaseParam::GUI_PARAMETER_STRING_OUT, stringPtr, nullptr)

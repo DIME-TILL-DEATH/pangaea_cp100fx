@@ -3,16 +3,16 @@
 
 #include "appdefs.h"
 #include "mmgr.h"
-#include "usb.h"
-#include "display.h"
+#include "tasks/usb_task.h"
+#include "tasks/display_task.h"
 #include "storage.h"
-#include "fs.h"
-#include "cs.h"
+#include "tasks/filesystem_task.h"
+#include "tasks/ui_task.h"
 #include "tasks/controllers_task.h"
-#include "sd_test.h"
-#include "enc.h"
+#include "tasks/sdtest_task.h"
+#include "tasks/io_task.h"
 #include "errno.h"
-#include "spectrum.h"
+#include "tasks/spectrum_task.h"
 #include "tasks/midi_task.h"
 
 
@@ -115,17 +115,17 @@ int main(void)
 	pin_usb_init();
 	sysclock = GetCpuClock();
 
-	FSTask = new TFSTask();
-	FSTask->Create("FS", 40*configMINIMAL_STACK_SIZE, 0);
+	FileSystemTask = new TFileSystemTask();
+	FileSystemTask->Create("FS", 40*configMINIMAL_STACK_SIZE, 0);
 
 	DisplayTask = new TDisplayTask();
 	DisplayTask->Create("DISP", 60*configMINIMAL_STACK_SIZE, 0);
 
-	ENCTask = new TENCTask();
-	ENCTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 0);
+	IOTask = new TIOTask();
+	IOTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 0);
 
-	CSTask = new TCSTask();
-	CSTask->Create("CS", 30*configMINIMAL_STACK_SIZE, 0);
+	UITask = new TUITask();
+	UITask->Create("CS", 30*configMINIMAL_STACK_SIZE, 0);
 
 	SpectrumTask = new TSpectrumTask();
 	SpectrumTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
@@ -134,8 +134,8 @@ int main(void)
 	ControllersTask = new TControllersTask();
 	ControllersTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
 
-	SD_TESTTask = new TSD_TESTTask();
-	SD_TESTTask->Create("SD_TEST", configMINIMAL_STACK_SIZE, 0);
+	SDTestTask = new TSDTestTask();
+	SDTestTask->Create("SD_TEST", configMINIMAL_STACK_SIZE, 0);
 
 	MidiTask = new TMidiTask();
 	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);

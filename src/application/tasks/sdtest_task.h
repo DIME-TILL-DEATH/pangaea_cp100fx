@@ -2,10 +2,10 @@
 
 #include "appdefs.h"
 
-class TSD_TESTTask: public TTask
+class TSDTestTask: public TTask
 {
 public:
-	TSD_TESTTask();
+	TSDTestTask();
 
 	inline void Give()
 	{
@@ -28,6 +28,6 @@ private:
 	TSemaphore *sem;
 };
 
-extern TSD_TESTTask *SD_TESTTask;
+extern TSDTestTask *SDTestTask;
 
 #endif /* SD_TEST_H_ */

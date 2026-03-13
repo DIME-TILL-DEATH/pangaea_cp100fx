@@ -2,7 +2,7 @@
 #define __SPECTRUM_H__
 
 #include "appdefs.h"
-#include "display.h"
+#include "display_task.h"
 #include "dsp/fft.h"
 #include "math/window.h"
 

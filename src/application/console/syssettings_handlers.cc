@@ -1,10 +1,10 @@
 #include "syssettings_handlers.h"
 
+#include "../tasks/display_task.h"
+#include "../tasks/ui_task.h"
 #include "console_helpers.h"
 #include "modules.h"
 #include "BF706_send.h"
-
-#include "display.h"
 
 #include "eepr.h"
 #include "init.h"
@@ -13,7 +13,6 @@
 
 #include "tun_bit.h"
 
-#include "cs.h"
 
 static void sys_settings_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {

@@ -1,14 +1,13 @@
 #include "fs_browser.h"
 
-#include "fs.h"
-#include "cs.h"
-
 #include "BF706_send.h"
 #include "eepr.h"
 #include "init.h"
 #include "storage.h"
 #include "AT45DB321.h"
 #include "allFonts.h"
+#include "tasks/filesystem_task.h"
+#include "tasks/ui_task.h"
 
 
 void out_file_strings(const char *file_name)
@@ -228,7 +227,7 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 //----------------------------------------------------------------
 void TFsBrowser::LoadCab(fs_object_t &object)
 {
-	TCSTask::TResponse response;
+	TUITask::TResponse response;
 
 	if(object.type == fotFile)
 	{
@@ -238,7 +237,7 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 		emb_string err;
 		if(GetDataFromFile(presetBuffer, err))
 		{
-			response.responseType = TCSTask::rpFileLoaded;
+			response.responseType = TUITask::rpFileLoaded;
 			response.file.buffer = &presetBuffer[0];
 
 			char nameBuffer[64];
@@ -257,14 +256,14 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 		}
 		else
 		{
-			response.responseType = TCSTask::rpFileInvalid;
+			response.responseType = TUITask::rpFileInvalid;
 		}
 	}
 	else
 	{
-		response.responseType = TCSTask::rpDirSelected;
+		response.responseType = TUITask::rpDirSelected;
 	}
-	CSTask->SendResponse(response);
+	UITask->SendResponse(response);
 
 }
 void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& object)
@@ -277,7 +276,7 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 			{
 				while(curr_fs_object->name!="..")
 					PrevObject(object);
-				FSTask->SendCommand(TFsBrowser::bcAction);
+				FileSystemTask->SendCommand(TFsBrowser::bcAction);
 			}
 		break;
 		case bcCurrent:
@@ -309,9 +308,9 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 					object = *curr_fs_object;
 				}
 
-				TCSTask::TResponse response;
-				response.responseType = TCSTask::rpDirSelected;
-				CSTask->SendResponse(response);
+				TUITask::TResponse response;
+				response.responseType = TUITask::rpDirSelected;
+				UITask->SendResponse(response);
 			}
 
 			if(curr_fs_object->type==fotFile)
@@ -320,13 +319,13 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 				tmp.resize(_MAX_LFN);
 				kgp_sdk_libc::memcpy(Preset::impulsePath, tmp.c_str(), _MAX_LFN);
 
-				tmp = FSTask->Object().name;
+				tmp = FileSystemTask->Object().name;
 				tmp.resize(_MAX_LFN);
 				kgp_sdk_libc::memcpy(Preset::impulsePath+256, tmp.c_str(), _MAX_LFN);
 
-				TCSTask::TResponse response;
-				response.responseType = TCSTask::rpFileSelected;
-				CSTask->SendResponse(response);
+				TUITask::TResponse response;
+				response.responseType = TUITask::rpFileSelected;
+				UITask->SendResponse(response);
 			}
 		break;
 

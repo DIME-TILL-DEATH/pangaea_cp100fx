@@ -1,9 +1,9 @@
 #include "presetactionsmenu.h"
 
 #include "../../../tasks/controllers_task.h"
-#include "fs.h"
+#include "../../../tasks/display_task.h"
+#include "../../../tasks/filesystem_task.h"
 #include "eepr.h"
-#include "display.h"
 #include "eepr.h"
 #include "modulesmenu.h"
 #include "copyselectmenu.h"

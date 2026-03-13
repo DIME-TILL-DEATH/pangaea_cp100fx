@@ -1,6 +1,6 @@
 #include "appdefs.h"
 #include "eepr.h"
-#include "fs.h"
+#include "filesystem_task.h"
 
 #include "init.h"
 
@@ -129,7 +129,7 @@ void EEPR_writePreset(uint8_t nu)
 
 void EEPROM_loadPreset(uint8_t nu)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 
 	nu++;
 
@@ -183,14 +183,14 @@ void EEPROM_loadPreset(uint8_t nu)
 		if(f_size)
 		{
 			kgp_sdk_libc::memcpy(Preset::impulsePath, tmp, _MAX_LFN);
-			FSTask->Object().name = emb_string(tmp);
+			FileSystemTask->Object().name = emb_string(tmp);
 			f_read(&file, tmp, _MAX_LFN, &f_size);
 			f_close(&file);
 
 			kgp_sdk_libc::memcpy(Preset::impulsePath+255, tmp, _MAX_LFN);
-			FSTask->Object().startup = emb_string(tmp);
+			FileSystemTask->Object().startup = emb_string(tmp);
 
-			emb_string startup = FSTask->Object().name + emb_string("/") + FSTask->Object().startup;
+			emb_string startup = FileSystemTask->Object().name + emb_string("/") + FileSystemTask->Object().startup;
 //			if(FR_OK==f_open(&file, startup.c_str(), FA_READ))
 //			{
 //				FSTask->SendCommand(TFsBrowser::bcStartup);
@@ -208,7 +208,7 @@ void EEPROM_loadPreset(uint8_t nu)
 			fs_res = f_stat(startup.c_str(), &fno);
 			if(fs_res == FR_OK)
 			{
-				FSTask->SendCommand(TFsBrowser::bcStartup);
+				FileSystemTask->SendCommand(TFsBrowser::bcStartup);
 			}
 
 		}
@@ -268,12 +268,12 @@ void EEPROM_loadPreset(uint8_t nu)
 	currentPreset.comment[14] = 0;
 	cab1.name.string[62] = cab2.name.string[62] = 0;
 
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 
 	char fna[_MAX_LFN];
 	FRESULT fs_res;
@@ -320,7 +320,7 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 	presetData->cab1Name[63] = 0;
 	presetData->cab2Name[63] = 0;
 
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 void EEPROM_LoadPresetToBuffer(uint8_t presetNum, uint8_t* buffer)

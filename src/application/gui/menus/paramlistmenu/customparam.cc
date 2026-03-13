@@ -1,10 +1,10 @@
 #include "../paramlistmenu/customparam.h"
 
+#include "../../../tasks/display_task.h"
 #include "BF706_send.h"
-#include "enc.h"
+#include "io_task.h"
 #include "eepr.h"
 
-#include "display.h"
 
 CustomParam::CustomParam(TDisplayType displayType, const char* name, void* paramValuePtr)
 	:BaseParam(BaseParam::GUI_PARAMETER_CUSTOM, name, paramValuePtr)

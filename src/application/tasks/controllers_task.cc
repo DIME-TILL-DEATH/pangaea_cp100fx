@@ -1,10 +1,5 @@
 #include "appdefs.h"
 #include "eepr.h"
-#include "display.h"
-#include "cs.h"
-#include "enc.h"
-#include "display.h"
-
 #include "BF706_send.h"
 #include "system.h"
 
@@ -14,11 +9,15 @@
 #include "controller.h"
 #include "controllers_task.h"
 
+#include "display_task.h"
+#include "display_task.h"
+#include "io_task.h"
 #include "midi_task.h"
 #include "preset.h"
 #include "modules.h"
 
 #include "tapmenu.h"
+#include "ui_task.h"
 
 TControllersTask *ControllersTask;
 
@@ -433,13 +432,13 @@ void TControllersTask::Code()
 				System::setMoogTime(result);
 				System::setDelayTime(result);
 				System::setTremoloTime(result);
-				CSTask->refreshMenu();
+				UITask->refreshMenu();
 				break;
 			}
 		}
 
 		if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
-			CSTask->refreshMenu();
+			UITask->refreshMenu();
 	}
 }
 

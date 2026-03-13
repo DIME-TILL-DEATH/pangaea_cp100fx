@@ -32,10 +32,10 @@ typedef struct{
 	TEncStep state;
 }TEncoderEvents;
 
-class TENCTask: public TTask
+class TIOTask: public TTask
 {
 public:
-	TENCTask();
+	TIOTask();
 
 	void Give()
 	{
@@ -65,10 +65,6 @@ void ISR_encoder_read();
 void ISR_buttons_read();
 void ISR_fsw_hold_timer();
 
-extern volatile uint8_t encoder_state;
-extern volatile uint8_t encoder_state_updated;
-extern volatile uint8_t encoder_knob_pressed;
-
-extern TENCTask *ENCTask;
+extern TIOTask *IOTask;
 
 #endif /*__ENC_H__*/

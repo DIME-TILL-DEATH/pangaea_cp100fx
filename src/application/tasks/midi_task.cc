@@ -1,6 +1,3 @@
-#include "display.h"
-#include "enc.h"
-#include "cs.h"
 #include "eepr.h"
 #include "BF706_send.h"
 #include "allFonts.h"
@@ -10,9 +7,13 @@
 #include "tunerextmenu.h"
 #include "controllersmenu.h"
 #include "midi_task.h"
+
+#include "display_task.h"
+#include "io_task.h"
 #include "system.h"
 
 #include "preset.h"
+#include "ui_task.h"
 
 TMidiTask *MidiTask;
 

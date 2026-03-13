@@ -1,11 +1,10 @@
 #include "submenuparam.h"
 
+#include "../../../tasks/display_task.h"
 #include "BF706_send.h"
-#include "enc.h"
+
+#include "io_task.h"
 #include "eepr.h"
-
-#include "display.h"
-
 #include "system.h"
 
 SubmenuParam::SubmenuParam(gui_param_type paramType, const char* name, AbstractMenu* menu, void* param)

@@ -1,14 +1,14 @@
 #include "mainmenu.h"
 
 #include "../../tasks/controllers_task.h"
+#include "../../tasks/display_task.h"
+#include "../../tasks/filesystem_task.h"
+#include "../../tasks/io_task.h"
 #include "../../tasks/midi_task.h"
+#include "../../tasks/ui_task.h"
 #include "appdefs.h"
-#include "cs.h"
-#include "fs.h"
 #include "eepr.h"
 #include "allFonts.h"
-#include "display.h"
-#include "enc.h"
 #include "BF706_send.h"
 #include "system.h"
 

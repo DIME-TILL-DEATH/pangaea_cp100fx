@@ -1,10 +1,10 @@
 #include "controllersmenu.h"
 
 #include "../../../tasks/controllers_task.h"
-#include "cs.h"
+#include "../../../tasks/display_task.h"
+#include "../../../tasks/io_task.h"
+#include "../../../tasks/ui_task.h"
 #include "allFonts.h"
-#include "display.h"
-#include "enc.h"
 #include "eepr.h"
 
 #include "footswitch.h"

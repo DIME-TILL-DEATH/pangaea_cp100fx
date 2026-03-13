@@ -1,8 +1,7 @@
 #include "abstractmenu.h"
 
+#include "../../tasks/display_task.h"
 #include "eepr.h"
-
-#include "display.h"
 
 #include "preset.h"
 

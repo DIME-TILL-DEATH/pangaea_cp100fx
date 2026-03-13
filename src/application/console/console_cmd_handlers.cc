@@ -1,3 +1,5 @@
+#include "../tasks/filesystem_task.h"
+#include "../tasks/spectrum_task.h"
 #include "console_handlers.h"
 
 #include "eepr.h"
@@ -12,10 +14,6 @@
 #include "midi_task.h"
 
 #include "system.h"
-#include "fs.h"
-
-#include "spectrum.h"
-
 #include "console_helpers.h"
 #include "resonance_filter_handlers.h"
 #include "gate_handlers.h"
@@ -95,7 +93,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 static void ls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
 
 	for(auto it = fileBrowser->List().begin(); it != fileBrowser->List().end(); ++it)
@@ -103,12 +101,12 @@ static void ls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		msg_console("%d:%s|", (*it).type, (*it).name.c_str());
 	}
 	msg_console("\n");
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 
 	consoleBusy = true;
 	char folderName[256];
@@ -121,13 +119,13 @@ static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 
 	msg_console("%s\r%s\n", args[0], fileBrowser->CurrDir(false).c_str());
 //	msg_console("%s\r%s\n", args[0], fileBrowser->CurrentObject()->full_dir.c_str());
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 uint16_t bufPos;
 static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 
 	msg_console("%s ", args[0]);
 
@@ -173,7 +171,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 			if(!fileBrowser->GetDataFromFile(presetBuffer, errStr))
 			{
 				msg_console(" error\r%s\n", errStr.c_str());
-				FSTask->Resume();
+				FileSystemTask->Resume();
 				return;
 			}
 
@@ -264,12 +262,12 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 			msg_console("%d restore\r\n", cabNum);
 		}
 	}
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
 
 	consoleBusy = true;
@@ -284,12 +282,12 @@ static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	fsObject.name = dirName;
 	fileBrowser->CreateDir(fsObject);
 
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
 
 	consoleBusy = true;
@@ -304,12 +302,12 @@ static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	fsObject.name = objName;
 
 	fileBrowser->RemoveObject(fsObject);
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
 
 	consoleBusy = true;
@@ -331,7 +329,7 @@ static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	fileBrowser->RenameObject(srcObject, dstObject);
 
 	msg_console("%s\r%s\n", srcName, dstName);
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -377,7 +375,7 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 	if(command == "start")
 	{
-		FSTask->Suspend();
+		FileSystemTask->Suspend();
 
 		char buffer[128];
 		getDataPartFromStream(rl, buffer, 128);
@@ -391,14 +389,14 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 			msg_console("error\rCANNOT_CREATE_FILE\n");
 		}
 
-		FSTask->Resume();
+		FileSystemTask->Resume();
 	}
 
 	if (command == "part")
 	{
 		if (count > 2)
 		{
-			FSTask->Suspend();
+			FileSystemTask->Suspend();
 
 			char buffer[512];
 			char *pEnd;
@@ -417,7 +415,7 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 				msg_console("request_part\r\n");
 			}
 
-			FSTask->Resume();
+			FileSystemTask->Resume();
 		}
 		else
 		{

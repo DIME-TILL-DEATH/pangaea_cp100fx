@@ -1,5 +1,5 @@
-#ifndef __USB_H__
-#define __USB_H__
+#ifndef __USB_TASK_H__
+#define __USB_TASK_H__
 
 #include "appdefs.h"
 #include "console.h"
@@ -49,4 +49,4 @@ private:
 
 extern TUsbTask *UsbTask;
 
-#endif /*__USB_H__*/
+#endif /*__USB_TASK_H__*/

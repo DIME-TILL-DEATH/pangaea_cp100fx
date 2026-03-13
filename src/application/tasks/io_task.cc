@@ -1,12 +1,11 @@
-#include "enc.h"
-
-#include "cs.h"
-#include "sd_test.h"
-
 #include "eepr.h"
 #include "footswitch.h"
 #include "system.h"
 #include "init.h"
+#include "io_task.h"
+
+#include "sdtest_task.h"
+#include "ui_task.h"
 
 #define KEY_NO_PRESS_MASK 0x8613
 
@@ -29,9 +28,9 @@ volatile uint8_t encoder_knob_pressed;
 volatile uint16_t key_reg;
 
 
-TENCTask *ENCTask;
+TIOTask *IOTask;
 //------------------------------------------------------------------------------
-TENCTask::TENCTask() :
+TIOTask::TIOTask() :
 		TTask()
 {
 
@@ -53,7 +52,7 @@ uint8_t fsw3_in_hold_fl = 0;
 
 uint8_t tim3_end_fl = 0;
 
-void TENCTask::Code()
+void TIOTask::Code()
 {
 	while(!enc_run);
 
@@ -198,7 +197,7 @@ void ISR_buttons_read()
 	keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
 	keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
 
-	if(CSTask) CSTask->keysEvents(keyEvents);
+	if(UITask) UITask->keysEvents(keyEvents);
 
 	if(key_reg) keysHold = true;
 	else keysHold = false;
@@ -227,7 +226,7 @@ void ISR_encoder_read()
 
 			encEvents.updated = 1;
 
-			CSTask->encoderEvents(encEvents);
+			UITask->encoderEvents(encEvents);
 		}
 	}
 
@@ -237,7 +236,7 @@ void ISR_encoder_read()
 		if(drebezg(EXTI_Line15)==1)
 		{
 			encEvents.pressed = 1;
-			CSTask->encoderEvents(encEvents);
+			UITask->encoderEvents(encEvents);
 		}
 	}
 }
@@ -245,9 +244,6 @@ void ISR_encoder_read()
 
 void ISR_fsw_hold_timer()
 {
-	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-	TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
-
 	tim3_end_fl = 1;
 	if(fsw1_in_press_fl || fsw2_in_press_fl || fsw3_in_press_fl)
 	{

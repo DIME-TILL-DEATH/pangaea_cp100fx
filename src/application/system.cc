@@ -1,8 +1,8 @@
 #include "system.h"
 
 #include "eepr.h"
-#include "display.h"
 #include "preset.h"
+#include "tasks/display_task.h"
 
 float tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 

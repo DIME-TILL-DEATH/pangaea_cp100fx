@@ -1,8 +1,7 @@
 #include "tapmenu.h"
 
+#include "../../tasks/display_task.h"
 #include "allFonts.h"
-#include "display.h"
-
 #include "system.h"
 #include "preset.h"
 

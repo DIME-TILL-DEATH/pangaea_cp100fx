@@ -2,13 +2,12 @@
 #include "BF706_send.h"
 #include "eepr.h"
 
-#include "cs.h"
-
 #include "system.h"
 
 #include "init.h"
 
 #include "preset.h"
+#include "tasks/ui_task.h"
 
 volatile uint8_t gui_fl;
 volatile uint8_t contr_fl;

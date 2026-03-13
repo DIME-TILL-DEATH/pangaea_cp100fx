@@ -1,9 +1,9 @@
-#include "display.h"
 #include "allFonts.h"
 #include "icon_bit.h"
 #include "eepr.h"
 
 #include "BF706_send.h"
+#include "display_task.h"
 
 volatile uint8_t ind_en;
 

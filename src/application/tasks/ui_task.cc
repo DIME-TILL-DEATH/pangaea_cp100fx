@@ -1,10 +1,9 @@
-#include "cs.h"
+#include "ui_task.h"
 
 #include "appdefs.h"
 #include "init.h"
 #include "eepr.h"
 
-#include "enc.h"
 #include "BF706_send.h"
 
 #include "mainmenu.h"
@@ -14,32 +13,33 @@
 #include "system.h"
 
 #include "compressor.h"
+#include "display_task.h"
 
 
-#include "display.h"
 #include "ER_OLEDM023-1B.h"
+#include "io_task.h"
 
 
-TCSTask *CSTask;
+TUITask *UITask;
 
 AbstractMenu *currentMenu = nullptr;
 MainMenu *mainMenu = nullptr;
 UsbMenu *usbMenu = nullptr;
 
-TCSTask::TCSTask() :
+TUITask::TUITask() :
 		TTask()
 {
 	responseQueue = new TQueue(4, sizeof(TResponse));
 	cmdQueue = new TQueue(8, sizeof(TCSCmd));
 }
 
-TCSTask::~TCSTask()
+TUITask::~TUITask()
 {
 	delete responseQueue;
 	delete cmdQueue;
 }
 
-void TCSTask::Code()
+void TUITask::Code()
 {
 	Delay(100);
 	sem = new TSemaphore(TSemaphore::fstCounting, 4, 0);
@@ -49,7 +49,7 @@ void TCSTask::Code()
 	COMPR_Init();
 	COMPR_ChangePreset(0, 0);
 
-	CSTask->DisplayAccess(false);
+	UITask->DisplayAccess(false);
 
 	currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
 
@@ -67,7 +67,7 @@ void TCSTask::Code()
 		adc_init(1);
 	}
 
-	CSTask->DisplayAccess(true);
+	UITask->DisplayAccess(true);
 
 	DSP_GuiSendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
@@ -105,7 +105,7 @@ void TCSTask::Code()
 	Preset::Change();
 
 	send_codec(0xa301);
-	ENCTask->SetEnc(1);
+	IOTask->SetEnc(1);
 
 	sem->Take(portMAX_DELAY);
 	if(DisplayAccess())
@@ -131,20 +131,20 @@ void TCSTask::Code()
 
 			switch(cmd.type)
 			{
-				case CS_REFRESH_MENU:
+				case UI_REFRESH_MENU:
 				{
 					currentMenu->refresh();
 					break;
 				}
 
-				case CS_RUNNING_STRING:
+				case UI_RUNNING_STRING:
 				{
 					StringOutParam *runningString = currentMenu->getRunningString();
 					if(runningString) runningString->task();
 					break;
 				}
 
-				case CS_TASK:
+				case UI_TASK:
 				{
 					if((GPIOA->IDR & GPIO_Pin_9) && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
 					{
@@ -155,7 +155,7 @@ void TCSTask::Code()
 					break;
 				}
 
-				case CS_KEYS_EVENTS:
+				case UI_KEYS_EVENTS:
 				{
 					if(cmd.keysEvents.hold) break;
 
@@ -204,7 +204,7 @@ void TCSTask::Code()
 					break;
 				}
 
-				case CS_ENCODER_EVENTS:
+				case UI_ENCODER_EVENTS:
 				{
 					if(cmd.encoderEvents.pressed)
 						currentMenu->encoderPressed();

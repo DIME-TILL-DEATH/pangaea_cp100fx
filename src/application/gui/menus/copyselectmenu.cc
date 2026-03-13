@@ -1,6 +1,6 @@
 #include "copyselectmenu.h"
 
-#include "display.h"
+#include "../../tasks/display_task.h"
 #include "preset.h"
 #include "eepr.h"
 
