@@ -4,10 +4,9 @@
 #include "appdefs.h"
 
 extern uint8_t cab_type;
-
+extern volatile uint16_t key_reg_in;
 
 extern uint32_t sram_point;
-extern volatile uint8_t blinkFlag_fl;
 extern uint8_t usart_buf[4];
 
 typedef union

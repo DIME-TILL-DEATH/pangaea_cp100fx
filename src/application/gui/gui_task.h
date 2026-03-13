@@ -7,8 +7,6 @@
 
 #include "baseparam.h"
 
-void restartBlinking(uint8_t val);
-
 void gui(void);
 void clean_flag (void);
 

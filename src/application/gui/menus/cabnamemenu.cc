@@ -14,7 +14,7 @@ CabNameMenu::CabNameMenu(AbstractMenu* parent)
 
 void CabNameMenu::task()
 {
-	if(blinkFlag_fl)
+	if(blinkFlag)
 	{
 		if(m_delay)
 		{

@@ -28,14 +28,14 @@ void MidiMapMenu::task()
 {
 	if(!m_encoderKnobSelected)
 	{
-		if(blinkFlag_fl)
+		if(blinkFlag)
 			DisplayTask->Clear_str(3, 0, Font::fntSystem, 3);
 		else
 			DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
 	}
 	else
 	{
-		if(blinkFlag_fl)
+		if(blinkFlag)
 			DisplayTask->Clear_str(36, 0, Font::fntSystem, 3);
 		else
 			DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);

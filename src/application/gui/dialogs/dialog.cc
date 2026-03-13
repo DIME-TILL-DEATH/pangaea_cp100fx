@@ -135,7 +135,7 @@ void Dialog::keyUp()
 
 void Dialog::task()
 {
-	DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, 3*blinkFlag_fl, (uint8_t*)m_btnNames[m_paramNum]);
+	DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, 3*blinkFlag, (uint8_t*)m_btnNames[m_paramNum]);
 }
 
 void Dialog::encoderPressed()

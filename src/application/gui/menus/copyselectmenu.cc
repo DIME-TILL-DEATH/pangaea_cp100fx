@@ -53,7 +53,7 @@ void CopySelectMenu::show(TShowMode showMode)
 
 void CopySelectMenu::task()
 {
-	if(blinkFlag_fl && m_copied)
+	if(blinkFlag && m_copied)
 	{
 		topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
 	}

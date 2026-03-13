@@ -48,14 +48,14 @@ void FswModeMenu::task()
 	{
 		if(!m_parNum)
 		{
-			DisplayTask->StringOut(3, 0, Font::fntSystem, 2 * blinkFlag_fl, &strMode[0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, 2 * blinkFlag, &strMode[0]);
 		}
 		else
 		{
 			if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Double)
-				DisplayTask->StringOut(10+(m_parNum-1)*70, 2 , Font::fntSystem, 2 * blinkFlag_fl, &strReleaseHold[m_parNum-1][0]);
+				DisplayTask->StringOut(10+(m_parNum-1)*70, 2 , Font::fntSystem, 2 * blinkFlag, &strReleaseHold[m_parNum-1][0]);
 			else
-				DisplayTask->StringOut(40, 0, Font::fntSystem, 2 * blinkFlag_fl, &strModeType[0][0]);
+				DisplayTask->StringOut(40, 0, Font::fntSystem, 2 * blinkFlag, &strModeType[0][0]);
 		}
 	}
 }

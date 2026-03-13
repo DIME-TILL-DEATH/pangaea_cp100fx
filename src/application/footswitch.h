@@ -23,5 +23,8 @@ enum FswType
 };
 
 const uint8_t expr_menu_str[][10] = {"Type", "Calibrate", "CC#", "Store Lev"};
+
+void press_execute(uint8_t num);
+void hold_execute(uint8_t num);
 }
 #endif /* SRC_APPLICATION_FOOTSWITCH_H_ */

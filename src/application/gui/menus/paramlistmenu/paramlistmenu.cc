@@ -112,7 +112,7 @@ void ParamListMenu::task()
 	if(!m_encoderKnobSelected)
 	{
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-								blinkFlag_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+								blinkFlag * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 }
 

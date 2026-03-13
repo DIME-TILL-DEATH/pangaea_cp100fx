@@ -79,9 +79,9 @@ void ControllersMenu::task()
 	if(!m_encoderKnobSelected)
 	{
 		if(m_parNum < ControllerMenuParams::MinValue)
-			DisplayTask->StringOut(0, m_parNum, Font::fntSystem, blinkFlag_fl * 2, &strControllersMenu[m_parNum][0]);
+			DisplayTask->StringOut(0, m_parNum, Font::fntSystem, blinkFlag * 2, &strControllersMenu[m_parNum][0]);
 		else
-			DisplayTask->StringOut(0, m_parNum - 3, Font::fntSystem, blinkFlag_fl * 2, &strControllersMenu[m_parNum][0]);
+			DisplayTask->StringOut(0, m_parNum - 3, Font::fntSystem, blinkFlag * 2, &strControllersMenu[m_parNum][0]);
 	}
 }
 

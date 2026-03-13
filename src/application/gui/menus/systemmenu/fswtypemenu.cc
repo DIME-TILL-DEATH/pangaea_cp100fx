@@ -37,7 +37,7 @@ void FswTypeMenu::task()
 {
 	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2 * blinkFlag_fl, (uint8_t*)&strFswMenu[m_parNum]);
+		DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2 * blinkFlag, (uint8_t*)&strFswMenu[m_parNum]);
 	}
 
 }

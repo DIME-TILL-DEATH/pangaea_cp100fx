@@ -26,7 +26,7 @@ void TDisplayTask::Code()
 
 	while(1)
 	{
-		queue->Receive(&cmd, portMAX_DELAY) ;
+		queue->Receive(&cmd, portMAX_DELAY);
 
 		switch(cmd.cmd)
 		{

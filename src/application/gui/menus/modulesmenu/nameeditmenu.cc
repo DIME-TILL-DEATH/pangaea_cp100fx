@@ -44,11 +44,11 @@ void NameEditMenu::task()
 {
 	if(nameCursorPos < 14)
 	{
-		DisplayTask->SymbolOut(nameCursorPos*6+2, 0,Font::fntSystem, blinkFlag_fl*2-encoderKnobPressed, currentPreset.name[nameCursorPos]);
+		DisplayTask->SymbolOut(nameCursorPos*6+2, 0,Font::fntSystem, blinkFlag*2-encoderKnobPressed, currentPreset.name[nameCursorPos]);
 	}
 	else
 	{
-		DisplayTask->SymbolOut((nameCursorPos-14)*6+2 , 1,Font::fntSystem, blinkFlag_fl*2-encoderKnobPressed, currentPreset.comment[(nameCursorPos-14)]);
+		DisplayTask->SymbolOut((nameCursorPos-14)*6+2 , 1,Font::fntSystem, blinkFlag*2-encoderKnobPressed, currentPreset.comment[(nameCursorPos-14)]);
 	}
 
 	if(encoderKnobPressed)
@@ -58,7 +58,7 @@ void NameEditMenu::task()
 		else symbolChart = ascii_high;
 
 		DisplayTask->SymbolOut((symbolCursorPos % chartStringLength)*6, 2 + (symbolCursorPos / chartStringLength),
-										Font::fntSystem, blinkFlag_fl, symbolChart[symbolCursorPos]);
+										Font::fntSystem, blinkFlag, symbolChart[symbolCursorPos]);
 	}
 }
 

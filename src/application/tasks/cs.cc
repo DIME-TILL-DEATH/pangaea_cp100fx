@@ -2,10 +2,8 @@
 
 #include "appdefs.h"
 #include "init.h"
-#include "allFonts.h"
-#include "fs.h"
 #include "eepr.h"
-#include "display.h"
+
 #include "enc.h"
 #include "BF706_send.h"
 
@@ -13,21 +11,16 @@
 #include "usbmenu.h"
 
 #include "preset.h"
+#include "system.h"
 
 #include "compressor.h"
 
-#include "system.h"
 
-#include "console_handlers.h"
-#include "controllers_task.h"
+#include "display.h"
+#include "ER_OLEDM023-1B.h"
+
 
 TCSTask *CSTask;
-
-volatile uint8_t usb_flag = 0;
-
-void oled023_1_disp_init(void);
-void led_disp_write(void);
-extern uint8_t led_buf[];
 
 AbstractMenu *currentMenu = nullptr;
 MainMenu *mainMenu = nullptr;
@@ -127,139 +120,99 @@ void TCSTask::Code()
 	TCSCmd cmd;
 	while(1)
 	{
-		sem->Take(portMAX_DELAY);
 		if(DisplayAccess())
 		{
+			cmdQueue->Receive(&cmd, portMAX_DELAY) ;
 
-			if(cmdQueue->Receive(&cmd, 0) == pdTRUE)
+			switch(cmd.type)
 			{
-				switch(cmd.type)
+				case CS_REFRESH_MENU:
 				{
-					case CS_REFRESH_MENU:
+					currentMenu->refresh();
+					break;
+				}
+
+				case CS_RUNNING_STRING:
+				{
+					break;
+				}
+
+				case CS_TASK:
+				{
+					if((GPIOA->IDR & GPIO_Pin_9) && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
 					{
-						currentMenu->refresh();
+						currentMenu->showChild(usbMenu);
+					}
+
+					currentMenu->task();
+					break;
+				}
+
+				case CS_KEYS_EVENTS:
+				{
+					if(cmd.keysEvents.hold) break;
+
+					if(cmd.keysEvents.keyUp)
+					{
+						currentMenu->keyUp();
 						break;
 					}
 
-					case CS_RUNNING_STRING:
+					if(cmd.keysEvents.keyDown)
 					{
+						currentMenu->keyDown();
 						break;
 					}
+
+					if(cmd.keysEvents.key1)
+					{
+						currentMenu->key1();
+						break;
+					}
+
+					if(cmd.keysEvents.key2)
+					{
+						currentMenu->key2();
+						break;
+					}
+
+					if(cmd.keysEvents.key3)
+					{
+						currentMenu->key3();
+						break;
+					}
+
+					if(cmd.keysEvents.key4)
+					{
+						currentMenu->key4();
+						break;
+					}
+
+					if(cmd.keysEvents.key5)
+					{
+						currentMenu->key5();
+						break;
+					}
+
+					break;
 				}
-			}
-			else
-			{
-				gui();
+
+				case CS_ENCODER_EVENTS:
+				{
+					if(cmd.encoderEvents.pressed)
+						currentMenu->encoderPressed();
+
+					if(cmd.encoderEvents.updated)
+					{
+						if(cmd.encoderEvents.state == ENC_COUNTERCLOCKWISE_STEP)
+							currentMenu->encoderCounterClockwise();
+
+						if(cmd.encoderEvents.state == ENC_CLOCKWISE_STEP)
+							currentMenu->encoderClockwise();
+					}
+					break;
+				}
 			}
 		}
 	}
 }
-
-//------------------------------------------------------------------------------------
-extern ad_data_t adc_data[];
-extern da_data_t dac_data[];
-int32_t __CCM_BSS__ ccl;
-int32_t __CCM_BSS__ ccr;
-volatile uint32_t __CCM_BSS__ cl;
-volatile uint32_t __CCM_BSS__ cr;
-uint8_t dma_ht_fl;
-uint8_t tun_del;
-uint8_t tun_del_val;
-
-#include "spectrum.h"
-
-extern "C" void DMA1_Stream2_IRQHandler()
-{
-	if(tap_temp < 131071) tap_temp += 1;
-
-	if(DMA_GetITStatus(DMA1_Stream2, DMA_IT_HTIF2))
-	{
-		DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_HTIF2);
-		dma_ht_fl = 0;
-	}
-	else
-	{
-		DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_TCIF2);
-		dma_ht_fl = 1;
-	}
-	//GPIO_SetBits(GPIOC,GPIO_Pin_5);
-
-	cr = ror16(adc_data[dma_ht_fl].left.sample);
-	cl = ror16(adc_data[dma_ht_fl].right.sample);
-	ccl = cl;
-	ccl = ccl >> 8;
-	ccr = cr;
-	ccr = ccr >> 8;
-//-------------------------------------------------------
-	float in = ccl * 0.000000119f;
-
-//---------------------Vol indicator----------------------------
-
-	ind_out_l[0] = abs(ccl);
-	if(ind_out_l[0] > ind_out_l[1])
-		ind_out_l[1] = ind_out_l[0];
-
-
-	DisplayTask->VolIndicatorTask();
-
-//--------------------Tuner------------------------------
-	if(currentMenu)
-	{
-		if(currentMenu->menuType() == MENU_TUNER)
-		{
-			SpectrumBuffsUpdate(COMPR_Out(in));
-			if(tun_del > tun_del_val)
-			{
-				tun_del = 0;
-
-				DisplayTask->TunStrel();
-			}
-			tun_del++;
-			return;
-		}
-	}
-
-	if(SpectrumTask)
-	{
-		if(SpectrumTask->backgroundTunerEnabled)
-		{
-			SpectrumBuffsUpdate(COMPR_Out(in));
-			if(tun_del > tun_del_val)
-			{
-				tun_del = 0;
-//				if(!consoleBusy){
-//					BaseType_t HigherPriorityTaskWoken;
-//					char cmd[] = "tn get\r\n";
-//					for (size_t i = 0; i < 8; i++)
-//						ConsoleTask->WriteToInputBuffFromISR(cmd + i, &HigherPriorityTaskWoken);
-//
-//					portYIELD_FROM_ISR(HigherPriorityTaskWoken);
-//				}
-				if(SpectrumTask->samplesCount > 0)
-				{
-					SpectrumTask->samplesCount--;
-					if(ind_out_l[0] > 1500)
-						ConsoleTask->UnsafePrintF("tn get\r%s\r%d\n", SpectrumTask->note_name, SpectrumTask->cents);
-					else
-						ConsoleTask->UnsafePrintF("tn get\r-\r0\n");
-				}
-				else
-				{
-					SpectrumTask->backgroundTunerEnabled = false;
-
-					DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
-					GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-					send_codec(0xa103);
-				}
-			}
-			tun_del++;
-			return;
-		}
-	}
-
-	GPIOB->BSRRH |= GPIO_Pin_11;
-
-	dac_data[dma_ht_fl].left.sample = ror16(cr);
-	dac_data[dma_ht_fl].right.sample = ror16(cr);
-}
-

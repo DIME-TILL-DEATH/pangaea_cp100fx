@@ -38,13 +38,13 @@ void EqMenu::task()
 	if(bandNum<5)
 	{
 		if(!encoderKnobSelected)
-			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], blinkFlag_fl);
+			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], blinkFlag);
 		else
 			DisplayTask->EqIndic(27+bandNum*14, 0, currentPreset.modules.rawData[eq1+bandNum], 1);
 	}
 	else
 	{
-		if(blinkFlag_fl==0)
+		if(blinkFlag==0)
 			DisplayTask->StringOut(6, bandNum-5, Font::fntSystem, 0, (uint8_t*)lpf_hpf+(bandNum-5)*9);
 		else
 			DisplayTask->StringOut(6, bandNum-5, Font::fntSystem, 2, (uint8_t*)lpf_hpf+(bandNum-5)*9);

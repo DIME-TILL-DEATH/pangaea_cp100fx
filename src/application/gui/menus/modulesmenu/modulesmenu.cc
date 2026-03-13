@@ -94,7 +94,7 @@ void ModulesMenu::task()
 		yCoord = 2;
 	}
 
-	if(blinkFlag_fl == 0) DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
+	if(blinkFlag == 0) DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
 	else DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, 2);
 }
 

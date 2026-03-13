@@ -61,11 +61,11 @@ void UsbMenu::task()
 		return;
 	}
 
-	DisplayTask->StringOut(strPositions[m_parNum], m_parNum, Font::fntSystem, 2 * blinkFlag_fl, &strUsbMenu[m_parNum][0]);
+	DisplayTask->StringOut(strPositions[m_parNum], m_parNum, Font::fntSystem, 2 * blinkFlag, &strUsbMenu[m_parNum][0]);
 
 	if(autoconnectOn)
 	{
-		if(blinkFlag_fl)
+		if(blinkFlag)
 		{
 			if(m_countOff > 0)
 			{

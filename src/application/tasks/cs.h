@@ -1,7 +1,7 @@
 #ifndef __CS_H__
+#define __CS_H__
 
 #include "appdefs.h"
-#include "gui_task.h"
 
 #include "fs_browser.h"
 
@@ -83,18 +83,51 @@ public:
 
 	typedef enum{
 		CS_REFRESH_MENU,
-		CS_RUNNING_STRING
+		CS_RUNNING_STRING,
+		CS_TASK,
+		CS_KEYS_EVENTS,
+		CS_ENCODER_EVENTS
 	}TCSCmdType;
 
 	typedef struct{
 		TCSCmdType type;
+
+		union{
+			TKeysEvents keysEvents;
+			TEncoderEvents encoderEvents;
+		};
 	}TCSCmd;
 
 	void refreshMenu(){
 		TCSCmd cmd;
 		cmd.type = CS_REFRESH_MENU;
 		Command(&cmd);
-		Give();
+	}
+
+	void runningString(){
+		TCSCmd cmd;
+		cmd.type = CS_RUNNING_STRING;
+		Command(&cmd);
+	}
+
+	void task(){
+		TCSCmd cmd;
+		cmd.type = CS_TASK;
+		Command(&cmd);
+	}
+
+	void keysEvents(const TKeysEvents& events){
+		TCSCmd cmd;
+		cmd.type = CS_KEYS_EVENTS;
+		cmd.keysEvents = events;
+		Command(&cmd);
+	}
+
+	void encoderEvents(const TEncoderEvents& events){
+		TCSCmd cmd;
+		cmd.type = CS_ENCODER_EVENTS;
+		cmd.encoderEvents = events;
+		Command(&cmd);
 	}
 
 private:
@@ -127,7 +160,6 @@ private:
 
 
 };
-
 extern uint8_t tun_del_val;
 
 extern TCSTask *CSTask;

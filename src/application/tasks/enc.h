@@ -1,14 +1,37 @@
 #ifndef __ENC_H__
+#define __ENC_H__
 
 #include "appdefs.h"
 
-enum
+typedef enum
 {
 	ENC_COUNTERCLOCKWISE_STEP = 1,
 	ENC_CLOCKWISE_STEP
-};
+}TEncStep;
 
-volatile extern uint8_t enc_run;
+typedef struct{
+	uint8_t keyUp; //k_up;
+	uint8_t keyDown; //k_down;
+
+	uint8_t key1; //k_att;
+	uint8_t key2; //k_master;
+	uint8_t key3; //k_master_eq;
+	uint8_t key4; //k_sys;
+	uint8_t key5; //k_tuner;
+
+	uint8_t encPressed;
+	uint8_t	encUpdated;
+	TEncStep encState;
+
+	uint8_t hold;
+}TKeysEvents;
+
+typedef struct{
+	uint8_t pressed;
+	uint8_t	updated;
+	TEncStep state;
+}TEncoderEvents;
+
 class TENCTask: public TTask
 {
 public:
@@ -38,18 +61,13 @@ private:
 	uint8_t enc_run = 0;
 };
 
+void ISR_encoder_read();
+void ISR_buttons_read();
+void ISR_fsw_hold_timer();
+
 extern volatile uint8_t encoder_state;
 extern volatile uint8_t encoder_state_updated;
 extern volatile uint8_t encoder_knob_pressed;
-
-extern uint8_t k_up;
-extern uint8_t k_down;
-
-extern uint8_t k_att;
-extern uint8_t k_master;
-extern uint8_t k_master_eq;
-extern uint8_t k_sys;
-extern uint8_t k_tuner;
 
 extern TENCTask *ENCTask;
 

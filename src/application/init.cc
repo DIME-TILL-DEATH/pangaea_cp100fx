@@ -8,9 +8,11 @@
 
 #include "system.h"
 
+#include "spectrum.h"
+#include "compressor.h"
+
 uint32_t sram_point;
 uint32_t sram_point1;
-volatile uint8_t blinkFlag_fl;
 uint8_t us2_buf[2];
 uint8_t us2_buf1[2] =
 {0xaa, 0x55};
@@ -19,8 +21,10 @@ uint8_t cab_type = 0;
 ad_data_t adc_data[2];
 da_data_t dac_data[2];
 
-extern volatile uint8_t key_reg_out[];
-extern volatile uint16_t key_reg_in;
+
+volatile uint8_t key_reg_out[2] = {0, 0};
+volatile uint16_t key_reg_in;
+
 extern const uint8_t dsp_cod[];
 void adc_calib(void)
 {
@@ -159,8 +163,54 @@ void spi_init(uint8_t type)
 	SPI_Init(SPI2, &SPI_InitStructure);
 	SPI_Cmd(SPI2, ENABLE);
 }
+
+//---------------------------------------------------------------------------
+void eepr_init(void)
+{
+	extern uint8_t sys_para[];
+	sys_para[126] = 127;
+	DIR dir;
+	FATFS fs;
+	FIL file;
+	UINT file_size;
+	FRESULT res;
+	if(f_mount(&fs, "1:", 1)!=FR_OK)
+	{
+		f_mkfs("1:", 0, 0);
+		f_setlabel("PANGEA");
+		f_mount(&fs, "1:", 1);
+	}
+	res = f_opendir(&dir, "1:PRESETS");
+	if(res==FR_OK)
+		f_closedir(&dir);
+	else
+		f_mkdir("1:PRESETS");
+
+	res = f_open(&file, "1:system.pan", FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
+	if(f_size(&file)==0)
+	{
+		sys_para[System::TUNER_EXTERNAL] = 0x81;
+		f_write(&file, sys_para, 512, &file_size);
+	}
+
+	f_read(&file, sys_para, 512, &file_size);
+	f_close(&file);
+	f_mount(0, "1:", 0);
+	if(!sys_para[System::MIDI_PC_IND])
+	{
+		for(uint8_t i = 0; i<128; i++)
+		{
+			if(i<99)
+				sys_para[i+128] = i;
+			else
+				sys_para[i+128] = i-99;
+		}
+		sys_para[System::MIDI_PC_IND] = 1;
+		void write_sys(void);
+		write_sys();
+	}
+}
 //---------------------------------------------------------------------------------------------------------
-void eepr_init(void);
 void init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -534,83 +584,138 @@ void init(void)
 
 	load_mass_imp();
 }
-//---------------------------------------------------------------------------
-void eepr_init(void)
-{
-	extern uint8_t sys_para[];
-	sys_para[126] = 127;
-	DIR dir;
-	FATFS fs;
-	FIL file;
-	UINT file_size;
-	FRESULT res;
-	if(f_mount(&fs, "1:", 1)!=FR_OK)
-	{
-		f_mkfs("1:", 0, 0);
-		f_setlabel("PANGEA");
-		f_mount(&fs, "1:", 1);
-	}
-	res = f_opendir(&dir, "1:PRESETS");
-	if(res==FR_OK)
-		f_closedir(&dir);
-	else
-		f_mkdir("1:PRESETS");
 
-	res = f_open(&file, "1:system.pan", FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
-	if(f_size(&file)==0)
-	{
-		sys_para[System::TUNER_EXTERNAL] = 0x81;
-		f_write(&file, sys_para, 512, &file_size);
-	}
 
-	f_read(&file, sys_para, 512, &file_size);
-	f_close(&file);
-	f_mount(0, "1:", 0);
-	if(!sys_para[System::MIDI_PC_IND])
-	{
-		for(uint8_t i = 0; i<128; i++)
-		{
-			if(i<99)
-				sys_para[i+128] = i;
-			else
-				sys_para[i+128] = i-99;
-		}
-		sys_para[System::MIDI_PC_IND] = 1;
-		void write_sys(void);
-		write_sys();
-	}
-}
-volatile uint8_t encoder_state;
-volatile uint8_t encoder_state_updated;
-volatile uint8_t encoder_knob_pressed;
-
+//==============================ISR EXTI===================================
 extern "C" void EXTI15_10_IRQHandler()
 {
-	if(EXTI_GetITStatus (EXTI_Line14))
+	ISR_encoder_read();
+}
+//==============================ISR DMA================================
+
+extern "C" void DMA1_Stream5_IRQHandler()
+{
+	ISR_buttons_read();
+}
+
+extern ad_data_t adc_data[];
+extern da_data_t dac_data[];
+int32_t __CCM_BSS__ ccl;
+int32_t __CCM_BSS__ ccr;
+volatile uint32_t __CCM_BSS__ cl;
+volatile uint32_t __CCM_BSS__ cr;
+uint8_t dma_ht_fl;
+uint8_t tun_del;
+uint8_t tun_del_val;
+extern "C" void DMA1_Stream2_IRQHandler()
+{
+	if(tap_temp < 131071) tap_temp += 1;
+
+	if(DMA_GetITStatus(DMA1_Stream2, DMA_IT_HTIF2))
 	{
-		uint16_t a = GPIOC->IDR&GPIO_Pin_13;
-		EXTI_ClearITPendingBit(EXTI_Line14);
-		if(drebezg(EXTI_Line14)==1)
+		DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_HTIF2);
+		dma_ht_fl = 0;
+	}
+	else
+	{
+		DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_TCIF2);
+		dma_ht_fl = 1;
+	}
+	//GPIO_SetBits(GPIOC,GPIO_Pin_5);
+
+	cr = ror16(adc_data[dma_ht_fl].left.sample);
+	cl = ror16(adc_data[dma_ht_fl].right.sample);
+	ccl = cl;
+	ccl = ccl >> 8;
+	ccr = cr;
+	ccr = ccr >> 8;
+//-------------------------------------------------------
+	float in = ccl * 0.000000119f;
+
+//---------------------Vol indicator----------------------------
+
+	ind_out_l[0] = abs(ccl);
+	if(ind_out_l[0] > ind_out_l[1])
+		ind_out_l[1] = ind_out_l[0];
+
+
+	DisplayTask->VolIndicatorTask();
+
+//--------------------Tuner------------------------------
+	if(currentMenu)
+	{
+		if(currentMenu->menuType() == MENU_TUNER)
 		{
-			if(a)
-				encoder_state = 1;
-			else
-				encoder_state = 2;
-			encoder_state_updated = 1;
-			TIM_ITConfig(TIM4, TIM_IT_Update, DISABLE);
-			CSTask->Give();
+			SpectrumBuffsUpdate(COMPR_Out(in));
+			if(tun_del > tun_del_val)
+			{
+				tun_del = 0;
+
+				DisplayTask->TunStrel();
+			}
+			tun_del++;
+			return;
 		}
 	}
 
-	if(EXTI_GetITStatus (EXTI_Line15))
+	if(SpectrumTask)
 	{
-		EXTI_ClearITPendingBit(EXTI_Line15);
-		if(drebezg(EXTI_Line15)==1)
+		if(SpectrumTask->backgroundTunerEnabled)
 		{
-			encoder_knob_pressed = 1;
-			blinkFlag_fl = 1;
-			CSTask->Give();
+			SpectrumBuffsUpdate(COMPR_Out(in));
+			if(tun_del > tun_del_val)
+			{
+				tun_del = 0;
+//				if(!consoleBusy){
+//					BaseType_t HigherPriorityTaskWoken;
+//					char cmd[] = "tn get\r\n";
+//					for (size_t i = 0; i < 8; i++)
+//						ConsoleTask->WriteToInputBuffFromISR(cmd + i, &HigherPriorityTaskWoken);
+//
+//					portYIELD_FROM_ISR(HigherPriorityTaskWoken);
+//				}
+				if(SpectrumTask->samplesCount > 0)
+				{
+					SpectrumTask->samplesCount--;
+					if(ind_out_l[0] > 1500)
+						ConsoleTask->UnsafePrintF("tn get\r%s\r%d\n", SpectrumTask->note_name, SpectrumTask->cents);
+					else
+						ConsoleTask->UnsafePrintF("tn get\r-\r0\n");
+				}
+				else
+				{
+					SpectrumTask->backgroundTunerEnabled = false;
+
+					DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
+					GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+					send_codec(0xa103);
+				}
+			}
+			tun_del++;
+			return;
 		}
 	}
+
+	GPIOB->BSRRH |= GPIO_Pin_11;
+
+	dac_data[dma_ht_fl].left.sample = ror16(cr);
+	dac_data[dma_ht_fl].right.sample = ror16(cr);
+}
+
+//==============================ISR Timers=============================
+
+extern "C" void TIM3_IRQHandler()
+{
+	ISR_fsw_hold_timer();
+}
+
+extern "C" void TIM4_IRQHandler()
+{
+	TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
+
+	AbstractMenu::blinkRoutine();
+
+	CSTask->task();
+	CSTask->Give();
 }
 

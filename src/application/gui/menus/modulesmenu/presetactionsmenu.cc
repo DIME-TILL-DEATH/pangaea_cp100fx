@@ -34,7 +34,7 @@ void PresetActionsMenu::show(TShowMode showMode)
 
 void PresetActionsMenu::task()
 {
-	if(blinkFlag_fl==0)
+	if(blinkFlag==0)
 	{
 		bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
 		DisplayTask->Prog_ind(targetPresetNum, filled);

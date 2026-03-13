@@ -37,18 +37,18 @@ void FswControlMenu::task()
 	{
 		if(!m_parNum)
 		{
-			DisplayTask->StringOut(3, 0, Font::fntSystem, 2 * blinkFlag_fl, &Footswitch::expr_menu_str[0][0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, 2 * blinkFlag, &Footswitch::expr_menu_str[0][0]);
 		}
 		else
 		{
 			if((*(m_fswControls.fs)==1) && (m_parNum==1))
 			{
-				DisplayTask->StringOut(52, 2, Font::fntSystem, 2 * blinkFlag_fl, "CC#");
+				DisplayTask->StringOut(52, 2, Font::fntSystem, 2 * blinkFlag, "CC#");
 			}
 			if(*(m_fswControls.fs) > 2)
 			{
 
-				if(blinkFlag_fl)
+				if(blinkFlag)
 				{
 					str_temp[(m_parNum-1)*4] |= 0x80;
 					str_temp[(m_parNum-1)*4+1] |= 0x80;

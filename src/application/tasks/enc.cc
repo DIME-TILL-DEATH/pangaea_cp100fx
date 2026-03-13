@@ -1,41 +1,34 @@
-#include "appdefs.h"
 #include "enc.h"
-#include "eepr.h"
-#include "BF706_send.h"
+
 #include "cs.h"
-#include "fs.h"
-#include "display.h"
 #include "sd_test.h"
-#include "allFonts.h"
-#include "controllers_task.h"
-#include "system.h"
-
-#include "usb.h"
-
 #include "gui_task.h"
 
-#include "preset.h"
+#include "eepr.h"
 #include "footswitch.h"
-#include "midi_task.h"
-#include "tunermenu.h"
-
 #include "system.h"
+#include "init.h"
 
-volatile uint8_t contr_pr[3];
+#define KEY_NO_PRESS_MASK 0x8613
 
-uint8_t k_up = 0;
-uint8_t k_down = 0;
+#define KEY_UP_POS		14
+#define KEY_DOWN_POS	3
+#define KEY1_POS	13
+#define KEY2_POS	12
+#define KEY3_POS	11
+#define KEY4_POS	6
+#define KEY5_POS	5
 
-uint8_t k_att = 0;
-uint8_t k_sys = 0;
-uint8_t k_master = 0;
-uint8_t k_master_eq = 0;
-uint8_t k_tuner = 0;
+#define FSW_DOWN_POS	3
+#define FSW_CONFIRM_POS	7
+#define FSW_UP_POS	8
 
-volatile uint16_t key_reg_in;
-volatile uint8_t key_reg_out[2] = {0, 0};
+volatile uint8_t encoder_state;
+volatile uint8_t encoder_state_updated;
+volatile uint8_t encoder_knob_pressed;
+
 volatile uint16_t key_reg;
-volatile uint8_t num_key_prog;
+
 
 TENCTask *ENCTask;
 //------------------------------------------------------------------------------
@@ -52,269 +45,6 @@ void tim_start(uint16_t del)
 	TIM_Cmd(TIM3, ENABLE);
 }
 
-void fsw_press_execute(uint8_t num)
-{
-	if(currentMenu->menuType() == MENU_TUNER)
-	{
-		currentMenu->keyUp();
-		CSTask->Give();
-	}
-	else
-	{
-		switch(sys_para[System::FSW1_PRESS_TYPE + num])
-		{
-			case Footswitch::Default:
-				if(currentMenu->menuType() == MENU_MAIN)
-				{
-					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
-
-					switch(num)
-					{
-						case 0:
-						{
-							mainMenu->presetDown();
-
-							if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
-									|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
-							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-							}
-							CSTask->Give();
-							break;
-						}
-						case 1:
-						{
-							if(!sys_para[System::SWAP_SWITCH])
-							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-								CSTask->Give();
-							}
-							else
-							{
-								mainMenu->presetUp();
-
-								if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
-										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
-								{
-									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-								}
-								CSTask->Give();
-							}
-						}
-						break;
-						case 2:
-							if(!sys_para[System::SWAP_SWITCH])
-							{
-								mainMenu->presetUp();
-
-								if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
-										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
-								{
-									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-								}
-								CSTask->Give();
-							}
-							else
-							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-							}
-						break;
-					}
-				}
-			break;
-			case Footswitch::Controller:
-				if(!currentPreset.modules.paramData.foot_ind_press[num])
-				{
-					currentPreset.modules.paramData.foot_ind_press[num] = 1;
-					ControllersTask->extCommand(num + 2, 127);
-				}
-				else
-				{
-					currentPreset.modules.paramData.foot_ind_press[num] = 0;
-					ControllersTask->extCommand(num + 2, 0);
-				}
-
-				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num); // refresh в конце
-
-				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
-					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.modules.paramData.foot_ind_press[num]);
-
-			break;
-
-			case Footswitch::Tuner:
-				currentMenu->showChild(new TunerMenu(currentMenu));
-				CSTask->Give();
-			break;
-
-			default: // Preset maps
-				if(currentMenu->menuType() == MENU_MAIN)
-				{
-					if(num_key_prog == num)
-						contr_pr[num]++;
-					if(contr_pr[num] > (sys_para[System::FSW1_PRESS_TYPE + num] - 3))
-						contr_pr[num] = 0;
-
-					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
-					mainMenu->presetChoose(sys_para[System::FSW1_PRESS_PR1 + num * 4 + contr_pr[num]]);
-					num_key_prog = num;
-
-					if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default)
-					{
-						if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
-						{
-							encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-						}
-						else
-						{
-							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default) encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-							else mainMenu->refresh();
-						}
-					}
-					else
-					{
-						mainMenu->refresh();
-					}
-					CSTask->Give();
-				}
-			break;
-		}
-	}
-}
-void fsw_hold_execute(uint8_t num)
-{
-	if(currentMenu->menuType() == MENU_TUNER)
-	{
-		currentMenu->keyUp();
-		CSTask->Give();
-	}
-	else
-	{
-		switch(sys_para[System::FSW1_HOLD_TYPE + num])
-		{
-			case Footswitch::Default:
-			{
-				if(currentMenu->menuType() == MENU_MAIN)
-				{
-					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
-
-					switch(num)
-					{
-						case 0:
-						{
-							mainMenu->presetDown();
-
-							if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
-									|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
-							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-							}
-							CSTask->Give();
-							break;
-						}
-						case 1:
-						{
-							if(!sys_para[System::SWAP_SWITCH])
-							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-								CSTask->Give();
-							}
-							else
-							{
-								mainMenu->presetUp();
-
-								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
-										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
-								{
-									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-								}
-								CSTask->Give();
-							}
-						}
-						break;
-						case 2:
-							if(!sys_para[System::SWAP_SWITCH])
-							{
-								mainMenu->presetUp();
-
-								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
-										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
-								{
-									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-								}
-								CSTask->Give();
-							}
-							else
-							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-							}
-						break;
-					}
-				}
-				break;
-			}
-			case Footswitch:: Controller:
-			{
-				if(!currentPreset.modules.paramData.foot_ind_hold[num])
-				{
-
-					currentPreset.modules.paramData.foot_ind_hold[num] = 1;
-					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 127);
-				}
-				else
-				{
-					currentPreset.modules.paramData.foot_ind_hold[num] = 0;
-					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 0);
-				}
-
-				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num);
-
-				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
-					MidiTask->fswPressed(System::FSW1_CTRL_HOLD_CC + num, currentPreset.modules.paramData.foot_ind_hold[num]);
-
-			break;
-			}
-
-			case Footswitch::Tuner:
-				currentMenu->showChild(new TunerMenu(currentMenu));
-				CSTask->Give();
-			break;
-
-			default:
-				if(currentMenu->menuType() == MENU_MAIN)
-				{
-					if(contr_pr[num] > (sys_para[System::FSW1_HOLD_TYPE + num] - 3))
-						contr_pr[num] = 0;
-
-					MainMenu* mainMenu = static_cast<MainMenu*>(currentMenu);
-					mainMenu->presetChoose(sys_para[System::FSW1_HOLD_PR1 + num * 4 + contr_pr[num]++]);
-
-					if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
-					{
-						if(sys_para[System::FSW2_MODE] == Footswitch::Single)
-						{
-							encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-						}
-						else
-						{
-							if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default) encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-							else mainMenu->refresh();
-						}
-					}
-					else
-					{
-						mainMenu->refresh();
-					}
-					CSTask->Give();
-				}
-			break;
-		}
-	}
-}
-
-uint8_t kn2_in_fl = 0;
-
 uint8_t fsw1_in_press_fl = 0;
 uint8_t fsw2_in_press_fl = 0;
 uint8_t fsw3_in_press_fl = 0;
@@ -329,6 +59,7 @@ void TENCTask::Code()
 	while(!enc_run);
 
 	TIM_Cmd(TIM3, ENABLE);
+
 	while(1)
 	{
 		//---------------------------------------------Run string-------------------------------------
@@ -341,51 +72,17 @@ void TENCTask::Code()
 		}
 		//------------------------------------------Keys------------------------------------------------
 
-		if((key_reg != 31212) && (!kn2_in_fl) && (!fsw1_in_press_fl) && (!fsw2_in_press_fl) && (!fsw3_in_press_fl))
+		if((key_reg != 31212) && (!fsw1_in_press_fl) && (!fsw2_in_press_fl) && (!fsw3_in_press_fl))
 		{
 			tim_start(0xf700);
 			switch(key_reg)
 			{
-				case 14828:
-					k_up = 1;
-					CSTask->Give();
-					kn2_in_fl = 1;
-				break;
-				case 31204:
-					k_down = 1;
-					CSTask->Give();
-					kn2_in_fl = 1;
-				break;
-				case 23020:
-					k_att = 1;
-					CSTask->Give();
-					kn2_in_fl = 1;
-				break;
-				case 31148:
-					k_sys = 1;
-					CSTask->Give();
-					kn2_in_fl = 1;
-				break;
-				case 31180:
-					k_tuner = 1;
-					CSTask->Give();
-					kn2_in_fl = 1;
-				break;
-				case 27116:
-					k_master = 1;
-					CSTask->Give();
-					kn2_in_fl = 1;
-				break;
-				case 29164:
-					k_master_eq = 1;
-					CSTask->Give();
-					kn2_in_fl = 1;
-				break;
+
 				case 30956:
 					fsw1_in_press_fl = 1;
 					if(sys_para[System::FSW1_MODE] == Footswitch::FswMode::Single)
 					{
-						fsw_press_execute(0);
+						Footswitch::press_execute(0);
 					}
 					else
 					{
@@ -400,7 +97,7 @@ void TENCTask::Code()
 					fsw2_in_press_fl = 1;
 					if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
 					{
-						fsw_press_execute(1);
+						Footswitch::press_execute(1);
 					}
 					else
 					{
@@ -413,9 +110,9 @@ void TENCTask::Code()
 				break;    //----------------CONFIRM----------
 				case 31208:
 					fsw3_in_press_fl = 1;
-					if(!sys_para[System::FSW3_MODE])
+					if(sys_para[System::FSW3_MODE] == Footswitch::Single)
 					{
-						fsw_press_execute(2);
+						Footswitch::press_execute(2);
 					}
 					else
 					{
@@ -427,7 +124,6 @@ void TENCTask::Code()
 					}
 				break;    //--------------------UP-----------------
 			}
-			blinkFlag_fl = 1;
 		}
 
 		if(key_reg == 31212)
@@ -438,7 +134,7 @@ void TENCTask::Code()
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
-						fsw_press_execute(0);
+						Footswitch::press_execute(0);
 					tim_start(0xf700);
 					fsw1_in_press_fl = 0;
 				}
@@ -450,7 +146,7 @@ void TENCTask::Code()
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
-						fsw_press_execute(1);
+						Footswitch::press_execute(1);
 					tim_start(0xf700);
 					fsw2_in_press_fl = 0;
 				}
@@ -462,7 +158,7 @@ void TENCTask::Code()
 				{
 					TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 					if(!tim3_end_fl)
-						fsw_press_execute(2);
+						Footswitch::press_execute(2);
 					tim_start(0xf700);
 					fsw3_in_press_fl = 0;
 				}
@@ -471,9 +167,8 @@ void TENCTask::Code()
 
 		if(TIM_GetFlagStatus(TIM3, TIM_FLAG_Update))
 		{
-			//TIM_ClearFlag(TIM3,TIM_FLAG_Update);
 			if(key_reg == 31212)
-				kn2_in_fl = fsw1_in_press_fl = fsw2_in_press_fl = fsw3_in_press_fl = tim3_end_fl = 0;
+				fsw1_in_press_fl = fsw2_in_press_fl = fsw3_in_press_fl = tim3_end_fl = 0;
 		}
 //----------------------------------------------------LED FX-----------------------------------------------
 		uint8_t isLedOn = 0;
@@ -499,22 +194,76 @@ void TENCTask::Code()
 	}
 }
 
-extern "C" void DMA1_Stream5_IRQHandler()
+volatile bool keysHold = false;
+void ISR_buttons_read()
 {
 	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
 	DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
 	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TCIF6);
-	key_reg = key_reg_in & 0x7fff;
+
+	key_reg = ~((key_reg_in & 0x7fff) ^ KEY_NO_PRESS_MASK);
+
+	TKeysEvents keyEvents;
+	keyEvents.hold = keysHold;
+
+	keyEvents.keyUp = (key_reg >> KEY_UP_POS) & 0x1;
+	keyEvents.keyDown = (key_reg >> KEY_DOWN_POS) & 0x1;
+	keyEvents.key1 = (key_reg >> KEY1_POS) & 0x1;
+	keyEvents.key2 = (key_reg >> KEY2_POS) & 0x1;
+	keyEvents.key3 = (key_reg >> KEY3_POS) & 0x1;
+	keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
+	keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
+
+	if(CSTask) CSTask->keysEvents(keyEvents);
+
+	if(key_reg) keysHold = true;
+	else keysHold = false;
+
 	DMA_Cmd(DMA1_Stream6, DISABLE);
 	DMA1_Stream6->NDTR = 2;
 	GPIO_SetBits(GPIOC, GPIO_Pin_4);
 	DMA_Cmd(DMA1_Stream6, ENABLE);
 }
 
-extern "C" void TIM3_IRQHandler()
+void ISR_encoder_read()
+{
+	TEncoderEvents encEvents;
+	encEvents.pressed = 0;
+	encEvents.updated = 0;
+
+	if(EXTI_GetITStatus (EXTI_Line14))
+	{
+		uint16_t a = GPIOC->IDR&GPIO_Pin_13;
+		EXTI_ClearITPendingBit(EXTI_Line14);
+
+		if(drebezg(EXTI_Line14)==1)
+		{
+			if(a) encEvents.state = ENC_COUNTERCLOCKWISE_STEP;
+			else encEvents.state = ENC_CLOCKWISE_STEP;
+
+			encEvents.updated = 1;
+
+			CSTask->encoderEvents(encEvents);
+		}
+	}
+
+	if(EXTI_GetITStatus (EXTI_Line15))
+	{
+		EXTI_ClearITPendingBit(EXTI_Line15);
+		if(drebezg(EXTI_Line15)==1)
+		{
+			encEvents.pressed = 1;
+			CSTask->encoderEvents(encEvents);
+		}
+	}
+}
+
+
+void ISR_fsw_hold_timer()
 {
 	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
+
 	tim3_end_fl = 1;
 	if(fsw1_in_press_fl || fsw2_in_press_fl || fsw3_in_press_fl)
 	{
@@ -522,22 +271,24 @@ extern "C" void TIM3_IRQHandler()
 		{
 			fsw1_in_hold_fl = 1;
 			fsw1_in_press_fl = 0;
-			fsw_hold_execute(0);
+			Footswitch::hold_execute(0);
 			fsw1_in_hold_fl = 0;
 		}
 		if(fsw2_in_press_fl)
 		{
 			fsw2_in_hold_fl = 1;
 			fsw2_in_press_fl = 0;
-			fsw_hold_execute(1);
+			Footswitch::hold_execute(1);
 			fsw2_in_hold_fl = 0;
 		}
 		if(fsw3_in_press_fl)
 		{
 			fsw3_in_hold_fl = 1;
 			fsw3_in_press_fl = 0;
-			fsw_hold_execute(2);
+			Footswitch::hold_execute(2);
 			fsw3_in_hold_fl = 0;
 		}
 	}
 }
+
+

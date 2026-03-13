@@ -8,7 +8,7 @@
 #include "preset.h"
 
 
-
+bool AbstractMenu::blinkFlag = false;
 uint8_t AbstractMenu::subMenusToRoot = 1;
 
 gui_menu_type AbstractMenu::menuType()
@@ -96,4 +96,11 @@ void AbstractMenu::setRunningString(StringOutParam* runningString)
 StringOutParam* AbstractMenu::getRunningString()
 {
 	return m_runningString;
+}
+
+void AbstractMenu::restartBlinking(uint8_t val)
+{
+	TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
+	TIM_SetCounter(TIM4, 0xffff);
+	blinkFlag = val;
 }

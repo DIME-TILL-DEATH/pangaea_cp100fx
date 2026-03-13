@@ -5,6 +5,8 @@
 
 #include "stringoutparam.h"
 
+#include "enc.h"
+
 enum gui_menu_type
 {
 	MENU_MAIN,
@@ -97,6 +99,8 @@ public:
 	virtual void key4() {};
 	virtual void key5() {};
 
+	virtual void combinationalEvent(const TKeysEvents& keyEvents) {};
+
 	gui_menu_type menuType();
 
 	void setTopLevelMenu(AbstractMenu* parent);
@@ -104,6 +108,10 @@ public:
 
 	void setRunningString(StringOutParam* strings);
 	StringOutParam* getRunningString();
+
+	static void blinkRoutine() { blinkFlag = !blinkFlag; };
+
+	void restartBlinking(uint8_t val);
 
 protected:
 	AbstractMenu* topLevelMenu = nullptr;
@@ -114,6 +122,7 @@ protected:
 	StringOutParam* m_runningString = nullptr;
 
 	static uint8_t subMenusToRoot;
+	static bool blinkFlag;
 };
 
 extern AbstractMenu* currentMenu;

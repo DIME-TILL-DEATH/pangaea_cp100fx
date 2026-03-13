@@ -51,7 +51,7 @@ void EqGraphMenu::task()
 {
 	if(!encoderKnobSelected)
 	{
-		DisplayTask->StringOut(0, paramNum, Font::fntSystem, blinkFlag_fl * 2, (uint8_t*)&paramNames[paramNum]);
+		DisplayTask->StringOut(0, paramNum, Font::fntSystem, blinkFlag * 2, (uint8_t*)&paramNames[paramNum]);
 	}
 
 	if(updateResponse)

@@ -56,17 +56,17 @@ void ExpressionMenu::task()
 	switch(m_menuState)
 	{
 		case ParamChoice:
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2*blinkFlag_fl, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
+			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2*blinkFlag, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
 		break;
 
 		case ParamTuning: break;
 
 		case CalMin:
-			DisplayTask->StringOut(67, 1, Font::fntSystem, 2*blinkFlag_fl, (uint8_t*)strSetMin);
+			DisplayTask->StringOut(67, 1, Font::fntSystem, 2*blinkFlag, (uint8_t*)strSetMin);
 		break;
 
 		case CalMax:
-			DisplayTask->StringOut(67, 1, Font::fntSystem, 2*blinkFlag_fl, (uint8_t*)strSetMmax);
+			DisplayTask->StringOut(67, 1, Font::fntSystem, 2*blinkFlag, (uint8_t*)strSetMmax);
 		break;
 	}
 }
