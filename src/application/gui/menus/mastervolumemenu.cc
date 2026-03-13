@@ -1,7 +1,6 @@
 #include "mastervolumemenu.h"
 
 #include "eepr.h"
-#include "gui_task.h"
 
 #include "system.h"
 

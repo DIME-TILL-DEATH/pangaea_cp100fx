@@ -2,9 +2,6 @@
 #define SRC_APPLICATION_CONSOLE_CONSOLE_HELPERS_H_
 
 #include "appdefs.h"
-
-#include "gui_task.h"
-
 #include "preset.h"
 
 static const char hexes[] = "0123456789abcdef";

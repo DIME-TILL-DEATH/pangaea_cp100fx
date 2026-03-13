@@ -6,8 +6,6 @@
 #include "enc.h"
 #include "eepr.h"
 
-#include "gui_task.h"
-
 #include "footswitch.h"
 
 const uint8_t FswControlMenu::presetNumPos[4];

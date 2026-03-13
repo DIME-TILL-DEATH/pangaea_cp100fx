@@ -6,16 +6,16 @@
 #include "cs.h"
 #include "AT45DB321.h"
 
+#include "sd_test.h"
+
 #include "system.h"
+
+#include "midi_task.h"
 
 #include "spectrum.h"
 #include "compressor.h"
 
-uint32_t sram_point;
-uint32_t sram_point1;
-uint8_t us2_buf[2];
-uint8_t us2_buf1[2] =
-{0xaa, 0x55};
+
 uint8_t cab_type = 0;
 
 ad_data_t adc_data[2];
@@ -287,8 +287,8 @@ void init(void)
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_USART2);
 
-	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource9);
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource8);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource9);
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource13);
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource14);
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource15);
@@ -299,9 +299,6 @@ void init(void)
 
 	EXTI_InitStruct.EXTI_Line = EXTI_Line9;
 	EXTI_Init(&EXTI_InitStruct);
-
-	//EXTI_InitStruct.EXTI_Line = EXTI_Line13;
-	//EXTI_Init(&EXTI_InitStruct);
 
 	EXTI_InitStruct.EXTI_Line = EXTI_Line14;
 	EXTI_Init(&EXTI_InitStruct);
@@ -439,11 +436,13 @@ void init(void)
 	DMA_Cmd(DMA1_Stream5, ENABLE);
 	DMA_Cmd(DMA1_Stream6, ENABLE);
 
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3|RCC_APB1Periph_TIM4|RCC_APB1Periph_TIM6|RCC_APB1Periph_TIM14, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3|RCC_APB1Periph_TIM4|RCC_APB1Periph_TIM5|
+			RCC_APB1Periph_TIM6|RCC_APB1Periph_TIM14, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
 
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 
+	// FSW hold timer
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;
 	TIM_TimeBaseStructure.TIM_Prescaler = 0x1fff;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
@@ -452,11 +451,37 @@ void init(void)
 	TIM_SelectOnePulseMode(TIM3, TIM_OPMode_Single);
 	TIM_SetCounter(TIM3, 0);
 
+	// Blink timer
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;
 	TIM_TimeBaseStructure.TIM_Prescaler = 0x200;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+
+	// Running string timer
+	TIM_TimeBaseStructure.TIM_Period = 0x4fff;
+	TIM_TimeBaseStructure.TIM_Prescaler = 0x750;
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);
+
+	// Encoder speed up timer
+	TIM_TimeBaseStructure.TIM_Period = 0xffff;
+	TIM_TimeBaseStructure.TIM_Prescaler = 0xff;
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
+	TIM_SelectOnePulseMode(TIM6, TIM_OPMode_Single);
+	TIM_SetCounter(TIM6, 0);
+
+	// Anti-drebezg timer
+	TIM_TimeBaseStructure.TIM_Period = 0xffff;
+	TIM_TimeBaseStructure.TIM_Prescaler = 5;
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM9, &TIM_TimeBaseStructure);
+	TIM_SelectOnePulseMode(TIM9, TIM_OPMode_Single);
+	TIM_Cmd(TIM9, ENABLE);
 
 	// MIDI Timing clock timer
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;
@@ -466,22 +491,6 @@ void init(void)
 	TIM_TimeBaseInit(TIM14, &TIM_TimeBaseStructure);
 	TIM_SelectOnePulseMode(TIM14, TIM_OPMode_Single);
 	TIM_SetCounter(TIM14, 0);
-
-	TIM_TimeBaseStructure.TIM_Period = 0xffff;
-	TIM_TimeBaseStructure.TIM_Prescaler = 0xff;
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
-	TIM_SelectOnePulseMode(TIM6, TIM_OPMode_Single);
-	TIM_SetCounter(TIM6, 0);
-
-	TIM_TimeBaseStructure.TIM_Period = 0xffff;
-	TIM_TimeBaseStructure.TIM_Prescaler = 5;
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(TIM9, &TIM_TimeBaseStructure);
-	TIM_SelectOnePulseMode(TIM9, TIM_OPMode_Single);
-	TIM_Cmd(TIM9, ENABLE);
 
 	NVIC_PriorityGroupConfig (NVIC_PriorityGroup_4);
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -493,6 +502,10 @@ void init(void)
 
 	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
+	NVIC_Init(&NVIC_InitStructure);
+
+	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
 	NVIC_Init(&NVIC_InitStructure);
 
 	NVIC_InitStructure.NVIC_IRQChannel = DMA1_Stream2_IRQn;
@@ -589,6 +602,13 @@ void init(void)
 //==============================ISR EXTI===================================
 extern "C" void EXTI15_10_IRQHandler()
 {
+	if(EXTI_GetITStatus(EXTI_Line8))
+	{
+		EXTI_ClearITPendingBit(EXTI_Line8);
+
+		if(SD_TESTTask) SD_TESTTask->Give();
+	}
+
 	ISR_encoder_read();
 }
 //==============================ISR DMA================================
@@ -716,6 +736,17 @@ extern "C" void TIM4_IRQHandler()
 	AbstractMenu::blinkRoutine();
 
 	CSTask->task();
-	CSTask->Give();
 }
 
+extern "C" void TIM5_IRQHandler()
+{
+	TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
+
+	CSTask->runningString();
+}
+
+//==============================ISR USART================================
+extern "C" void USART1_IRQHandler()
+{
+	ISR_midi_recieve();
+}

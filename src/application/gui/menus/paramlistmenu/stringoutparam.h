@@ -19,6 +19,7 @@ public:
 	void printParam(uint8_t yPos) override;
 
 	void setRunning(bool enable, AbstractMenu* owner);
+	void resetRunning();
 
 	void task();
 
@@ -31,10 +32,6 @@ private:
 
 	uint8_t m_symbolOffset{0};
 
-//	static constexpr uint8_t bufSize = 32;
-//	uint8_t m_nameBuffer[bufSize];
-
-	uint32_t m_timeThreshold{150000};
 	uint32_t m_timeCounter{0};
 };
 

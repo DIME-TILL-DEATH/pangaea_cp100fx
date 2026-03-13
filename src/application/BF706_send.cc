@@ -1,7 +1,8 @@
 #include "appdefs.h"
 #include "BF706_send.h"
 #include "eepr.h"
-#include "gui_task.h"
+
+#include "cs.h"
 
 #include "system.h"
 

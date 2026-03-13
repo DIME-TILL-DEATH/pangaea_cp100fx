@@ -1,8 +1,6 @@
 #include "icon_bit.h"
 
 #include "allFonts.h"
-#include "../gui_task.h"
-#include "../menus/abstractmenu.h"
 
 const uint8_t icon_bit[] =
 {

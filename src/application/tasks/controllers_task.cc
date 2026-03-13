@@ -9,7 +9,6 @@
 #include "system.h"
 
 #include "allFonts.h"
-#include "gui_task.h"
 #include "modulesmenu.h"
 
 #include "controller.h"

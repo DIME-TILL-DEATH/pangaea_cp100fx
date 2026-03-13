@@ -2,7 +2,6 @@
 
 #include "cs.h"
 #include "sd_test.h"
-#include "gui_task.h"
 
 #include "eepr.h"
 #include "footswitch.h"
@@ -62,14 +61,6 @@ void TENCTask::Code()
 
 	while(1)
 	{
-		//---------------------------------------------Run string-------------------------------------
-		if(currentMenu)
-		{
-
-			StringOutParam *runningString = currentMenu->getRunningString();
-			if(runningString)
-				runningString->task();
-		}
 		//------------------------------------------Keys------------------------------------------------
 
 		if((key_reg != 31212) && (!fsw1_in_press_fl) && (!fsw2_in_press_fl) && (!fsw3_in_press_fl))
@@ -184,13 +175,6 @@ void TENCTask::Code()
 			GPIO_SetBits(GPIOB, GPIO_Pin_14);
 		else
 			GPIO_ResetBits(GPIOB, GPIO_Pin_14);
-
-//----------------------------------------------------Test SD------------------------------------------------
-		if(EXTI_GetITStatus (EXTI_Line8))
-		{
-			EXTI_ClearITPendingBit(EXTI_Line8);
-			SD_TESTTask->Give();
-		}
 	}
 }
 

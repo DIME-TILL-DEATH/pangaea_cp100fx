@@ -115,6 +115,11 @@ void TCSTask::Code()
 
 		currentMenu = mainMenu;
 		mainMenu->show();
+
+		//enable running string timer
+		TIM_SetCounter(TIM4, 0);
+		TIM_Cmd(TIM5, ENABLE);
+		TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
 	}
 
 	TCSCmd cmd;
@@ -122,7 +127,7 @@ void TCSTask::Code()
 	{
 		if(DisplayAccess())
 		{
-			cmdQueue->Receive(&cmd, portMAX_DELAY) ;
+			cmdQueue->Receive(&cmd, portMAX_DELAY);
 
 			switch(cmd.type)
 			{
@@ -134,6 +139,8 @@ void TCSTask::Code()
 
 				case CS_RUNNING_STRING:
 				{
+					StringOutParam *runningString = currentMenu->getRunningString();
+					if(runningString) runningString->task();
 					break;
 				}
 

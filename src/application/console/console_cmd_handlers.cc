@@ -9,7 +9,6 @@
 #include "init.h"
 
 #include "controller.h"
-#include "gui_task.h"
 #include "midi_task.h"
 
 #include "system.h"

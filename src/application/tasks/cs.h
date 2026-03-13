@@ -164,6 +164,7 @@ extern uint8_t tun_del_val;
 
 extern TCSTask *CSTask;
 
+extern AbstractMenu *currentMenu;
 extern MainMenu *mainMenu;
 extern UsbMenu *usbMenu;
 

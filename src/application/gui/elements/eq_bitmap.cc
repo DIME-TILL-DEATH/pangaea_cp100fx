@@ -4,7 +4,6 @@
 #include "filter.h"
 #include "allFonts.h"
 #include "eepr.h"
-#include "gui_task.h"
 #include "icon_bit.h"
 
 #include "modules.h"

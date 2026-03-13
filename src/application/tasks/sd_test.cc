@@ -3,9 +3,6 @@
 #include "sdio_sd.h"
 #include "fs.h"
 
-//void SD_DeInit(void);
-//SD_Error SD_Init(void);
-
 
 uint8_t TSD_TESTTask::sdInitState = 0;
 
@@ -16,6 +13,7 @@ TSD_TESTTask::TSD_TESTTask() :
 		TTask()
 {
 }
+
 void TSD_TESTTask::Code()
 {
 	sem = new TSemaphore(TSemaphore::fstCounting, 4, 0);

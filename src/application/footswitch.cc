@@ -14,8 +14,6 @@
 
 #include "usb.h"
 
-#include "gui_task.h"
-
 #include "preset.h"
 #include "footswitch.h"
 #include "midi_task.h"
@@ -29,6 +27,10 @@ volatile uint8_t contr_pr[3];
 
 void Footswitch::press_execute(uint8_t num)
 {
+	TEncoderEvents encEvents;
+	encEvents.pressed = 0;
+	encEvents.updated = 0;
+
 	if(currentMenu->menuType() == MENU_TUNER)
 	{
 		currentMenu->keyUp();
@@ -52,9 +54,9 @@ void Footswitch::press_execute(uint8_t num)
 							if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
 									|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+								encEvents.pressed = 1;
+								CSTask->encoderEvents(encEvents);
 							}
-							CSTask->Give();
 							break;
 						}
 						case 1:
@@ -71,9 +73,9 @@ void Footswitch::press_execute(uint8_t num)
 								if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
-									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+									encEvents.pressed = 1;
+									CSTask->encoderEvents(encEvents);
 								}
-								CSTask->Give();
 							}
 						}
 						break;
@@ -85,13 +87,14 @@ void Footswitch::press_execute(uint8_t num)
 								if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
-									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+									encEvents.pressed = 1;
+									CSTask->encoderEvents(encEvents);
 								}
-								CSTask->Give();
 							}
 							else
 							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+								encEvents.pressed = 1;
+								CSTask->encoderEvents(encEvents);
 							}
 						break;
 					}
@@ -119,7 +122,7 @@ void Footswitch::press_execute(uint8_t num)
 
 			case Footswitch::Tuner:
 				currentMenu->showChild(new TunerMenu(currentMenu));
-				CSTask->Give();
+				CSTask->task();
 			break;
 
 			default: // Preset maps
@@ -138,17 +141,22 @@ void Footswitch::press_execute(uint8_t num)
 					{
 						if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
 						{
-							encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+							encEvents.pressed = 1;
+							CSTask->encoderEvents(encEvents);
 						}
 						else
 						{
-							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default) encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-							else mainMenu->refresh();
+							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
+							{
+								encEvents.pressed = 1;
+								CSTask->encoderEvents(encEvents);
+							}
+							else CSTask->refreshMenu();
 						}
 					}
 					else
 					{
-						mainMenu->refresh();
+						CSTask->refreshMenu();
 					}
 					CSTask->Give();
 				}
@@ -159,10 +167,14 @@ void Footswitch::press_execute(uint8_t num)
 
 void Footswitch::hold_execute(uint8_t num)
 {
+	TEncoderEvents encEvents;
+	encEvents.pressed = 0;
+	encEvents.updated = 0;
+
 	if(currentMenu->menuType() == MENU_TUNER)
 	{
 		currentMenu->keyUp();
-		CSTask->Give();
+		CSTask->task();
 	}
 	else
 	{
@@ -183,17 +195,17 @@ void Footswitch::hold_execute(uint8_t num)
 							if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
 									|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+								encEvents.pressed = 1;
+								CSTask->encoderEvents(encEvents);
 							}
-							CSTask->Give();
 							break;
 						}
 						case 1:
 						{
 							if(!sys_para[System::SWAP_SWITCH])
 							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-								CSTask->Give();
+								encEvents.pressed = 1;
+								CSTask->encoderEvents(encEvents);
 							}
 							else
 							{
@@ -202,9 +214,9 @@ void Footswitch::hold_execute(uint8_t num)
 								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
-									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+									encEvents.pressed = 1;
+									CSTask->encoderEvents(encEvents);
 								}
-								CSTask->Give();
 							}
 						}
 						break;
@@ -216,13 +228,14 @@ void Footswitch::hold_execute(uint8_t num)
 								if((sys_para[System::FSW2_HOLD_TYPE] && !sys_para[System::SWAP_SWITCH])
 										|| (sys_para[System::FSW3_HOLD_TYPE] && sys_para[System::SWAP_SWITCH]))
 								{
-									encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+									encEvents.pressed = 1;
+									CSTask->encoderEvents(encEvents);
 								}
-								CSTask->Give();
 							}
 							else
 							{
-								encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+								encEvents.pressed = 1;
+								CSTask->encoderEvents(encEvents);
 							}
 						break;
 					}
@@ -270,19 +283,23 @@ void Footswitch::hold_execute(uint8_t num)
 					{
 						if(sys_para[System::FSW2_MODE] == Footswitch::Single)
 						{
-							encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
+							encEvents.pressed = 1;
+							CSTask->encoderEvents(encEvents);
 						}
 						else
 						{
-							if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default) encoder_knob_pressed = 1; // Thread sync mainMenu->presetConfirm();
-							else mainMenu->refresh();
+							if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default)
+							{
+								encEvents.pressed = 1;
+								CSTask->encoderEvents(encEvents);
+							}
+							else CSTask->refreshMenu();
 						}
 					}
 					else
 					{
-						mainMenu->refresh();
+						CSTask->refreshMenu();
 					}
-					CSTask->Give();
 				}
 			break;
 		}

@@ -2,7 +2,6 @@
 
 #include "system.h"
 #include "eepr.h"
-#include "gui_task.h"
 
 #include "stringlistparam.h"
 

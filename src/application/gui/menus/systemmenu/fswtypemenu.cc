@@ -8,8 +8,6 @@
 
 #include "fswmodemenu.h"
 
-#include "gui_task.h"
-
 #include "system.h"
 
 const uint8_t FswTypeMenu::strFswMenu[][12];
@@ -39,7 +37,6 @@ void FswTypeMenu::task()
 	{
 		DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2 * blinkFlag, (uint8_t*)&strFswMenu[m_parNum]);
 	}
-
 }
 
 void FswTypeMenu::encoderPressed()

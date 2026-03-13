@@ -114,4 +114,6 @@ void adc_proc(void);
 
 extern TMidiTask *MidiTask;
 
+void ISR_midi_recieve();
+
 #endif /* __MIDI_SEND_H__ */

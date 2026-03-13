@@ -10,8 +10,6 @@
 
 #include "system.h"
 
-#include "gui_task.h"
-
 const uint8_t FswModeMenu::strMode[];
 const uint8_t FswModeMenu::strModeType[][7];
 const uint8_t FswModeMenu::strReleaseHold[][10];

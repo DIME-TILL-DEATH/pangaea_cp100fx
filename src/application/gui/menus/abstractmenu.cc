@@ -3,7 +3,6 @@
 #include "eepr.h"
 
 #include "display.h"
-#include "gui_task.h"
 
 #include "preset.h"
 

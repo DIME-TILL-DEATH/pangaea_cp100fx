@@ -70,8 +70,6 @@ void ParamListMenu::show(TShowMode showMode)
 	{
 		m_currentPageNumber = -1;
 
-//		for(int a=0; a<m_paramsCount; a++) m_paramsList[a]->setDisabled(0); //cleanup
-
 		for(int i = 0; i<m_paramsCount; i++)
 		{
 			if(m_paramsList[i]->type() == BaseParam::GUI_PARAMETER_LIST)
@@ -98,6 +96,9 @@ void ParamListMenu::show(TShowMode showMode)
 
 	printPage(true);
 	DisplayTask->SetVolIndicator(m_volIndicatorType, m_indicatorSource, m_indicatorParam_ptr);
+
+	StringOutParam* runningString = getRunningString();
+	if(runningString) runningString->resetRunning();
 }
 
 void ParamListMenu::refresh()

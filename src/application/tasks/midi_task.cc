@@ -1,6 +1,5 @@
 #include "display.h"
 #include "enc.h"
-#include "gui_task.h"
 #include "cs.h"
 #include "eepr.h"
 #include "BF706_send.h"
@@ -229,7 +228,7 @@ uint16_t midi_clk_buf[32];
 uint16_t midi_clk_data[clk_data_size];
 uint8_t midi_clk_pos = 0;
 volatile uint8_t sysEx_fl = 0;
-extern "C" void USART1_IRQHandler()
+void ISR_midi_recieve()
 {
 	uint8_t uart_buf = USART1->DR; // auto drop USART_IT_RXNE
 

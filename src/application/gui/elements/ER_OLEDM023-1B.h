@@ -3,8 +3,6 @@
 
 #include "appdefs.h"
 
-#include "gui_task.h"
-
 #define CS GPIO_Pin_1
 #define RS GPIO_Pin_0
 
@@ -18,8 +16,9 @@ void Set_Col_Pag_Adress(uint8_t col,uint8_t pag);
 void oled023_1_disp_clear(void);
 void led_disp_write(void);
 void write_pot(void);
+
+
 extern uint8_t pot_val;
 extern uint8_t sys_para[];
-//extern const uint16_t att_db_num [56];
 
 #endif /* ER_OLEDM023_1B_H_ */
