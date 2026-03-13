@@ -31,7 +31,7 @@ private:
 	static constexpr uint8_t strOk[] = "Ok";
 	static constexpr uint8_t strSetMin[] = "Set to min";
 	static constexpr uint8_t strSetMmax[] = "Set to max";
-	static constexpr uint8_t strExprType[][12] = {"   Off     ", "Standard V ", "Alternat V ", "Standard CC", "Alternat CC"};
+	static constexpr uint8_t strExprType[][12] = {"   Off     ", "Std. Volume", "Alt. Volume", "Std. CC    ", "Alt. CC    "};
 
 };
 
