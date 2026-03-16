@@ -487,7 +487,7 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
 
 		uint8_t enabled[14];
-		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);
+		kgp_sdk_libc::memcpy(enabled, &presetData.modules.switches, 14);
 		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
 	}
 	msg_console("\n");
@@ -540,7 +540,7 @@ static void pbrief_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 		msg_console("\r%d|%s|%s|%s|%s|", presetNum, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
 
 		uint8_t enabled[14];
-		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);
+		kgp_sdk_libc::memcpy(enabled, &presetData.modules.switches, 14);
 		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
 
 		msg_console("\n");

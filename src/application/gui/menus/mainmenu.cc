@@ -37,6 +37,7 @@ void MainMenu::show(TShowMode swhoMode)
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	m_preselectedPresetNum = currentPresetNumber;
+	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 
 	DisplayTask->Clear();
 	refresh();
@@ -48,20 +49,18 @@ void MainMenu::task()
 	{
 		if(blinkFlag == 0)
 		{
-			bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
+			bool filled = m_selectedPresetBrief.cab1Name[0]
+							|| (cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
 			DisplayTask->Prog_ind(m_preselectedPresetNum, filled);
 		}
 		else
 		{
-			if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update) == 1)
-				DisplayTask->Clear_str(87 , 0 , Font::fnt33x30 , 39);
+			DisplayTask->Clear_str(87 , 0 , Font::fnt33x30 , 39);
 		}
+		DisplayTask->IndFoot(0, m_selectedPresetBrief.modules.foot_ind_press[0], m_selectedPresetBrief.modules.foot_ind_hold[0]);
+		DisplayTask->IndFoot(1, m_selectedPresetBrief.modules.foot_ind_press[1], m_selectedPresetBrief.modules.foot_ind_hold[1]);
+		DisplayTask->IndFoot(2, m_selectedPresetBrief.modules.foot_ind_press[2], m_selectedPresetBrief.modules.foot_ind_hold[2]);
 	}
-
-//	if((sys_para[System::FSW1_PRESS_TYPE] == 1) || ((sys_para[System::FSW1_HOLD_TYPE] == 1) && sys_para[System::FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0);
-//	if((sys_para[System::FSW2_PRESS_TYPE] == 1) || ((sys_para[System::FSW2_HOLD_TYPE] == 1) && sys_para[System::FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1);
-//	if((sys_para[System::FSW3_PRESS_TYPE] == 1) || ((sys_para[System::FSW3_HOLD_TYPE] == 1) && sys_para[System::FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2);
-
 }
 
 void MainMenu::encoderPressed()
@@ -100,9 +99,6 @@ void MainMenu::keyUp()
 void MainMenu::keyDown()
 {
 	if(m_preselectedPresetNum != currentPresetNumber) return;
-
-//	shownChildMenu = &modulesMenu;
-//	modulesMenu.show();
 
 	shownChildMenu = new ModulesMenu(this);
 	shownChildMenu->show();
@@ -172,22 +168,29 @@ void MainMenu::key5()
 
 void MainMenu::refresh()
 {
-	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
-
 	DisplayTask->Clear_str(2, 0, Font::fntSystem, 14);
 	DisplayTask->Clear_str(2, 1, Font::fntSystem, 14);
 
 	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.name);
 	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.comment);
 
-	bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
+	bool filled;
+	if(currentPresetNumber != m_preselectedPresetNum)
+	{
+		filled = m_selectedPresetBrief.cab1Name[0]
+				|| (cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+	}
+	else
+	{
+		filled = cab1.name.size
+				|| (cab_type == CAB_CONFIG_STEREO ? cab2.name.size : 0);
+	}
 
 	DisplayTask->Prog_ind(m_preselectedPresetNum, filled);
 
-	if((sys_para[System::FSW1_PRESS_TYPE] == 1) || ((sys_para[System::FSW1_HOLD_TYPE] == 1) && sys_para[System::FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0);
-	if((sys_para[System::FSW2_PRESS_TYPE] == 1) || ((sys_para[System::FSW2_HOLD_TYPE] == 1) && sys_para[System::FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1);
-	if((sys_para[System::FSW3_PRESS_TYPE] == 1) || ((sys_para[System::FSW3_HOLD_TYPE] == 1) && sys_para[System::FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2);
-
+	DisplayTask->IndFoot(0, currentPreset.modules.paramData.foot_ind_press[0], currentPreset.modules.paramData.foot_ind_hold[0]);
+	DisplayTask->IndFoot(1, currentPreset.modules.paramData.foot_ind_press[1], currentPreset.modules.paramData.foot_ind_hold[1]);
+	DisplayTask->IndFoot(2, currentPreset.modules.paramData.foot_ind_press[2], currentPreset.modules.paramData.foot_ind_hold[2]);
 }
 
 void MainMenu::presetUp()
@@ -195,12 +198,10 @@ void MainMenu::presetUp()
 	if(m_preselectedPresetNum == 98) m_preselectedPresetNum = 0;
 	else m_preselectedPresetNum++;
 
+	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 	refresh();
 
-	restartBlinking(0);
-	TIM_SetCounter(TIM6, 0x8000);
-	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
-	TIM_Cmd(TIM6, ENABLE);
+	restartBlinking(1);
 }
 
 void MainMenu::presetDown()
@@ -208,12 +209,10 @@ void MainMenu::presetDown()
 	if(m_preselectedPresetNum == 0) m_preselectedPresetNum = 98;
 	else m_preselectedPresetNum -= 1;
 
+	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 	refresh();
 
-	restartBlinking(0);
-	TIM_SetCounter(TIM6,0xa000);
-	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
-	TIM_Cmd(TIM6,ENABLE);
+	restartBlinking(1);
 }
 
 void MainMenu::presetChoose(uint8_t presetNum)
@@ -226,7 +225,7 @@ void MainMenu::presetConfirm()
 {
 	currentPresetNumber = m_preselectedPresetNum;
 
-	refresh();
+	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 
 	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
 	Preset::Change();

@@ -224,8 +224,8 @@ typedef struct
 
     uint8_t reverb_predelay;
 
-    uint8_t foot_ind_press[3]; // /*foot ind*/fo1,fo2,fo3
-    uint8_t foot_ind_hold[3]; // /*foot ind*/fo11,fo12,fo13
+    uint8_t foot_ind_press[3];
+    uint8_t foot_ind_hold[3];
 
     uint8_t tremolo_lfo_type;
 
@@ -284,10 +284,14 @@ typedef struct
 	uint8_t name[15];
 	uint8_t comment[15];
 
-	TEnableData switches;
+//	TEnableData switches;
+	TModulesData modules;
 
 	char cab1Name[64];
 	char cab2Name[64];
+
+	uint8_t foot_ind_press[3];
+	uint8_t foot_ind_hold[3];
 }TPresetBrief;
 
 extern uint8_t impulsePath[];

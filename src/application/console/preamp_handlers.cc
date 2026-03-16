@@ -42,7 +42,7 @@ static void preamp_high_command_handler(TReadLine* rl, TReadLine::const_symbol_t
 
 void set_preamp_handlers(TReadLine *rl)
 {
-	rl->AddCommandHandler("pr_on",  preamp_on_command_handler);
+	rl->AddCommandHandler(preamp_on_string,  preamp_on_command_handler);
 	rl->AddCommandHandler("pr_gn",  preamp_gain_command_handler);
 	rl->AddCommandHandler("pr_vl",  preamp_volume_command_handler);
 	rl->AddCommandHandler("pr_lo",  preamp_low_command_handler);

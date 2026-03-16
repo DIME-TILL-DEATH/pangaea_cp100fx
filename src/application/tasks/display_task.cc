@@ -219,7 +219,7 @@ void TDisplayTask::Code()
 			break;
 
 			case dcInd_foot:
-				ind_foot(cmd.Ind_footParam.num);
+				ind_foot(cmd.Ind_footParam.num, cmd.Ind_footParam.pressState, cmd.Ind_footParam.holdState);
 			break;
 
 			case dcReset:
@@ -236,11 +236,13 @@ void TDisplayTask::Code()
     }
 }
 
-void TDisplayTask::IndFoot(uint8_t num)
+void TDisplayTask::IndFoot(uint8_t num, uint8_t pressState, uint8_t holdState)
 {
 	TDisplayCmd cmd ;
 	cmd.cmd=dcInd_foot;
 	cmd.Ind_footParam.num = num;
+	cmd.Ind_footParam.pressState = pressState;
+	cmd.Ind_footParam.holdState = holdState;
 	Command(&cmd);
 }
 void TDisplayTask::WriteReg(TWriteRegDest dest , uint32_t data )

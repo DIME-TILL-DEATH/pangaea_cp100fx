@@ -37,6 +37,8 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		case Controller::Dst::PreampOnOff:
 			currentPreset.modules.rawData[ENABLE_PREAMP] = (val < 64.0f) ? 0 : 1;
 			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PREAMP, currentPreset.modules.rawData[ENABLE_PREAMP]);
+
+			if(ConsoleTask) ConsoleTask->PrintF("%s %d\r\n", preamp_on_string, currentPreset.modules.rawData[ENABLE_PREAMP]);
 		break;
 //-------------------------------------------------PA-------------------------------------------------
 		case Controller::Dst::AmpOnOff:
@@ -48,7 +50,6 @@ void controllerSetData(uint8_t adr, uint8_t data)
 			currentPreset.modules.rawData[AMP_MASTER] = val;
 			DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_MASTER_POS, currentPreset.modules.rawData[AMP_MASTER]);
 
-//			ConsoleTask->WriteToInputBuff("pa_ms 5\r\n");
 		break;
 
 		case Controller::Dst::AmpSlave:

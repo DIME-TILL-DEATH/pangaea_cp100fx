@@ -45,24 +45,9 @@ typedef struct
 uint8_t symbolWidth(TFontName fontName);
 };
 
-extern const uint8_t syst[];
-extern const uint8_t equ[];
-extern const uint8_t volu[];
-extern const uint8_t in[];
-extern const uint8_t out[];
-extern const uint8_t inpp[];
-extern const uint8_t outt[];
-extern const uint8_t amt[];
-
-extern const uint8_t sys[];
-extern const uint8_t cc_of[];
-
 extern uint32_t ind_in_p[];
 extern uint32_t ind_out_l[];
-extern uint16_t ind_poin;
 
-extern uint8_t t_po;
-extern volatile uint8_t t_no;
 
 void oled023_1_disp_reset(void);
 void disp_start(uint8_t num);
@@ -78,7 +63,7 @@ void mode_ind(uint8_t val);
 void tap_ind(uint8_t cur);
 void pot32x32_(uint8_t col, uint8_t pag, uint16_t sym);
 void tun_ini(void);
-void ind_foot(uint8_t num);
+void ind_foot(uint8_t num, uint8_t pressState, uint8_t holdState);
 void strel_print(uint8_t col, uint8_t pag, uint8_t dir);
 
 void del_sec_ind(uint8_t col, uint8_t pag, uint32_t d);

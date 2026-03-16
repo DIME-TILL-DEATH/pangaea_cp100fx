@@ -208,45 +208,29 @@ void ind_foot_proc(uint8_t col, uint8_t val)
 	GPIO_SetBits(GPIOB, CS);
 }
 
-void ind_foot(uint8_t num)
+void ind_foot(uint8_t num, uint8_t pressState, uint8_t holdState)
 {
-	switch(num)
+	struct{
+		uint8_t pressSinglePos;
+		uint8_t pressDualPos;
+		uint8_t holdDualPos;
+	}indPos[3] = {
+			{0, 0, 7},
+			{57, 60, 64},
+			{113, 113, 120}
+	};
+
+	if((sys_para[System::FSW1_PRESS_TYPE + num] == Footswitch::FswType::Controller))
 	{
-		case 0:
-			if((sys_para[System::FSW1_PRESS_TYPE] == Footswitch::FswType::Controller))
-				ind_foot_proc(0, currentPreset.modules.paramData.foot_ind_press[0]);
-
-			if(sys_para[System::FSW1_MODE]  == Footswitch::FswMode::Double
-					&& (sys_para[System::FSW1_HOLD_TYPE] == Footswitch::FswType::Controller))
-				ind_foot_proc(7, currentPreset.modules.paramData.foot_ind_hold[0]);
-		break;
-		case 1:
-			if((sys_para[System::FSW2_PRESS_TYPE] == Footswitch::FswType::Controller))
-			{
-				if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Double)
-					ind_foot_proc(57, currentPreset.modules.paramData.foot_ind_press[1]);
-				else
-					ind_foot_proc(60, currentPreset.modules.paramData.foot_ind_press[1]);
-			}
-
-			if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Double
-						&& (sys_para[System::FSW2_HOLD_TYPE] == Footswitch::FswType::Controller))
-				ind_foot_proc(64, currentPreset.modules.paramData.foot_ind_hold[1]);
-		break;
-		case 2:
-			if((sys_para[System::FSW3_PRESS_TYPE] == Footswitch::FswType::Controller))
-			{
-				if(sys_para[System::FSW3_MODE] == Footswitch::FswMode::Double)
-					ind_foot_proc(113, currentPreset.modules.paramData.foot_ind_press[2]);
-				else
-					ind_foot_proc(120, currentPreset.modules.paramData.foot_ind_press[2]);
-			}
-
-			if(sys_para[System::FSW3_MODE] == Footswitch::FswMode::Double
-						&& (sys_para[System::FSW3_HOLD_TYPE] == Footswitch::FswType::Controller))
-				ind_foot_proc(120, currentPreset.modules.paramData.foot_ind_hold[2]);
-		break;
+		if(sys_para[System::FSW1_MODE + num] == Footswitch::FswMode::Double)
+			ind_foot_proc(indPos[num].pressSinglePos, pressState);
+		else
+			ind_foot_proc(indPos[num].pressDualPos, pressState);
 	}
+
+	if(sys_para[System::FSW1_MODE + num] == Footswitch::FswMode::Double
+				&& (sys_para[System::FSW1_HOLD_TYPE + num] == Footswitch::FswType::Controller))
+		ind_foot_proc(indPos[num].holdDualPos, holdState);
 }
 
 void prog_ind(uint32_t val, bool filled)

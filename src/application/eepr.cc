@@ -281,8 +281,6 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 	FIL file;
 	UINT f_size;
 
-//	kgp_sdk_libc::memset(presetData, 0, sizeof(Preset::TPresetBrief));
-
 	presetNum++;
 	if(presetNum<10)
 		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)presetNum);
@@ -294,7 +292,7 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 	if(fs_res==FR_OK)
 	{
 		kgp_sdk_libc::memset(presetData, 0, sizeof(Preset::TPresetBrief));
-		f_read(&file, presetData, 15 + 15 + 14, &f_size);
+		f_read(&file, presetData, 15 + 15 + sizeof(Preset::TModulesData), &f_size);
 
 		f_lseek(&file, sizeof(Preset::TPreset) + 2 + CAB_DATA_SIZE);
 		f_read(&file, presetData->cab1Name, 64, &f_size);
@@ -311,7 +309,8 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 
 		kgp_sdk_libc::memset(&(presetData->cab1Name), 0, 64);
 		kgp_sdk_libc::memset(&(presetData->cab2Name), 0, 64);
-		kgp_sdk_libc::memset(&(presetData->switches), 0, sizeof(Preset::TEnableData));
+//		kgp_sdk_libc::memset(&(presetData->modules.switches), 0, sizeof(Preset::TEnableData));
+		kgp_sdk_libc::memset(&(presetData->modules), 0, sizeof(Preset::TModulesData));
 	}
 	f_close(&file);
 

@@ -41,7 +41,7 @@ enum {
 	bpm_del = 511
 };
 
-
+extern const char* preamp_on_string;
 
 enum dsp_enable_pos_t
 {

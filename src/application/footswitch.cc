@@ -112,7 +112,7 @@ void Footswitch::press_execute(uint8_t num)
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num);
+					DisplayTask->IndFoot(num, currentPreset.modules.paramData.foot_ind_press[num], currentPreset.modules.paramData.foot_ind_hold[num]);
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.modules.paramData.foot_ind_press[num]);
@@ -256,7 +256,7 @@ void Footswitch::hold_execute(uint8_t num)
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num);
+					DisplayTask->IndFoot(num, currentPreset.modules.paramData.foot_ind_press[num], currentPreset.modules.paramData.foot_ind_hold[num]);
 
 				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_HOLD_CC + num, currentPreset.modules.paramData.foot_ind_hold[num]);
@@ -266,7 +266,6 @@ void Footswitch::hold_execute(uint8_t num)
 
 			case Footswitch::Tuner:
 				currentMenu->showChild(new TunerMenu(currentMenu));
-				UITask->Give();
 			break;
 
 			default:
