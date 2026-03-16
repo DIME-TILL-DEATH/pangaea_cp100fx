@@ -87,7 +87,15 @@ void ControllersMenu::task()
 
 void ControllersMenu::encoderPressed()
 {
-	if(m_encoderKnobSelected == 0) m_encoderKnobSelected = 1;
+	if(m_encoderKnobSelected == 0)
+	{
+		m_encoderKnobSelected = 1;
+
+		if(m_parNum < ControllerMenuParams::MinValue)
+			DisplayTask->StringOut(0, m_parNum, Font::fntSystem, 2, &strControllersMenu[m_parNum][0]);
+		else
+			DisplayTask->StringOut(0, m_parNum - 3, Font::fntSystem, 2, &strControllersMenu[m_parNum][0]);
+	}
 	else m_encoderKnobSelected = 0;
 }
 
