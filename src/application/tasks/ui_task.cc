@@ -11,12 +11,11 @@
 
 #include "preset.h"
 #include "system.h"
-
-#include "compressor.h"
-#include "display_task.h"
+#include "dsp.h"
 
 
 #include "ER_OLEDM023-1B.h"
+#include "display_task.h"
 #include "io_task.h"
 
 
@@ -46,8 +45,8 @@ void TUITask::Code()
 	GetCpuClock();
 
 	GATE_ChangePreset();
-	COMPR_Init();
-	COMPR_ChangePreset(0, 0);
+	COMP_Init();
+	COMP_ChangePreset(0, 0);
 
 	UITask->DisplayAccess(false);
 

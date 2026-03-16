@@ -8,7 +8,7 @@
 
 #include "midi_task.h"
 
-#include "compressor.h"
+#include "dsp.h"
 #include "tasks/filesystem_task.h"
 #include "tasks/sdtest_task.h"
 #include "tasks/spectrum_task.h"
@@ -665,7 +665,7 @@ extern "C" void DMA1_Stream2_IRQHandler()
 	{
 		if(currentMenu->menuType() == MENU_TUNER)
 		{
-			SpectrumBuffsUpdate(COMPR_Out(in));
+			SpectrumBuffsUpdate(COMP_Out(in));
 			if(tun_del > tun_del_val)
 			{
 				tun_del = 0;
@@ -681,7 +681,7 @@ extern "C" void DMA1_Stream2_IRQHandler()
 	{
 		if(SpectrumTask->backgroundTunerEnabled)
 		{
-			SpectrumBuffsUpdate(COMPR_Out(in));
+			SpectrumBuffsUpdate(COMP_Out(in));
 			if(tun_del > tun_del_val)
 			{
 				tun_del = 0;

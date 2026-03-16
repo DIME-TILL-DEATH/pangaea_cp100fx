@@ -1,23 +1,12 @@
 #include "compressor.h"
 
 #include "vdt/vdt.h"
+#include "dsp.h"
 
-#define  MIN_GAIN  0.00001f        // -100dB  This will help prevent evaluation of denormal numbers
-#define LOG_2  0.693147f
-#define LOG_10 2.302585f
-#define samp_rate 46875.0f
+using namespace vdt;
+using namespace vdt::details;
 
-using namespace vdt ;
-using namespace vdt::details ;
 
-inline float dB2rap(float dB)
-{
-	return fast_expf((dB) * LOG_10 / 20.0f);
-}
-inline float rap2dB(float rap)
-{
-	return 20.0f * fast_logf(rap) / LOG_10;
-}
 
   float lvolume;
   float lvolume_db;
@@ -57,8 +46,8 @@ inline float rap2dB(float rap)
   int peak;
   int clipping;
 
-void comp_para(uint32_t val);
-void COMPR_Init (void)
+void COMP_SetParam(uint32_t val);
+void COMP_Init (void)
 {
   lvolume = 0.0f;
   lvolume_db = 0.0f;
@@ -84,7 +73,7 @@ void COMPR_Init (void)
   clipping = 0;
 
   uint8_t a[5] = {10,64,20,0,0};
-  for(uint8_t i = 0 ; i < 5 ; i++)comp_para(i | (a[i] << 8));
+  for(uint8_t i = 0 ; i < 5 ; i++)COMP_SetParam(i | (a[i] << 8));
 }
 void Compressor_Change (int np, int value)
 {
@@ -113,7 +102,7 @@ void Compressor_Change (int np, int value)
       outlevel = dB2rap((float)toutput) * makeuplin * 0.05f;
 }
 float bu[512];
-void COMPR_ChangePreset (int dgui, int npreset)
+void COMP_ChangePreset (int dgui, int npreset)
 {
 	for(int i = 0 ; i < 512 ; i++)bu[i] = 0.0f;
 	//thres,ratio,out,attak,relise,aout,knee,stereo,peak
@@ -127,7 +116,7 @@ void COMPR_ChangePreset (int dgui, int npreset)
 uint16_t bu_po;
 volatile float bu_add = 0.0f;
 //---------------------------------------------Compressor---------------------------------------------------------
-float COMPR_Out (float efxout)
+float COMP_Out (float efxout)
 {
 	bu_add -= bu[bu_po];
 	bu[bu_po] = efxout * efxout;
@@ -199,100 +188,8 @@ float COMPR_Out (float efxout)
     lgain_old = lgain;
     return efxout;
 }
-//------------------------------------------------Gate-----------------------------------------------------
-#define ENV_TR 0.0001f
-#define CLOSED  1
-#define OPENING 2
-#define OPEN    3
-#define CLOSING 4
-float env = 0.0f;
-float t_level;
-float gate = 0.0f;
-float a_rate;
-float fs = 46875.0f;
-float d_rate = 6.85959239e-05f;
-float cut;
-int state;
-int hold_count = 0.0f;
-int Pthreshold;
-int Prange;
-int Pattack;
-int Pdecay;
-int Phold;
-void Gate_Change (int np, int value)
-{
-  switch (np)
-    {
-    case 0:Pthreshold = value;t_level = dB2rap((float)Pthreshold);break;
-    case 1:Pattack = value;a_rate = 1000.0f / ((float)Pattack * fs); break;
-    case 2:Pdecay = value;d_rate = 1000.0f / ((float)Pdecay * fs);break;
-    }
-}
-void GATE_ChangePreset (void)
-{
-	  env = 0.0f;
-	  gate = 0.0f;
-	  fs = samp_rate;
-	  state = CLOSED;
-	  hold_count = 0;
-    int presets[3] = {-50, 1, 100};
-    for (int n = 0; n < 3; n++) Gate_Change (n, presets[n]);
-}
-float Gate_out (float efxout)
-{
-  float sum;
-      sum = fabsf (efxout);
-      if (sum > env)env = sum;
-      else env = 0.0f;//sum * ENV_TR + env * (1.0f - ENV_TR);
-  //------------------------------------------------------------------
-      if (state == CLOSED)
-      {
-    	  if (env >= t_level)state = OPENING;
-      }
-      else {
-    	  if (state == OPENING)
-      	  {
-    	  	  gate += a_rate;
-    	  	  if (gate >= 1.0f)
-    	  	  {
-    	  		  gate = 1.0f;
-    	  		  state = OPEN;
-    	  	  }
-      	  }
-      	  else {
-      		  if (state == OPEN)
-      	  	  {
-      			  if (env < t_level) state = CLOSING;
-      	  	  }
-      	  	  else {
-      	  		  if (state == CLOSING)
-      	  		  {
-      	  			  gate -= d_rate;
-      	  			  if (env >= t_level)state = OPENING;
-      	  			  else {
-      	  				  if (gate <= 0.0f)
-      	  				  {
-      	  					  gate = 0.0f;
-      	  					  state = CLOSED;
-      	  				  }
-      	  			  }
-      	  		  }
-      	  	  }
-      	  }
-      }
-      return gate;
-}
-void gate_par(uint32_t val)
-{
-	uint32_t va = val >> 8;
-	val &= 0xff;
-	switch(val & 0xff){
-	case 0:Gate_Change(0,-((127 - va) * (70.0f/127.0f) + 17.0f));break;
-	case 1:Gate_Change(1, va + 1);break;
-	case 2:Gate_Change(2, va * 10 + 10);break;
-	}
-}
-void comp_para(uint32_t val)
+
+void COMP_SetParam(uint32_t val)
 {
 	uint32_t va = val >> 8;
 	val &= 0xff;
