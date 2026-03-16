@@ -96,35 +96,35 @@ public:
 			TKeysEvents keysEvents;
 			TEncoderEvents encoderEvents;
 		};
-	}TCSCmd;
+	}TUICmd;
 
 	void refreshMenu(){
-		TCSCmd cmd;
+		TUICmd cmd;
 		cmd.type = UI_REFRESH_MENU;
 		Command(&cmd);
 	}
 
 	void runningString(){
-		TCSCmd cmd;
+		TUICmd cmd;
 		cmd.type = UI_RUNNING_STRING;
 		Command(&cmd);
 	}
 
 	void task(){
-		TCSCmd cmd;
+		TUICmd cmd;
 		cmd.type = UI_TASK;
 		Command(&cmd);
 	}
 
 	void keysEvents(const TKeysEvents& events){
-		TCSCmd cmd;
+		TUICmd cmd;
 		cmd.type = UI_KEYS_EVENTS;
 		cmd.keysEvents = events;
 		Command(&cmd);
 	}
 
 	void encoderEvents(const TEncoderEvents& events){
-		TCSCmd cmd;
+		TUICmd cmd;
 		cmd.type = UI_ENCODER_EVENTS;
 		cmd.encoderEvents = events;
 		Command(&cmd);
@@ -133,24 +133,22 @@ public:
 private:
 	void Code();
 
-	TQueue::TQueueSendResult Command(TCSCmd *cmd)
+	TQueue::TQueueSendResult Command(TUICmd *cmd)
+	{
+		if(cortex_isr_num())
 		{
-			if(cortex_isr_num())
-			{
-				// send comand from ISR
-				BaseType_t HigherPriorityTaskWoken;
-				TQueue::TQueueSendResult result;
-				result = cmdQueue->SendToBackFromISR(cmd, &HigherPriorityTaskWoken);
-				if(HigherPriorityTaskWoken)
-					TScheduler::Yeld();
-				return result;
-			}
-			else
-			{
-				// thread mode
-				return cmdQueue->SendToBack(cmd, 0);
-			}
+			BaseType_t HigherPriorityTaskWoken;
+			TQueue::TQueueSendResult result;
+			result = cmdQueue->SendToBackFromISR(cmd, &HigherPriorityTaskWoken);
+			if(HigherPriorityTaskWoken)
+				TScheduler::Yeld();
+			return result;
 		}
+		else
+		{
+			return cmdQueue->SendToBack(cmd, 0);
+		}
+	}
 
 	TQueue *responseQueue;
 	TQueue *cmdQueue;

@@ -58,9 +58,9 @@ void MainMenu::task()
 		}
 	}
 
-	if((sys_para[System::FSW1_PRESS_TYPE] == 1) || ((sys_para[System::FSW1_HOLD_TYPE] == 1) && sys_para[System::FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0);
-	if((sys_para[System::FSW2_PRESS_TYPE] == 1) || ((sys_para[System::FSW2_HOLD_TYPE] == 1) && sys_para[System::FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1);
-	if((sys_para[System::FSW3_PRESS_TYPE] == 1) || ((sys_para[System::FSW3_HOLD_TYPE] == 1) && sys_para[System::FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2);
+//	if((sys_para[System::FSW1_PRESS_TYPE] == 1) || ((sys_para[System::FSW1_HOLD_TYPE] == 1) && sys_para[System::FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0);
+//	if((sys_para[System::FSW2_PRESS_TYPE] == 1) || ((sys_para[System::FSW2_HOLD_TYPE] == 1) && sys_para[System::FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1);
+//	if((sys_para[System::FSW3_PRESS_TYPE] == 1) || ((sys_para[System::FSW3_HOLD_TYPE] == 1) && sys_para[System::FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2);
 
 }
 

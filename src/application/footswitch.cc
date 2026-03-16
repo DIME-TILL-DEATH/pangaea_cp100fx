@@ -112,7 +112,7 @@ void Footswitch::press_execute(uint8_t num)
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num); // refresh в конце
+					DisplayTask->IndFoot(num);
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.modules.paramData.foot_ind_press[num]);

@@ -726,7 +726,6 @@ extern "C" void DMA1_Stream2_IRQHandler()
 extern "C" void TIM3_IRQHandler()
 {
 	TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-	TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 
 	ISR_fsw_hold_timer();
 }

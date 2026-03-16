@@ -9,6 +9,14 @@ typedef enum
 	ENC_CLOCKWISE_STEP
 }TEncStep;
 
+typedef enum
+{
+	FSW_NONE = -1,
+	FSW_DOWN = 0,
+	FSW_CONFIRM,
+	FSW_UP
+}TFSWNum;
+
 typedef struct{
 	uint8_t keyUp; //k_up;
 	uint8_t keyDown; //k_down;
@@ -27,6 +35,11 @@ typedef struct{
 }TKeysEvents;
 
 typedef struct{
+	TFSWNum fsw;
+}TFswEvents;
+
+
+typedef struct{
 	uint8_t pressed;
 	uint8_t	updated;
 	TEncStep state;
@@ -36,19 +49,42 @@ class TIOTask: public TTask
 {
 public:
 	TIOTask();
+	~TIOTask();
 
-	void Give()
-	{
-		if(cortex_isr_num())
-		{
-			BaseType_t HigherPriorityTaskWoken;
-			sem->GiveFromISR(&HigherPriorityTaskWoken);
-			if(HigherPriorityTaskWoken)
-				TScheduler::Yeld();
-		}
-		else
-			sem->Give();
-	}
+	typedef enum{
+		IO_FSW_SINGLE_MODE_PRESS,
+		IO_FSW_DUAL_MODE_PRESS,
+		IO_FSW_DUAL_MODE_HOLD
+	}TIOCmdType;
+
+	typedef struct{
+		TIOCmdType type;
+
+		union{
+			TFswEvents fswEvents;
+		};
+	}TIOCmd;
+
+	void fswSinglePressed(const TFswEvents& fswEvents){
+		TIOCmd cmd;
+		cmd.type = IO_FSW_SINGLE_MODE_PRESS;
+		cmd.fswEvents = fswEvents;
+		Command(&cmd);
+	};
+
+	void fswDualPressed(const TFswEvents& fswEvents){
+		TIOCmd cmd;
+		cmd.type = IO_FSW_DUAL_MODE_PRESS;
+		cmd.fswEvents = fswEvents;
+		Command(&cmd);
+	};
+
+	void fswDualHolded(const TFswEvents& fswEvents){
+		TIOCmd cmd;
+		cmd.type = IO_FSW_DUAL_MODE_HOLD;
+		cmd.fswEvents = fswEvents;
+		Command(&cmd);
+	};
 
 	void SetEnc(uint8_t val)
 	{
@@ -56,9 +92,27 @@ public:
 	}
 private:
 	void Code();
-	TSemaphore *sem;
 
 	uint8_t enc_run = 0;
+
+	TQueue::TQueueSendResult Command(TIOCmd *cmd)
+	{
+		if(cortex_isr_num())
+		{
+			BaseType_t HigherPriorityTaskWoken;
+			TQueue::TQueueSendResult result;
+			result = queue->SendToBackFromISR(cmd, &HigherPriorityTaskWoken);
+			if(HigherPriorityTaskWoken)
+				TScheduler::Yeld();
+			return result;
+		}
+		else
+		{
+			return queue->SendToBack(cmd, 0);
+		}
+	}
+
+	TQueue *queue;
 };
 
 void ISR_encoder_read();

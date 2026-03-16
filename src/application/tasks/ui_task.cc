@@ -30,7 +30,7 @@ TUITask::TUITask() :
 		TTask()
 {
 	responseQueue = new TQueue(4, sizeof(TResponse));
-	cmdQueue = new TQueue(8, sizeof(TCSCmd));
+	cmdQueue = new TQueue(8, sizeof(TUICmd));
 }
 
 TUITask::~TUITask()
@@ -122,7 +122,7 @@ void TUITask::Code()
 		TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
 	}
 
-	TCSCmd cmd;
+	TUICmd cmd;
 	while(1)
 	{
 		if(DisplayAccess())

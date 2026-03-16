@@ -178,26 +178,6 @@ void mode_ind(uint8_t val)
 	GPIO_SetBits(GPIOB, CS);
 }
 
-extern uint8_t fsw1_in_hold_fl;
-extern uint8_t fsw2_in_hold_fl;
-extern uint8_t fsw3_in_hold_fl;
-extern uint8_t contr_kn[];
-extern uint8_t contr_kn1[];
-void ind_foot_proc(uint8_t col, uint8_t val)
-{
-	Set_Page_Address(3);
-	Set_Column_Address(col);
-	GPIO_ResetBits(GPIOB, CS);
-	for(uint8_t i = 0; i < 7; i++)
-	{
-		if(!i || (i == 6))
-			oled023_1_send_data(0x7c);
-		else
-			oled023_1_send_data((val * 0xfe) | 0x82);
-	}
-	GPIO_SetBits(GPIOB, CS);
-}
-
 void checkbox(uint8_t x, uint8_t y, uint8_t val)
 {
 	Set_Page_Address(y);
@@ -213,48 +193,61 @@ void checkbox(uint8_t x, uint8_t y, uint8_t val)
 	GPIO_SetBits(GPIOB, CS);
 }
 
-//currentPreset.modules.paramData.foot_ind_hold
+void ind_foot_proc(uint8_t col, uint8_t val)
+{
+	Set_Page_Address(3);
+	Set_Column_Address(col);
+	GPIO_ResetBits(GPIOB, CS);
+	for(uint8_t i = 0; i < 7; i++)
+	{
+		if(!i || (i == 6))
+			oled023_1_send_data(0x7c);
+		else
+			oled023_1_send_data((val * 0xfe) | 0x82);
+	}
+	GPIO_SetBits(GPIOB, CS);
+}
+
 void ind_foot(uint8_t num)
 {
 	switch(num)
 	{
 		case 0:
-			if(!fsw1_in_hold_fl && (sys_para[System::FSW1_PRESS_TYPE] == Footswitch::FswType::Controller))
+			if((sys_para[System::FSW1_PRESS_TYPE] == Footswitch::FswType::Controller))
 				ind_foot_proc(0, currentPreset.modules.paramData.foot_ind_press[0]);
 
-			if(sys_para[System::FSW1_MODE] && (sys_para[System::FSW1_HOLD_TYPE] == Footswitch::FswType::Controller))
+			if(sys_para[System::FSW1_MODE]  == Footswitch::FswMode::Double
+					&& (sys_para[System::FSW1_HOLD_TYPE] == Footswitch::FswType::Controller))
 				ind_foot_proc(7, currentPreset.modules.paramData.foot_ind_hold[0]);
 		break;
 		case 1:
-			if(!fsw2_in_hold_fl && (sys_para[System::FSW2_PRESS_TYPE] == Footswitch::FswType::Controller))
+			if((sys_para[System::FSW2_PRESS_TYPE] == Footswitch::FswType::Controller))
 			{
-				if(sys_para[System::FSW2_MODE])
+				if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Double)
 					ind_foot_proc(57, currentPreset.modules.paramData.foot_ind_press[1]);
 				else
 					ind_foot_proc(60, currentPreset.modules.paramData.foot_ind_press[1]);
 			}
 
-			if(sys_para[System::FSW2_MODE] && (sys_para[System::FSW2_HOLD_TYPE] == Footswitch::FswType::Controller))
+			if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Double
+						&& (sys_para[System::FSW2_HOLD_TYPE] == Footswitch::FswType::Controller))
 				ind_foot_proc(64, currentPreset.modules.paramData.foot_ind_hold[1]);
 		break;
 		case 2:
-			if(!fsw3_in_hold_fl && (sys_para[System::FSW3_PRESS_TYPE] == Footswitch::FswType::Controller))
+			if((sys_para[System::FSW3_PRESS_TYPE] == Footswitch::FswType::Controller))
 			{
-				if(sys_para[System::FSW3_MODE])
+				if(sys_para[System::FSW3_MODE] == Footswitch::FswMode::Double)
 					ind_foot_proc(113, currentPreset.modules.paramData.foot_ind_press[2]);
 				else
 					ind_foot_proc(120, currentPreset.modules.paramData.foot_ind_press[2]);
 			}
 
-			if(sys_para[System::FSW3_MODE] && (sys_para[System::FSW3_HOLD_TYPE] == Footswitch::FswType::Controller))
+			if(sys_para[System::FSW3_MODE] == Footswitch::FswMode::Double
+						&& (sys_para[System::FSW3_HOLD_TYPE] == Footswitch::FswType::Controller))
 				ind_foot_proc(120, currentPreset.modules.paramData.foot_ind_hold[2]);
 		break;
 	}
 }
-
-const uint8_t inpp[] = "In";
-const uint8_t outt[] = "Out";
-
 
 void prog_ind(uint32_t val, bool filled)
 {
