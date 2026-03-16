@@ -14,34 +14,14 @@ public:
 	TUITask();
 	~TUITask();
 
-	inline void Give()
-	{
-		if(cortex_isr_num())
-		{
-			BaseType_t HigherPriorityTaskWoken;
-			sem->GiveFromISR(&HigherPriorityTaskWoken);
-			if(HigherPriorityTaskWoken)
-				TScheduler::Yeld();
-		}
-		else
-			sem->Give();
-	}
-
 	inline void DisplayAccess(bool val)
 	{
 		DispalyAccess = val;
-		if(val)
-			Give();
 	}
 
 	inline bool DisplayAccess()
 	{
 		return DispalyAccess;
-	}
-
-	inline void CS_del(uint32_t del)
-	{
-		Delay(del);
 	}
 
 	//-----------------Responses----------------------
@@ -83,6 +63,7 @@ public:
 
 	typedef enum{
 		UI_REFRESH_MENU,
+		UI_RETURN_FROM_MENU,
 		UI_RUNNING_STRING,
 		UI_TASK,
 		UI_KEYS_EVENTS,
@@ -101,6 +82,12 @@ public:
 	void refreshMenu(){
 		TUICmd cmd;
 		cmd.type = UI_REFRESH_MENU;
+		Command(&cmd);
+	}
+
+	void returnFromMenu(){
+		TUICmd cmd;
+		cmd.type = UI_RETURN_FROM_MENU;
 		Command(&cmd);
 	}
 
@@ -153,10 +140,7 @@ private:
 	TQueue *responseQueue;
 	TQueue *cmdQueue;
 
-	TSemaphore *sem;
 	bool DispalyAccess;
-
-
 };
 extern uint8_t tun_del_val;
 

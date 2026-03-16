@@ -41,7 +41,6 @@ TUITask::~TUITask()
 void TUITask::Code()
 {
 	Delay(100);
-	sem = new TSemaphore(TSemaphore::fstCounting, 4, 0);
 	GetCpuClock();
 
 	GATE_ChangePreset();
@@ -104,9 +103,9 @@ void TUITask::Code()
 	Preset::Change();
 
 	send_codec(0xa301);
+
 	IOTask->SetEnc(1);
 
-	sem->Take(portMAX_DELAY);
 	if(DisplayAccess())
 	{
 		mainMenu = new MainMenu();
@@ -133,6 +132,12 @@ void TUITask::Code()
 				case UI_REFRESH_MENU:
 				{
 					currentMenu->refresh();
+					break;
+				}
+
+				case UI_RETURN_FROM_MENU:
+				{
+					currentMenu->keyUp();
 					break;
 				}
 

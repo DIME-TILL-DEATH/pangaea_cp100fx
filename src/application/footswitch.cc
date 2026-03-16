@@ -32,8 +32,7 @@ void Footswitch::press_execute(uint8_t num)
 
 	if(currentMenu->menuType() == MENU_TUNER)
 	{
-		currentMenu->keyUp();
-		UITask->Give();
+		UITask->returnFromMenu();
 	}
 	else
 	{
@@ -157,7 +156,6 @@ void Footswitch::press_execute(uint8_t num)
 					{
 						UITask->refreshMenu();
 					}
-					UITask->Give();
 				}
 			break;
 		}
@@ -172,8 +170,7 @@ void Footswitch::hold_execute(uint8_t num)
 
 	if(currentMenu->menuType() == MENU_TUNER)
 	{
-		currentMenu->keyUp();
-		UITask->task();
+		UITask->returnFromMenu();
 	}
 	else
 	{

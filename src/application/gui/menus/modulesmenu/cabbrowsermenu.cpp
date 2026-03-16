@@ -37,7 +37,6 @@ void CabBrowserMenu::show(TShowMode showMode)
 		{
 			FileSystemTask->SendCommand(TFsBrowser::bcCurrent);
 			FileSystemTask->SendCommand(TFsBrowser::bcLoadImp);
-			UITask->Give();
 
 			processBrowserResponse();
 			refresh();
@@ -46,7 +45,7 @@ void CabBrowserMenu::show(TShowMode showMode)
 		{
 			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"There is no directory"); //imp_dir_n
 			DisplayTask->StringOut(42, 3, Font::fntSystem, 0, (uint8_t*)"IMPULSE");	//imp_dir_no
-			UITask->CS_del(1000);
+			UITask->Delay(1000);
 			DisplayTask->Clear();
 
 			topLevelMenu->returnFromChildMenu();
@@ -61,7 +60,7 @@ void CabBrowserMenu::show(TShowMode showMode)
 		else
 			DisplayTask->StringOut(0, 1, Font::fntSystem, 0, (uint8_t*)"MicroSD is loading..");  //sd_lo
 
-		UITask->CS_del(1000);
+		UITask->Delay(1000);
 		DisplayTask->Clear();
 
 		topLevelMenu->returnFromChildMenu();
@@ -88,7 +87,6 @@ void CabBrowserMenu::keyUp()
 void CabBrowserMenu::encoderPressed()
 {
 	FileSystemTask->SendCommand(TFsBrowser::bcAction);
-	UITask->Give();
 
 	TUITask::TResponse browserResponse;
 	browserResponse = UITask->GetResponseBlocking();
@@ -127,7 +125,6 @@ void CabBrowserMenu::encoderPressed()
 void CabBrowserMenu::encoderCounterClockwise()
 {
 	FileSystemTask->SendCommand(TFsBrowser::bcUp);
-	UITask->Give();
 
 	processBrowserResponse();
 	refresh();
@@ -136,7 +133,6 @@ void CabBrowserMenu::encoderCounterClockwise()
 void CabBrowserMenu::encoderClockwise()
 {
 	FileSystemTask->SendCommand(TFsBrowser::bcDown);
-	UITask->Give();
 
 	processBrowserResponse();
 	refresh();
