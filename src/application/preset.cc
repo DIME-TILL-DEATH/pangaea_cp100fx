@@ -44,7 +44,7 @@ void Preset::Change()
 		adc_proc();
 
 	if(sys_para[System::ATTENUATOR_MODE])
-		DisplayTask->Pot_Write();
+		IOTask->potWrite();
 
 	pc_mute_fl = 1;
 }

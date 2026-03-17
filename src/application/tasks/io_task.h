@@ -54,7 +54,9 @@ public:
 	typedef enum{
 		IO_FSW_SINGLE_MODE_PRESS,
 		IO_FSW_DUAL_MODE_PRESS,
-		IO_FSW_DUAL_MODE_HOLD
+		IO_FSW_DUAL_MODE_HOLD,
+		IO_LED_TASK,
+		IO_POT_WRITE
 	}TIOCmdType;
 
 	typedef struct{
@@ -64,6 +66,18 @@ public:
 			TFswEvents fswEvents;
 		};
 	}TIOCmd;
+
+	void ledTask(){
+		TIOCmd cmd;
+		cmd.type = IO_LED_TASK;
+		Command(&cmd);
+	};
+
+	void potWrite(){
+		TIOCmd cmd;
+		cmd.type = IO_POT_WRITE;
+		Command(&cmd);
+	};
 
 	void fswSinglePressed(const TFswEvents& fswEvents){
 		TIOCmd cmd;

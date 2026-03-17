@@ -65,7 +65,7 @@ public:
 		dcStrel,
 		dcCount,
 
-		dcLed_Write,
+//		dcLed_Write,
 		dcPot_Write
 	}TCommand;
 
@@ -315,50 +315,58 @@ public:
 	}
 
 	void WriteReg(TWriteRegDest dest, uint32_t data);
+
+	void SetColumn(uint8_t x);
+	void SetPagAdr(uint8_t x);
+
 	void Clear();
 	void Clear_str(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count);
+
 	void SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol);
 
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t *string);
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const uint8_t *string);
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
 
-//	void NumberOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState state, uint32_t val);
 
 	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 	void VolIndicatorTask();
 
-	void Prog_ind(uint8_t prog, bool filled = true);
 	void EfIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
-	void SetColumn(uint8_t x);
-	void SetPagAdr(uint8_t x);
+
 	void EqIndic(uint8_t x, uint8_t y, uint8_t data, uint8_t cur);
 	void EqFreq(uint8_t x, uint8_t y, int16_t val, uint8_t band);
 	void EqQ(uint8_t x, uint8_t y, int16_t val, uint8_t band);
 	void EqInit(void);
 	void EqLH(float num, uint8_t type);
 	void EqResponse();
+
 	void CheckBox(uint8_t x, uint8_t y, uint8_t checked);
+
 	void ParamIndic(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data);
 	void ParamIndicNum(uint8_t x, uint8_t y, uint16_t data);
 	void ParamIndicNote(uint8_t x, uint8_t y, uint16_t data);
 	void ParamIndicPan(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndicMix(uint8_t x, uint8_t y, uint8_t data);
-	void DelayTimeInd(uint8_t x, uint8_t y, uint32_t data);
-	void StartScreen(uint8_t data);
-	void Contrast(uint8_t val);
-	void Tap_ind(uint8_t cur);
 
-	void Led_Write(void);
-	void Pot_Write(void);
+	void Prog_ind(uint8_t prog, bool filled = true);
+	void Tap_ind(uint8_t cur);
+	void IndFoot(uint8_t num, uint8_t pressState, uint8_t holdDualState);
+	void DelayTimeInd(uint8_t x, uint8_t y, uint32_t data);
+
+	void StartScreen(uint8_t data);
+
+	void Contrast(uint8_t val);
 
 	void Icon_Strel(icon_t num, strelka_t strel);
+
 	void TunerInit();
 	void TunerDeinit();
 	void TunStrel();
+
 	void PresetPreview(uint8_t index);
-	void IndFoot(uint8_t num, uint8_t pressState, uint8_t holdDualState);
+
 	void Display_Reset(void);
 	void Strel(uint8_t x, uint8_t y, uint32_t dir);
 

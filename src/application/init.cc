@@ -1,5 +1,8 @@
-#include "appdefs.h"
 #include "init.h"
+
+#include "periphery.h"
+#include "gpio.h"
+
 #include "eepr.h"
 #include "allFonts.h"
 #include "AT45DB321.h"
@@ -20,11 +23,9 @@ uint8_t cab_type = 0;
 ad_data_t adc_data[2];
 da_data_t dac_data[2];
 
-
 volatile uint8_t key_reg_out[2] = {0, 0};
-volatile uint16_t key_reg_in;
+volatile uint16_t key_reg_in = 0xFFFF;
 
-extern const uint8_t dsp_cod[];
 void adc_calib(void)
 {
 	adc_low = sys_para[System::EXPR_CAL_MIN_HI];
@@ -43,45 +44,13 @@ void adc_calib(void)
 	adc_val = adc_high-adc_low;
 	adc_val1 = 127.0f/adc_val;
 }
-//-------------------------------------------Setting PINs ADC------------------------------------------
-void adc_pin_init(void)
-{
-	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Speed = GPIO_High_Speed;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	if((sys_para[3]&1))
-	{
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-		GPIO_Init(GPIOC, &GPIO_InitStructure);
-		GPIO_SetBits(GPIOC, GPIO_Pin_1);
-
-		GPIO_InitStructure.GPIO_Speed = GPIO_Low_Speed;
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-		GPIO_Init(GPIOC, &GPIO_InitStructure);
-	}
-	else
-	{
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-		GPIO_Init(GPIOC, &GPIO_InitStructure);
-		GPIO_SetBits(GPIOC, GPIO_Pin_0);
-
-		GPIO_InitStructure.GPIO_Speed = GPIO_Low_Speed;
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-		GPIO_Init(GPIOC, &GPIO_InitStructure);
-	}
-}
 //-------------------------------------------Setting ADC------------------------------------------------
-void adc_init(uint8_t stat)
+void adc_init(uint8_t state)
 {
-	if(stat)
+	if(state)
 	{
 		adc_calib();
-		adc_pin_init();
+		HW_adc_pin_init();
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 		ADC_InitTypeDef ADC_InitStructure;
 		ADC_CommonInitTypeDef ADC_CommonInitStructure;
@@ -130,8 +99,8 @@ void send_codec(uint16_t data)
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOC, GPIO_Pin_7);
-	for(int i = 0; i<0xff; i++)
-		NOP();
+
+	HW_delay(0xff);
 }
 //-------------------------------------------------SPI_init------------------------------------------------
 void spi_init(uint8_t type)
@@ -212,79 +181,23 @@ void eepr_init(void)
 //---------------------------------------------------------------------------------------------------------
 void init(void)
 {
-	GPIO_InitTypeDef GPIO_InitStructure;
+
 	NVIC_InitTypeDef NVIC_InitStructure;
 	EXTI_InitTypeDef EXTI_InitStruct;
 	USART_InitTypeDef USART_InitStructure;
 	USART_ClockInitTypeDef USART_ClockStructure;
 
-	for(uint32_t d = 0; d<0xfffff; d++)
-		NOP();
+	HW_delay(0xfffff);
 	AT45DB321_Init();
-	for(uint32_t d = 0; d<0xfffff; d++)
-		NOP();
+	HW_delay(0xfffff);
 	eepr_init();
-
-	cab_type = sys_para[System::CAB_SIM_CONFIG];
 
 //-------------------------------------------------GPIO_init-----------------------------------------------
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;           // DSP feedback
-	GPIO_InitStructure.GPIO_Speed = GPIO_High_Speed;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	HW_gpio_init();
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8; // SD_detect
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15; // Encoder
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-
-	GPIO_ResetBits(GPIOA, GPIO_Pin_10);
-	GPIO_ResetBits(GPIOA, GPIO_Pin_0);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_10 /*| GPIO_Pin_13 | GPIO_Pin_14*/; // reset_dsp | reset_codec
-	GPIO_Init(GPIOA, &GPIO_InitStructure);                   // SWD pins
-
-	GPIO_SetBits(GPIOC, GPIO_Pin_4);
-	GPIO_SetBits(GPIOC, GPIO_Pin_6);
-	GPIO_SetBits(GPIOC, GPIO_Pin_7);
-	GPIO_ResetBits(GPIOC, GPIO_Pin_5);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7; // Key_reg_sc | LED4 green | Pot cs | codec_cs
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-	GPIO_ResetBits(GPIOB, GPIO_Pin_14);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8|GPIO_Pin_11|GPIO_Pin_14; // No select | LED3 green | LED4 red
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3|GPIO_Pin_4|GPIO_Pin_15; // key_usart | key_usart | I2S3ws
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3|GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_13;
-	// I2S3sclk      I2S3ext_sd    I2S3_sd      MIDI_out      MIDI_in      SPI2_clk
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2|GPIO_Pin_3; // SPI2
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource2, GPIO_AF_SPI2);
-	GPIO_PinAFConfig(GPIOC, GPIO_PinSource3, GPIO_AF_SPI2);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource3, GPIO_AF_SPI3);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_I2S3ext);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_SPI3);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource15, GPIO_AF_SPI3);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_USART2);
 
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource8);
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource9);
@@ -430,10 +343,6 @@ void init(void)
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_Init(&NVIC_InitStructure);
 
-	DMA_ITConfig(DMA1_Stream5, DMA_IT_TC, ENABLE);
-	USART_Cmd(USART2, ENABLE);
-	DMA_Cmd(DMA1_Stream5, ENABLE);
-	DMA_Cmd(DMA1_Stream6, ENABLE);
 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3|RCC_APB1Periph_TIM4|RCC_APB1Periph_TIM5|
 			RCC_APB1Periph_TIM6|RCC_APB1Periph_TIM14, ENABLE);
@@ -514,11 +423,11 @@ void init(void)
 //-----------------------------------------------Start_Shark-------------------------------
 	spi_init(1);
 
-	for(uint32_t d = 0; d<0x1ffffff; d++)
-		NOP();
+	HW_delay(0x1ffffff);
 
 	SPI_NSSInternalSoftwareConfig(SPI2, SPI_NSSInternalSoft_Reset);
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+
 	SPI_I2S_SendData(SPI2, 0);
 	GPIO_SetBits(GPIOA, GPIO_Pin_0);
 	for(size_t i = 0; i<3; i++)
@@ -526,6 +435,8 @@ void init(void)
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, 0);
 	}
+
+	cab_type = sys_para[System::CAB_SIM_CONFIG];
 
 	cab1.data = &ccmCommonCabBuffer[0];
 	cab2.data = &ccmCommonCabBuffer[4096 * 3];
@@ -541,7 +452,9 @@ void init(void)
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, (&_binary_Pangaea_CP100FX_1_ldr_start)[i]);
 	}
-#else
+#endif
+
+#ifdef __MONO_MOD__
 	if(cab_type != CAB_CONFIG_STEREO)
 	{
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_start;
@@ -570,15 +483,9 @@ void init(void)
 	}
 #endif
 
-	GPIO_SetBits(GPIOA, GPIO_Pin_1);
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1; //  dsp_cs
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
 	spi_init(0);
 
-	for(uint32_t d = 0; d<0x3ffffff; d++)
-		NOP();
+	HW_delay(0x3ffffff);
 
 	GPIO_SetBits(GPIOA, GPIO_Pin_10);
 //-----------------------------------------------StartScreen------------------------------------
@@ -587,14 +494,15 @@ void init(void)
 	ind_en = 0;
 	disp_start(0);
 //------------------------------------------------Start codec-------------------------------------
-	const uint16_t fff[3] =
-	{0xa103, 0xa381, 0xa265};
+	const uint16_t fff[3] = {0xa103, 0xa381, 0xa265};
 	for(int i = 0; i<3; i++)
 	{
 		send_codec(fff[i]);
 	}
 
 	load_mass_imp();
+
+	HW_pin_usb_init();
 }
 
 
@@ -617,8 +525,6 @@ extern "C" void DMA1_Stream5_IRQHandler()
 	ISR_buttons_read();
 }
 
-extern ad_data_t adc_data[];
-extern da_data_t dac_data[];
 int32_t __CCM_BSS__ ccl;
 int32_t __CCM_BSS__ ccr;
 volatile uint32_t __CCM_BSS__ cl;
@@ -685,14 +591,6 @@ extern "C" void DMA1_Stream2_IRQHandler()
 			if(tun_del > tun_del_val)
 			{
 				tun_del = 0;
-//				if(!consoleBusy){
-//					BaseType_t HigherPriorityTaskWoken;
-//					char cmd[] = "tn get\r\n";
-//					for (size_t i = 0; i < 8; i++)
-//						ConsoleTask->WriteToInputBuffFromISR(cmd + i, &HigherPriorityTaskWoken);
-//
-//					portYIELD_FROM_ISR(HigherPriorityTaskWoken);
-//				}
 				if(SpectrumTask->samplesCount > 0)
 				{
 					SpectrumTask->samplesCount--;

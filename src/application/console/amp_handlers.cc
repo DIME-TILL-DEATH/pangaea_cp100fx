@@ -1,7 +1,7 @@
 #include "amp_handlers.h"
 #include "console_helpers.h"
-#include "../modules.h"
-#include "../BF706_send.h"
+#include "modules.h"
+#include "BF706_send.h"
 
 static void amp_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {

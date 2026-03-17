@@ -1,10 +1,11 @@
-#include "eepr.h"
-#include "footswitch.h"
-#include "system.h"
-#include "init.h"
 #include "io_task.h"
 
-#include "sdtest_task.h"
+#include "pot.h"
+
+#include "init.h"
+#include "footswitch.h"
+#include "system.h"
+
 #include "ui_task.h"
 
 #define KEY_NO_PRESS_MASK 0x8613
@@ -21,15 +22,13 @@
 #define FSW_CONFIRM_POS	7
 #define FSW_UP_POS	2
 
-volatile uint16_t key_reg;
-
 
 TIOTask *IOTask;
 //------------------------------------------------------------------------------
 TIOTask::TIOTask() :
 		TTask()
 {
-	queue = new TQueue(8, sizeof(TIOCmd));
+	queue = new TQueue(16, sizeof(TIOCmd));
 }
 
 TIOTask::~TIOTask()
@@ -37,12 +36,21 @@ TIOTask::~TIOTask()
 	delete queue;
 }
 
-
-
 void TIOTask::Code()
 {
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_IOTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
+
+	// HW_read_keys_enable();
+	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
+	USART_Cmd(USART2, ENABLE);
+	DMA_Cmd(DMA1_Stream5, ENABLE);
+	DMA_ITConfig(DMA1_Stream5, DMA_IT_TC, ENABLE);
+	DMA1_Stream6->NDTR = 2;
+	GPIO_SetBits(GPIOC, GPIO_Pin_4);
+
+	DMA_Cmd(DMA1_Stream6, ENABLE);
+
 
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 
@@ -73,22 +81,31 @@ void TIOTask::Code()
 					Footswitch::hold_execute(cmd.fswEvents.fsw);
 				break;
 			}
-		}
 
-//----------------------------------------------------LED FX-----------------------------------------------
-		uint8_t isLedOn = 0;
-		uint16_t enabledMask = 0;
-		enabledMask = (1 << ENABLE_AMP) | (1 << ENABLE_PREAMP) | (1 << ENABLE_CAB);
-		for(uint8_t i = 0; i < 14; i++)
-		{
-			if(!((enabledMask >> i) & 0x1))
-				isLedOn += currentPreset.modules.rawData[i];
-		}
+			case IO_LED_TASK:
+			{
+				uint8_t isLedOn = 0;
+				uint16_t enabledMask = 0;
+				enabledMask = (1 << ENABLE_AMP) | (1 << ENABLE_PREAMP) | (1 << ENABLE_CAB);
+				for(uint8_t i = 0; i < 14; i++)
+				{
+					if(!((enabledMask >> i) & 0x1))
+						isLedOn += currentPreset.modules.rawData[i];
+				}
 
-		if(isLedOn)
-			GPIO_SetBits(GPIOB, GPIO_Pin_14);
-		else
-			GPIO_ResetBits(GPIOB, GPIO_Pin_14);
+				if(isLedOn)
+					GPIO_SetBits(GPIOB, GPIO_Pin_14);
+				else
+					GPIO_ResetBits(GPIOB, GPIO_Pin_14);
+				break;
+			}
+
+			case IO_POT_WRITE:
+			{
+				HW_write_pot();
+				break;
+			}
+		}
 	}
 }
 
@@ -133,7 +150,7 @@ void ISR_buttons_read()
 	DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
 	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TCIF6);
 
-	key_reg = ~((key_reg_in & 0x7fff) ^ KEY_NO_PRESS_MASK);
+	uint16_t key_reg = ~((key_reg_in & 0x7fff) ^ KEY_NO_PRESS_MASK);
 
 	TKeysEvents keyEvents;
 	keyEvents.hold = keysHold;
@@ -146,7 +163,7 @@ void ISR_buttons_read()
 	keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
 	keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
 
-	if(UITask) UITask->keysEvents(keyEvents);
+	UITask->keysEvents(keyEvents);
 
 	TFswEvents fswEvents;
 
@@ -155,34 +172,35 @@ void ISR_buttons_read()
 	if((key_reg >> FSW_CONFIRM_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_CONFIRM;
 	if((key_reg >> FSW_UP_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_UP;
 
-	if(IOTask)
+
+	if(holdedFsw != fswEvents.fsw)
 	{
-		if(holdedFsw != fswEvents.fsw)
+		if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
 		{
-			if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
-			{
-				IOTask->fswSinglePressed(fswEvents);
+			IOTask->fswSinglePressed(fswEvents);
 
-				TIM_ClearFlag(TIM3, TIM_FLAG_Update);
-				TIM_SetCounter(TIM3, sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
-				TIM_Cmd(TIM3, ENABLE);
-			}
-			else	// press out
+			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
+			TIM_SetCounter(TIM3, sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
+			TIM_Cmd(TIM3, ENABLE);
+		}
+		else	// press out
+		{
+			if(TIM3->CR1 & TIM_CR1_CEN)
 			{
-				if(TIM3->CR1 & TIM_CR1_CEN)
-				{
-					fswEvents.fsw = holdedFsw;
-					IOTask->fswDualPressed(fswEvents);
+				fswEvents.fsw = holdedFsw;
+				IOTask->fswDualPressed(fswEvents);
 
-					TIM_Cmd(TIM3, DISABLE);
-				}
+				TIM_Cmd(TIM3, DISABLE);
 			}
 		}
 	}
+
 	holdedFsw = fswEvents.fsw;
 
 	if(key_reg) keysHold = true;
 	else keysHold = false;
+
+	IOTask->ledTask();
 
 	DMA_Cmd(DMA1_Stream6, DISABLE);
 	DMA1_Stream6->NDTR = 2;
@@ -198,7 +216,6 @@ void ISR_fsw_hold_timer()
 		fswEvents.fsw = holdedFsw;
 		IOTask->fswDualHolded(fswEvents);
 	}
-//	TIM_ITConfig(TIM3, TIM_IT_Update, DISABLE);
 	TIM_SetCounter(TIM3, 0);
 	TIM_Cmd(TIM3, DISABLE);
 }

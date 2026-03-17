@@ -32,7 +32,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	setParams(params, paramCount);
 	setIcon(false, ICON_NONE);
 
-	DisplayTask->Pot_Write();
+	IOTask->potWrite();
 }
 
 void AttenuatorMenu::encoderClockwise()
@@ -51,7 +51,7 @@ void AttenuatorMenu::encoderClockwise()
 			refresh();
 		}
 
-		DisplayTask->Pot_Write();
+		IOTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
@@ -80,7 +80,7 @@ void AttenuatorMenu::encoderCounterClockwise()
 			refresh();
 		}
 
-		DisplayTask->Pot_Write();
+		IOTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}

@@ -1,19 +1,20 @@
 #include "expressionmenu.h"
 
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/io_task.h"
-#include "../../../tasks/ui_task.h"
+#include "gpio.h"
+
+#include "display_task.h"
+#include "io_task.h"
+#include "ui_task.h"
+#include "midi_task.h"
+
 #include "allFonts.h"
 #include "icon_bit.h"
-#include "eepr.h"
 
+#include "eepr.h"
 #include "system.h"
 #include "footswitch.h"
 
 #include "BF706_send.h"
-
-#include "midi_task.h"
-
 
 const uint8_t ExpressionMenu::strOk[];
 const uint8_t ExpressionMenu::strSetMin[];
@@ -136,11 +137,12 @@ void ExpressionMenu::encoderClockwise()
 			switch(m_parNum)
 			{
 				case 0:
-					if((sys_para[System::EXPR_TYPE]&0x7f)<4)
+					if((sys_para[System::EXPR_TYPE]&0x7f) < 4)
 					{
 						DisplayTask->StringOut(60, 0, Font::fntSystem, 0,
 								(uint8_t*)strExprType[++sys_para[System::EXPR_TYPE] & 0x7f]);
-						adc_pin_init();
+
+						HW_adc_pin_init();
 						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
 							ext_send(127);
 					}
@@ -193,7 +195,7 @@ void ExpressionMenu::encoderCounterClockwise()
 					{
 						DisplayTask->StringOut(60, 0, Font::fntSystem, 0,
 								(uint8_t*)&strExprType[--sys_para[System::EXPR_TYPE] & 0x7f]);
-						adc_pin_init();
+						HW_adc_pin_init();
 						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
 							ext_send(127);
 					}

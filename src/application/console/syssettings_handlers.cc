@@ -37,14 +37,14 @@ static void attenuator_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 															: &sys_para[System::ATTENUATOR];
 
 	default_param_handler(value_ptr, rl, args, count);
-	DisplayTask->Pot_Write();
+	IOTask->potWrite();
 	write_sys();
 }
 
 static void attenuator_mode_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::ATTENUATOR_MODE], rl, args, count);
-	DisplayTask->Pot_Write();
+	IOTask->potWrite();
 	write_sys();
 }
 
@@ -58,7 +58,7 @@ static void master_volume_command_handler(TReadLine* rl, TReadLine::const_symbol
 static void phones_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::PHONES_VOLUME], rl, args, count);
-	DisplayTask->Pot_Write();
+	IOTask->potWrite();
 	write_sys();
 }
 

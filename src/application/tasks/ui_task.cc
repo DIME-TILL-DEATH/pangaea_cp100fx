@@ -5,6 +5,7 @@
 #include "eepr.h"
 
 #include "BF706_send.h"
+#include "pot.h"
 
 #include "mainmenu.h"
 #include "usbmenu.h"
@@ -58,7 +59,7 @@ void TUITask::Code()
 
 	USART_Cmd(USART1, ENABLE);
 
-	if(sys_para[3] & 0x80)
+	if(sys_para[System::EXPR_TYPE] & 0x80)
 	{
 		adc_init(1);
 	}
@@ -72,7 +73,8 @@ void TUITask::Code()
 
 	if(!sys_para[System::PHONES_VOLUME]) sys_para[System::PHONES_VOLUME] = 127;
 
-	DisplayTask->Pot_Write(); // phones, attenuator
+//	DisplayTask->potWrite(); // phones, attenuator
+	HW_write_pot();
 
 	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
 
@@ -109,8 +111,9 @@ void TUITask::Code()
 	currentMenu = mainMenu;
 	mainMenu->show();
 
-	//enable running string timer
 	TIM_SetCounter(TIM4, 0);
+
+	//enable running string timer
 	TIM_Cmd(TIM5, ENABLE);
 	TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
 

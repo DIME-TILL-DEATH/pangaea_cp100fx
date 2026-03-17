@@ -200,14 +200,6 @@ void TDisplayTask::Code()
 				tap_ind(cmd.Tap_indParam.data);
 			break;
 
-			case dcLed_Write:
-				led_disp_write();
-			break;
-
-			case dcPot_Write:
-				write_pot();
-			break;
-
 			case dcIcStrel:
 				icon_print(cmd.IcStrelParam.num, cmd.IcStrelParam.str);
 			break;
@@ -501,18 +493,6 @@ void TDisplayTask::StartScreen(uint8_t data)
 	TDisplayCmd cmd;
 	cmd.cmd=dcStart;
 	cmd.StartParam.data = data;
-	Command(&cmd);
-}
-void TDisplayTask::Led_Write()
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcLed_Write;
-	Command(&cmd);
-}
-void TDisplayTask::Pot_Write()
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcPot_Write;
 	Command(&cmd);
 }
 

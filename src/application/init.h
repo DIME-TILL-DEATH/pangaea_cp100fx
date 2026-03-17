@@ -52,7 +52,6 @@ void send_codec(uint16_t data);
 void init(void);
 void adc_init(uint8_t stat);
 void adc_calib(void);
-void adc_pin_init(void);
 
 inline void __attribute__ ((always_inline)) dela(uint32_t i)
 {

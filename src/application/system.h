@@ -129,6 +129,7 @@ namespace System
 	const uint8_t maxBpm = 240;
 };
 
+extern uint8_t sys_para[];
 extern volatile uint32_t tap_temp;
 
 #endif /* SRC_APPLICATION_SYSTEM_H_ */
