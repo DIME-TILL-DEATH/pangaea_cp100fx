@@ -384,6 +384,9 @@ void TControllersTask::Code()
 
 	for(int i =0; i < maBufSize; i++) maMidiClockBuf[i] = 500;
 
+	extern EventGroupHandle_t startEventGroup;
+	xEventGroupSync(startEventGroup, EVENT_BIT_CCTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
+
 	while(1)
 	{
 		queue->Receive(&cmd, portMAX_DELAY);

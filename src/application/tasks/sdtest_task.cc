@@ -21,6 +21,9 @@ void TSDTestTask::Code()
 	Delay(10);
 	SDTestTask->Give();
 
+	extern EventGroupHandle_t startEventGroup;
+	xEventGroupSync(startEventGroup, EVENT_BIT_STTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
+
 	while(1)
 	{
 		sem->Take(portMAX_DELAY);

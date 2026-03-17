@@ -49,6 +49,9 @@ void TMidiTask::Code()
 	if(!queue) Suspend();
 	if(!queue->IsCreated()) Suspend();
 
+	extern EventGroupHandle_t startEventGroup;
+	xEventGroupSync(startEventGroup, EVENT_BIT_MDTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
+
 	TMidiCmd cmd;
 
 	while(1)

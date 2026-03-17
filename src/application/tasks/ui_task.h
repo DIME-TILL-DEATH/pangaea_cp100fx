@@ -14,16 +14,6 @@ public:
 	TUITask();
 	~TUITask();
 
-	inline void DisplayAccess(bool val)
-	{
-		DispalyAccess = val;
-	}
-
-	inline bool DisplayAccess()
-	{
-		return DispalyAccess;
-	}
-
 	//-----------------Responses----------------------
 	typedef enum
 	{
@@ -139,10 +129,7 @@ private:
 
 	TQueue *responseQueue;
 	TQueue *cmdQueue;
-
-	bool DispalyAccess;
 };
-extern uint8_t tun_del_val;
 
 extern TUITask *UITask;
 

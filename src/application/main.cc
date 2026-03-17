@@ -2,19 +2,24 @@
 #define __KLIBC_WRAPS_IMPL__
 
 #include "appdefs.h"
+
+#include "storage.h"
+
+#include "errno.h"
 #include "mmgr.h"
+
 #include "tasks/usb_task.h"
 #include "tasks/display_task.h"
-#include "storage.h"
 #include "tasks/filesystem_task.h"
 #include "tasks/ui_task.h"
 #include "tasks/controllers_task.h"
 #include "tasks/sdtest_task.h"
 #include "tasks/io_task.h"
-#include "errno.h"
+
 #include "tasks/spectrum_task.h"
 #include "tasks/midi_task.h"
 
+EventGroupHandle_t startEventGroup;
 
 extern void (*__preinit_array_start__[])(void);
 extern void (*__preinit_array_end__[])(void);
@@ -115,6 +120,8 @@ int main(void)
 	pin_usb_init();
 	sysclock = GetCpuClock();
 
+	startEventGroup = xEventGroupCreate();
+
 	FileSystemTask = new TFileSystemTask();
 	FileSystemTask->Create("FS", 40*configMINIMAL_STACK_SIZE, 0);
 
@@ -129,7 +136,6 @@ int main(void)
 
 	SpectrumTask = new TSpectrumTask();
 	SpectrumTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
-
 
 	ControllersTask = new TControllersTask();
 	ControllersTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);

@@ -24,6 +24,9 @@ void TDisplayTask::Code()
 
 	if (!queue->IsCreated()) Suspend();
 
+	extern EventGroupHandle_t startEventGroup;
+	xEventGroupSync(startEventGroup, EVENT_BIT_DSTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
+
 	while(1)
 	{
 		queue->Receive(&cmd, portMAX_DELAY);

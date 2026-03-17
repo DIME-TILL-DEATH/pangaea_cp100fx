@@ -86,14 +86,8 @@ public:
 		Command(&cmd);
 	};
 
-	void SetEnc(uint8_t val)
-	{
-		enc_run = val;
-	}
 private:
 	void Code();
-
-	uint8_t enc_run = 0;
 
 	TQueue::TQueueSendResult Command(TIOCmd *cmd)
 	{

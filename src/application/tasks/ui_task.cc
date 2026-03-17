@@ -47,8 +47,6 @@ void TUITask::Code()
 	COMP_Init();
 	COMP_ChangePreset(0, 0);
 
-	UITask->DisplayAccess(false);
-
 	currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
 
 	DisplayTask->StartScreen(1);
@@ -64,8 +62,6 @@ void TUITask::Code()
 	{
 		adc_init(1);
 	}
-
-	UITask->DisplayAccess(true);
 
 	DSP_GuiSendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
@@ -104,125 +100,121 @@ void TUITask::Code()
 
 	send_codec(0xa301);
 
-	IOTask->SetEnc(1);
+	mainMenu = new MainMenu();
+	usbMenu = new UsbMenu(mainMenu);
 
-	if(DisplayAccess())
-	{
-		mainMenu = new MainMenu();
-		usbMenu = new UsbMenu(mainMenu);
+	extern EventGroupHandle_t startEventGroup;
+	xEventGroupSync(startEventGroup, EVENT_BIT_UITASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
-		currentMenu = mainMenu;
-		mainMenu->show();
+	currentMenu = mainMenu;
+	mainMenu->show();
 
-		//enable running string timer
-		TIM_SetCounter(TIM4, 0);
-		TIM_Cmd(TIM5, ENABLE);
-		TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
-	}
+	//enable running string timer
+	TIM_SetCounter(TIM4, 0);
+	TIM_Cmd(TIM5, ENABLE);
+	TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
 
 	TUICmd cmd;
+
 	while(1)
 	{
-		if(DisplayAccess())
-		{
-			cmdQueue->Receive(&cmd, portMAX_DELAY);
+		cmdQueue->Receive(&cmd, portMAX_DELAY);
 
-			switch(cmd.type)
+		switch(cmd.type)
+		{
+			case UI_REFRESH_MENU:
 			{
-				case UI_REFRESH_MENU:
+				currentMenu->refresh();
+				break;
+			}
+
+			case UI_RETURN_FROM_MENU:
+			{
+				currentMenu->keyUp();
+				break;
+			}
+
+			case UI_RUNNING_STRING:
+			{
+				StringOutParam *runningString = currentMenu->getRunningString();
+				if(runningString) runningString->task();
+				break;
+			}
+
+			case UI_TASK:
+			{
+				if((GPIOA->IDR & GPIO_Pin_9) && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
 				{
-					currentMenu->refresh();
-					break;
+					currentMenu->showChild(usbMenu);
 				}
 
-				case UI_RETURN_FROM_MENU:
+				currentMenu->task();
+				break;
+			}
+
+			case UI_KEYS_EVENTS:
+			{
+				if(cmd.keysEvents.hold) break;
+
+				if(cmd.keysEvents.keyUp)
 				{
 					currentMenu->keyUp();
 					break;
 				}
 
-				case UI_RUNNING_STRING:
+				if(cmd.keysEvents.keyDown)
 				{
-					StringOutParam *runningString = currentMenu->getRunningString();
-					if(runningString) runningString->task();
+					currentMenu->keyDown();
 					break;
 				}
 
-				case UI_TASK:
+				if(cmd.keysEvents.key1)
 				{
-					if((GPIOA->IDR & GPIO_Pin_9) && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
-					{
-						currentMenu->showChild(usbMenu);
-					}
-
-					currentMenu->task();
+					currentMenu->key1();
 					break;
 				}
 
-				case UI_KEYS_EVENTS:
+				if(cmd.keysEvents.key2)
 				{
-					if(cmd.keysEvents.hold) break;
-
-					if(cmd.keysEvents.keyUp)
-					{
-						currentMenu->keyUp();
-						break;
-					}
-
-					if(cmd.keysEvents.keyDown)
-					{
-						currentMenu->keyDown();
-						break;
-					}
-
-					if(cmd.keysEvents.key1)
-					{
-						currentMenu->key1();
-						break;
-					}
-
-					if(cmd.keysEvents.key2)
-					{
-						currentMenu->key2();
-						break;
-					}
-
-					if(cmd.keysEvents.key3)
-					{
-						currentMenu->key3();
-						break;
-					}
-
-					if(cmd.keysEvents.key4)
-					{
-						currentMenu->key4();
-						break;
-					}
-
-					if(cmd.keysEvents.key5)
-					{
-						currentMenu->key5();
-						break;
-					}
-
+					currentMenu->key2();
 					break;
 				}
 
-				case UI_ENCODER_EVENTS:
+				if(cmd.keysEvents.key3)
 				{
-					if(cmd.encoderEvents.pressed)
-						currentMenu->encoderPressed();
-
-					if(cmd.encoderEvents.updated)
-					{
-						if(cmd.encoderEvents.state == ENC_COUNTERCLOCKWISE_STEP)
-							currentMenu->encoderCounterClockwise();
-
-						if(cmd.encoderEvents.state == ENC_CLOCKWISE_STEP)
-							currentMenu->encoderClockwise();
-					}
+					currentMenu->key3();
 					break;
 				}
+
+				if(cmd.keysEvents.key4)
+				{
+					currentMenu->key4();
+					break;
+				}
+
+				if(cmd.keysEvents.key5)
+				{
+					currentMenu->key5();
+					break;
+				}
+
+				break;
+			}
+
+			case UI_ENCODER_EVENTS:
+			{
+				if(cmd.encoderEvents.pressed)
+					currentMenu->encoderPressed();
+
+				if(cmd.encoderEvents.updated)
+				{
+					if(cmd.encoderEvents.state == ENC_COUNTERCLOCKWISE_STEP)
+						currentMenu->encoderCounterClockwise();
+
+					if(cmd.encoderEvents.state == ENC_CLOCKWISE_STEP)
+						currentMenu->encoderClockwise();
+				}
+				break;
 			}
 		}
 	}

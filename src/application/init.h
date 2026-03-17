@@ -3,6 +3,8 @@
 
 #include "appdefs.h"
 
+extern uint8_t tun_del_val;
+
 extern uint8_t cab_type;
 extern volatile uint16_t key_reg_in;
 

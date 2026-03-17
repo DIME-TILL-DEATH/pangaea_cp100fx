@@ -37,27 +37,13 @@ TIOTask::~TIOTask()
 	delete queue;
 }
 
-//void tim_start(uint16_t del)
-//{
-//	TIM_ClearFlag(TIM3, TIM_FLAG_Update);
-//	TIM_SetCounter(TIM3, del);
-//	TIM_Cmd(TIM3, ENABLE);
-//}
 
-//uint8_t fsw1_in_press_fl = 0;
-//uint8_t fsw2_in_press_fl = 0;
-//uint8_t fsw3_in_press_fl = 0;
-//uint8_t fsw1_in_hold_fl = 0;
-//uint8_t fsw2_in_hold_fl = 0;
-//uint8_t fsw3_in_hold_fl = 0;
-//
-//uint8_t tim3_end_fl = 0;
 
 void TIOTask::Code()
 {
-	while(!enc_run);
+	extern EventGroupHandle_t startEventGroup;
+	xEventGroupSync(startEventGroup, EVENT_BIT_IOTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
-//	TIM_Cmd(TIM3, ENABLE);
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 
 	TIOCmd cmd;
