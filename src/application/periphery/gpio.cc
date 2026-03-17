@@ -1,10 +1,17 @@
 #include "gpio.h"
 
-#include "eepr.h"
+#include "periphery.h"
+
 #include "system.h"
+
+#include "io_task.h"
+#include "sdtest_task.h"
 
 void HW_gpio_init()
 {
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+
 	GPIO_InitTypeDef GPIO_InitStructure;
 
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;           // DSP feedback
@@ -55,8 +62,6 @@ void HW_gpio_init()
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1; //  dsp_cs
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_I2S3ext);
-
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource13, GPIO_AF_SPI2);
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource2, GPIO_AF_SPI2);
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource3, GPIO_AF_SPI2);
@@ -69,6 +74,45 @@ void HW_gpio_init()
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_USART2);
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource4, GPIO_AF_USART2);
+
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_I2S3ext);
+}
+
+void HW_exti_init()
+{
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+
+	EXTI_InitTypeDef EXTI_InitStruct;
+
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource8);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOB, EXTI_PinSource9);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource13);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource14);
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource15);
+
+	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Falling;
+	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+
+	EXTI_InitStruct.EXTI_Line = EXTI_Line9;
+	EXTI_Init(&EXTI_InitStruct);
+
+	EXTI_InitStruct.EXTI_Line = EXTI_Line14;
+	EXTI_Init(&EXTI_InitStruct);
+
+	EXTI_InitStruct.EXTI_Line = EXTI_Line15;
+	EXTI_Init(&EXTI_InitStruct);
+
+	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+	EXTI_InitStruct.EXTI_Line = EXTI_Line8;
+	EXTI_Init(&EXTI_InitStruct);
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = NVIC_PRIORITY_ENCODER_READ;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 void HW_adc_pin_init()
@@ -138,4 +182,17 @@ void HW_port_B_conf(uint8_t mode)
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_12;
 		GPIO_Init(GPIOB, &GPIO_InitStructure);
 	}
+}
+
+//======================================ISR=============================
+extern "C" void EXTI15_10_IRQHandler()
+{
+	if(EXTI_GetITStatus(EXTI_Line8))
+	{
+		EXTI_ClearITPendingBit(EXTI_Line8);
+
+		if(SDTestTask) SDTestTask->Give();
+	}
+
+	ISR_encoder_read();
 }

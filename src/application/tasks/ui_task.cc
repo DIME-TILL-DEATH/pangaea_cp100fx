@@ -42,7 +42,6 @@ TUITask::~TUITask()
 void TUITask::Code()
 {
 	Delay(100);
-	GetCpuClock();
 
 	GATE_ChangePreset();
 	COMP_Init();
@@ -54,8 +53,6 @@ void TUITask::Code()
 
 	TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM4, ENABLE);
-
-	while(!ind_en);
 
 	USART_Cmd(USART1, ENABLE);
 

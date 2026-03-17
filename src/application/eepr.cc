@@ -65,6 +65,53 @@ volatile uint32_t fl_st;
 
 int16_t mstEqMidFreq;
 
+void EEPROM_start()
+{
+	DIR dir;
+	FATFS fs;
+	FIL file;
+	UINT file_size;
+	FRESULT res;
+
+	sys_para[System::MASTER_VOLUME] = 127;
+
+	if(f_mount(&fs, "1:", 1)!=FR_OK)
+	{
+		f_mkfs("1:", 0, 0);
+		f_setlabel("PANGEA");
+		f_mount(&fs, "1:", 1);
+	}
+	res = f_opendir(&dir, "1:PRESETS");
+	if(res==FR_OK)
+		f_closedir(&dir);
+	else
+		f_mkdir("1:PRESETS");
+
+	res = f_open(&file, "1:system.pan", FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
+	if(f_size(&file)==0)
+	{
+		sys_para[System::TUNER_EXTERNAL] = 0x81;
+		f_write(&file, sys_para, 512, &file_size);
+	}
+
+	f_read(&file, sys_para, 512, &file_size);
+	f_close(&file);
+	f_mount(0, "1:", 0);
+	if(!sys_para[System::MIDI_PC_IND])
+	{
+		for(uint8_t i = 0; i<128; i++)
+		{
+			if(i<99)
+				sys_para[i+128] = i;
+			else
+				sys_para[i+128] = i-99;
+		}
+		sys_para[System::MIDI_PC_IND] = 1;
+		void write_sys(void);
+		write_sys();
+	}
+}
+
 void write_sys(void)
 {
 	// Значения поумолчанию чтобы не решать квадратное уравнение
@@ -440,7 +487,7 @@ void preset_erase(uint8_t nu)
 //	FSTask->Resume();
 }
 
-void load_mass_imp(void)
+void EEPROM_load_all_ir(void)
 {
 	uint32_t buf;
 	char fna[_MAX_LFN];

@@ -1,6 +1,7 @@
 #include "expressionmenu.h"
 
 #include "gpio.h"
+#include "periphery.h"
 
 #include "display_task.h"
 #include "io_task.h"
@@ -10,7 +11,6 @@
 #include "allFonts.h"
 #include "icon_bit.h"
 
-#include "eepr.h"
 #include "system.h"
 #include "footswitch.h"
 
@@ -98,7 +98,7 @@ void ExpressionMenu::encoderPressed()
 
 			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
-			dela(0x7fffff);
+			HW_delay(0x7fffff);
 			DisplayTask->StringOut(67, 1, Font::fntSystem, 2, (uint8_t*)strSetMmax);
 			adc_calib();
 
@@ -111,7 +111,7 @@ void ExpressionMenu::encoderPressed()
 
 			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
-			dela(0x7fffff);
+			HW_delay(0x7fffff);
 			adc_calib();
 			m_menuState = ParamChoice;
 		break;

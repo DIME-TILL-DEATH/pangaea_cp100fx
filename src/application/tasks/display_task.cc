@@ -5,8 +5,6 @@
 #include "BF706_send.h"
 #include "display_task.h"
 
-volatile uint8_t ind_en;
-
 TDisplayTask* DisplayTask;
 
 TDisplayTask::TDisplayTask () :TTask()

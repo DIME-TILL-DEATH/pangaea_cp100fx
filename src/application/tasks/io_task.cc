@@ -1,8 +1,9 @@
 #include "io_task.h"
 
+#include "serial.h"
 #include "pot.h"
 
-#include "init.h"
+#include "serial.h"
 #include "footswitch.h"
 #include "system.h"
 
@@ -41,16 +42,7 @@ void TIOTask::Code()
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_IOTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
-	// HW_read_keys_enable();
-	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
-	USART_Cmd(USART2, ENABLE);
-	DMA_Cmd(DMA1_Stream5, ENABLE);
-	DMA_ITConfig(DMA1_Stream5, DMA_IT_TC, ENABLE);
-	DMA1_Stream6->NDTR = 2;
-	GPIO_SetBits(GPIOC, GPIO_Pin_4);
-
-	DMA_Cmd(DMA1_Stream6, ENABLE);
-
+	HW_read_keys_enable();
 
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 
@@ -107,6 +99,38 @@ void TIOTask::Code()
 			}
 		}
 	}
+}
+
+uint8_t drebezg(uint32_t line)
+{
+	uint8_t sss;
+	TIM_Cmd(TIM9, DISABLE);
+	if((EXTI->FTSR&line)!=0)
+	{
+		if(TIM_GetFlagStatus(TIM9, TIM_FLAG_Update)==1)
+		{
+			sss = 1;
+			EXTI->FTSR &= ~line;
+			EXTI->RTSR |= line;
+		}
+		else
+			sss = 0;
+	}
+	else
+	{
+		if(TIM_GetFlagStatus(TIM9, TIM_FLAG_Update)==1)
+		{
+			EXTI->RTSR &= ~line;
+			EXTI->FTSR |= line;
+			sss = 2;
+		}
+		else
+			sss = 0;
+	}
+	TIM_SetCounter(TIM9, 0);
+	TIM_ClearFlag(TIM9, TIM_FLAG_Update);
+	TIM_Cmd(TIM9, ENABLE);
+	return sss;
 }
 
 void ISR_encoder_read()
@@ -219,5 +243,3 @@ void ISR_fsw_hold_timer()
 	TIM_SetCounter(TIM3, 0);
 	TIM_Cmd(TIM3, DISABLE);
 }
-
-

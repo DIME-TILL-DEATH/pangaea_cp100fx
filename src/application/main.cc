@@ -18,9 +18,6 @@
 
 EventGroupHandle_t startEventGroup;
 
-
-
-
 int main(void)
 {
 	sysclock = GetCpuClock();

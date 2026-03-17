@@ -158,6 +158,9 @@ void SpectrumBuffsUpdate(float u)
 void TSpectrumTask::Code()
 {
 
+	extern EventGroupHandle_t startEventGroup;
+	xEventGroupSync(startEventGroup, EVENT_BIT_SPTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
+
 	DMA_ITConfig(DMA1_Stream2, DMA_IT_TC, ENABLE);
 	DMA_ITConfig(DMA1_Stream2, DMA_IT_HT, ENABLE);
 

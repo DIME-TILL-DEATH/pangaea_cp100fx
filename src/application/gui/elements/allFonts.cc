@@ -49,7 +49,6 @@ void disp_start(uint8_t num)
 			}
 			GPIO_SetBits(GPIOB, CS);
 		}
-		//for(uint32_t d = 0 ; d < 0x1ffffff ; d++)NOP();
 	}
 	else
 	{
@@ -80,8 +79,6 @@ void disp_start(uint8_t num)
 		}
 		GPIO_SetBits(GPIOB, CS);
 	}
-	extern volatile uint8_t ind_en;
-	ind_en = 1;
 }
 
 
