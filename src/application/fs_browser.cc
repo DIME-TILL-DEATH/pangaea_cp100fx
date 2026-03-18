@@ -1,13 +1,12 @@
 #include "fs_browser.h"
 
-#include "BF706_send.h"
-#include "eepr.h"
-#include "init.h"
 #include "storage.h"
-#include "AT45DB321.h"
-#include "allFonts.h"
-#include "tasks/filesystem_task.h"
-#include "tasks/ui_task.h"
+#include "eepr.h"
+
+#include "system.h"
+
+#include "filesystem_task.h"
+#include "ui_task.h"
 
 
 void out_file_strings(const char *file_name)

@@ -1,7 +1,6 @@
 #include "ER_OLEDM023-1B.h"
 
-#include "allFonts.h"
-
+#include "../gui/bitmaps/allFonts.h"
 #include "preset.h"
 #include "system.h"
 #include "eepr.h"
@@ -22,18 +21,44 @@ void oled023_1_send_data(uint32_t dat)
 	while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
 }
 
-void oled023_1_write_data(uint32_t dat)
+void oled023_1_write_data(uint32_t data)
+{
+	oled023_1_write_data(data, 1);
+}
+
+void oled023_1_write_data(uint32_t data, uint16_t dataSize)
 {
 	GPIO_ResetBits(GPIOB, CS);
-	oled023_1_send_data(dat);
+
+	for(uint8_t i = 0; i < dataSize; i++)
+	{
+		while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+		USART_SendData(USART3, __RBIT(data) >> 24);
+		while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
+	}
 	GPIO_SetBits(GPIOB, CS);
 }
 
-void oled023_1_write_instruction(uint32_t dat)
+void oled023_1_write_data(const uint8_t* data_ptr, uint16_t dataSize)
+{
+	GPIO_ResetBits(GPIOB, CS);
+
+		for(uint8_t i = 0; i < dataSize; i++)
+		{
+			while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+			USART_SendData(USART3, __RBIT(data_ptr[i]) >> 24);
+			while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
+		}
+		GPIO_SetBits(GPIOB, CS);
+}
+
+void oled023_1_write_instruction(uint32_t instr)
 {
 	GPIO_ResetBits(GPIOB, RS);
 	GPIO_ResetBits(GPIOB, CS);
-	oled023_1_send_data(dat);
+	while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+	USART_SendData(USART3, __RBIT(instr) >> 24);
+	while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
 	GPIO_SetBits(GPIOB, CS);
 	GPIO_SetBits(GPIOB, RS);
 }
@@ -65,20 +90,11 @@ void oled023_1_disp_clear(void)
 	{
 		Set_Page_Address(j);
 		Set_Column_Address(0);
-		GPIO_ResetBits(GPIOB, CS);
-		for(uint16_t i = 0; i < 128; i++)
-			oled023_1_write_data(0);
-		GPIO_SetBits(GPIOB, CS);
+		uint8_t nullData = 0;
+		oled023_1_write_data(nullData, 128);
 	}
 }
-//
-//void led_disp_write(void)
-//{
-//	for(int i = 0; i < 3; i++)
-//		oled023_1_send_data(led_buf[i]);
-//	GPIO_SetBits(GPIOB, GPIO_Pin_15);
-//	GPIO_ResetBits(GPIOB, GPIO_Pin_15);
-//}
+
 
 void oled023_1_disp_reset(void)
 {
@@ -157,12 +173,5 @@ void oled023_1_disp_init(void)
 	for(int i = 0; i < 30; i++)
 		oled023_1_write_instruction(oled_ini[i]);
 
-	//oled023_1_disp_reset();
-
 	oled023_1_disp_clear();
 }
-
-
-
-
-

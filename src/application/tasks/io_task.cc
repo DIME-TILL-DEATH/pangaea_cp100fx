@@ -39,6 +39,8 @@ TIOTask::~TIOTask()
 
 void TIOTask::Code()
 {
+	HW_write_pot();
+
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_IOTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 

@@ -1,10 +1,9 @@
-#include "appdefs.h"
-#include "allFonts.h"
+#include "../bitmaps/allFonts.h"
 
-#include "../../tasks/filesystem_task.h"
-#include "../../tasks/ui_task.h"
-#include "eepr.h"
+#include "../bitmaps/amt.h"
 #include "amt.h"
+
+#include "periphery.h"
 
 #include "preset.h"
 #include "footswitch.h"
@@ -14,9 +13,6 @@
 uint32_t ind_in_p[2];
 uint32_t ind_out_l[2];
 
-uint8_t t_po;
-uint8_t t_po1;
-volatile uint8_t t_no;
 
 uint8_t Font::symbolWidth(Font::TFontName fontName)
 {
@@ -52,30 +48,34 @@ void disp_start(uint8_t num)
 	}
 	else
 	{
+		uint8_t nullData = 0;
 		for(uint8_t i = 0; i < 128; i++)
 		{
 			Set_Column_Address(i);
-			for(uint8_t j = 0; j < 4; j++)
-			{
-				Set_Page_Address(j);
-				oled023_1_write_data(0);
-			}
-			for(uint32_t d = 0; d < 0xffff; d++)
-				NOP();
+//			for(uint8_t j = 0; j < 4; j++)
+//			{
+//				Set_Page_Address(j);
+//				oled023_1_write_data(0);
+//			}
+			oled023_1_write_data(nullData, 4);
+
+			HW_delay(0xffff);
 		}
+		Arsys_line(50, 1, (uint8_t*)"CP100-FX", 0);
 		Arsys_line(50, 2, (uint8_t*)amt_ver, 0);
+
 		for(uint32_t d = 0; d < 0x7fffff; d++)
 			NOP();
 		for(uint8_t i = 127; i > 0; i--)
 		{
 			Set_Column_Address(i);
-			for(uint8_t j = 0; j < 4; j++)
-			{
-				Set_Page_Address(j);
-				oled023_1_write_data(0);
-			}
-			for(uint32_t d = 0; d < 0xffff; d++)
-				NOP();
+//			for(uint8_t j = 0; j < 4; j++)
+//			{
+//				Set_Page_Address(j);
+//				oled023_1_write_data(0);
+//			}
+			oled023_1_write_data(nullData, 4);
+			HW_delay(0xffff);
 		}
 		GPIO_SetBits(GPIOB, CS);
 	}
@@ -357,17 +357,6 @@ void Arsys_ef(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs)
 		else
 			oled023_1_write_data(7);
 	}
-}
-void disp_contr(uint8_t val)
-{
-	//erc12864_Set_Contrast_Control_Register(val * (22.0/31.0) + 14.0);
-}
-
-
-void tun_ini(void)
-{
-	oled023_1_disp_clear();
-	scal_tun();
 }
 
 void del_sec_ind(uint8_t col, uint8_t pag, uint32_t d)

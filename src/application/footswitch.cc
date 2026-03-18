@@ -3,12 +3,13 @@
 #include "appdefs.h"
 #include "eepr.h"
 #include "BF706_send.h"
-#include "allFonts.h"
 #include "controllers_task.h"
 #include "system.h"
 
 #include "preset.h"
 #include "footswitch.h"
+
+#include "gui/bitmaps/allFonts.h"
 #include "midi_task.h"
 #include "tunermenu.h"
 

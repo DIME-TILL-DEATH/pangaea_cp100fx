@@ -1,17 +1,19 @@
 #include "syssettings_handlers.h"
 
-#include "../tasks/display_task.h"
-#include "../tasks/ui_task.h"
 #include "console_helpers.h"
-#include "modules.h"
+
+#include "adc.h"
 #include "BF706_send.h"
 
 #include "eepr.h"
-#include "init.h"
 
 #include "system.h"
+#include "modules.h"
 
 #include "tun_bit.h"
+
+#include "display_task.h"
+#include "ui_task.h"
 
 
 static void sys_settings_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
@@ -139,14 +141,14 @@ static void expr_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 
 	if(!val)
 	{
-		adc_init(0);
+		ADC_init(0);
 		sys_para[System::EXPR_TYPE] &= 0x7f;
 		ext_send(127);
 	}
 	else
 	{
 		sys_para[System::EXPR_TYPE] |= 0x80;
-		adc_init(1);
+		ADC_init(1);
 	}
 
 	write_sys();

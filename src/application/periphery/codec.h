@@ -43,5 +43,7 @@ typedef union
 	};
 } da_data_t;
 
+void CODEC_start();
+void CODEC_send(uint16_t data);
 
 #endif /* CODEC_H_ */

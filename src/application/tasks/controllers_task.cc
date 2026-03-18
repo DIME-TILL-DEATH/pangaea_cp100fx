@@ -3,12 +3,12 @@
 #include "BF706_send.h"
 #include "system.h"
 
-#include "allFonts.h"
 #include "modulesmenu.h"
 
 #include "controller.h"
 #include "controllers_task.h"
 
+#include "../gui/bitmaps/allFonts.h"
 #include "display_task.h"
 #include "display_task.h"
 #include "io_task.h"

@@ -3,7 +3,7 @@
 #include "../../../tasks/display_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "allFonts.h"
+#include "../../bitmaps/allFonts.h"
 #include "eepr.h"
 
 #include "fswmodemenu.h"

@@ -23,8 +23,9 @@ LIB_FLAGS=	-I$(READLINE_SRC_DIR) \
 			-I$(SRC_DIR)/application/periphery\
 			-I$(SRC_DIR)/application/hardware\
 			-I$(SRC_DIR)/application/gui\
+			-I$(SRC_DIR)/application/gui/bitmaps\
 			-I$(SRC_DIR)/application/gui/dialogs\
-			-I$(SRC_DIR)/application/gui/elements\
+			-I$(SRC_DIR)/application/gui/fonts\
 			-I$(SRC_DIR)/application/gui/menus\
 			-I$(SRC_DIR)/application/gui/menus/paramlistmenu\
 			-I$(SRC_DIR)/application/gui/menus/modulesmenu\

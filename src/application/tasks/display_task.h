@@ -2,11 +2,8 @@
 #define __DISPLAY_H__
 
 #include "appdefs.h"
-#include "modules.h"
-#include "BF706_send.h"
 
 #include "allFonts.h"
-#include "icon_bit.h"
 
 #define FILE_NAME_LENGTH 64
 
@@ -62,11 +59,8 @@ public:
 		dcTunStrel,
 		dcInd_foot,
 		dcReset,
-		dcStrel,
+		dcArrow,
 		dcCount,
-
-//		dcLed_Write,
-		dcPot_Write
 	}TCommand;
 
 	typedef struct
@@ -368,7 +362,7 @@ public:
 	void PresetPreview(uint8_t index);
 
 	void Display_Reset(void);
-	void Strel(uint8_t x, uint8_t y, uint32_t dir);
+	void Arrow(uint8_t x, uint8_t y, uint32_t dir);
 
 private:
 	void Code();

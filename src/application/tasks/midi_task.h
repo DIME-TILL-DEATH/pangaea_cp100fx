@@ -108,9 +108,7 @@ private:
 	TQueue *queue;
 };
 
-extern volatile uint16_t adc_bu;
 extern volatile uint8_t pc_mute_fl;
-void adc_proc(void);
 
 extern TMidiTask *MidiTask;
 

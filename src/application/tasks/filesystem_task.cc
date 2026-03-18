@@ -1,7 +1,7 @@
 #include "filesystem_task.h"
 
+#include "../gui/bitmaps/allFonts.h"
 #include "format.h"
-#include "allFonts.h"
 #include "display_task.h"
 #include "ui_task.h"
 

@@ -1,11 +1,12 @@
 #include "ui_task.h"
 
-#include "appdefs.h"
-#include "init.h"
 #include "eepr.h"
 
+#include "adc.h"
+#include "ER_OLEDM023-1B.h"
 #include "BF706_send.h"
 #include "pot.h"
+#include "codec.h"
 
 #include "mainmenu.h"
 #include "usbmenu.h"
@@ -14,11 +15,8 @@
 #include "system.h"
 #include "dsp.h"
 
-
-#include "ER_OLEDM023-1B.h"
 #include "display_task.h"
 #include "io_task.h"
-
 
 TUITask *UITask;
 
@@ -41,15 +39,13 @@ TUITask::~TUITask()
 
 void TUITask::Code()
 {
-	Delay(100);
+//	Delay(100);
 
 	GATE_ChangePreset();
 	COMP_Init();
 	COMP_ChangePreset(0, 0);
 
 	currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
-
-	DisplayTask->StartScreen(1);
 
 	TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM4, ENABLE);
@@ -58,7 +54,7 @@ void TUITask::Code()
 
 	if(sys_para[System::EXPR_TYPE] & 0x80)
 	{
-		adc_init(1);
+		ADC_init(1);
 	}
 
 	DSP_GuiSendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
@@ -69,9 +65,6 @@ void TUITask::Code()
 	DSP_GuiSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0); // left cab bypass
 
 	if(!sys_para[System::PHONES_VOLUME]) sys_para[System::PHONES_VOLUME] = 127;
-
-//	DisplayTask->potWrite(); // phones, attenuator
-	HW_write_pot();
 
 	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
 
@@ -97,7 +90,7 @@ void TUITask::Code()
 	Delay(500);
 	Preset::Change();
 
-	send_codec(0xa301);
+	CODEC_send(0xa301);
 
 	mainMenu = new MainMenu();
 	usbMenu = new UsbMenu(mainMenu);

@@ -10,10 +10,7 @@ extern const uint8_t prog_data_init[];
 extern uint8_t sys_para[];
 extern uint8_t imp_buf_uint[];
 
-extern volatile uint16_t adc_low;
-extern volatile uint16_t adc_high;
-extern volatile uint16_t adc_val;
-extern volatile float adc_val1;
+
 
 extern int16_t mstEqMidFreq;
 

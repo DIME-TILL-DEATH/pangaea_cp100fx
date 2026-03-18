@@ -4,6 +4,10 @@
 #include "preset.h"
 #include "tasks/display_task.h"
 
+volatile uint32_t tap_temp;
+uint8_t cab_type = 0;
+uint8_t tun_del_val;
+
 float tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
 const uint16_t bpm_time[] =
@@ -19,7 +23,6 @@ const uint16_t bpm_time[] =
 		280, 279, 278, 276, 275, 274, 273, 271, 270, 269, 268, 267, 265, 264, 263, 262, 261, 260, 259, 258, 256, 255,
 		254, 253, 252, 251, 250};
 
-volatile uint32_t tap_temp;
 
 void System::setMoogTime(float quarterInterval)
 {

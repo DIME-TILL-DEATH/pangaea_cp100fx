@@ -3,18 +3,31 @@
 #include "appdefs.h"
 #include "sdk_port.h"
 
-#include "tasks/usb_task.h"
-#include "tasks/display_task.h"
-#include "tasks/filesystem_task.h"
-#include "tasks/ui_task.h"
-#include "tasks/controllers_task.h"
-#include "tasks/sdtest_task.h"
-#include "tasks/io_task.h"
+#include "eepr.h"
 
-#include "tasks/spectrum_task.h"
-#include "tasks/midi_task.h"
+#include "periphery.h"
+#include "AT45DB321.h"
+#include "ER_OLEDM023-1B.h"
+#include "serial.h"
+#include "gpio.h"
+#include "hw_timers.h"
+#include "sharc.h"
+#include "codec.h"
 
-#include "init.h"
+#include "allFonts.h"
+#include "par_bitmap.h"
+
+#include "system.h"
+
+#include "filesystem_task.h"
+#include "display_task.h"
+#include "io_task.h"
+#include "ui_task.h"
+#include "spectrum_task.h"
+#include "controllers_task.h"
+#include "sdtest_task.h"
+#include "midi_task.h"
+
 
 EventGroupHandle_t startEventGroup;
 
@@ -22,7 +35,32 @@ int main(void)
 {
 	sysclock = GetCpuClock();
 
-	init();
+	oled023_1_disp_init();
+	disp_start(0);
+
+	AT45DB321_Init();
+	HW_delay(0xfffff);
+
+	EEPROM_start();
+
+	HW_gpio_init();
+	HW_exti_init();
+
+	HW_i2s_init();
+	HW_uart_init();
+
+	HW_timers_init();
+
+	SHARC_spi_init(TSharcSpiMode::SPI_SLAVE);
+	SHARC_startup_load();
+	SHARC_spi_init(TSharcSpiMode::SPI_MASTER);
+
+	CODEC_start();
+
+	disp_start(1);
+	EEPROM_load_all_ir();
+
+	HW_pin_usb_init();
 
 	startEventGroup = xEventGroupCreate();
 

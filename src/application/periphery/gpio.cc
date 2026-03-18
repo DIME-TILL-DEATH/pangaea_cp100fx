@@ -95,6 +95,7 @@ void HW_exti_init()
 	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Falling;
 	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
 
+	// wait sharc?
 	EXTI_InitStruct.EXTI_Line = EXTI_Line9;
 	EXTI_Init(&EXTI_InitStruct);
 

@@ -1,25 +1,21 @@
 #include "systemmenu.h"
 
-#include "../../../tasks/controllers_task.h"
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/io_task.h"
-#include "../../../tasks/midi_task.h"
-#include "../../../tasks/ui_task.h"
-#include "appdefs.h"
-#include "eepr.h"
-#include "allFonts.h"
+#include "adc.h"
 #include "BF706_send.h"
-#include "midimapmenu.h"
-#include "expressionmenu.h"
-#include "fswtypemenu.h"
-#include "tunerextmenu.h"
+
+#include "system.h"
+#include "eepr.h"
 
 #include "baseparam.h"
 #include "stringlistparam.h"
 #include "submenuparam.h"
 #include "customparam.h"
 
-#include "system.h"
+#include "dialog.h"
+#include "midimapmenu.h"
+#include "expressionmenu.h"
+#include "fswtypemenu.h"
+#include "tunerextmenu.h"
 
 SystemMenu::SystemMenu(AbstractMenu* parent, gui_menu_type menuType)
 		:ParamListMenu(parent, menuType)
@@ -236,7 +232,7 @@ void SystemMenu::expressionPrint(void* parameter)
 void SystemMenu::expressionDescrease(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	adc_init(0);
+	ADC_init(0);
 	*valuePtr &= 0x7f;
 	ext_send(127);
 }
@@ -245,7 +241,7 @@ void SystemMenu::expressionIncrease(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	*valuePtr |= 0x80;
-	adc_init(1);
+	ADC_init(1);
 }
 
 void SystemMenu::expressionKeyDown(void* parameter)

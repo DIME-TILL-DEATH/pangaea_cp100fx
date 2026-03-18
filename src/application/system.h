@@ -33,7 +33,7 @@ namespace System
 		LAST_PRESET_NUM = 31,
 
 		/*FSW button mode*/
-		FSW1_MODE = 32, FSW2_MODE, FSW3_MODE,
+		FSW1_MODE, FSW2_MODE, FSW3_MODE,
 
 		FSW1_HOLD_TYPE, FSW2_HOLD_TYPE, FSW3_HOLD_TYPE,
 
@@ -130,6 +130,8 @@ namespace System
 };
 
 extern uint8_t sys_para[];
+extern uint8_t cab_type;
+extern uint8_t tun_del_val;
 extern volatile uint32_t tap_temp;
 
 #endif /* SRC_APPLICATION_SYSTEM_H_ */

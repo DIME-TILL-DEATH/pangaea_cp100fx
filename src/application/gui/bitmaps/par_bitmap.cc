@@ -1,6 +1,7 @@
-#include "par_bitmap.h"
-
 #include "allFonts.h"
+#include "../bitmaps/par_bitmap.h"
+
+#include "../bitmaps/allFonts.h"
 
 const uint8_t dry[] = "Dry";
 const uint8_t wet[] = "Wet";

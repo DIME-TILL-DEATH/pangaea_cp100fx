@@ -1,14 +1,13 @@
-#include "../tasks/filesystem_task.h"
-#include "../tasks/spectrum_task.h"
+
+#include "../gui/bitmaps/amt.h"
+#include "../gui/bitmaps/tun_bit.h"
 #include "console_handlers.h"
 
 #include "eepr.h"
 #include "ff.h"
 
-#include "amt.h"
-
+#include "codec.h"
 #include "BF706_send.h"
-#include "init.h"
 
 #include "controller.h"
 #include "midi_task.h"
@@ -34,7 +33,9 @@
 
 #include "copyselectmenu.h"
 
-#include "tun_bit.h"
+#include "filesystem_task.h"
+#include "spectrum_task.h"
+
 
 bool consoleBusy = false;
 
@@ -739,7 +740,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 			if(on)
 			{
-				send_codec(0xa102);
+				CODEC_send(0xa102);
 				DSP_ContrSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 				tun_base_old = 0.0f;
 
@@ -752,7 +753,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 				DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 
 				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-				send_codec(0xa103);
+				CODEC_send(0xa103);
 			}
 			msg_console("%d", on);
 		}

@@ -1,6 +1,7 @@
-#include "icon_bit.h"
-
 #include "allFonts.h"
+#include "../bitmaps/icons_bitmap.h"
+
+#include "../bitmaps/allFonts.h"
 
 const uint8_t icon_bit[] =
 {
@@ -32,8 +33,8 @@ const uint8_t icon_bit[] =
 		0x40, 0x40, 0x7C, 0x7C, 0x7C, 0x7C, 0x7E, 0x7F, 0x40, 0x40, 0x7C, 0x7C, 0x7C, 0x40, 0x40, 0x7F,   // PA
 
 		0xFE, 0x02, 0x02, 0xF2, 0xF2, 0xF2, 0x02, 0x06, 0xFE, 0x02, 0x02, 0x7E, 0x7E, 0x7E, 0x02, 0x02, 0xFE, 0x7F,
-		0x40, 0x40, 0x7C, 0x7C, 0x7C, 0x7C, 0x7E, 0x7F, 0x40, 0x40, 0x7E, 0x7E, 0x7E, 0x40, 0x40,
-		0x7F,   // PH
+		0x40, 0x40, 0x7C, 0x7C, 0x7C, 0x7C, 0x7E, 0x7F, 0x40, 0x40, 0x7E, 0x7E, 0x7E, 0x40, 0x40, 0x7F,   // PH
+
 		0xFE, 0x02, 0x02, 0x72, 0x72, 0x72, 0x72, 0xF2, 0xF2, 0xFE, 0x02, 0x02, 0xFE, 0xFE, 0xFE, 0xFE, 0xFE, 0x7F,
 		0x40, 0x40, 0x7E, 0x7E, 0x7E, 0x7E, 0x7F, 0x7F, 0x7F, 0x40, 0x40, 0x4F, 0x4F, 0x4F, 0x4F, 0x7F,   // FL
 
@@ -54,9 +55,11 @@ const uint8_t icon_bit[] =
 };
 
 const uint8_t strelk[] =
-{0x60, 0x50, 0x48, 0x44, 0x42, 0x41,    //UP
+{
+		0x60, 0x50, 0x48, 0x44, 0x42, 0x41,    //UP
 		0x42, 0x44, 0x48, 0x50, 0x60, 0x00, 0x06, 0x0a, 0x12, 0x22, 0x42, 0x82,    //DOWN
-		0x42, 0x22, 0x12, 0x0a, 0x06, 0x00};
+		0x42, 0x22, 0x12, 0x0a, 0x06, 0x00
+};
 
 icon_t iconFormMenuType(gui_menu_type menuType)
 {
@@ -66,7 +69,6 @@ icon_t iconFormMenuType(gui_menu_type menuType)
 void icon_print(icon_t num, strelka_t strel)
 {
 	uint8_t col = 111;
-	uint8_t col1 = 114;
 	uint16_t addr = num * 34;
 
 	uint8_t nullBuf[12];
@@ -79,42 +81,34 @@ void icon_print(icon_t num, strelka_t strel)
 		oled023_1_write_data(&icon_bit[addr], 17);
 		addr += 17;
 	}
+	col += 3;
+
 	switch(strel)
 	{
 		case 0:
 		break;
 		case 1:
 		{
-			Set_Page_Address(0);
-			Set_Column_Address(col1);
-			oled023_1_write_data(strelk, 12);
+			arrow_print(col, 0, 1);
 
+			Set_Column_Address(col);
 			Set_Page_Address(3);
-			Set_Column_Address(col1);
 			oled023_1_write_data(nullBuf, 12);
 			break;
 		}
 		case 2:
 		{
-
+			Set_Column_Address(col);
 			Set_Page_Address(0);
-			Set_Column_Address(col1);
 			oled023_1_write_data(nullBuf, 12);
 
-			Set_Page_Address(3);
-			Set_Column_Address(col1);
-			oled023_1_write_data(&strelk[12], 12);
+			arrow_print(col, 3, 0);
 			break;
 		}
 		case 3:
 		{
-			Set_Page_Address(0);
-			Set_Column_Address(col1);
-			oled023_1_write_data(strelk, 12);
-
-			Set_Page_Address(3);
-			Set_Column_Address(col1);
-			oled023_1_write_data(&strelk[12], 12);
+			arrow_print(col, 0, 1);
+			arrow_print(col, 3, 0);
 			break;
 		}
 	}
@@ -122,8 +116,8 @@ void icon_print(icon_t num, strelka_t strel)
 
 void arrow_print(uint8_t col, uint8_t pag, uint8_t dir)
 {
-	Set_Page_Address(pag);
 	Set_Column_Address(col);
+	Set_Page_Address(pag);
 
 	if(dir)
 		oled023_1_write_data(&strelk[0], 12);

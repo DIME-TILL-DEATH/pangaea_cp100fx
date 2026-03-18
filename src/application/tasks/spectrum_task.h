@@ -84,7 +84,7 @@ private:
 
 	//float ffts_x2_uS , uS_find_tone, note_and_diff_uS ;
 };
-
+extern volatile uint8_t notee;
 extern TSpectrumTask *SpectrumTask;
 
 void SpectrumBuffsUpdate(float u);

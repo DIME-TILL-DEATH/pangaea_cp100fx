@@ -6,9 +6,9 @@
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/sdtest_task.h"
 #include "../../../tasks/ui_task.h"
+#include "../../bitmaps/allFonts.h"
 #include "appdefs.h"
 #include "eepr.h"
-#include "allFonts.h"
 #include "BF706_send.h"
 
 #include "fs_browser.h"

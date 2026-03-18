@@ -1,9 +1,6 @@
-#include "allFonts.h"
-#include "icon_bit.h"
-#include "eepr.h"
-
-#include "BF706_send.h"
 #include "display_task.h"
+
+#include "icons_bitmap.h"
 
 TDisplayTask* DisplayTask;
 
@@ -35,7 +32,7 @@ void TDisplayTask::Code()
 				if (cmd.WriteRegParams.dest == wrdCmd)
 					oled023_1_write_instruction(cmd.WriteRegParams.data);
 				else
-					oled023_1_write_data(cmd.WriteRegParams.data);
+					oled023_1_write_data(cmd.WriteRegParams.data, 1);
 			break;
 
 			case dcClear:
@@ -190,10 +187,6 @@ void TDisplayTask::Code()
 				disp_start(cmd.StartParam.data);
 			break;
 
-			case dcContrast:
-				disp_contr(cmd.ContrastParam.data);
-			break;
-
 			case dcTap_ind:
 				tap_ind(cmd.Tap_indParam.data);
 			break;
@@ -219,8 +212,8 @@ void TDisplayTask::Code()
 				oled023_1_disp_reset();
 			break;
 
-			case dcStrel:
-				strel_print(cmd.StrelParam.pos.x, cmd.StrelParam.pos.y, cmd.StrelParam.dir);
+			case dcArrow:
+				arrow_print(cmd.StrelParam.pos.x, cmd.StrelParam.pos.y, cmd.StrelParam.dir);
 			break;
 
 			default:
@@ -536,16 +529,13 @@ void TDisplayTask::Display_Reset(void)
 	cmd.cmd=dcReset;
 	Command(&cmd);
 }
-void TDisplayTask::Strel(uint8_t x, uint8_t y , uint32_t dir)
+void TDisplayTask::Arrow(uint8_t x, uint8_t y , uint32_t dir)
 {
-	if(m_tunerInitiated)
-	{
-		TDisplayCmd cmd;
-		cmd.cmd=dcStrel;
-		cmd.StrelParam.pos = {x,y};
-		cmd.StrelParam.dir = dir;
-		Command(&cmd);
-	}
+	TDisplayCmd cmd;
+	cmd.cmd=dcArrow;
+	cmd.StrelParam.pos = {x,y};
+	cmd.StrelParam.dir = dir;
+	Command(&cmd);
 }
 
 void TDisplayTask::DrawVolIndicator(uint8_t xPos, uint8_t indLength)
@@ -566,28 +556,26 @@ void TDisplayTask::DrawVolIndicator(uint8_t xPos, uint8_t indLength)
 
 	Set_Column_Address(xPos);
 	Set_Page_Address(3);
-	GPIO_ResetBits(GPIOB, CS);
 
 	for(uint8_t i = 0; i < indLength; i++)
 	{
 		if(m_volIndicatorType == TVolIndicatorType::VOL_INDICATOR_VOLUME && i >= volIndPosition - 2 && i <= volIndPosition)
 		{
-				if(i == volIndPosition - 1) oled023_1_send_data(0x42);
-				else oled023_1_send_data(0x3c);
+				if(i == volIndPosition - 1) oled023_1_write_data(0x42);
+				else oled023_1_write_data(0x3c);
 		}
 		else
 		{
 			if((i == indLength - 1) || (i == 0))
 			{
-				oled023_1_send_data(0x7e); //3c
+				oled023_1_write_data(0x7e, 1); //3c
 			}
 			else
 			{
-				if(i < outLevel) oled023_1_send_data(0x3c);
-				else oled023_1_send_data(0x0);
+				if(i < outLevel) oled023_1_write_data(0x3c);
+				else oled023_1_write_data(0x0);
 			}
 		}
 	}
-	GPIO_SetBits(GPIOB, CS);
 }
 

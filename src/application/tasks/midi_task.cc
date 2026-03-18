@@ -1,6 +1,5 @@
 #include "eepr.h"
 #include "BF706_send.h"
-#include "allFonts.h"
 #include "controllers_task.h"
 
 #include "tunermenu.h"
@@ -8,6 +7,7 @@
 #include "controllersmenu.h"
 #include "midi_task.h"
 
+#include "../gui/bitmaps/allFonts.h"
 #include "display_task.h"
 #include "io_task.h"
 #include "system.h"
@@ -280,96 +280,4 @@ void ISR_midi_recieve()
 	{
 		MidiTask->uartRcv(uart_buf);
 	}
-}
-
-uint16_t mediann(uint16_t *array, int length)  // массив и его длина
-{
-	uint16_t slit = length / 2;
-	for(uint16_t i = 0; i < length; i++)
-	{
-		uint16_t s1 = 0, s2 = 0;
-		uint16_t val = array[i];
-		for(int j = 0; j < length; j++)
-		{
-			if(array[j] < val)
-			{
-				if(++s1 > slit)
-					goto aaa;
-			}
-			else if(array[j] > val)
-			{
-				if(++s2 > slit)
-					goto aaa;
-			}
-		}
-		return val;
-aaa:	;
-	}
-	return 0;  // чистая формальность, досюда исполнение никогда не доходит
-}
-volatile uint16_t adc_bu;
-volatile uint16_t adc_bu_cont;
-volatile uint16_t adc_bu1[2];
-volatile uint16_t adc_bu2;
-uint16_t adc_buff[32];
-volatile uint8_t adc_po;
-volatile uint8_t adc_point = 0;
-volatile uint8_t adc_inv_fl = 0;
-
-void adc_proc(void)
-{
-	if(sys_para[System::EXPR_CCN])
-	{
-		MidiTask->exprSend(adc_bu2);
-	}
-
-	if((sys_para[System::EXPR_TYPE] & 0x7f) < 3)
-	{
-		if(pc_mute_fl)
-			ext_send(adc_bu2);
-	}
-	else
-	{
-		ControllersTask->extCommand(1, adc_bu2);
-	}
-	adc_bu1[1] = adc_bu1[0];
-	adc_bu1[0] = adc_bu2;
-}
-
-extern "C" void ADC_IRQHandler()
-{
-	ADC_ClearITPendingBit(ADC1, ADC_IT_EOC);
-	adc_bu = ADC1->DR;
-	adc_bu_cont = adc_bu;
-	//----------------------------------------------------------------------------------
-	int a = adc_bu_cont - adc_low;
-	if(a < 0)
-		a = 0;
-	adc_bu_cont = a * adc_val1;
-	if(adc_bu_cont > 127)
-		adc_bu_cont = 127;
-	if(adc_inv_fl)
-		adc_bu_cont = 127 - adc_bu_cont;
-
-	adc_buff[adc_po++] = adc_bu_cont;
-	if(adc_po == 32)
-		adc_po = 0;
-	adc_bu2 = mediann(adc_buff, 32);
-
-	if(adc_bu2 != adc_bu1[0])
-	{
-		if((adc_bu2 != adc_bu1[1]) && (sys_para[3] & 0x80))
-		{
-			if(adc_point++ == 100)
-			{
-				adc_point = 0;
-				adc_proc();
-			}
-		}
-	}
-	if((sys_para[3] & 1))
-		ADC_RegularChannelConfig(ADC1, 10, 1, ADC_SampleTime_480Cycles);
-	else
-		ADC_RegularChannelConfig(ADC1, 11, 1, ADC_SampleTime_480Cycles);
-	ADC_SoftwareStartConv (ADC1);
 }

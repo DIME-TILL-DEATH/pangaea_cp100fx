@@ -40,6 +40,7 @@ void HW_spi_init(uint8_t type)
 	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;
 	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;
 	SPI_InitStructure.SPI_CRCPolynomial = 7;
+
 	SPI_Init(SPI2, &SPI_InitStructure);
 	SPI_Cmd(SPI2, ENABLE);
 }
@@ -223,7 +224,6 @@ volatile uint32_t __CCM_BSS__ cl;
 volatile uint32_t __CCM_BSS__ cr;
 uint8_t dma_ht_fl;
 uint8_t tun_del;
-uint8_t tun_del_val;
 extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 {
 	if(tap_temp < 131071) tap_temp += 1;
@@ -238,7 +238,8 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 		DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_TCIF2);
 		dma_ht_fl = 1;
 	}
-	//GPIO_SetBits(GPIOC,GPIO_Pin_5);
+
+	GPIO_SetBits(GPIOC, GPIO_Pin_5); // LED4G
 
 	cr = ror16(adc_data[dma_ht_fl].left.sample);
 	cl = ror16(adc_data[dma_ht_fl].right.sample);
@@ -294,7 +295,7 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 
 					DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 					GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-					send_codec(0xa103);
+					CODEC_send(0xa103);
 				}
 			}
 			tun_del++;

@@ -4,10 +4,9 @@
 
 #include "system.h"
 
-#include "init.h"
 
 #include "preset.h"
-#include "tasks/ui_task.h"
+#include "ui_task.h"
 
 volatile uint8_t gui_fl;
 volatile uint8_t contr_fl;
@@ -130,7 +129,6 @@ void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
 	}
 
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }
@@ -238,19 +236,9 @@ void DSP_SendPrimaryCabData(uint8_t* data, uint8_t presetNum) // (0, presetNum, 
 		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
 		EXTI_ClearITPendingBit(EXTI_Line9);
 
-//		if(i < 4096)
-//		{
-			sendBuf = data[i * 3] << 8;
-			sendBuf |= data[i * 3 + 1] << 16;
-			sendBuf |= data[i * 3 + 2] << 24;
-//		}
-//		else
-//		{
-//			uint32_t a = i - 4096;
-//			sendBuf = data[a * 3] << 8;
-//			sendBuf |= data[a * 3 + 1] << 16;
-//			sendBuf |= data[a * 3 + 2] << 24;
-//		}
+		sendBuf = data[i * 3] << 8;
+		sendBuf |= data[i * 3 + 1] << 16;
+		sendBuf |= data[i * 3 + 2] << 24;
 
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, sendBuf >> 16);

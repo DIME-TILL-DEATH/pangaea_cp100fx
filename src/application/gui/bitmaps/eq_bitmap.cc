@@ -1,11 +1,10 @@
+#include "../bitmaps/eq_bitmap.h"
+
+#include "../bitmaps/allFonts.h"
+#include "../bitmaps/icons_bitmap.h"
 #include "appdefs.h"
-#include "eq_bitmap.h"
-
 #include "filter.h"
-#include "allFonts.h"
 #include "eepr.h"
-#include "icon_bit.h"
-
 #include "modules.h"
 #include "preset.h"
 

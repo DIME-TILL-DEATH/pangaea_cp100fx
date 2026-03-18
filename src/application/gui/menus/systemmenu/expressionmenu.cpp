@@ -1,20 +1,20 @@
 #include "expressionmenu.h"
 
+//#include "allFonts.h"
+#include "icons_bitmap.h"
+
+#include "adc.h"
+#include "BF706_send.h"
 #include "gpio.h"
 #include "periphery.h"
-
-#include "display_task.h"
-#include "io_task.h"
-#include "ui_task.h"
-#include "midi_task.h"
-
-#include "allFonts.h"
-#include "icon_bit.h"
 
 #include "system.h"
 #include "footswitch.h"
 
-#include "BF706_send.h"
+#include "display_task.h"
+//#include "io_task.h"
+//#include "ui_task.h"
+//#include "midi_task.h"
 
 const uint8_t ExpressionMenu::strOk[];
 const uint8_t ExpressionMenu::strSetMin[];
@@ -100,7 +100,7 @@ void ExpressionMenu::encoderPressed()
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
 			HW_delay(0x7fffff);
 			DisplayTask->StringOut(67, 1, Font::fntSystem, 2, (uint8_t*)strSetMmax);
-			adc_calib();
+			ADC_calibrate();
 
 			m_menuState = CalMax;
 		break;
@@ -112,7 +112,7 @@ void ExpressionMenu::encoderPressed()
 			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
 			HW_delay(0x7fffff);
-			adc_calib();
+			ADC_calibrate();
 			m_menuState = ParamChoice;
 		break;
 	}

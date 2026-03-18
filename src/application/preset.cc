@@ -1,16 +1,15 @@
 #include "preset.h"
 
+#include "adc.h"
+
 #include "eepr.h"
 #include "BF706_send.h"
-#include "init.h"
 
 #include "system.h"
-#include "tasks/controllers_task.h"
-#include "tasks/display_task.h"
-#include "tasks/filesystem_task.h"
-#include "tasks/io_task.h"
-#include "tasks/midi_task.h"
-#include "tasks/ui_task.h"
+
+#include "io_task.h"
+#include "midi_task.h"
+
 
 Preset::TPreset __CCM_BSS__ currentPreset;
 
@@ -32,7 +31,6 @@ void Preset::Change()
 {
 	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
 
-
 	EEPROM_loadPreset(currentPresetNumber);
 	pc_mute_fl = 0;
 
@@ -41,7 +39,7 @@ void Preset::Change()
 	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modules.rawData[PHASER_WIDTH]);
 
 	if(sys_para[System::EXPR_STORE_LEVEL])
-		adc_proc();
+		ADC_routine();
 
 	if(sys_para[System::ATTENUATOR_MODE])
 		IOTask->potWrite();

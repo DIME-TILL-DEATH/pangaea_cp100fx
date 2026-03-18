@@ -1,13 +1,10 @@
 #include "tunermenu.h"
 
-#include "../../tasks/display_task.h"
-#include "../../tasks/io_task.h"
-#include "../../tasks/spectrum_task.h"
-#include "../../tasks/ui_task.h"
-#include "appdefs.h"
-#include "eepr.h"
-#include "gui/elements/allFonts.h"
 #include "BF706_send.h"
+#include "codec.h"
+
+#include "display_task.h"
+#include "spectrum_task.h"
 
 TunerMenu::TunerMenu(AbstractMenu *parent)
 {
@@ -18,7 +15,7 @@ TunerMenu::TunerMenu(AbstractMenu *parent)
 void TunerMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
-	send_codec(0xa102);
+	CODEC_send(0xa102);
 	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 	tun_base_old = 0.0f;
 
@@ -84,7 +81,6 @@ void TunerMenu::endTunerTask()
 	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 	DisplayTask->TunerDeinit();
 
-//	CSTask->Give();
 	GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-	send_codec(0xa103);
+	CODEC_send(0xa103);
 }

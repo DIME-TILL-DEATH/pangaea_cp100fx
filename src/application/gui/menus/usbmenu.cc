@@ -1,11 +1,10 @@
 #include "usbmenu.h"
 
-#include "../../tasks/display_task.h"
-#include "../../tasks/ui_task.h"
-#include "../../tasks/usb_task.h"
-#include "init.h"
-
+#include "codec.h"
 #include "BF706_send.h"
+
+#include "display_task.h"
+#include "usb_task.h"
 
 const uint8_t UsbMenu::strUsbMenu[][19];
 const uint8_t UsbMenu::strPositions[3];
@@ -92,7 +91,7 @@ void UsbMenu::encoderPressed()
 	{
 		case TUsbTask::mMSC:
 		{
-			send_codec(0xa102);
+			CODEC_send(0xa102);
 			DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 
 			DisplayTask->Clear();

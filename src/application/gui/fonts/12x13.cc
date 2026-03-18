@@ -1,4 +1,4 @@
-#include "../elements/12x13.h"
+#include "12x13.h"
 
 const uint8_t Tahoma12x13[] = {
         0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // Code for char
@@ -103,15 +103,15 @@ uint32_t t12x13_sym(uint8_t col , uint8_t pag , uint16_t sym , uint8_t curs)
     sym = (sym - 32)*27;
     uint32_t b = Tahoma12x13[sym++]+2;
     for(uint32_t i = 0; i < b ; i++)
-        {
-          for(uint8_t j = 0 ; j < 2 ; j++)
-            {
-              Set_Page_Address(j + pag);
-              Set_Column_Address(i + col);
-              if(curs == 0)oled023_1_write_data(Tahoma12x13[sym + j + i*2]);
-              else oled023_1_write_data(0);
-            }
-        }
+	{
+	  for(uint8_t j = 0 ; j < 2 ; j++)
+		{
+		  Set_Page_Address(j + pag);
+		  Set_Column_Address(i + col);
+		  if(curs == 0)oled023_1_write_data(Tahoma12x13[sym + j + i*2], 1);
+		  else oled023_1_write_data(0);
+		}
+	}
     return b;
 }
 void t12x13_line_name(uint32_t col , uint8_t pag , uint8_t* adr )

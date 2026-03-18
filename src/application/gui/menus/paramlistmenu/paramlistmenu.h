@@ -1,14 +1,15 @@
 #ifndef PARAMLISTMENU_H_
 #define PARAMLISTMENU_H_
 
-#include "../../../tasks/display_task.h"
 #include "abstractmenu.h"
+
+#include "display_task.h"
+#include "icons_bitmap.h"
+
 
 #include "system.h"
 
-#include "icon_bit.h"
-
-#include "BF706_send.h"
+//#include "BF706_send.h"
 #include "modules.h"
 
 #include "baseparam.h"

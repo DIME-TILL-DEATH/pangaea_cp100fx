@@ -1,15 +1,14 @@
 #include "dialog.h"
 
-#include "../../tasks/display_task.h"
-#include "../../tasks/io_task.h"
-#include "allFonts.h"
-#include "eepr.h"
-#include "init.h"
 #include "BF706_send.h"
 
-#include "presetactionsmenu.h"
-
+#include "eepr.h"
 #include "preset.h"
+
+#include "display_task.h"
+#include "io_task.h"
+
+#include "presetactionsmenu.h"
 
 // TODO: common Dialog to subtypes
 

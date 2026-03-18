@@ -1,20 +1,18 @@
-#include "appdefs.h"
 #include "eepr.h"
-#include "filesystem_task.h"
-
-#include "init.h"
 
 #include "system.h"
 
 #include "controller.h"
+
 #include "preset.h"
 #include "modules.h"
 
+#include "filesystem_task.h"
+
+#include "par_bitmap.h"
+
 volatile uint32_t flash_adr;
-volatile uint16_t adc_low;
-volatile uint16_t adc_high;
-volatile uint16_t adc_val;
-volatile float adc_val1;
+
 
 const uint8_t prog_data_init[512] =
 {/*switch*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -97,6 +95,7 @@ void EEPROM_start()
 	f_read(&file, sys_para, 512, &file_size);
 	f_close(&file);
 	f_mount(0, "1:", 0);
+
 	if(!sys_para[System::MIDI_PC_IND])
 	{
 		for(uint8_t i = 0; i<128; i++)
@@ -107,9 +106,12 @@ void EEPROM_start()
 				sys_para[i+128] = i-99;
 		}
 		sys_para[System::MIDI_PC_IND] = 1;
-		void write_sys(void);
 		write_sys();
 	}
+
+	cab_type = sys_para[System::CAB_SIM_CONFIG];
+	cab1.data = &ccmCommonCabBuffer[0];
+	cab2.data = &ccmCommonCabBuffer[4096 * 3];
 }
 
 void write_sys(void)
@@ -356,7 +358,6 @@ void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 
 		kgp_sdk_libc::memset(&(presetData->cab1Name), 0, 64);
 		kgp_sdk_libc::memset(&(presetData->cab2Name), 0, 64);
-//		kgp_sdk_libc::memset(&(presetData->modules.switches), 0, sizeof(Preset::TEnableData));
 		kgp_sdk_libc::memset(&(presetData->modules), 0, sizeof(Preset::TModulesData));
 	}
 	f_close(&file);
@@ -495,6 +496,9 @@ void EEPROM_load_all_ir(void)
 	FIL file;
 	UINT f_size;
 	f_mount(&fs, "1:", 1);
+
+	uint8_t loadProgress = 0;
+
 	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
 	for(uint8_t i = 1; i<100; i++)
 	{
@@ -502,6 +506,7 @@ void EEPROM_load_all_ir(void)
 			ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)i);
 		else
 			ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)i);
+
 		if(f_open(&file, fna, FA_READ)==FR_OK)
 		{
 			while(EXTI_GetITStatus(EXTI_Line9)==RESET);
@@ -526,10 +531,9 @@ void EEPROM_load_all_ir(void)
 				buf |= cab1.data[ii*3+2]<<24;
 
 				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-
 				SPI_I2S_SendData(SPI2, buf>>16);
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
+				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 				SPI_I2S_SendData(SPI2, buf);
 			}
 
@@ -555,15 +559,15 @@ void EEPROM_load_all_ir(void)
 			{
 				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 				EXTI_ClearITPendingBit(EXTI_Line9);
+
 				buf = ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3]<<8;
 				buf |= ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3+1]<<16;
 				buf |= ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3+2]<<24;
 
 				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-
 				SPI_I2S_SendData(SPI2, buf>>16);
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
+				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 				SPI_I2S_SendData(SPI2, buf);
 			}
 
@@ -587,6 +591,11 @@ void EEPROM_load_all_ir(void)
 			}
 			f_close(&file);
 		}
+
+		uint8_t prog_x = 40;
+		uint8_t prog_y = 40;
+		loadProgress++;
+		par_ind(prog_x, prog_y, loadProgress);
 	}
 	while(EXTI_GetITStatus(EXTI_Line9)==RESET);
 	EXTI_ClearITPendingBit (EXTI_Line9);

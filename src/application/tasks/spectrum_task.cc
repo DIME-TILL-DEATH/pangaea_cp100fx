@@ -48,6 +48,8 @@ vec __CCM_BSS__ Wfwd[32];
 //float dBv[N];
 //float dBw[N];
 
+volatile uint8_t notee;
+
 TSpectrumTask::TSpectrumTask()
 {
 	guitar_classic_index_table[0] = 28;  // 28  0082.406 Hz  Big/E
@@ -73,7 +75,7 @@ TSpectrumTask::TSpectrumTask()
 	backgroundTunerEnabled = false;
 }
 
-volatile uint8_t notee;
+
 void TSpectrumTask::ToneMeter()
 {
 
