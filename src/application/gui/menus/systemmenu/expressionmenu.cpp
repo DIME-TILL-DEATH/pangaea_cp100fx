@@ -98,9 +98,9 @@ void ExpressionMenu::encoderPressed()
 
 			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
-			HW_delay(0x7fffff);
+			HW_Delay(0x7fffff);
 			DisplayTask->StringOut(67, 1, Font::fntSystem, 2, (uint8_t*)strSetMmax);
-			ADC_calibrate();
+			ADC_Calibrate();
 
 			m_menuState = CalMax;
 		break;
@@ -111,8 +111,8 @@ void ExpressionMenu::encoderPressed()
 
 			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
-			HW_delay(0x7fffff);
-			ADC_calibrate();
+			HW_Delay(0x7fffff);
+			ADC_Calibrate();
 			m_menuState = ParamChoice;
 		break;
 	}
@@ -142,7 +142,7 @@ void ExpressionMenu::encoderClockwise()
 						DisplayTask->StringOut(60, 0, Font::fntSystem, 0,
 								(uint8_t*)strExprType[++sys_para[System::EXPR_TYPE] & 0x7f]);
 
-						HW_adc_pin_init();
+						HW_AdcPinInit();
 						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
 							ext_send(127);
 					}
@@ -195,7 +195,7 @@ void ExpressionMenu::encoderCounterClockwise()
 					{
 						DisplayTask->StringOut(60, 0, Font::fntSystem, 0,
 								(uint8_t*)&strExprType[--sys_para[System::EXPR_TYPE] & 0x7f]);
-						HW_adc_pin_init();
+						HW_AdcPinInit();
 						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
 							ext_send(127);
 					}

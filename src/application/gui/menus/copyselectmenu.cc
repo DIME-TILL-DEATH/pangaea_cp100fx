@@ -242,7 +242,7 @@ void CopySelectMenu::copyPreset(const TSelectionMask& selectionMask, uint8_t tar
 		}
 	}
 
-	write_prog_temp(targetPresetNum);
+	EEPROM_WriteTempPreset(targetPresetNum);
 	Preset::cab_data_ready = true; // Kostyl
 	send_cab_data(1, targetPresetNum+1, 1);
 	Preset::cab_data_ready = false;

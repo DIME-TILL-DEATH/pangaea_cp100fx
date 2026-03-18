@@ -39,12 +39,12 @@ TIOTask::~TIOTask()
 
 void TIOTask::Code()
 {
-	HW_write_pot();
+	HW_WritePot();
 
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_IOTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
-	HW_read_keys_enable();
+	HW_ReadKeysEnable();
 
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 
@@ -96,7 +96,7 @@ void TIOTask::Code()
 
 			case IO_POT_WRITE:
 			{
-				HW_write_pot();
+				HW_WritePot();
 				break;
 			}
 		}

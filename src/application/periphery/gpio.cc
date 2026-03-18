@@ -7,7 +7,7 @@
 #include "io_task.h"
 #include "sdtest_task.h"
 
-void HW_gpio_init()
+void HW_GpioInit()
 {
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
@@ -78,7 +78,7 @@ void HW_gpio_init()
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource4, GPIO_AF_I2S3ext);
 }
 
-void HW_exti_init()
+void HW_ExtiInit()
 {
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
@@ -116,7 +116,7 @@ void HW_exti_init()
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-void HW_adc_pin_init()
+void HW_AdcPinInit()
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Speed = GPIO_High_Speed;
@@ -149,7 +149,7 @@ void HW_adc_pin_init()
 	}
 }
 
-void HW_pin_usb_init()
+void HW_PinUsbInit()
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
@@ -161,7 +161,7 @@ void HW_pin_usb_init()
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
-void HW_port_B_conf(uint8_t mode)
+void HW_PortBConf(uint8_t mode)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_StructInit(&GPIO_InitStructure);

@@ -10,30 +10,30 @@ void pot_send_data(uint32_t dat, uint8_t num)
 {
 	GPIO_ResetBits(GPIOB, GPIO_Pin_12);
 	GPIO_ResetBits(GPIOB, GPIO_Pin_10);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_SetBits(GPIOB, GPIO_Pin_12);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_ResetBits(GPIOB, GPIO_Pin_12);
 	if(num & 2)
 		GPIO_SetBits(GPIOB, GPIO_Pin_10);
 	else
 		GPIO_ResetBits(GPIOB, GPIO_Pin_10);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_SetBits(GPIOB, GPIO_Pin_12);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_ResetBits(GPIOB, GPIO_Pin_12);
 	if(num & 1)
 		GPIO_SetBits(GPIOB, GPIO_Pin_10);
 	else
 		GPIO_ResetBits(GPIOB, GPIO_Pin_10);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_SetBits(GPIOB, GPIO_Pin_12);
-	HW_delay(6);
+	HW_Delay(6);
 
 	for(uint8_t i = 0; i < 8; i++)
 	{
@@ -43,10 +43,10 @@ void pot_send_data(uint32_t dat, uint8_t num)
 			GPIO_ResetBits(GPIOB, GPIO_Pin_10);
 		else
 			GPIO_SetBits(GPIOB, GPIO_Pin_10);
-		HW_delay(10);
+		HW_Delay(10);
 
 		GPIO_SetBits(GPIOB, GPIO_Pin_12);
-		HW_delay(10);
+		HW_Delay(10);
 		dat = dat << 1;
 	}
 }
@@ -56,9 +56,9 @@ const uint16_t att_db_num[56] =
 		261, 260, 259, 258, 257, 256, 253, 249, 227, 207, 182, 144, 128, 105, 100, 89, 80, 70, 62, 55, 48, 43, 38, 34,
 		30, 27, 24, 22, 19, 17, 15, 13};
 
-void HW_write_pot()
+void HW_WritePot()
 {
-	HW_port_B_conf(0);
+	HW_PortBConf(0);
 	GPIO_ResetBits(GPIOC, GPIO_Pin_6);
 
 #ifdef __MONO_MOD__
@@ -84,17 +84,17 @@ void HW_write_pot()
 	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
 	pot_send_data(sys_para[System::PHONES_VOLUME] << 1, 0);
 	GPIO_SetBits(GPIOC,GPIO_Pin_6);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
 	pot_send_data(att_val,1);
 	GPIO_SetBits(GPIOC,GPIO_Pin_6);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
 	pot_send_data(sys_para[System::PHONES_VOLUME] << 1, 2);
 	GPIO_SetBits(GPIOC,GPIO_Pin_6);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
 	pot_send_data(b, 3);
@@ -119,5 +119,5 @@ void HW_write_pot()
 	pot_send_data(sys_para[System::MASTER_VOLUME] << 1, 3);
 #endif
 	GPIO_SetBits(GPIOC, GPIO_Pin_6);
-	HW_port_B_conf(1);
+	HW_PortBConf(1);
 }

@@ -3,7 +3,7 @@
 #include "ui_task.h"
 #include "io_task.h"
 
-void HW_timers_init()
+void HW_TimersInit()
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3|RCC_APB1Periph_TIM4|RCC_APB1Periph_TIM5|
 				RCC_APB1Periph_TIM6|RCC_APB1Periph_TIM14, ENABLE);

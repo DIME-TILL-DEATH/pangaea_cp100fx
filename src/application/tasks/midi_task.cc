@@ -52,6 +52,8 @@ void TMidiTask::Code()
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_MDTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
+	USART_Cmd(USART1, ENABLE);
+
 	TMidiCmd cmd;
 
 	while(1)

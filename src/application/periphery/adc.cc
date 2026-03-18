@@ -13,7 +13,7 @@ volatile uint16_t adc_high;
 volatile uint16_t adc_val;
 volatile float adc_val1;
 
-void ADC_calibrate(void)
+void ADC_Calibrate(void)
 {
 	adc_low = sys_para[System::EXPR_CAL_MIN_HI];
 	adc_low |= sys_para[System::EXPR_CAL_MIN_LO]<<8;
@@ -33,12 +33,12 @@ void ADC_calibrate(void)
 }
 
 
-void ADC_init(uint8_t state)
+void ADC_Init(uint8_t state)
 {
 	if(state)
 	{
-		ADC_calibrate();
-		HW_adc_pin_init();
+		ADC_Calibrate();
+		HW_AdcPinInit();
 
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 		ADC_InitTypeDef ADC_InitStructure;
@@ -88,7 +88,7 @@ uint16_t adc_buff[32];
 volatile uint8_t adc_po;
 volatile uint8_t adc_point = 0;
 volatile uint8_t adc_inv_fl = 0;
-void ADC_routine(void)
+void ADC_Routine(void)
 {
 	if(sys_para[System::EXPR_CCN])
 	{
@@ -161,7 +161,7 @@ extern "C" void ADC_IRQHandler()
 			if(adc_point++ == 100)
 			{
 				adc_point = 0;
-				ADC_routine();
+				ADC_Routine();
 			}
 		}
 	}

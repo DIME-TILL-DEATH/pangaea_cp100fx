@@ -125,7 +125,7 @@ void Dialog::keyUp()
 		}
 		case TDialogType::RestartDevice:
 		{
-			write_sys();
+			EEPROM_WriteSys();
 			topLevelMenu->returnFromChildMenu();
 			break;
 		}
@@ -159,7 +159,7 @@ void Dialog::encoderPressed()
 				}
 				case TDialogType::RestartDevice:
 				{
-					write_sys();
+					EEPROM_WriteSys();
 					topLevelMenu->returnFromChildMenu();
 					break;
 				}
@@ -178,7 +178,7 @@ void Dialog::encoderPressed()
 				}
 				case TDialogType::RestartDevice:
 				{
-					write_sys();
+					EEPROM_WriteSys();
 					NVIC_SystemReset();
 					topLevelMenu->returnFromChildMenu(); //dummy
 					break;

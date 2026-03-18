@@ -129,7 +129,7 @@ bool SystemMenu::editingFinished()
 			return false;
 		}
 	}
-	write_sys();
+	EEPROM_WriteSys();
 
 	return true;
 }
@@ -232,7 +232,7 @@ void SystemMenu::expressionPrint(void* parameter)
 void SystemMenu::expressionDescrease(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	ADC_init(0);
+	ADC_Init(0);
 	*valuePtr &= 0x7f;
 	ext_send(127);
 }
@@ -241,7 +241,7 @@ void SystemMenu::expressionIncrease(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	*valuePtr |= 0x80;
-	ADC_init(1);
+	ADC_Init(1);
 }
 
 void SystemMenu::expressionKeyDown(void* parameter)

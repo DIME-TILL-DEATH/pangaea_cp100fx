@@ -91,7 +91,7 @@ void UsbMenu::encoderPressed()
 	{
 		case TUsbTask::mMSC:
 		{
-			CODEC_send(0xa102);
+			CODEC_Send(0xa102);
 			DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 
 			DisplayTask->Clear();

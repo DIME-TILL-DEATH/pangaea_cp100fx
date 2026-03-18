@@ -3,6 +3,6 @@
 
 #include "appdefs.h"
 
-void HW_write_pot();
+void HW_WritePot();
 
 #endif /* POT_H_ */

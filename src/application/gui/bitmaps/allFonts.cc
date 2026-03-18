@@ -1,6 +1,6 @@
-#include "../bitmaps/allFonts.h"
+#include "allFonts.h"
 
-#include "../bitmaps/amt.h"
+
 #include "amt.h"
 
 #include "periphery.h"
@@ -52,32 +52,16 @@ void disp_start(uint8_t num)
 		for(uint8_t i = 0; i < 128; i++)
 		{
 			Set_Column_Address(i);
-//			for(uint8_t j = 0; j < 4; j++)
-//			{
-//				Set_Page_Address(j);
-//				oled023_1_write_data(0);
-//			}
-			oled023_1_write_data(nullData, 4);
+			for(uint8_t j = 0; j < 4; j++)
+			{
+				Set_Page_Address(j);
+				oled023_1_write_data(nullData, 1);
+			}
 
-			HW_delay(0xffff);
+			HW_Delay(0x1ffff);
 		}
 		Arsys_line(50, 1, (uint8_t*)"CP100-FX", 0);
 		Arsys_line(50, 2, (uint8_t*)amt_ver, 0);
-
-		for(uint32_t d = 0; d < 0x7fffff; d++)
-			NOP();
-		for(uint8_t i = 127; i > 0; i--)
-		{
-			Set_Column_Address(i);
-//			for(uint8_t j = 0; j < 4; j++)
-//			{
-//				Set_Page_Address(j);
-//				oled023_1_write_data(0);
-//			}
-			oled023_1_write_data(nullData, 4);
-			HW_delay(0xffff);
-		}
-		GPIO_SetBits(GPIOB, CS);
 	}
 }
 

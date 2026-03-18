@@ -40,56 +40,56 @@ static void attenuator_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 
 	default_param_handler(value_ptr, rl, args, count);
 	IOTask->potWrite();
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void attenuator_mode_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::ATTENUATOR_MODE], rl, args, count);
 	IOTask->potWrite();
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void master_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_VOLUME], rl, args, count);
 	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void phones_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::PHONES_VOLUME], rl, args, count);
 	IOTask->potWrite();
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void meq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_ON], rl, args, count);
 	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void meq_low_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_LOW], rl, args, count);
 	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_LOW]);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void meq_mid_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_MID], rl, args, count);
 	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_MID]);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void meq_high_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_HIGH], rl, args, count);
 	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_HIGH]);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void meq_mid_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -110,28 +110,28 @@ static void meq_mid_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_
 
 	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
 	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void cab_mode_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::CAB_SIM_DISABLED], rl, args, count);
 	DSP_ContrSendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void cab_num_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::CAB_SIM_CONFIG], rl, args, count);
 	DSP_ContrSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0);
-	write_sys();
+	EEPROM_WriteSys();
 	//Reset?????
 }
 
 static void midi_ch_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MIDI_CHANNEL], rl, args, count);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void expr_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -141,17 +141,17 @@ static void expr_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 
 	if(!val)
 	{
-		ADC_init(0);
+		ADC_Init(0);
 		sys_para[System::EXPR_TYPE] &= 0x7f;
 		ext_send(127);
 	}
 	else
 	{
 		sys_para[System::EXPR_TYPE] |= 0x80;
-		ADC_init(1);
+		ADC_Init(1);
 	}
 
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void expr_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -164,52 +164,52 @@ static void expr_type_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 	if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
 		ext_send(127);
 
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void expr_cc_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::EXPR_CCN], rl, args, count);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void expr_slev_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::EXPR_STORE_LEVEL], rl, args, count);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void spdif_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::SPDIF_OUT_TYPE], rl, args, count);
 	DSP_ContrSendParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void tempo_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TAP_TYPE], rl, args, count);
 	DSP_ContrSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void time_format_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TIME_FORMAT], rl, args, count);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void swap_conf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::SWAP_SWITCH], rl, args, count);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void tuner_speed_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TUNER_SPEED], rl, args, count);
 	tun_del_val = (127-sys_para[System::TUNER_SPEED])*(90.0f/127.0f)+10.0f;
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void tuner_ctrl_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -225,7 +225,7 @@ static void tuner_ctrl_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 	{
 		if(!(sys_para[System::TUNER_EXTERNAL] & 0x80)) sys_para[System::TUNER_EXTERNAL] |= 0x80;
 	}
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void tuner_cc_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -234,13 +234,13 @@ static void tuner_cc_command_handler(TReadLine* rl, TReadLine::const_symbol_type
 	default_param_handler(&val, rl, args, count);
 
 	sys_para[System::TUNER_EXTERNAL] = (val & 0x7F) | (sys_para[System::TUNER_EXTERNAL] & 0x80);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void fsw_speed_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::FSW_SPEED], rl, args, count);
-	write_sys();
+	EEPROM_WriteSys();
 }
 
 static void midi_map_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
@@ -252,7 +252,7 @@ static void midi_map_command_handler(TReadLine* rl, TReadLine::const_symbol_type
 		uint8_t mapVal = kgp_sdk_libc::strtol(args[2], &end, 16);
 
 		sys_para[System::MIDI_MAP_START + mapPos] = mapVal;
-		write_sys();
+		EEPROM_WriteSys();
 
 		msg_console("%s\r%d\r%d\n", args[0], mapPos, mapVal);
 	}
@@ -339,7 +339,7 @@ static void fsw_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_
 	}
 
 ending:
-	write_sys();
+	EEPROM_WriteSys();
 	msg_console("\n");
 }
 

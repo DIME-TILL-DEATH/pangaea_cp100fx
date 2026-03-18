@@ -63,7 +63,7 @@ volatile uint32_t fl_st;
 
 int16_t mstEqMidFreq;
 
-void EEPROM_start()
+void EEPROM_Start()
 {
 	DIR dir;
 	FATFS fs;
@@ -106,7 +106,7 @@ void EEPROM_start()
 				sys_para[i+128] = i-99;
 		}
 		sys_para[System::MIDI_PC_IND] = 1;
-		write_sys();
+		EEPROM_WriteSys();
 	}
 
 	cab_type = sys_para[System::CAB_SIM_CONFIG];
@@ -114,7 +114,7 @@ void EEPROM_start()
 	cab2.data = &ccmCommonCabBuffer[4096 * 3];
 }
 
-void write_sys(void)
+void EEPROM_WriteSys(void)
 {
 	// Значения поумолчанию чтобы не решать квадратное уравнение
 	// mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
@@ -136,7 +136,7 @@ void write_sys(void)
 	f_mount(0, "1:", 0);
 }
 
-void EEPR_writePreset(uint8_t nu)
+void EEPROM_WritePreset(uint8_t nu)
 {
 	nu++;
 
@@ -449,7 +449,7 @@ void EEPROM_LoadPresetToBuffer(uint8_t presetNum, uint8_t* buffer)
 	f_mount(0, "1:", 0);
 }
 
-void write_prog_temp(uint8_t nu)
+void EEPROM_WriteTempPreset(uint8_t nu)
 {
 	nu++;
 
@@ -469,7 +469,7 @@ void write_prog_temp(uint8_t nu)
 	f_mount(0, "1:", 0);
 }
 
-void preset_erase(uint8_t nu)
+void EEPROM_PresetErase(uint8_t nu)
 {
 //	FSTask->Suspend();
 
@@ -488,7 +488,7 @@ void preset_erase(uint8_t nu)
 //	FSTask->Resume();
 }
 
-void EEPROM_load_all_ir(void)
+void EEPROM_LoadAllIr(void)
 {
 	uint32_t buf;
 	char fna[_MAX_LFN];

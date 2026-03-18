@@ -164,7 +164,7 @@ void MasterEqMenu::encoderCounterClockwise()
 
 void MasterEqMenu::keyUp()
 {
-	write_sys();
+	EEPROM_WriteSys();
 	topLevelMenu->returnFromChildMenu();
 }
 
@@ -182,38 +182,38 @@ void MasterEqMenu::keyDown()
 		show();
 	}
 
-	write_sys();
+	EEPROM_WriteSys();
 
 	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
 }
 
 void MasterEqMenu::key1()
 {
-	write_sys();
+	EEPROM_WriteSys();
 	topLevelMenu->key1();
 }
 
 void MasterEqMenu::key2()
 {
-	write_sys();
+	EEPROM_WriteSys();
 	topLevelMenu->key2();
 }
 
 void MasterEqMenu::key3()
 {
-	write_sys();
+	EEPROM_WriteSys();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void MasterEqMenu::key4()
 {
-	write_sys();
+	EEPROM_WriteSys();
 	topLevelMenu->key4();
 }
 
 void MasterEqMenu::key5()
 {
-	write_sys();
+	EEPROM_WriteSys();
 	topLevelMenu->key5();
 }
 

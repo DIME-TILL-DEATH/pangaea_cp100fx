@@ -135,7 +135,7 @@ void PresetActionsMenu::savePreset()
 
 	currentPreset.modules.rawData[147] = Preset::delay_time;
 	currentPreset.modules.rawData[148] = Preset::delay_time>>8;
-	EEPR_writePreset(targetPresetNum);
+	EEPROM_WritePreset(targetPresetNum);
 
 	send_cab_data(0, targetPresetNum+1, 0);
 	if(cab_type==CAB_CONFIG_STEREO)

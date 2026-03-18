@@ -3,12 +3,12 @@
 
 #include "appdefs.h"
 
-void HW_gpio_init();
-void HW_adc_pin_init();
-void HW_pin_usb_init();
+void HW_GpioInit();
+void HW_AdcPinInit();
+void HW_PinUsbInit();
 
-void HW_exti_init();
+void HW_ExtiInit();
 
-void HW_port_B_conf(uint8_t mode);
+void HW_PortBConf(uint8_t mode);
 
-#endif /* SRC_APPLICATION_PERIPHERY_GPIO_H_ */
+#endif /* GPIO_H_ */

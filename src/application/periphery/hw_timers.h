@@ -3,6 +3,6 @@
 
 #include "appdefs.h"
 
-void HW_timers_init();
+void HW_TimersInit();
 
 #endif /* TIMERS_H_ */

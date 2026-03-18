@@ -39,28 +39,28 @@ int main(void)
 	disp_start(0);
 
 	AT45DB321_Init();
-	HW_delay(0xfffff);
+	HW_Delay(0xfffff);
 
-	EEPROM_start();
+	EEPROM_Start();
 
-	HW_gpio_init();
-	HW_exti_init();
+	HW_GpioInit();
+	HW_ExtiInit();
 
-	HW_i2s_init();
-	HW_uart_init();
+	HW_I2sInit();
+	HW_UartInit();
 
-	HW_timers_init();
+	HW_TimersInit();
 
-	SHARC_spi_init(TSharcSpiMode::SPI_SLAVE);
-	SHARC_startup_load();
-	SHARC_spi_init(TSharcSpiMode::SPI_MASTER);
+	SHARC_SpiInit(TSharcSpiMode::SPI_SLAVE);
+	SHARC_StartupLoad();
+	SHARC_SpiInit(TSharcSpiMode::SPI_MASTER);
 
-	CODEC_start();
+	CODEC_Start();
 
 	disp_start(1);
-	EEPROM_load_all_ir();
+	EEPROM_LoadAllIr();
 
-	HW_pin_usb_init();
+	HW_PinUsbInit();
 
 	startEventGroup = xEventGroupCreate();
 

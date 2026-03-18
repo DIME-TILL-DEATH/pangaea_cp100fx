@@ -99,10 +99,10 @@ void oled023_1_disp_clear(void)
 void oled023_1_disp_reset(void)
 {
 	GPIO_ResetBits(GPIOB, GPIO_Pin_15);
-	HW_delay(0x6ff);
+	HW_Delay(0x6ff);
 
 	GPIO_SetBits(GPIOB, GPIO_Pin_15);
-	HW_delay(0x6ff);
+	HW_Delay(0x6ff);
 
 	if(disp_orient)
 	{
@@ -136,7 +136,7 @@ void oled023_1_disp_init(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;             //Pot_cs
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 
-	HW_port_B_conf(1);
+	HW_PortBConf(1);
 
 	USART_InitTypeDef USART_InitStructure;
 	USART_ClockInitTypeDef USART_ClockStructure;
@@ -161,9 +161,9 @@ void oled023_1_disp_init(void)
 	USART_ClockInit(USART3, &USART_ClockStructure);
 	USART_Cmd(USART3, ENABLE);
 
-	HW_delay(0x6ff);
+	HW_Delay(0x6ff);
 	GPIO_SetBits(GPIOB, GPIO_Pin_15);
-	HW_delay(0x6ff);
+	HW_Delay(0x6ff);
 
 	if(disp_orient)
 	{

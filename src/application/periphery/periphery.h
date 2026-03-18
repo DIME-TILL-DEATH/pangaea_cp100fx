@@ -11,6 +11,6 @@
 #define NVIC_PRIORITY_CODEC_I2S 2
 
 //inline void __attribute__ ((always_inline))
-void HW_delay(uint64_t delayTime);
+void HW_Delay(uint64_t delayTime);
 
 #endif /* PERIPHERY_H_ */

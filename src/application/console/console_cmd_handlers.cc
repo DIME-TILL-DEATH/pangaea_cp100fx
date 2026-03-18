@@ -75,7 +75,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	currentPreset.modules.rawData[147] = Preset::delay_time;
 	currentPreset.modules.rawData[148] = Preset::delay_time>>8;
 
-	EEPR_writePreset(currentPresetNumber);
+	EEPROM_WritePreset(currentPresetNumber);
 
 	// Не работает. Возвращает сохранённое по звуку
 //	DSP_SendPresetData(currentPreset.modules.rawData);
@@ -670,7 +670,7 @@ static void controller_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 	}
 
 ending:
-	write_sys();
+	EEPROM_WriteSys();
 	msg_console("\n");
 }
 
@@ -740,7 +740,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 			if(on)
 			{
-				CODEC_send(0xa102);
+				CODEC_Send(0xa102);
 				DSP_ContrSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 				tun_base_old = 0.0f;
 
@@ -753,7 +753,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 				DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 
 				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-				CODEC_send(0xa103);
+				CODEC_Send(0xa103);
 			}
 			msg_console("%d", on);
 		}

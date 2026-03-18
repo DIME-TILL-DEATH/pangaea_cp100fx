@@ -39,7 +39,7 @@ void Preset::Change()
 	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modules.rawData[PHASER_WIDTH]);
 
 	if(sys_para[System::EXPR_STORE_LEVEL])
-		ADC_routine();
+		ADC_Routine();
 
 	if(sys_para[System::ATTENUATOR_MODE])
 		IOTask->potWrite();
@@ -49,7 +49,7 @@ void Preset::Change()
 
 void Preset::Erase()
 {
-	preset_erase(currentPresetNumber);
+	EEPROM_PresetErase(currentPresetNumber);
 	kgp_sdk_libc::memcpy(currentPreset.modules.rawData, prog_data_init, 512);
 	currentPreset.modules.rawData[delay_tim_lo] = 0xf4;
 	currentPreset.modules.rawData[delay_tim_hi] = 1;

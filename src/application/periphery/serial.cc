@@ -13,7 +13,7 @@
 #include "periphery.h"
 
 //-------------------------------------------------SPI_init------------------------------------------------
-void HW_spi_init(uint8_t type)
+void HW_SpiInit(uint8_t type)
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 
@@ -47,7 +47,7 @@ void HW_spi_init(uint8_t type)
 
 ad_data_t adc_data[2];
 da_data_t dac_data[2];
-void HW_i2s_init()
+void HW_I2sInit()
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);
 	RCC_PLLI2SCmd (DISABLE);
@@ -117,7 +117,7 @@ void HW_i2s_init()
 
 volatile uint8_t key_reg_out[2] = {0, 0};
 volatile uint16_t key_reg_in = 0xFFFF;
-void HW_uart_init()
+void HW_UartInit()
 {
 	USART_InitTypeDef USART_InitStructure;
 	USART_ClockInitTypeDef USART_ClockStructure;
@@ -195,7 +195,7 @@ void HW_uart_init()
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-void HW_read_keys_enable()
+void HW_ReadKeysEnable()
 {
 	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
 	USART_Cmd(USART2, ENABLE);
@@ -295,7 +295,7 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 
 					DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 					GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-					CODEC_send(0xa103);
+					CODEC_Send(0xa103);
 				}
 			}
 			tun_del++;

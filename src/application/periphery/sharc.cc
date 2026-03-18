@@ -6,7 +6,7 @@
 #include "system.h"
 #include "modules.h"
 
-void SHARC_spi_init(TSharcSpiMode mode)
+void SHARC_SpiInit(TSharcSpiMode mode)
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 
@@ -37,17 +37,17 @@ void SHARC_spi_init(TSharcSpiMode mode)
 	SPI_Init(SPI2, &SPI_InitStructure);
 	SPI_Cmd(SPI2, ENABLE);
 
-	HW_delay(0xffffff); // 0x1ffffff start, 0x3ffffff end
+	HW_Delay(0xffffff); // 0x1ffffff start, 0x3ffffff end
 }
 
-void SHARC_startup_load()
+void SHARC_StartupLoad()
 {
 	SPI_NSSInternalSoftwareConfig(SPI2, SPI_NSSInternalSoft_Reset);
-	SHARC_send_data(0);
+	SHARC_SendData(0);
 	GPIO_SetBits(GPIOA, GPIO_Pin_0);	//reset pin
 
 	for(size_t i = 0; i<3; i++)
-		SHARC_send_data(0);
+		SHARC_SendData(0);
 
 	uint32_t binarySize;
 	uint8_t* binaryStart;
@@ -78,15 +78,15 @@ void SHARC_startup_load()
 	}
 #endif
 	for(uint32_t i = 0; i<binarySize; i++)
-		SHARC_send_data(binaryStart[i]);
+		SHARC_SendData(binaryStart[i]);
 }
 
-void SHARC_wait_for_ready()
+void SHARC_WaitForReady()
 {
 
 }
 
-void SHARC_send_data(uint16_t data)
+void SHARC_SendData(uint16_t data)
 {
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 	SPI_I2S_SendData(SPI2, data);

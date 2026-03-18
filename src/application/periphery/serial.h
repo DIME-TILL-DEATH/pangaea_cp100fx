@@ -3,11 +3,11 @@
 
 #include "appdefs.h"
 
-void HW_spi_init(uint8_t type);
-void HW_i2s_init();
-void HW_uart_init();
+void HW_SpiInit(uint8_t type);
+void HW_I2sInit();
+void HW_UartInit();
 
-void HW_read_keys_enable();
+void HW_ReadKeysEnable();
 
 extern volatile uint16_t key_reg_in;
 
