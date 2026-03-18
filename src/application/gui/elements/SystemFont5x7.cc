@@ -13,19 +13,15 @@ uint32_t Arsys_sym(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 	sym = (sym - 32) * 6;
 	Set_Page_Address(pag);
 	Set_Column_Address(col);
-	GPIO_ResetBits(GPIOB, CS);
 	for(uint8_t i = 0; i < 6; i++)
 	{
 		j = SystemFont5x7[sym + i];
-		if(curs == 1)
-			j |= 0x80;
-		if(curs == 2)
-			j = (~j) & 0x7f;
-		if(curs == 3)
-			j = 0;
-		oled023_1_send_data(j);
+		if(curs == 1) j |= 0x80;
+		if(curs == 2) j = (~j) & 0x7f;
+		if(curs == 3) j = 0;
+
+		oled023_1_write_data(j, 1);
 	}
-	GPIO_SetBits(GPIOB, CS);
 	return col + 6;
 }
 
@@ -35,7 +31,6 @@ uint32_t Arsys_sym_up(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 	sym = (sym - 32) * 6;
 	Set_Page_Address(pag);
 	Set_Column_Address(col);
-	GPIO_ResetBits(GPIOB, CS);
 	for(uint8_t i = 0; i < 6; i++)
 	{
 		j = SystemFont5x7[sym + i] << 4;
@@ -43,9 +38,8 @@ uint32_t Arsys_sym_up(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 			j |= 0x80;
 		if(curs == 2)
 			j = ~j;
-		oled023_1_send_data(j);
+		oled023_1_write_data(j);
 	}
-	GPIO_SetBits(GPIOB, CS);
 	return col + 6;
 }
 
@@ -55,7 +49,6 @@ uint32_t Arsys_sym_down(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 	sym = (sym - 32) * 6;
 	Set_Page_Address(pag);
 	Set_Column_Address(col);
-	GPIO_ResetBits(GPIOB, CS);
 	for(uint8_t i = 0; i < 6; i++)
 	{
 		j = SystemFont5x7[sym + i] >> 4;
@@ -63,9 +56,8 @@ uint32_t Arsys_sym_down(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 			j |= 0x80;
 		if(curs == 2)
 			j = ~j;
-		oled023_1_send_data(j);
+		oled023_1_write_data(j, 1);
 	}
-	GPIO_SetBits(GPIOB, CS);
 	return col + 6;
 }
 

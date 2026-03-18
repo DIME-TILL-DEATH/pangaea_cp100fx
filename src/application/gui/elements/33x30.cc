@@ -114,8 +114,6 @@ uint32_t t33x30_sym(uint8_t col, uint8_t pag, uint16_t sym, bool filled)
 	{
 		Set_Page_Address(j);
 		Set_Column_Address(col);
-		GPIO_SetBits(GPIOB, RS);
-		GPIO_ResetBits(GPIOB, CS);
 		for(uint32_t i = 0; i < 19; i++)
 		{
 			if(filled)
@@ -123,9 +121,8 @@ uint32_t t33x30_sym(uint8_t col, uint8_t pag, uint16_t sym, bool filled)
 			else
 				data = Tahoma33x30_[sym + i * 3 + j];
 
-			oled023_1_send_data(data);
+			oled023_1_write_data(data, 1);
 		}
-		GPIO_SetBits(GPIOB, CS);
 	}
 	return 20;
 }
@@ -136,10 +133,8 @@ void t33x30_clear(uint8_t col, uint8_t pag, uint8_t size)
 	{
 		Set_Page_Address(pag + i);
 		Set_Column_Address(col);
-		GPIO_SetBits(GPIOB, RS);
-		GPIO_ResetBits(GPIOB, CS);
-		for(uint8_t j = 0; j < size; j++)
-			oled023_1_send_data(0);
-		GPIO_SetBits(GPIOB, CS);
+
+		uint8_t nullData = 0;
+		oled023_1_write_data(nullData, size);
 	}
 }

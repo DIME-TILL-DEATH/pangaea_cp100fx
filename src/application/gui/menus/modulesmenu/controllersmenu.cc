@@ -65,7 +65,8 @@ void ControllersMenu::show(TShowMode swhoMode)
 			break;
 		}
 	}
-	DisplayTask->Strel(58, 3, 0);
+
+	DisplayTask->Arrow(58, 3, 0);
 }
 
 void ControllersMenu::showInputMidiCC(uint8_t midiCC)
@@ -263,27 +264,7 @@ void ControllersMenu::encoderCounterClockwise()
 
 			if(m_parNum == ControllerMenuParams::Destination)
 			{
-				DisplayTask->Clear();
-				DisplayTask->Strel(58, 3, 0);
-				DisplayTask->StringOut(0, 0, Font::fntSystem, 0, &strControllersMenu[0][0]);
-				DisplayTask->StringOut(0, 1, Font::fntSystem, 0, &strControllersMenu[1][0]);
-				for(uint8_t i = 0; i < 3; i++)
-				{
-					DisplayTask->StringOut(0, i, Font::fntSystem, 0, &strControllersMenu[i][0]);
-					switch(i)
-					{
-						case 0:
-							DisplayTask->ParamIndicNum(45, 0, m_controllerNum + 1);
-						break;
-						case 1:
-							DisplayTask->Clear_str(45, 1, Font::fntSystem, 13);
-							printSources();
-						break;
-						case 2:
-							DisplayTask->StringOut(45, 2, Font::fntSystem, 0, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
-						break;
-					}
-				}
+				show(); // show first page
 			}
 			restartBlinking(0);
 		}

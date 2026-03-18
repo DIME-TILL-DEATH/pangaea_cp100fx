@@ -96,9 +96,8 @@ void eq_init(void)
     Arsys_sym_down(9,2,48,0);
     Set_Page_Address(1);
     Set_Column_Address(20);
-    GPIO_ResetBits(GPIOB,CS);
-    for(uint8_t i = 0 ; i < 63 ; i++)oled023_1_send_data(0x80);
-    GPIO_SetBits(GPIOB,CS);
+    oled023_1_write_data(0x80, 63);
+
     for(uint8_t i = 0 ; i < 4 ; i++)
       {
         Set_Page_Address(i);

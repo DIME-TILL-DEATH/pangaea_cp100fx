@@ -1,8 +1,9 @@
 #include "cabnamemenu.h"
 
-#include "../../tasks/display_task.h"
-#include "allFonts.h"
+#include "display_task.h"
+
 #include "preset.h"
+#include "system.h"
 
 CabNameMenu::CabNameMenu(AbstractMenu* parent)
 	:AbstractMenu()

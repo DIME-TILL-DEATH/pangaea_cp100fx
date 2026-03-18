@@ -15,7 +15,7 @@ void diez_tun(void)
 		Set_Column_Address(74);
 		Set_Page_Address(i);
 		GPIO_ResetBits(GPIOB,CS);
-		for(uint8_t f = 0; f < 13 ; f++)oled023_1_send_data(di_tun[f*2 + i]);
+		for(uint8_t f = 0; f < 13 ; f++) oled023_1_send_data(di_tun[f*2 + i]);
 		GPIO_SetBits(GPIOB,CS);
 	}
 }
@@ -37,9 +37,8 @@ void note_tun(void)
 	{
 		Set_Column_Address(74);
 		Set_Page_Address(i);
-		GPIO_ResetBits(GPIOB,CS);
-		for(uint8_t f = 0; f < 13 ; f++)oled023_1_send_data(0);
-		GPIO_SetBits(GPIOB,CS);
+		uint8_t nullData = 0;
+		oled023_1_write_data(nullData, 13);
 	}
 
 	for(uint8_t i = 0 ; i < 2 ; i++)
@@ -48,8 +47,16 @@ void note_tun(void)
 		Set_Page_Address(i);
 		GPIO_ResetBits(GPIOB,CS);
 
-		if(ind_out_l[1] > 1500) for(uint8_t f = 0; f < 15 ; f++) oled023_1_send_data(not_tun[f*2 + i + not_ind[t_no]*30]);
-		else for(uint8_t f = 0; f < 15 ; f++) oled023_1_send_data(tire[f*2 + i]);
+		if(ind_out_l[1] > 1500)
+		{
+			for(uint8_t f = 0; f < 15 ; f++)
+				oled023_1_send_data(not_tun[f*2 + i + not_ind[t_no]*30]);
+		}
+		else
+		{
+			for(uint8_t f = 0; f < 15 ; f++)
+				oled023_1_send_data(tire[f*2 + i]);
+		}
 
 		if(((t_no == 1) || (t_no == 3) || (t_no == 6) || (t_no == 8) || (t_no == 10)) && (ind_out_l[1] > 500)) diez_tun();
 		GPIO_SetBits(GPIOB,CS);
@@ -85,9 +92,8 @@ void strel_tun(void)
 		Set_Page_Address(3);
 		Set_Column_Address(t_po1 - 8);
 
-		GPIO_ResetBits(GPIOB, CS);
-		for(uint8_t i = 0 ; i < 15 ; i++) oled023_1_send_data(0);
-		GPIO_SetBits(GPIOB, CS);
+		uint8_t nullData = 0;
+		oled023_1_write_data(nullData, 15);
 
 		if(ind_out_l[1] < 1500)t_po = 64;
 
@@ -96,6 +102,7 @@ void strel_tun(void)
 
 		if((t_po1 > 62) && (t_po1 < 66))GPIO_SetBits(GPIOB,GPIO_Pin_11);
 		else GPIO_ResetBits(GPIOB,GPIO_Pin_11);
+
 		Set_Column_Address(t_po1 - 8);
 		GPIO_ResetBits(GPIOB,CS);
 		for(uint8_t i = 0 ; i < 15 ; i++)oled023_1_send_data(strelk_tun[i]);

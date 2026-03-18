@@ -68,17 +68,16 @@ void icon_print(icon_t num, strelka_t strel)
 	uint8_t col = 111;
 	uint8_t col1 = 114;
 	uint16_t addr = num * 34;
+
+	uint8_t nullBuf[12];
+	kgp_sdk_libc::memset(nullBuf, 0, 12);
+
 	for(int i = 0; i < 2; i++)
 	{
 		Set_Page_Address(i + 1);
 		Set_Column_Address(col);
-		GPIO_ResetBits(GPIOB, CS);
-		GPIO_SetBits(GPIOB, RS);
-		for(int j = 0; j < 17; j++)
-		{
-			oled023_1_send_data(icon_bit[addr++]);
-		}
-		GPIO_SetBits(GPIOB, CS);
+		oled023_1_write_data(&icon_bit[addr], 17);
+		addr += 17;
 	}
 	switch(strel)
 	{
@@ -88,75 +87,47 @@ void icon_print(icon_t num, strelka_t strel)
 		{
 			Set_Page_Address(0);
 			Set_Column_Address(col1);
-			GPIO_ResetBits(GPIOB, CS);
-			GPIO_SetBits(GPIOB, RS);
-			for(uint32_t i = 0; i < 12; i++)
-				oled023_1_send_data(strelk[i]);
-			GPIO_SetBits(GPIOB, CS);
+			oled023_1_write_data(strelk, 12);
+
 			Set_Page_Address(3);
 			Set_Column_Address(col1);
-			GPIO_ResetBits(GPIOB, CS);
-			GPIO_SetBits(GPIOB, RS);
-			for(uint32_t i = 12; i < 24; i++)
-				oled023_1_send_data(0);
-			GPIO_SetBits(GPIOB, CS);
+			oled023_1_write_data(nullBuf, 12);
 			break;
 		}
 		case 2:
 		{
-//		if(!(((current_menu == MENU_PA) || (current_menu == MENU_PREAMP)) && (par_num < 3)))
-//		{
+
 			Set_Page_Address(0);
 			Set_Column_Address(col1);
-			GPIO_ResetBits(GPIOB, CS);
-			GPIO_SetBits(GPIOB, RS);
-			for(uint32_t i = 0; i < 12; i++)
-				oled023_1_send_data(0);
-			GPIO_SetBits(GPIOB, CS);
-//		}
-//		if(((current_menu == MENU_PA) || (current_menu == MENU_PREAMP)) && (par_num < 3)) Set_Page_Address(2);
-			/*else*/Set_Page_Address(3);
+			oled023_1_write_data(nullBuf, 12);
+
+			Set_Page_Address(3);
 			Set_Column_Address(col1);
-			GPIO_ResetBits(GPIOB, CS);
-			GPIO_SetBits(GPIOB, RS);
-			for(uint32_t i = 12; i < 24; i++)
-				oled023_1_send_data(strelk[i]);
-			GPIO_SetBits(GPIOB, CS);
+			oled023_1_write_data(&strelk[12], 12);
 			break;
 		}
 		case 3:
 		{
 			Set_Page_Address(0);
 			Set_Column_Address(col1);
-			GPIO_ResetBits(GPIOB, CS);
-			GPIO_SetBits(GPIOB, RS);
-			for(uint32_t i = 0; i < 12; i++)
-				oled023_1_send_data(strelk[i]);
-			GPIO_SetBits(GPIOB, CS);
+			oled023_1_write_data(strelk, 12);
+
 			Set_Page_Address(3);
 			Set_Column_Address(col1);
-			GPIO_ResetBits(GPIOB, CS);
-			GPIO_SetBits(GPIOB, RS);
-			for(uint32_t i = 12; i < 24; i++)
-				oled023_1_send_data(strelk[i]);
-			GPIO_SetBits(GPIOB, CS);
+			oled023_1_write_data(&strelk[12], 12);
 			break;
 		}
 	}
 }
 
-void strel_print(uint8_t col, uint8_t pag, uint8_t dir)
+void arrow_print(uint8_t col, uint8_t pag, uint8_t dir)
 {
 	Set_Page_Address(pag);
 	Set_Column_Address(col);
-	GPIO_ResetBits(GPIOB, CS);
-	GPIO_SetBits(GPIOB, RS);
+
 	if(dir)
-		for(uint32_t i = 0; i < 12; i++)
-			oled023_1_send_data(strelk[i]);
+		oled023_1_write_data(&strelk[0], 12);
 	else
-		for(uint32_t i = 12; i < 24; i++)
-			oled023_1_send_data(strelk[i]);
-	GPIO_SetBits(GPIOB, CS);
+		oled023_1_write_data(&strelk[12], 12);
 }
 

@@ -64,7 +64,7 @@ void tap_ind(uint8_t cur);
 void pot32x32_(uint8_t col, uint8_t pag, uint16_t sym);
 void tun_ini(void);
 void ind_foot(uint8_t num, uint8_t pressState, uint8_t holdState);
-void strel_print(uint8_t col, uint8_t pag, uint8_t dir);
+void arrow_print(uint8_t col, uint8_t pag, uint8_t dir);
 
 void del_sec_ind(uint8_t col, uint8_t pag, uint32_t d);
 void del_tim_ind(uint8_t col, uint8_t pag, uint32_t d);

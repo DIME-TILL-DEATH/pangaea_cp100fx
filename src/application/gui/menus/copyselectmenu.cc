@@ -1,7 +1,9 @@
 #include "copyselectmenu.h"
 
-#include "../../tasks/display_task.h"
+#include "display_task.h"
+
 #include "preset.h"
+#include "system.h"
 #include "eepr.h"
 
 CopySelectMenu::TSelectionMask CopySelectMenu::m_selectionMask =

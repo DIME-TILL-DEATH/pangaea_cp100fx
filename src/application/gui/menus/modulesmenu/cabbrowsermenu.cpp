@@ -1,18 +1,14 @@
 #include "cabbrowsermenu.h"
 
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/filesystem_task.h"
-#include "../../../tasks/sdtest_task.h"
-#include "../../../tasks/ui_task.h"
-#include "appdefs.h"
-#include "init.h"
-
-#include "allFonts.h"
-#include "BF706_send.h"
-
+#include "system.h"
 #include "preset.h"
 
 #include "fs_browser.h"
+
+#include "display_task.h"
+#include "filesystem_task.h"
+#include "sdtest_task.h"
+#include "ui_task.h"
 
 CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 {

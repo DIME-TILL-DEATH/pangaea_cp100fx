@@ -43,7 +43,7 @@ void disp_start(uint8_t num)
 			GPIO_SetBits(GPIOB, RS);
 			for(uint8_t i = 0; i < 75; i++)
 			{
-				oled023_1_send_data(amt_logo[a++]);
+				oled023_1_write_data(amt_logo[a++]);
 				if(a > 299)
 					break;
 			}
@@ -159,20 +159,14 @@ void mode_ind(uint8_t val)
 		break;
 	}
 	Set_Column_Address(2);
-	GPIO_ResetBits(GPIOB, CS);
-	for(uint8_t i = 0; i < 15; i++)
-		oled023_1_send_data(a1);
-	GPIO_SetBits(GPIOB, CS);
+	oled023_1_write_data(a1, 15);
+
 	Set_Column_Address(38);
-	GPIO_ResetBits(GPIOB, CS);
-	for(uint8_t i = 0; i < 15; i++)
-		oled023_1_send_data(a2);
-	GPIO_SetBits(GPIOB, CS);
+	oled023_1_write_data(a2, 15);
+
 	Set_Column_Address(74);
-	GPIO_ResetBits(GPIOB, CS);
-	for(uint8_t i = 0; i < 15; i++)
-		oled023_1_send_data(0x7);
-	GPIO_SetBits(GPIOB, CS);
+	oled023_1_write_data(0x7, 15);
+
 }
 
 void checkbox(uint8_t x, uint8_t y, uint8_t val)

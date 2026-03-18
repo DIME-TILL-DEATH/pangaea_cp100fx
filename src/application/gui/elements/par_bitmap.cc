@@ -144,7 +144,7 @@ void par_ind_num_mix(uint8_t col, uint8_t pag, uint8_t val)
 	}
 }
 
-uint8_t par_ind(uint8_t col, uint8_t pag, uint32_t val)
+void par_ind(uint8_t col, uint8_t pag, uint32_t val)
 {
 	Set_Column_Address(col);
 	Set_Page_Address(pag);
@@ -158,7 +158,6 @@ uint8_t par_ind(uint8_t col, uint8_t pag, uint32_t val)
 	}
 	GPIO_SetBits(GPIOB, CS);
 	par_ind_num_(col+34, pag, val);
-	return 0;
 }
 
 void p_ind(uint8_t col, uint8_t pag, uint32_t val)
@@ -179,7 +178,7 @@ void p_ind(uint8_t col, uint8_t pag, uint32_t val)
 		oled023_1_write_data(0x7e);
 	else
 		Set_Column_Address(col+32);
-	oled023_1_write_data(0x7e);
+	oled023_1_write_data(0x7e, 1);
 }
 
 void par_ind_pan(uint8_t col, uint8_t pag, uint32_t val)
