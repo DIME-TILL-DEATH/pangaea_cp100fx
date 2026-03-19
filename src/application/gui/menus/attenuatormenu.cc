@@ -11,7 +11,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCount = 2;
 	BaseParam* params[paramCount];
 
-	uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.modules.paramData.attenuator : &sys_para[System::ATTENUATOR];
+	uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator : &sys_para[System::ATTENUATOR];
 
 	params[0] = new StringListParam("Attenuator", valuePtr,
 			 {" +4 dB", " +3 dB", " +2 dB", " +1 dB", "  0 dB", " -1 dB", " -2 dB", " -3 dB",
@@ -44,7 +44,7 @@ void AttenuatorMenu::encoderClockwise()
 
 		if(m_currentParamNum == 1)
 		{
-			uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.modules.paramData.attenuator : &sys_para[System::ATTENUATOR];
+			uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator : &sys_para[System::ATTENUATOR];
 			StringListParam* attValueParam = static_cast<StringListParam*>(m_paramsList[0]);
 			attValueParam->setValuePtr(valuePtr);
 
@@ -73,7 +73,7 @@ void AttenuatorMenu::encoderCounterClockwise()
 
 		if(m_currentParamNum == 1)
 		{
-			uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.modules.paramData.attenuator : &sys_para[System::ATTENUATOR];
+			uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator : &sys_para[System::ATTENUATOR];
 			StringListParam* attValueParam = static_cast<StringListParam*>(m_paramsList[0]);
 			attValueParam->setValuePtr(valuePtr);
 

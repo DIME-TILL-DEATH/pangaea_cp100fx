@@ -62,7 +62,7 @@ void System::setStartupValues()
 
 void System::setMoogTime(float quarterInterval)
 {
-	if(currentPreset.modules.rawData[RFILTER_LFO_TYPE] == 0)
+	if(currentPreset.modulesBuf[RFILTER_LFO_TYPE] == 0)
 	{
 		Preset::moog_time = round(quarterInterval);
 		DSP_GuiSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time >> 8);
@@ -72,7 +72,7 @@ void System::setMoogTime(float quarterInterval)
 
 void System::setDelayTime(float quarterInterval)
 {
-	currentPreset.delayTime = round((float)(quarterInterval/tapCoeffs[currentPreset.modules.rawData[DELAY_TAP]]));
+	currentPreset.delayTime = round((float)(quarterInterval/tapCoeffs[currentPreset.modulesBuf[DELAY_TAP]]));
 	if(currentPreset.delayTime < 2731)
 	{
 		if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
@@ -88,7 +88,7 @@ void System::setDelayTime(float quarterInterval)
 
 				while(currentPreset.delayTime < bpm_time[temp++]);
 				currentPreset.delayTime = bpm_time[temp];
-				currentPreset.modules.rawData[BPM_DELAY] = 60000 / currentPreset.delayTime;
+				currentPreset.modulesBuf[BPM_DELAY] = 60000 / currentPreset.delayTime;
 
 				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
 				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
@@ -99,7 +99,7 @@ void System::setDelayTime(float quarterInterval)
 
 void System::setTremoloTime(float quarterInterval)
 {
-	Preset::trem_time = round((float)(quarterInterval/tapCoeffs[currentPreset.modules.rawData[TREMOLO_TAP]]));
+	Preset::trem_time = round((float)(quarterInterval/tapCoeffs[currentPreset.modulesBuf[TREMOLO_TAP]]));
 
 	if(Preset::trem_time < 2731)
 	{

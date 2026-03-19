@@ -65,7 +65,6 @@ void DSP_ErasePrimaryCab(uint8_t presetNum);
 void DSP_EraseSecondaryCab(uint8_t presetNum);
 
 void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl);
-void send_cab_data1(uint8_t val, uint8_t num);
 
 void ext_send(uint8_t data);
 

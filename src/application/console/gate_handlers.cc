@@ -5,26 +5,26 @@
 
 static void gate_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[ENABLE_GATE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_GATE, currentPreset.modules.rawData[ENABLE_GATE]);
+	default_param_handler(&currentPreset.modulesBuf[ENABLE_GATE], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_GATE, currentPreset.modulesBuf[ENABLE_GATE]);
 }
 
 static void gate_threshold_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[GATE_THRESHOLD], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_GATE, GATE_THRESHOLD_POS, currentPreset.modules.rawData[GATE_THRESHOLD]);
+	default_param_handler(&currentPreset.modulesBuf[GATE_THRESHOLD], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_GATE, GATE_THRESHOLD_POS, currentPreset.modulesBuf[GATE_THRESHOLD]);
 }
 
 static void gate_attack_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[GATE_ATTACK], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_GATE, GATE_ATTACK_POS, currentPreset.modules.rawData[GATE_ATTACK]);
+	default_param_handler(&currentPreset.modulesBuf[GATE_ATTACK], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_GATE, GATE_ATTACK_POS, currentPreset.modulesBuf[GATE_ATTACK]);
 }
 
 static void gate_decay_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[GATE_DECAY], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_GATE, GATE_DECAY_POS, currentPreset.modules.rawData[GATE_DECAY]);
+	default_param_handler(&currentPreset.modulesBuf[GATE_DECAY], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_GATE, GATE_DECAY_POS, currentPreset.modulesBuf[GATE_DECAY]);
 }
 
 void set_gate_handlers(TReadLine *rl)

@@ -20,14 +20,14 @@ EqGraphMenu::EqGraphMenu(AbstractMenu *parent)
 
 	for(uint8_t i=0; i<5; i++)
 	{
-		eqFreq_ptr[i] = (int8_t*)&currentPreset.modules.paramData.eq_freq[i];
+		eqFreq_ptr[i] = (int8_t*)&currentPreset.paramData.eq_freq[i];
 		minParamVal[i] = -100;
 		maxParamVal[i] = 100;
 	}
 
-	eqFreq_ptr[5] = (int8_t*)&currentPreset.modules.paramData.hpf;
-	eqFreq_ptr[6] = (int8_t*)&currentPreset.modules.paramData.lpf;
-	eqFreq_ptr[7] = (int8_t*)&currentPreset.modules.paramData.eq_pre_post;
+	eqFreq_ptr[5] = (int8_t*)&currentPreset.paramData.hpf;
+	eqFreq_ptr[6] = (int8_t*)&currentPreset.paramData.lpf;
+	eqFreq_ptr[7] = (int8_t*)&currentPreset.paramData.eq_pre_post;
 
 	minParamVal[5]=minParamVal[6] = 0;
 	maxParamVal[5]=maxParamVal[6] = 127;
@@ -126,10 +126,10 @@ void EqGraphMenu::encoderClockwise()
 			{
 				if(bandNum >= 5) break;
 
-				if(currentPreset.modules.rawData[EQ_G0+bandNum] < 30)
-					currentPreset.modules.rawData[EQ_G0+bandNum]++;
+				if(currentPreset.modulesBuf[EQ_G0+bandNum] < 30)
+					currentPreset.modulesBuf[EQ_G0+bandNum]++;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modules.rawData[EQ_G0 + bandNum]);
+				DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
 
 				break;
 			}
@@ -137,11 +137,11 @@ void EqGraphMenu::encoderClockwise()
 			{
 				if(bandNum >= 5) break;
 
-				int8_t a = currentPreset.modules.paramData.eq_q[bandNum];
+				int8_t a = currentPreset.paramData.eq_q[bandNum];
 				if(a < 120) a = BaseParam::encSpeedInc(a, 60);
-				currentPreset.modules.paramData.eq_q[bandNum] = a;
+				currentPreset.paramData.eq_q[bandNum] = a;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modules.rawData[EQ_Q0 + bandNum]);
+				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
 				break;
 			}
 		}
@@ -189,21 +189,21 @@ void EqGraphMenu::encoderCounterClockwise()
 			{
 				if(bandNum >= 5) break;
 
-				if(currentPreset.modules.rawData[EQ_G0+bandNum] > 0)
-					currentPreset.modules.rawData[EQ_G0+bandNum]--;
+				if(currentPreset.modulesBuf[EQ_G0+bandNum] > 0)
+					currentPreset.modulesBuf[EQ_G0+bandNum]--;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modules.rawData[EQ_G0 + bandNum]);
+				DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
 				break;
 			}
 			case 3:
 			{
 				if(bandNum >= 5) break;
 
-				int8_t a = currentPreset.modules.paramData.eq_q[bandNum];
+				int8_t a = currentPreset.paramData.eq_q[bandNum];
 				if(a > -60) a = BaseParam::encSpeedDec(a, -60);
-				currentPreset.modules.paramData.eq_q[bandNum] = (uint8_t)a;
+				currentPreset.paramData.eq_q[bandNum] = (uint8_t)a;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modules.rawData[EQ_Q0 + bandNum]);
+				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
 				break;
 			}
 		}
@@ -222,13 +222,13 @@ void EqGraphMenu::key3()
 
 	if(bandNum<5)
 	{
-		currentPreset.modules.rawData[EQ_G0 + bandNum] = 15;
-		currentPreset.modules.rawData[EQ_F0 + bandNum] = 0;
-		currentPreset.modules.rawData[EQ_Q0 + bandNum] = 0;
+		currentPreset.modulesBuf[EQ_G0 + bandNum] = 15;
+		currentPreset.modulesBuf[EQ_F0 + bandNum] = 0;
+		currentPreset.modulesBuf[EQ_Q0 + bandNum] = 0;
 
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modules.rawData[EQ_G0 + bandNum]);
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, currentPreset.modules.rawData[EQ_F0 + bandNum]);
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modules.rawData[EQ_Q0 + bandNum]);
+		DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
+		DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, currentPreset.modulesBuf[EQ_F0 + bandNum]);
+		DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
 
 	}
 	else
@@ -269,11 +269,11 @@ void EqGraphMenu::printPage()
 	{
 		DisplayTask->StringOut(0, 2, Font::fntSystem, (paramNum==2)*2, (uint8_t*)&paramNames[2]);
 		char numBuf[15];
-		ksprintf(numBuf, "%ddB", currentPreset.modules.paramData.eq_gain[bandNum]-15);
+		ksprintf(numBuf, "%ddB", currentPreset.paramData.eq_gain[bandNum]-15);
 		DisplayTask->StringOut(paramXPos, 2, Font::fntSystem, 0, (uint8_t*)numBuf);
 
 		DisplayTask->StringOut(0, 3, Font::fntSystem, (paramNum==3)*2, (uint8_t*)&paramNames[3]);
-		DisplayTask->EqQ(paramXPos, 3, (int8_t)currentPreset.modules.paramData.eq_q[bandNum], bandNum);
+		DisplayTask->EqQ(paramXPos, 3, (int8_t)currentPreset.paramData.eq_q[bandNum], bandNum);
 	}
 	updateResponse = true;
 }

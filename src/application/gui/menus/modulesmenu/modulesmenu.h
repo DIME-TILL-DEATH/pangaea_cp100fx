@@ -91,20 +91,20 @@ private:
 	TModule modulesPrevState[ModulesMenu::modulesCount];
 	uint8_t prevEnabledState[ModulesMenu::modulesCount];
 
-	TModule RF{"RF", &currentPreset.modules.rawData[ENABLE_RESONANCE_FILTER], &GuiModules::createRfMenu, nullptr, ENABLE_RESONANCE_FILTER};
-	TModule GT{"GT", &currentPreset.modules.rawData[ENABLE_GATE], &GuiModules::createGateMenu, nullptr, ENABLE_GATE};
-	TModule CM{"CM", &currentPreset.modules.rawData[ENABLE_COMPRESSOR], &GuiModules::createCompressorMenu, nullptr, ENABLE_COMPRESSOR};
-	TModule PR{"PR", &currentPreset.modules.rawData[ENABLE_PREAMP], &GuiModules::createPreampMenu, nullptr, ENABLE_PREAMP};
-	TModule PA{"PA", &currentPreset.modules.rawData[ENABLE_AMP], &GuiModules::createAmpMenu, nullptr, ENABLE_AMP};
-	TModule IR{"IR", &currentPreset.modules.rawData[ENABLE_CAB], &GuiModules::createIrMenu, &ModulesMenu::enableCab, ENABLE_CAB};
-	TModule EQ{"EQ", &currentPreset.modules.rawData[ENABLE_EQ], &GuiModules::createEqMenu, nullptr, ENABLE_EQ};
-	TModule PH{"PH", &currentPreset.modules.rawData[ENABLE_PHASER], &GuiModules::createPhaserMenu, nullptr, ENABLE_PHASER};
-	TModule FL{"FL", &currentPreset.modules.rawData[ENABLE_FLANGER], &GuiModules::createFlangerMenu, nullptr, ENABLE_FLANGER};
-	TModule CH{"CH", &currentPreset.modules.rawData[ENABLE_CHORUS], &GuiModules::createChorusMenu, nullptr, ENABLE_CHORUS};
-	TModule DL{"DL", &currentPreset.modules.rawData[ENABLE_DELAY], &GuiModules::createDelayMenu, nullptr, ENABLE_DELAY};
-	TModule ER{"ER", &currentPreset.modules.rawData[ENABLE_EARLY_REFLECTIONS], &GuiModules::createEarlyMenu, nullptr, ENABLE_EARLY_REFLECTIONS};
-	TModule RV{"RV", &currentPreset.modules.rawData[ENABLE_REVERB], &GuiModules::createReverbMenu, nullptr, ENABLE_REVERB};
-	TModule TR{"TR", &currentPreset.modules.rawData[ENABLE_TREMOLO], &GuiModules::createTremoloMenu, nullptr, ENABLE_TREMOLO};
+	TModule RF{"RF", &currentPreset.modulesBuf[ENABLE_RESONANCE_FILTER], &GuiModules::createRfMenu, nullptr, ENABLE_RESONANCE_FILTER};
+	TModule GT{"GT", &currentPreset.modulesBuf[ENABLE_GATE], &GuiModules::createGateMenu, nullptr, ENABLE_GATE};
+	TModule CM{"CM", &currentPreset.modulesBuf[ENABLE_COMPRESSOR], &GuiModules::createCompressorMenu, nullptr, ENABLE_COMPRESSOR};
+	TModule PR{"PR", &currentPreset.modulesBuf[ENABLE_PREAMP], &GuiModules::createPreampMenu, nullptr, ENABLE_PREAMP};
+	TModule PA{"PA", &currentPreset.modulesBuf[ENABLE_AMP], &GuiModules::createAmpMenu, nullptr, ENABLE_AMP};
+	TModule IR{"IR", &currentPreset.modulesBuf[ENABLE_CAB], &GuiModules::createIrMenu, &ModulesMenu::enableCab, ENABLE_CAB};
+	TModule EQ{"EQ", &currentPreset.modulesBuf[ENABLE_EQ], &GuiModules::createEqMenu, nullptr, ENABLE_EQ};
+	TModule PH{"PH", &currentPreset.modulesBuf[ENABLE_PHASER], &GuiModules::createPhaserMenu, nullptr, ENABLE_PHASER};
+	TModule FL{"FL", &currentPreset.modulesBuf[ENABLE_FLANGER], &GuiModules::createFlangerMenu, nullptr, ENABLE_FLANGER};
+	TModule CH{"CH", &currentPreset.modulesBuf[ENABLE_CHORUS], &GuiModules::createChorusMenu, nullptr, ENABLE_CHORUS};
+	TModule DL{"DL", &currentPreset.modulesBuf[ENABLE_DELAY], &GuiModules::createDelayMenu, nullptr, ENABLE_DELAY};
+	TModule ER{"ER", &currentPreset.modulesBuf[ENABLE_EARLY_REFLECTIONS], &GuiModules::createEarlyMenu, nullptr, ENABLE_EARLY_REFLECTIONS};
+	TModule RV{"RV", &currentPreset.modulesBuf[ENABLE_REVERB], &GuiModules::createReverbMenu, nullptr, ENABLE_REVERB};
+	TModule TR{"TR", &currentPreset.modulesBuf[ENABLE_TREMOLO], &GuiModules::createTremoloMenu, nullptr, ENABLE_TREMOLO};
 };
 
 #endif /* MODULESMENU_H_ */

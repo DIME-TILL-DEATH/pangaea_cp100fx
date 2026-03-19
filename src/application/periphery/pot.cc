@@ -65,7 +65,7 @@ void HW_WritePot()
 
 	uint16_t att_val;
 	if(sys_para[System::ATTENUATOR_MODE])
-	att_val = att_db_num[currentPreset.modules.paramData.attenuator];
+	att_val = att_db_num[currentPreset.paramData.attenuator];
 	else
 	att_val = att_db_num[sys_para[System::ATTENUATOR]];
 

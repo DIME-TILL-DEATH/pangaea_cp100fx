@@ -5,44 +5,44 @@
 
 static void chorus_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[chor], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CHORUS, currentPreset.modules.rawData[ENABLE_CHORUS]);
+	default_param_handler(&currentPreset.modulesBuf[chor], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CHORUS, currentPreset.modulesBuf[ENABLE_CHORUS]);
 }
 
 static void chorus_mix_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[CHORUS_MIX], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_MIX_POS, currentPreset.modules.rawData[CHORUS_MIX]);
+	default_param_handler(&currentPreset.modulesBuf[CHORUS_MIX], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_MIX_POS, currentPreset.modulesBuf[CHORUS_MIX]);
 }
 
 static void chorus_rate_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[CHORUS_RATE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_RATE_POS, currentPreset.modules.rawData[CHORUS_RATE]);
+	default_param_handler(&currentPreset.modulesBuf[CHORUS_RATE], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_RATE_POS, currentPreset.modulesBuf[CHORUS_RATE]);
 }
 
 static void chorus_width_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[CHORUS_WIDTH], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_WIDTH_POS, currentPreset.modules.rawData[CHORUS_WIDTH]);
+	default_param_handler(&currentPreset.modulesBuf[CHORUS_WIDTH], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_WIDTH_POS, currentPreset.modulesBuf[CHORUS_WIDTH]);
 }
 
 static void chorus_delay_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[CHORUS_DELAY], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_DELAY_POS, currentPreset.modules.rawData[CHORUS_DELAY]);
+	default_param_handler(&currentPreset.modulesBuf[CHORUS_DELAY], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_DELAY_POS, currentPreset.modulesBuf[CHORUS_DELAY]);
 }
 
 static void chorus_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[CHORUS_TYPE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_TYPE_POS, currentPreset.modules.rawData[CHORUS_TYPE]);
+	default_param_handler(&currentPreset.modulesBuf[CHORUS_TYPE], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_TYPE_POS, currentPreset.modulesBuf[CHORUS_TYPE]);
 }
 
 static void chorus_hpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[CHORUS_HPF], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_HPF_POS, currentPreset.modules.rawData[CHORUS_HPF]);
+	default_param_handler(&currentPreset.modulesBuf[CHORUS_HPF], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_HPF_POS, currentPreset.modulesBuf[CHORUS_HPF]);
 }
 
 

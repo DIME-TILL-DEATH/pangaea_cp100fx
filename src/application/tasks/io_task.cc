@@ -84,7 +84,7 @@ void TIOTask::Code()
 				for(uint8_t i = 0; i < 14; i++)
 				{
 					if(!((enabledMask >> i) & 0x1))
-						isLedOn += currentPreset.modules.rawData[i];
+						isLedOn += currentPreset.modulesBuf[i];
 				}
 
 				if(isLedOn)

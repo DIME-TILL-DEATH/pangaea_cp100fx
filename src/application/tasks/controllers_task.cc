@@ -35,51 +35,51 @@ void controllerSetData(uint8_t adr, uint8_t data)
 	switch(currentPreset.controller[adr].dst)
 	{
 		case Controller::Dst::PreampOnOff:
-			currentPreset.modules.rawData[ENABLE_PREAMP] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PREAMP, currentPreset.modules.rawData[ENABLE_PREAMP]);
+			currentPreset.modulesBuf[ENABLE_PREAMP] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PREAMP, currentPreset.modulesBuf[ENABLE_PREAMP]);
 
-			if(ConsoleTask) ConsoleTask->PrintF("%s %d\r\n", preamp_on_string, currentPreset.modules.rawData[ENABLE_PREAMP]);
+			if(ConsoleTask) ConsoleTask->PrintF("%s %d\r\n", preamp_on_string, currentPreset.modulesBuf[ENABLE_PREAMP]);
 		break;
 //-------------------------------------------------PA-------------------------------------------------
 		case Controller::Dst::AmpOnOff:
-			currentPreset.modules.rawData[ENABLE_AMP] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_AMP, currentPreset.modules.rawData[ENABLE_AMP]);
+			currentPreset.modulesBuf[ENABLE_AMP] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_AMP, currentPreset.modulesBuf[ENABLE_AMP]);
 		break;
 
 		case Controller::Dst::AmpVolume:
-			currentPreset.modules.rawData[AMP_MASTER] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_MASTER_POS, currentPreset.modules.rawData[AMP_MASTER]);
+			currentPreset.modulesBuf[AMP_MASTER] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_MASTER_POS, currentPreset.modulesBuf[AMP_MASTER]);
 
 		break;
 
 		case Controller::Dst::AmpSlave:
-			currentPreset.modules.rawData[AMP_LEVEL] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_LEVEL_POS, currentPreset.modules.rawData[AMP_LEVEL]);
+			currentPreset.modulesBuf[AMP_LEVEL] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_LEVEL_POS, currentPreset.modulesBuf[AMP_LEVEL]);
 		break;
 //-------------------------------------------------CAB SIM--------------------------------------------
 		case Controller::Dst::CabSimOnOff:
-			currentPreset.modules.rawData[ENABLE_CAB] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CAB, currentPreset.modules.rawData[ENABLE_CAB]);
+			currentPreset.modulesBuf[ENABLE_CAB] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CAB, currentPreset.modulesBuf[ENABLE_CAB]);
 		break;
 //-------------------------------------------------EQ-------------------------------------------------
 		case Controller::Dst::EqualOnOff:
-			currentPreset.modules.rawData[ENABLE_EQ] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EQ, currentPreset.modules.rawData[ENABLE_EQ]);
+			currentPreset.modulesBuf[ENABLE_EQ] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EQ, currentPreset.modulesBuf[ENABLE_EQ]);
 		break;
 //-------------------------------------------------Delay----------------------------------------------
 		case Controller::Dst::DelayOnOff:
-			currentPreset.modules.rawData[ENABLE_DELAY] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_DELAY, currentPreset.modules.rawData[ENABLE_DELAY]);
+			currentPreset.modulesBuf[ENABLE_DELAY] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_DELAY, currentPreset.modulesBuf[ENABLE_DELAY]);
 		break;
 
 		case Controller::Dst::DelayVolume:
-			currentPreset.modules.rawData[DELAY_MIX] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_DELAY, DELAY_MIX_POS, currentPreset.modules.rawData[DELAY_MIX]);
+			currentPreset.modulesBuf[DELAY_MIX] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_DELAY, DELAY_MIX_POS, currentPreset.modulesBuf[DELAY_MIX]);
 		break;
 
 		case Controller::Dst::DelayFeedback:
-			currentPreset.modules.rawData[DELAY_FEEDBACK] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_DELAY, DELAY_FEEDBACK_POS, currentPreset.modules.rawData[DELAY_FEEDBACK]);
+			currentPreset.modulesBuf[DELAY_FEEDBACK] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_DELAY, DELAY_FEEDBACK_POS, currentPreset.modulesBuf[DELAY_FEEDBACK]);
 		break;
 
 		case Controller::Dst::DelayTap:
@@ -97,78 +97,78 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		break;
 //-------------------------------------------------Phaser---------------------------------------------
 		case Controller::Dst::PhaserOnOff:
-			currentPreset.modules.rawData[ENABLE_PHASER] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PHASER, currentPreset.modules.rawData[ENABLE_PHASER]);
+			currentPreset.modulesBuf[ENABLE_PHASER] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PHASER, currentPreset.modulesBuf[ENABLE_PHASER]);
 		break;
 
 		case Controller::Dst::PhaserVolume:
-			currentPreset.modules.rawData[PHASER_MIX] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_MIX_POS, currentPreset.modules.rawData[PHASER_MIX]);
+			currentPreset.modulesBuf[PHASER_MIX] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_MIX_POS, currentPreset.modulesBuf[PHASER_MIX]);
 		break;
 
 		case Controller::Dst::PhaserRate:
-			currentPreset.modules.rawData[PHASER_RATE] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_RATE_POS, currentPreset.modules.rawData[PHASER_RATE]);
+			currentPreset.modulesBuf[PHASER_RATE] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_PHASER, PHASER_RATE_POS, currentPreset.modulesBuf[PHASER_RATE]);
 		break;
 //-------------------------------------------------Flanger--------------------------------------------
 		case Controller::Dst::FlangerOnOff:
-			currentPreset.modules.rawData[ENABLE_FLANGER] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_FLANGER, currentPreset.modules.rawData[ENABLE_FLANGER]);
+			currentPreset.modulesBuf[ENABLE_FLANGER] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_FLANGER, currentPreset.modulesBuf[ENABLE_FLANGER]);
 		break;
 
 		case Controller::Dst::FlangerVolume:
-			currentPreset.modules.rawData[FLANGER_MIX] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_FLANGER, FLANGER_MIX_POS, currentPreset.modules.rawData[FLANGER_MIX]);
+			currentPreset.modulesBuf[FLANGER_MIX] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_FLANGER, FLANGER_MIX_POS, currentPreset.modulesBuf[FLANGER_MIX]);
 		break;
 
 		case Controller::Dst::FlangerRate:
-			currentPreset.modules.rawData[FLANGER_RATE] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_FLANGER, FLANGER_RATE_POS, currentPreset.modules.rawData[FLANGER_RATE]);
+			currentPreset.modulesBuf[FLANGER_RATE] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_FLANGER, FLANGER_RATE_POS, currentPreset.modulesBuf[FLANGER_RATE]);
 		break;
 //-------------------------------------------------Chorus---------------------------------------------
 		case Controller::Dst::ChorusOnOff:
-			currentPreset.modules.rawData[ENABLE_CHORUS] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CHORUS, currentPreset.modules.rawData[ENABLE_CHORUS]);
+			currentPreset.modulesBuf[ENABLE_CHORUS] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CHORUS, currentPreset.modulesBuf[ENABLE_CHORUS]);
 		break;
 
 		case Controller::Dst::ChorusVolume:
-			currentPreset.modules.rawData[CHORUS_MIX] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_MIX_POS, currentPreset.modules.rawData[CHORUS_MIX]);
+			currentPreset.modulesBuf[CHORUS_MIX] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_MIX_POS, currentPreset.modulesBuf[CHORUS_MIX]);
 		break;
 
 		case Controller::Dst::ChorusRate:
-			currentPreset.modules.rawData[CHORUS_RATE] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_RATE_POS, currentPreset.modules.rawData[CHORUS_RATE]);
+			currentPreset.modulesBuf[CHORUS_RATE] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_CHORUS, CHORUS_RATE_POS, currentPreset.modulesBuf[CHORUS_RATE]);
 		break;
 //-------------------------------------------------Reverb---------------------------------------------
 		case Controller::Dst::ReverbOnOff:
-			currentPreset.modules.rawData[ENABLE_REVERB] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_REVERB, currentPreset.modules.rawData[ENABLE_REVERB]);
+			currentPreset.modulesBuf[ENABLE_REVERB] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_REVERB, currentPreset.modulesBuf[ENABLE_REVERB]);
 		break;
 
 		case Controller::Dst::ReverbVolume:
-			currentPreset.modules.rawData[REVERB_MIX] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_MIX_POS, currentPreset.modules.rawData[REVERB_MIX]);
+			currentPreset.modulesBuf[REVERB_MIX] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_MIX_POS, currentPreset.modulesBuf[REVERB_MIX]);
 		break;
 
 		case Controller::Dst::ReverbTime:
-			currentPreset.modules.rawData[REVERB_TIME] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_TIME_POS, currentPreset.modules.rawData[REVERB_TIME]);
+			currentPreset.modulesBuf[REVERB_TIME] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_TIME_POS, currentPreset.modulesBuf[REVERB_TIME]);
 		break;
 //-------------------------------------------------Tremolo--------------------------------------------
 		case Controller::Dst::TremoloOnOff:
-			currentPreset.modules.rawData[ENABLE_TREMOLO] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_TREMOLO, currentPreset.modules.rawData[ENABLE_TREMOLO]);
+			currentPreset.modulesBuf[ENABLE_TREMOLO] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_TREMOLO, currentPreset.modulesBuf[ENABLE_TREMOLO]);
 		break;
 
 		case Controller::Dst::TremoloIntensity:
-			currentPreset.modules.rawData[TREMOLO_INTENSITY] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_INTENSITY_POS, currentPreset.modules.rawData[TREMOLO_INTENSITY]);
+			currentPreset.modulesBuf[TREMOLO_INTENSITY] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_INTENSITY_POS, currentPreset.modulesBuf[TREMOLO_INTENSITY]);
 		break;
 
 		case Controller::Dst::TremoloRate:
-			currentPreset.modules.rawData[TREMOLO_RATE] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_RATE_POS, currentPreset.modules.rawData[TREMOLO_RATE]);
+			currentPreset.modulesBuf[TREMOLO_RATE] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_RATE_POS, currentPreset.modulesBuf[TREMOLO_RATE]);
 		break;
 
 		case Controller::Dst::TremoloTap:
@@ -186,37 +186,37 @@ void controllerSetData(uint8_t adr, uint8_t data)
 		break;
 //---------------------------------------------------------------------------------------------------
 		case Controller::Dst::PresetLevel:
-			if(!currentPreset.modules.rawData[vol_contr]) DSP_ContrSendParameter(DSP_ADDRESS_PRESET_VOLUME, val, 0);
+			if(!currentPreset.modulesBuf[vol_contr]) DSP_ContrSendParameter(DSP_ADDRESS_PRESET_VOLUME, val, 0);
 		break;
 //-------------------------------------------------Compressor--------------------------------------------
 		case Controller::Dst::CompressorOnOff:
-			currentPreset.modules.rawData[ENABLE_COMPRESSOR] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_COMPRESSOR, currentPreset.modules.rawData[ENABLE_COMPRESSOR]);
+			currentPreset.modulesBuf[ENABLE_COMPRESSOR] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_COMPRESSOR, currentPreset.modulesBuf[ENABLE_COMPRESSOR]);
 		break;
 
 		case Controller::Dst::CompressorThreshold:
-			currentPreset.modules.rawData[COMPRESSOR_THRESHOLD] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_THRESHOLD_POS, currentPreset.modules.rawData[COMPRESSOR_THRESHOLD]);
+			currentPreset.modulesBuf[COMPRESSOR_THRESHOLD] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_THRESHOLD_POS, currentPreset.modulesBuf[COMPRESSOR_THRESHOLD]);
 		break;
 
 		case Controller::Dst::CompressorVolume:
-			currentPreset.modules.rawData[COMPRESSOR_VOLUME] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_VOLUME_POS, currentPreset.modules.rawData[COMPRESSOR_VOLUME]);
+			currentPreset.modulesBuf[COMPRESSOR_VOLUME] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_VOLUME_POS, currentPreset.modulesBuf[COMPRESSOR_VOLUME]);
 		break;
 //-------------------------------------------------Moog filter-------------------------------------------
 		case Controller::Dst::RfOnOff:
-			currentPreset.modules.rawData[moog] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_RESONANCE_FILTER, currentPreset.modules.rawData[ENABLE_RESONANCE_FILTER]);
+			currentPreset.modulesBuf[moog] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_RESONANCE_FILTER, currentPreset.modulesBuf[ENABLE_RESONANCE_FILTER]);
 		break;
 
 		case Controller::Dst::RfLFOrate:
-			currentPreset.modules.rawData[RFILTER_RATE] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_RATE_POS, currentPreset.modules.rawData[RFILTER_RATE]);
+			currentPreset.modulesBuf[RFILTER_RATE] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_RATE_POS, currentPreset.modulesBuf[RFILTER_RATE]);
 		break;
 
 		case Controller::Dst::RfFreq:
-			currentPreset.modules.rawData[RFILTER_EXT] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_EXT_POS, currentPreset.modules.rawData[RFILTER_EXT]);
+			currentPreset.modulesBuf[RFILTER_EXT] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_EXT_POS, currentPreset.modulesBuf[RFILTER_EXT]);
 		break;
 
 //---------------------------------------------------Moog Tap--------------------------------------------------------
@@ -236,108 +236,108 @@ void controllerSetData(uint8_t adr, uint8_t data)
 //--------------------------------------------------Early------------------------------------------------------------
 		case Controller::Dst::EROnOff:
 
-			currentPreset.modules.rawData[ENABLE_EARLY_REFLECTIONS] = (val < 64.0f) ? 0 : 1;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EARLY_REFLECTIONS, currentPreset.modules.rawData[ENABLE_EARLY_REFLECTIONS]);
+			currentPreset.modulesBuf[ENABLE_EARLY_REFLECTIONS] = (val < 64.0f) ? 0 : 1;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EARLY_REFLECTIONS, currentPreset.modulesBuf[ENABLE_EARLY_REFLECTIONS]);
 		break;
 
 		case Controller::Dst::ERVolume:
-			currentPreset.modules.rawData[EARLY_MIX] = val * 0.5f;
-			DSP_ContrSendParameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_MIX_POS, currentPreset.modules.rawData[EARLY_MIX]);
+			currentPreset.modulesBuf[EARLY_MIX] = val * 0.5f;
+			DSP_ContrSendParameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_MIX_POS, currentPreset.modulesBuf[EARLY_MIX]);
 		break;
 
 //-------------------------------------------------------------------------------------------------------------------
 		case Controller::Dst::VolCtrlOnOff:
-				currentPreset.modules.rawData[PRESET_VOLUME_CONTROL] = (val < 64.0f) ? 0 : 1;
+				currentPreset.modulesBuf[PRESET_VOLUME_CONTROL] = (val < 64.0f) ? 0 : 1;
 		break;
 
 		case Controller::Dst::Cab1Volume:
-			currentPreset.modules.rawData[IR_VOLUME1] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			currentPreset.modulesBuf[IR_VOLUME1] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 		break;
 
 		case Controller::Dst::Cab2Volume:
-			currentPreset.modules.rawData[IR_VOLUME2] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			currentPreset.modulesBuf[IR_VOLUME2] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 		break;
 
 		case Controller::Dst::GateOnOff:
-			currentPreset.modules.rawData[ENABLE_GATE] = (val < 64.0f) ? 0 : 1;;
-			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_GATE, currentPreset.modules.rawData[ENABLE_GATE]);
+			currentPreset.modulesBuf[ENABLE_GATE] = (val < 64.0f) ? 0 : 1;;
+			DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_GATE, currentPreset.modulesBuf[ENABLE_GATE]);
 		break;
 
 		case Controller::Dst::GateThresh:
-			currentPreset.modules.rawData[GATE_THRESHOLD] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_GATE, GATE_THRESHOLD_POS, currentPreset.modules.rawData[GATE_THRESHOLD]);
+			currentPreset.modulesBuf[GATE_THRESHOLD] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_GATE, GATE_THRESHOLD_POS, currentPreset.modulesBuf[GATE_THRESHOLD]);
 		break;
 
 		case Controller::Dst::HPFfrequency:
-			currentPreset.modules.rawData[EQ_HPF] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, currentPreset.modules.rawData[EQ_HPF]);
+			currentPreset.modulesBuf[EQ_HPF] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, currentPreset.modulesBuf[EQ_HPF]);
 		break;
 
 		case Controller::Dst::LPFfrequency:
-			currentPreset.modules.rawData[EQ_LPF] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, currentPreset.modules.rawData[EQ_LPF]);
+			currentPreset.modulesBuf[EQ_LPF] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, currentPreset.modulesBuf[EQ_LPF]);
 		break;
 
 		case Controller::Dst::PresenceVal:
-			currentPreset.modules.rawData[EQ_PRESENCE] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_PRESENCE_POS, currentPreset.modules.rawData[EQ_PRESENCE]);
+			currentPreset.modulesBuf[EQ_PRESENCE] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_PRESENCE_POS, currentPreset.modulesBuf[EQ_PRESENCE]);
 		break;
 //------------------------------------------------------Preamp parameter--------------------------
 		case Controller::Dst::PreampGain:
-			currentPreset.modules.rawData[PREAMP_GAIN] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_GAIN_POS, currentPreset.modules.rawData[PREAMP_GAIN]);
+			currentPreset.modulesBuf[PREAMP_GAIN] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_GAIN_POS, currentPreset.modulesBuf[PREAMP_GAIN]);
 		break;
 
 		case Controller::Dst::PreampVolume:
-			currentPreset.modules.rawData[PREAMP_VOLUME] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_VOLUME_POS, currentPreset.modules.rawData[PREAMP_VOLUME]);
+			currentPreset.modulesBuf[PREAMP_VOLUME] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_VOLUME_POS, currentPreset.modulesBuf[PREAMP_VOLUME]);
 		break;
 
 		case Controller::Dst::PreampLow:
-			currentPreset.modules.rawData[PREAMP_LOW] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_LOW_POS, currentPreset.modules.rawData[PREAMP_LOW]);
+			currentPreset.modulesBuf[PREAMP_LOW] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_LOW_POS, currentPreset.modulesBuf[PREAMP_LOW]);
 		break;
 
 		case Controller::Dst::PreampMid:
-			currentPreset.modules.rawData[PREAMP_MID] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_MID_POS, currentPreset.modules.rawData[PREAMP_MID]);
+			currentPreset.modulesBuf[PREAMP_MID] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_MID_POS, currentPreset.modulesBuf[PREAMP_MID]);
 		break;
 
 		case Controller::Dst::PreampHigh:
-			currentPreset.modules.rawData[PREAMP_HIGH] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_HIGH_POS, currentPreset.modules.rawData[PREAMP_HIGH]);
+			currentPreset.modulesBuf[PREAMP_HIGH] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_PREAMP, PREAMP_HIGH_POS, currentPreset.modulesBuf[PREAMP_HIGH]);
 		break;
 //-------------------------------------------------------------Eq band-------------------------------
 		case Controller::Dst::EqBand1Lev:
-			currentPreset.modules.rawData[EQ_G0] = val * 0.25f;
-			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G0_POS, currentPreset.modules.rawData[EQ_G0]);
+			currentPreset.modulesBuf[EQ_G0] = val * 0.25f;
+			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G0_POS, currentPreset.modulesBuf[EQ_G0]);
 		break;
 
 		case Controller::Dst::EqBand2Lev:
-			currentPreset.modules.rawData[EQ_G1] = val * 0.25f;
-			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G1_POS, currentPreset.modules.rawData[EQ_G1]);
+			currentPreset.modulesBuf[EQ_G1] = val * 0.25f;
+			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G1_POS, currentPreset.modulesBuf[EQ_G1]);
 		break;
 
 		case Controller::Dst::EqBand3Lev:
-			currentPreset.modules.rawData[EQ_G2] = val * 0.25f;
-			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G2_POS, currentPreset.modules.rawData[EQ_G2]);
+			currentPreset.modulesBuf[EQ_G2] = val * 0.25f;
+			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G2_POS, currentPreset.modulesBuf[EQ_G2]);
 		break;
 
 		case Controller::Dst::EqBand4Lev:
-			currentPreset.modules.rawData[EQ_G3] = val * 0.25f;
-			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G3_POS, currentPreset.modules.rawData[EQ_G3]);
+			currentPreset.modulesBuf[EQ_G3] = val * 0.25f;
+			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G3_POS, currentPreset.modulesBuf[EQ_G3]);
 		break;
 
 		case Controller::Dst::EqBand5Lev:
-			currentPreset.modules.rawData[EQ_G4] = val * 0.25f;
-			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G4_POS, currentPreset.modules.rawData[EQ_G4]);
+			currentPreset.modulesBuf[EQ_G4] = val * 0.25f;
+			DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_G4_POS, currentPreset.modulesBuf[EQ_G4]);
 		break;
 //-------------------------------------------------------------Reverb type---------------------------
 		case Controller::Dst::ReverbType:
-			if(val < 7) currentPreset.modules.rawData[REVERB_TYPE] = val;
-			DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_TYPE_POS, currentPreset.modules.rawData[REVERB_TYPE]);
+			if(val < 7) currentPreset.modulesBuf[REVERB_TYPE] = val;
+			DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_TYPE_POS, currentPreset.modulesBuf[REVERB_TYPE]);
 		break;
 	}
 }

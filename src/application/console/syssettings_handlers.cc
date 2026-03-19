@@ -35,7 +35,7 @@ static void sys_settings_command_handler(TReadLine *rl, TReadLine::const_symbol_
 
 static void attenuator_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	uint8_t* value_ptr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.modules.paramData.attenuator
+	uint8_t* value_ptr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator
 															: &sys_para[System::ATTENUATOR];
 
 	default_param_handler(value_ptr, rl, args, count);

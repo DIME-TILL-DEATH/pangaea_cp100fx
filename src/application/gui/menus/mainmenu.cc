@@ -188,9 +188,9 @@ void MainMenu::refresh()
 
 	DisplayTask->Prog_ind(m_preselectedPresetNum, filled);
 
-	DisplayTask->IndFoot(0, currentPreset.modules.paramData.foot_ind_press[0], currentPreset.modules.paramData.foot_ind_hold[0]);
-	DisplayTask->IndFoot(1, currentPreset.modules.paramData.foot_ind_press[1], currentPreset.modules.paramData.foot_ind_hold[1]);
-	DisplayTask->IndFoot(2, currentPreset.modules.paramData.foot_ind_press[2], currentPreset.modules.paramData.foot_ind_hold[2]);
+	DisplayTask->IndFoot(0, currentPreset.paramData.foot_ind_press[0], currentPreset.paramData.foot_ind_hold[0]);
+	DisplayTask->IndFoot(1, currentPreset.paramData.foot_ind_press[1], currentPreset.paramData.foot_ind_hold[1]);
+	DisplayTask->IndFoot(2, currentPreset.paramData.foot_ind_press[2], currentPreset.paramData.foot_ind_hold[2]);
 }
 
 void MainMenu::presetUp()

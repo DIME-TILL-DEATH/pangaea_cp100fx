@@ -112,9 +112,9 @@ void SHARC_LoadAllData()
 
 			for(uint32_t ii = 0; ii<4096; ii++)	//CAB_DATA_SIZE / 3
 			{
-				buf = cab1.data[ii*3]<<8;
-				buf |= cab1.data[ii*3+1]<<16;
-				buf |= cab1.data[ii*3+2]<<24;
+				buf = currentPreset.cab1Data[ii*3]<<8;
+				buf |= currentPreset.cab1Data[ii*3+1]<<16;
+				buf |= currentPreset.cab1Data[ii*3+2]<<24;
 
 				SHARC_WaitForReady();
 				SHARC_SendData(buf>>16);
@@ -123,9 +123,18 @@ void SHARC_LoadAllData()
 
 			for(uint32_t ii = 0; ii<4096; ii++) //CAB_DATA_SIZE / 3
 			{
-				buf = currentPreset.cabinetDataBuf[CAB_DATA_SIZE + ii*3]<<8;
-				buf |= currentPreset.cabinetDataBuf[CAB_DATA_SIZE + ii*3+1]<<16;
-				buf |= currentPreset.cabinetDataBuf[CAB_DATA_SIZE + ii*3+2]<<24;
+				if(cab_type == CAB_CONFIG_STEREO)
+				{
+					buf = currentPreset.cab2Data[ii*3]<<8;
+					buf |= currentPreset.cab2Data[ii*3+1]<<16;
+					buf |= currentPreset.cab2Data[ii*3+2]<<24;
+				}
+				else
+				{
+					buf = currentPreset.cabAuxData[ii*3]<<8;
+					buf |= currentPreset.cabAuxData[ii*3+1]<<16;
+					buf |= currentPreset.cabAuxData[ii*3+2]<<24;
+				}
 
 				SHARC_WaitForReady();
 				SHARC_SendData(buf>>16);
@@ -134,7 +143,7 @@ void SHARC_LoadAllData()
 
 			for(uint32_t ii = 0; ii<512; ii++) //sizeof(Preset::TModulesData)
 			{
-				buf = currentPreset.modules.rawData[ii];
+				buf = currentPreset.modulesBuf[ii];
 
 				SHARC_WaitForReady();
 				SHARC_SendData(buf>>16);

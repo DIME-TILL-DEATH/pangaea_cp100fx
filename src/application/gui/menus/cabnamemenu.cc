@@ -68,7 +68,7 @@ void CabNameMenu::show(TShowMode showMode)
 {
 	if(!cab1.name.size && !cab2.name.size) return;
 
-	if(currentPreset.modules.paramData.switches.cab)
+	if(currentPreset.paramData.switches.cab)
 	{
 		currentMenu = this;
 		DisplayTask->Clear();

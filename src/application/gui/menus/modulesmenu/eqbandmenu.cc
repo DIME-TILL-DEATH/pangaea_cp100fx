@@ -30,10 +30,10 @@ void EqBandMenu::show(TShowMode showMode)
 
 	DisplayTask->Clear();
 	DisplayTask->StringOut(6, 0, Font::fntSystem, 0, (uint8_t*)eq_p_l);
-	int8_t a = currentPreset.modules.rawData[f1+m_bandNum];
+	int8_t a = currentPreset.modulesBuf[f1+m_bandNum];
 	DisplayTask->EqFreq(40, 0, a, m_bandNum);
 	DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)eq_p_l+2);
-	a = currentPreset.modules.rawData[q1+m_bandNum];
+	a = currentPreset.modulesBuf[q1+m_bandNum];
 	DisplayTask->EqQ(40, 1, a, m_bandNum);
 //	DisplayTask->StringOut(80, 0, Font::fntSystem, 0, (uint8_t*)gerz);
 	DisplayTask->StringOut(0, 2, Font::fntSystem, 0, (uint8_t*)"Press EQ for Default");
@@ -76,15 +76,15 @@ void EqBandMenu::encoderClockwise()
 	}
 	else
 	{
-		int8_t a = currentPreset.modules.rawData[EQ_F0+m_bandNum+m_paramNum*5];
+		int8_t a = currentPreset.modulesBuf[EQ_F0+m_bandNum+m_paramNum*5];
 		if(m_paramNum)
 		{
 			if(a<120)
 			{
 				a = BaseParam::encSpeedInc(a, 120);
-				currentPreset.modules.rawData[EQ_Q0 + m_bandNum] = a;
+				currentPreset.modulesBuf[EQ_Q0 + m_bandNum] = a;
 				DisplayTask->EqQ(40, 1, a, m_bandNum);
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modules.rawData[EQ_Q0 + m_bandNum]);
+				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
 			}
 		}
 		else
@@ -92,10 +92,10 @@ void EqBandMenu::encoderClockwise()
 			if(a<100)
 			{
 				a = BaseParam::encSpeedInc(a, 100);
-				currentPreset.modules.rawData[EQ_F0 + m_bandNum] = a;
+				currentPreset.modulesBuf[EQ_F0 + m_bandNum] = a;
 				DisplayTask->EqFreq(40, 0, a, m_bandNum);
 //				DisplayTask->StringOut(80, m_paramNum, Font::fntSystem, 0, (uint8_t*)gerz);
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modules.rawData[EQ_F0 + m_bandNum]);
+				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
 			}
 		}
 	}
@@ -114,15 +114,15 @@ void EqBandMenu::encoderCounterClockwise()
 	}
 	else
 	{
-		int8_t a = currentPreset.modules.rawData[f1+m_bandNum+m_paramNum*5];
+		int8_t a = currentPreset.modulesBuf[f1+m_bandNum+m_paramNum*5];
 		if(m_paramNum)
 		{
 			if(a>-60)
 			{
 				a = BaseParam::encSpeedDec(a, -60);
-				currentPreset.modules.rawData[EQ_Q0 + m_bandNum] = a;
+				currentPreset.modulesBuf[EQ_Q0 + m_bandNum] = a;
 				DisplayTask->EqQ(40, 1, a, m_bandNum);
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modules.rawData[EQ_Q0 + m_bandNum]);
+				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
 			}
 		}
 		else
@@ -130,9 +130,9 @@ void EqBandMenu::encoderCounterClockwise()
 			if(a>-100)
 			{
 				a = BaseParam::encSpeedDec(a, -100);
-				currentPreset.modules.rawData[EQ_F0 + m_bandNum] = a;
+				currentPreset.modulesBuf[EQ_F0 + m_bandNum] = a;
 				DisplayTask->EqFreq(40, 0, a, m_bandNum);
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modules.rawData[EQ_F0 + m_bandNum]);
+				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
 			}
 		}
 	}
@@ -145,15 +145,15 @@ void EqBandMenu::keyDown()
 
 void EqBandMenu::key3()
 {
-	currentPreset.modules.rawData[EQ_F0+m_bandNum] = 0;
-	currentPreset.modules.rawData[EQ_Q0+m_bandNum] = 0;
+	currentPreset.modulesBuf[EQ_F0+m_bandNum] = 0;
+	currentPreset.modulesBuf[EQ_Q0+m_bandNum] = 0;
 
-	int8_t a = currentPreset.modules.rawData[EQ_F0 + m_bandNum];
+	int8_t a = currentPreset.modulesBuf[EQ_F0 + m_bandNum];
 	DisplayTask->EqFreq(40, 0, a, m_bandNum);
 //	DisplayTask->StringOut(80, 0, Font::fntSystem, 0, (uint8_t*)gerz);
-	a = currentPreset.modules.rawData[EQ_Q0 + m_bandNum];
+	a = currentPreset.modulesBuf[EQ_Q0 + m_bandNum];
 	DisplayTask->EqQ(40, 1, a, m_bandNum);
 
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modules.rawData[EQ_Q0 + m_bandNum]);
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modules.rawData[EQ_F0 + m_bandNum]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
+	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
 }

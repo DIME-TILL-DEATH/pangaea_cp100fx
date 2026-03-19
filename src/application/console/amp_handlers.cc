@@ -5,32 +5,32 @@
 
 static void amp_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[amp], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_AMP, currentPreset.modules.rawData[ENABLE_AMP]);
+	default_param_handler(&currentPreset.modulesBuf[amp], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_AMP, currentPreset.modulesBuf[ENABLE_AMP]);
 }
 
 static void amp_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[AMP_MASTER], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_MASTER_POS, currentPreset.modules.rawData[AMP_MASTER]);
+	default_param_handler(&currentPreset.modulesBuf[AMP_MASTER], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_MASTER_POS, currentPreset.modulesBuf[AMP_MASTER]);
 }
 
 static void amp_presence_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[EQ_PRESENCE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_PRESENCE_POS, currentPreset.modules.rawData[EQ_PRESENCE]);
+	default_param_handler(&currentPreset.modulesBuf[EQ_PRESENCE], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_PRESENCE_POS, currentPreset.modulesBuf[EQ_PRESENCE]);
 }
 
 static void amp_slave_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[AMP_LEVEL], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_LEVEL_POS, currentPreset.modules.rawData[AMP_LEVEL]);
+	default_param_handler(&currentPreset.modulesBuf[AMP_LEVEL], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_AMP, AMP_LEVEL_POS, currentPreset.modulesBuf[AMP_LEVEL]);
 }
 
 static void amp_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.rawData[AMP_TYPE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_AMP_TYPE, currentPreset.modules.rawData[AMP_TYPE], 0);
+	default_param_handler(&currentPreset.modulesBuf[AMP_TYPE], rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_AMP_TYPE, currentPreset.modulesBuf[AMP_TYPE], 0);
 }
 
 void set_amp_handlers(TReadLine *rl)

@@ -75,20 +75,20 @@ void Filter::calcEqResponse()
 	{
 		switch(bandNum)
 		{
-			case 0:case 1:f = fr_l[bandNum] + (int8_t)currentPreset.modules.rawData[EQ_F0 + bandNum];break;
-			case 2:f = fr_l[bandNum] + (int8_t)currentPreset.modules.rawData[EQ_F0 + bandNum]*2;break;
-			case 3:f = fr_l[bandNum] + (int8_t)currentPreset.modules.rawData[EQ_F0 + bandNum]*10;break;
-			case 4:f = fr_l[bandNum] + (int8_t)currentPreset.modules.rawData[EQ_F0 + bandNum]*50;break;
+			case 0:case 1:f = fr_l[bandNum] + (int8_t)currentPreset.modulesBuf[EQ_F0 + bandNum];break;
+			case 2:f = fr_l[bandNum] + (int8_t)currentPreset.modulesBuf[EQ_F0 + bandNum]*2;break;
+			case 3:f = fr_l[bandNum] + (int8_t)currentPreset.modulesBuf[EQ_F0 + bandNum]*10;break;
+			case 4:f = fr_l[bandNum] + (int8_t)currentPreset.modulesBuf[EQ_F0 + bandNum]*50;break;
 		}
 
-		g = currentPreset.modules.rawData[EQ_G0 + bandNum] - 15;
+		g = currentPreset.modulesBuf[EQ_G0 + bandNum] - 15;
 
-		if((int8_t)currentPreset.modules.rawData[EQ_Q0 + bandNum] <= 30)
+		if((int8_t)currentPreset.modulesBuf[EQ_Q0 + bandNum] <= 30)
 		{
-			Q = (int8_t)currentPreset.modules.rawData[EQ_Q0 + bandNum] * 0.01f + 0.701f;
+			Q = (int8_t)currentPreset.modulesBuf[EQ_Q0 + bandNum] * 0.01f + 0.701f;
 		}
 		else {
-			Q = ((int8_t)currentPreset.modules.rawData[EQ_Q0 + bandNum] - 20) * 0.1f + 0.001f;
+			Q = ((int8_t)currentPreset.modulesBuf[EQ_Q0 + bandNum] - 20) * 0.1f + 0.001f;
 		}
 
 		bandCoefs = Filter::calcFilterCoefs(Filter::TFilterType::PEAKING, f, g, Q);
@@ -99,14 +99,14 @@ void Filter::calcEqResponse()
 		}
 	}
 
-	f = currentPreset.modules.rawData[EQ_HPF]*(980.0/127.0)+20.0;
+	f = currentPreset.modulesBuf[EQ_HPF]*(980.0/127.0)+20.0;
 	bandCoefs = Filter::calcFilterCoefs(Filter::TFilterType::LOW_CUT, f, 0, 1);
 	for(int i=0; i<EqPointsNumber; i++)
 	{
 		eqResponsePoints[i] += calcFilterResponse(freqPoints[i], bandCoefs);
 	}
 
-	f = powf(127-currentPreset.modules.rawData[EQ_LPF], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0;
+	f = powf(127-currentPreset.modulesBuf[EQ_LPF], 2.0)*(19000.0/powf(127.0, 2.0))+1000.0;
 	bandCoefs = Filter::calcFilterCoefs(Filter::TFilterType::HIGH_CUT, f, 0, 1);
 	for(int i=0; i<EqPointsNumber; i++)
 	{

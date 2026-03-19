@@ -100,22 +100,22 @@ void Footswitch::press_execute(uint8_t num)
 				}
 			break;
 			case Footswitch::Controller:
-				if(!currentPreset.modules.paramData.foot_ind_press[num])
+				if(!currentPreset.paramData.foot_ind_press[num])
 				{
-					currentPreset.modules.paramData.foot_ind_press[num] = 1;
+					currentPreset.paramData.foot_ind_press[num] = 1;
 					ControllersTask->extCommand(num + 2, 127);
 				}
 				else
 				{
-					currentPreset.modules.paramData.foot_ind_press[num] = 0;
+					currentPreset.paramData.foot_ind_press[num] = 0;
 					ControllersTask->extCommand(num + 2, 0);
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num, currentPreset.modules.paramData.foot_ind_press[num], currentPreset.modules.paramData.foot_ind_hold[num]);
+					DisplayTask->IndFoot(num, currentPreset.paramData.foot_ind_press[num], currentPreset.paramData.foot_ind_hold[num]);
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
-					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.modules.paramData.foot_ind_press[num]);
+					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.paramData.foot_ind_press[num]);
 
 			break;
 
@@ -241,23 +241,23 @@ void Footswitch::hold_execute(uint8_t num)
 			}
 			case Footswitch:: Controller:
 			{
-				if(!currentPreset.modules.paramData.foot_ind_hold[num])
+				if(!currentPreset.paramData.foot_ind_hold[num])
 				{
 
-					currentPreset.modules.paramData.foot_ind_hold[num] = 1;
+					currentPreset.paramData.foot_ind_hold[num] = 1;
 					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 127);
 				}
 				else
 				{
-					currentPreset.modules.paramData.foot_ind_hold[num] = 0;
+					currentPreset.paramData.foot_ind_hold[num] = 0;
 					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 0);
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num, currentPreset.modules.paramData.foot_ind_press[num], currentPreset.modules.paramData.foot_ind_hold[num]);
+					DisplayTask->IndFoot(num, currentPreset.paramData.foot_ind_press[num], currentPreset.paramData.foot_ind_hold[num]);
 
 				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
-					MidiTask->fswPressed(System::FSW1_CTRL_HOLD_CC + num, currentPreset.modules.paramData.foot_ind_hold[num]);
+					MidiTask->fswPressed(System::FSW1_CTRL_HOLD_CC + num, currentPreset.paramData.foot_ind_hold[num]);
 
 			break;
 			}
