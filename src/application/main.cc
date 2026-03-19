@@ -58,7 +58,7 @@ int main(void)
 	CODEC_Start();
 
 	disp_start(1);
-	EEPROM_LoadAllIr();
+	SHARC_LoadAllData();
 
 	HW_PinUsbInit();
 

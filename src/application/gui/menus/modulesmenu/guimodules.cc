@@ -378,7 +378,7 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modules.rawData[DELAY_MIX]);
 	params[0]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_MIX_POS);
 
-	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME, "Time", &GuiModules::createDelayTapMenu, &Preset::delay_time);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME, "Time", &GuiModules::createDelayTapMenu, &currentPreset.delayTime);
 	params[1]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS);
 	params[1]->setByteSize(2);
 	params[1]->setBounds(10, 2730);
@@ -419,53 +419,53 @@ void delayTimeDecrease(void* parameter)
 {
 	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
 	{
-		if(Preset::delay_time > 10) Preset::delay_time = BaseParam::encSpeedDec(Preset::delay_time, 10);
+		if(currentPreset.delayTime > 10) currentPreset.delayTime = BaseParam::encSpeedDec(currentPreset.delayTime, 10);
 	}
 	else
 	{
-		uint16_t tempo = 60000 / Preset::delay_time;
+		uint16_t tempo = 60000 / currentPreset.delayTime;
 		if(tempo > System::minBpm) tempo = BaseParam::encSpeedDec(tempo, System::minBpm);
 		else tempo = System::minBpm;
-		Preset::delay_time = 60000 / tempo;
+		currentPreset.delayTime = 60000 / tempo;
 	}
 
-	currentPreset.modules.rawData[DELAY_TIME_LO] = Preset::delay_time & 0xFF;
-	currentPreset.modules.rawData[DELAY_TIME_HI] = Preset::delay_time >> 8;
+	currentPreset.modules.rawData[DELAY_TIME_LO] = currentPreset.delayTime & 0xFF;
+	currentPreset.modules.rawData[DELAY_TIME_HI] = currentPreset.delayTime >> 8;
 
-	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, Preset::delay_time >> 8);
-	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, Preset::delay_time & 0xFF);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime & 0xFF);
 }
 
 void delayTimeIncrease(void* parameter)
 {
 	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
 	{
-		if(Preset::delay_time < 2730) Preset::delay_time = BaseParam::encSpeedInc(Preset::delay_time, 2730);
+		if(currentPreset.delayTime < 2730) currentPreset.delayTime = BaseParam::encSpeedInc(currentPreset.delayTime, 2730);
 	}
 	else
 	{
-		uint16_t tempo = 60000 / Preset::delay_time;
+		uint16_t tempo = 60000 / currentPreset.delayTime;
 		if(tempo < System::maxBpm) tempo = BaseParam::encSpeedInc(tempo, System::maxBpm);
 		else tempo = System::maxBpm;
-		Preset::delay_time = 60000 / tempo;
+		currentPreset.delayTime = 60000 / tempo;
 	}
 
-	currentPreset.modules.rawData[DELAY_TIME_LO] = Preset::delay_time & 0xFF;
-	currentPreset.modules.rawData[DELAY_TIME_HI] = Preset::delay_time >> 8;
+	currentPreset.modules.rawData[DELAY_TIME_LO] = currentPreset.delayTime & 0xFF;
+	currentPreset.modules.rawData[DELAY_TIME_HI] = currentPreset.delayTime >> 8;
 
-	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, Preset::delay_time >> 8);
-	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, Preset::delay_time & 0xFF);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime & 0xFF);
 }
 
 void delayTimePrint(void* parameter)
 {
 	if(sys_para[System::TIME_FORMAT] == System::TIME_FORMAT_SEC)
 	{
-		DisplayTask->DelayTimeInd(58, 0, Preset::delay_time);
+		DisplayTask->DelayTimeInd(58, 0, currentPreset.delayTime);
 	}
 	else
 	{
-		DisplayTask->ParamIndicNum(58, 0, 60000/Preset::delay_time);
+		DisplayTask->ParamIndicNum(58, 0, 60000/currentPreset.delayTime);
 		DisplayTask->StringOut(58 + 24, 0, Font::fntSystem, 0, (uint8_t*)"BPM");
 	}
 }
@@ -477,7 +477,7 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 
 	ParamListMenu* menu;
 
-	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Time", &Preset::delay_time);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Time", &currentPreset.delayTime);
 	customParam->decreaseCallback = delayTimeDecrease;
 	customParam->increaseCallback = delayTimeIncrease;
 	customParam->printCallback = delayTimePrint;

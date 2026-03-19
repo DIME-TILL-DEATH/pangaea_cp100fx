@@ -3,8 +3,11 @@
 #include "periphery.h"
 #include "serial.h"
 
+#include "eepr.h"
 #include "system.h"
 #include "modules.h"
+
+#include "par_bitmap.h"
 
 void SHARC_SpiInit(TSharcSpiMode mode)
 {
@@ -93,4 +96,61 @@ void SHARC_SendData(uint16_t data)
 	SPI_I2S_SendData(SPI2, data);
 }
 
+void SHARC_LoadAllData()
+{
+	uint32_t buf;
+	uint8_t loadProgress = 0;
 
+	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
+	for(uint8_t i = 0; i<99; i++)
+	{
+		if(EEPROM_loadPreset(i))
+		{
+			SHARC_WaitForReady();
+			SHARC_SendData(i);
+			SHARC_SendData(i);
+
+			for(uint32_t ii = 0; ii<4096; ii++)	//CAB_DATA_SIZE / 3
+			{
+				buf = cab1.data[ii*3]<<8;
+				buf |= cab1.data[ii*3+1]<<16;
+				buf |= cab1.data[ii*3+2]<<24;
+
+				SHARC_WaitForReady();
+				SHARC_SendData(buf>>16);
+				SHARC_SendData(buf);
+			}
+
+			for(uint32_t ii = 0; ii<4096; ii++) //CAB_DATA_SIZE / 3
+			{
+				buf = currentPreset.cabinetDataBuf[CAB_DATA_SIZE + ii*3]<<8;
+				buf |= currentPreset.cabinetDataBuf[CAB_DATA_SIZE + ii*3+1]<<16;
+				buf |= currentPreset.cabinetDataBuf[CAB_DATA_SIZE + ii*3+2]<<24;
+
+				SHARC_WaitForReady();
+				SHARC_SendData(buf>>16);
+				SHARC_SendData(buf);
+			}
+
+			for(uint32_t ii = 0; ii<512; ii++) //sizeof(Preset::TModulesData)
+			{
+				buf = currentPreset.modules.rawData[ii];
+
+				SHARC_WaitForReady();
+				SHARC_SendData(buf>>16);
+				SHARC_SendData(buf);
+			}
+		}
+
+		loadProgress++;
+		progressBar((168/2-50), 3, loadProgress);
+	}
+
+	SHARC_WaitForReady();
+	SHARC_SendData(100);
+	SHARC_SendData(100);
+
+	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
+	GPIO_SetBits(GPIOA, GPIO_Pin_1);
+}

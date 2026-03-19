@@ -67,26 +67,26 @@ void System::setMoogTime(float quarterInterval)
 
 void System::setDelayTime(float quarterInterval)
 {
-	Preset::delay_time = round((float)(quarterInterval/tapCoeffs[currentPreset.modules.rawData[DELAY_TAP]]));
-	if(Preset::delay_time < 2731)
+	currentPreset.delayTime = round((float)(quarterInterval/tapCoeffs[currentPreset.modules.rawData[DELAY_TAP]]));
+	if(currentPreset.delayTime < 2731)
 	{
 		if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
 		{
-			DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, Preset::delay_time >> 8);
-			DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, Preset::delay_time);
+			DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+			DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
 		}
 		else
 		{
-			if(Preset::delay_time < 2728 && Preset::delay_time > 249)
+			if(currentPreset.delayTime < 2728 && currentPreset.delayTime > 249)
 			{
 				uint8_t temp = 0;
 
-				while(Preset::delay_time < bpm_time[temp++]);
-				Preset::delay_time = bpm_time[temp];
-				currentPreset.modules.rawData[BPM_DELAY] = 60000 / Preset::delay_time;
+				while(currentPreset.delayTime < bpm_time[temp++]);
+				currentPreset.delayTime = bpm_time[temp];
+				currentPreset.modules.rawData[BPM_DELAY] = 60000 / currentPreset.delayTime;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, Preset::delay_time >> 8);
-				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, Preset::delay_time);
+				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
 			}
 		}
 	}

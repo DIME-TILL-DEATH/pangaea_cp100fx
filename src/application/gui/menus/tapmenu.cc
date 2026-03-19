@@ -30,7 +30,7 @@ void TapMenu::refresh()
 	else ksprintf(string, "RF LFO: --");
 	DisplayTask->StringOut(12, 0, Font::fntSystem, 0, (uint8_t*)string);
 
-	ksprintf(string, "Delay time: %d", Preset::delay_time);
+	ksprintf(string, "Delay time: %d", currentPreset.delayTime);
 	DisplayTask->StringOut(12, 1, Font::fntSystem, 0, (uint8_t*)string);
 
 	if(Preset::trem_time !=0) ksprintf(string, "Tremolo time: %d", Preset::trem_time);

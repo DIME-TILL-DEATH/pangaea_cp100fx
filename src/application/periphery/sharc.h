@@ -12,5 +12,6 @@ void SHARC_SpiInit(TSharcSpiMode mode);
 void SHARC_StartupLoad();
 void SHARC_WaitForReady();
 void SHARC_SendData(uint16_t data);
+void SHARC_LoadAllData();
 
 #endif /* SHARC_H_ */

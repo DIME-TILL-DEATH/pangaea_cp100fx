@@ -10,6 +10,13 @@
 #define CAB_NAME_STRING_SIZE 64
 #define CAB_DATA_SIZE 4096 * 3	// =12288
 
+#define PRESET_DATA_OFFSET PRESET_NAME_STRING_SIZE + PRESET_COMMENT_STRING_SIZE
+#define CAB1_DATA_OFFSET PRESET_DATA_OFFSET + 1024 + 2
+#define CAB1_NAME_OFFSET CAB1_DATA_OFFSET + CAB_DATA_SIZE
+#define CAB2_DATA_OFFSET CAB1_NAME_OFFSET + CAB_NAME_STRING_SIZE
+#define CAB2_NAME_OFFSET CAB2_DATA_OFFSET + CAB_DATA_SIZE
+#define CAB1_AUX_DATA_OFFSET CAB2_NAME_OFFSET + CAB_DATA_SIZE
+
 namespace Preset
 {
 
@@ -246,6 +253,30 @@ typedef union
 	uint8_t rawData[512];
 }UModulesData;
 
+#pragma pack(push, 1)
+typedef struct
+{
+	uint8_t name[PRESET_NAME_STRING_SIZE];
+	uint8_t comment[PRESET_COMMENT_STRING_SIZE];
+
+	UModulesData modules;
+
+	Controller::TController controller[Controller::controllersCount];
+
+	uint8_t dummyFill[512 - sizeof(Controller::TController) * Controller::controllersCount - 2];
+
+	uint8_t pcOut;
+	uint8_t set;
+
+	uint16_t delayTime;
+
+	uint8_t cabinetDataBuf[CAB_DATA_SIZE * 3 + CAB_NAME_STRING_SIZE * 2];
+
+	uint8_t currentImpulsePath[256];
+	uint8_t currentImpulseName[256];
+}TPresetData;
+#pragma pack(pop)
+
 const uint8_t CabNameLength = CAB_NAME_STRING_SIZE - 1;
 typedef struct
 {
@@ -261,32 +292,6 @@ typedef struct
 
 typedef struct
 {
-	uint8_t name[PRESET_NAME_STRING_SIZE];
-	uint8_t comment[PRESET_COMMENT_STRING_SIZE];
-
-	UModulesData modules;
-
-	Controller::TController controller[Controller::controllersCount];
-
-	uint8_t dummyFill[512 - sizeof(Controller::TController) * Controller::controllersCount - 2];
-
-	uint8_t pcOut;
-	uint8_t set;
-
-//	uint16_t delayTime;
-//
-//	uint8_t cabinetDataBuf[CAB_DATA_SIZE * 3 + CAB_NAME_STRING_SIZE * 2];
-//
-//	uint8_t impulsePath[512];
-}TPreset;
-
-#define PRESET_DATA_OFFSET PRESET_NAME_STRING_SIZE + PRESET_COMMENT_STRING_SIZE
-#define CAB1_DATA_OFFSET PRESET_DATA_OFFSET + 1024 + 2
-#define CAB2_DATA_OFFSET CAB1_DATA_OFFSET + CAB_NAME_STRING_SIZE + CAB_DATA_SIZE
-#define CAB1_AUX_DATA_OFFSET CAB2_DATA_OFFSET + CAB_NAME_STRING_SIZE + CAB_DATA_SIZE
-
-typedef struct
-{
 	uint8_t name[15];
 	uint8_t comment[15];
 
@@ -296,8 +301,31 @@ typedef struct
 	char cab2Name[64];
 }TPresetBrief;
 
-extern uint8_t impulsePath[];
-extern uint16_t delay_time;
+typedef struct
+	{
+		uint8_t name;
+		uint8_t comment;
+		uint8_t controllers;
+		uint8_t rf;
+		uint8_t gt;
+		uint8_t cm;
+		uint8_t pr;
+		uint8_t pa;
+		uint8_t ir;
+		uint8_t eq;
+		uint8_t fl;
+		uint8_t ph;
+		uint8_t ch;
+		uint8_t dl;
+		uint8_t er;
+		uint8_t rv;
+		uint8_t tr;
+		uint8_t pv;
+		uint8_t att;
+	}TSelectionMask;
+
+//extern uint8_t impulsePath[];
+//extern uint16_t delay_time;
 extern uint16_t moog_time;
 extern uint16_t trem_time;
 extern bool cab_data_ready;
@@ -307,12 +335,12 @@ void Erase();
 }
 
 
-extern Preset::TPreset currentPreset;
+extern Preset::TPresetData currentPreset;
 extern Preset::TCabinet cab1;
 extern Preset::TCabinet cab2;
 
-extern uint8_t __CCM_BSS__ ccmCommonCabBuffer[4096 * 3 * 2];
-extern uint8_t __CCM_BSS__ presetBuffer[];
+//extern uint8_t __CCM_BSS__ ccmCommonCabBuffer[4096 * 3 * 2];
+//extern uint8_t __CCM_BSS__ presetBuffer[];
 
 
 extern volatile uint8_t currentPresetNumber;

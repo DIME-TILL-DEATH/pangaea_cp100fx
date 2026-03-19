@@ -11,32 +11,20 @@
 #include "midi_task.h"
 
 
-Preset::TPreset __CCM_BSS__ currentPreset;
+Preset::TPresetData __CCM_BSS__ currentPreset;
 
-uint8_t __CCM_BSS__ ccmCommonCabBuffer[CAB_DATA_SIZE * 2];
+//uint8_t __CCM_BSS__ ccmCommonCabBuffer[CAB_DATA_SIZE * 2];
 
-Preset::TCabinet __CCM_BSS__ cab1;// = {
-//	.data = &ccmCommonCabBuffer[0],
-//	.name = {
-//		.size = 0,
-//		.string = {0}
-//	}
-//};
-//
-Preset::TCabinet __CCM_BSS__ cab2;// = {
-//	.data = &ccmCommonCabBuffer[CAB_DATA_SIZE],
-//	.name = {
-//		.size = 0,
-//		.string = {0}
-//	}
-//};
+Preset::TCabinet cab1;
+Preset::TCabinet cab2;// = {
+//Preset::TModulesData* presetData;
 
 
-uint8_t Preset::impulsePath[512];
+//uint8_t Preset::impulsePath[512];
 
-uint8_t __CCM_BSS__ presetBuffer[38560];
+//uint8_t __CCM_BSS__ presetBuffer[38560 - 512];
 
-uint16_t __CCM_BSS__ Preset::delay_time;
+//uint16_t __CCM_BSS__ Preset::delay_time;
 uint16_t __CCM_BSS__ Preset::moog_time;
 uint16_t __CCM_BSS__ Preset::trem_time;
 
