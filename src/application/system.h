@@ -120,6 +120,7 @@ namespace System
 		FX_LED_MODE_CUSTOM
 	};
 
+	void setStartupValues();
 	void setMoogTime(float quarterInterval);
 	void setDelayTime(float quarterInterval);
 	void setTremoloTime(float quarterInterval);

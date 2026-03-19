@@ -150,15 +150,32 @@ void par_ind(uint8_t col, uint8_t pag, uint32_t val)
 	Set_Column_Address(col);
 	Set_Page_Address(pag);
 	GPIO_ResetBits(GPIOB, CS);
-	for(uint8_t i = 0; i<33; i++)
+	uint8_t width = 33;
+	for(uint8_t i = 0; i<width; i++)
 	{
-		if(((val>>2)>=i)||(i==0)||(i==32))
+		if(((val>>2)>=i)||(i==0)||(i==width-1))
 			oled023_1_send_data(0x7e);
 		else
 			oled023_1_send_data(0x42);
 	}
 	GPIO_SetBits(GPIOB, CS);
-	par_ind_num_(col+34, pag, val);
+	par_ind_num_(col+width+1, pag, val);
+}
+
+void progressBar(uint8_t col, uint8_t pag, uint32_t val)
+{
+	Set_Column_Address(col);
+	Set_Page_Address(pag);
+	GPIO_ResetBits(GPIOB, CS);
+	uint8_t width = 50;
+	for(uint8_t i = 0; i<50; i++)
+	{
+		if(((val/2)>=i)||(i==0)||(i==width-1))
+			oled023_1_send_data(0x7e);
+		else
+			oled023_1_send_data(0x42);
+	}
+	GPIO_SetBits(GPIOB, CS);
 }
 
 void p_ind(uint8_t col, uint8_t pag, uint32_t val)

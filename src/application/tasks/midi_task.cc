@@ -1,21 +1,23 @@
+#include "midi_task.h"
+
 #include "eepr.h"
 #include "BF706_send.h"
+
+#include "system.h"
+#include "preset.h"
+
+#include "display_task.h"
+#include "io_task.h"
+#include "ui_task.h"
 #include "controllers_task.h"
 
 #include "tunermenu.h"
 #include "tunerextmenu.h"
 #include "controllersmenu.h"
-#include "midi_task.h"
-
-#include "../gui/bitmaps/allFonts.h"
-#include "display_task.h"
-#include "io_task.h"
-#include "system.h"
-
-#include "preset.h"
-#include "ui_task.h"
 
 TMidiTask *MidiTask;
+
+volatile uint8_t pc_mute_fl;
 
 inline void uart_send(uint8_t val)
 {
@@ -36,12 +38,6 @@ TMidiTask::TMidiTask() :
 		TTask()
 {
 }
-volatile uint8_t pc_mute_fl;
-volatile uint8_t midi_f1 = 0;
-
-volatile uint8_t program_change_midi = 0;
-volatile uint8_t pc_in_fl = 0;
-volatile uint8_t pc_in = 0;
 
 void TMidiTask::Code()
 {

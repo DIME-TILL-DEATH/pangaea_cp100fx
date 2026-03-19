@@ -272,6 +272,12 @@ typedef struct
 
 	uint8_t pcOut;
 	uint8_t set;
+
+//	uint16_t delayTime;
+//
+//	uint8_t cabinetDataBuf[CAB_DATA_SIZE * 3 + CAB_NAME_STRING_SIZE * 2];
+//
+//	uint8_t impulsePath[512];
 }TPreset;
 
 #define PRESET_DATA_OFFSET PRESET_NAME_STRING_SIZE + PRESET_COMMENT_STRING_SIZE
@@ -284,14 +290,10 @@ typedef struct
 	uint8_t name[15];
 	uint8_t comment[15];
 
-//	TEnableData switches;
 	TModulesData modules;
 
 	char cab1Name[64];
 	char cab2Name[64];
-
-	uint8_t foot_ind_press[3];
-	uint8_t foot_ind_hold[3];
 }TPresetBrief;
 
 extern uint8_t impulsePath[];

@@ -60,8 +60,14 @@ void disp_start(uint8_t num)
 
 			HW_Delay(0x1ffff);
 		}
-		Arsys_line(50, 1, (uint8_t*)"CP100-FX", 0);
-		Arsys_line(50, 2, (uint8_t*)amt_ver, 0);
+#ifdef __MONO_MOD__
+		Arsys_line(35, 1, (uint8_t*)"CP100-FX", 0);
+#endif
+
+#ifdef __STEREO_MOD__
+		Arsys_line(29, 1, (uint8_t*)"CP100-FX-S", 0);
+#endif
+		Arsys_line(38, 2, (uint8_t*)amt_ver, 0);
 	}
 }
 

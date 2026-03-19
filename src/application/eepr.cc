@@ -1,9 +1,9 @@
 #include "eepr.h"
 
+#include "sharc.h"
+
 #include "system.h"
-
 #include "controller.h"
-
 #include "preset.h"
 #include "modules.h"
 
@@ -111,7 +111,7 @@ void EEPROM_Start()
 
 	cab_type = sys_para[System::CAB_SIM_CONFIG];
 	cab1.data = &ccmCommonCabBuffer[0];
-	cab2.data = &ccmCommonCabBuffer[4096 * 3];
+	cab2.data = &ccmCommonCabBuffer[CAB_DATA_SIZE];
 }
 
 void EEPROM_WriteSys(void)
@@ -509,32 +509,22 @@ void EEPROM_LoadAllIr(void)
 
 		if(f_open(&file, fna, FA_READ)==FR_OK)
 		{
-			while(EXTI_GetITStatus(EXTI_Line9)==RESET);
-			EXTI_ClearITPendingBit (EXTI_Line9);
-
-			while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-			SPI_I2S_SendData(SPI2, i-1);
-
-			while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-			SPI_I2S_SendData(SPI2, i-1);
+			SHARC_WaitForReady();
+			SHARC_SendData(i-1);
+			SHARC_SendData(i-1);
 
 			f_lseek(&file, sizeof(Preset::TPreset) + 2);
 			f_read(&file, cab1.data, CAB_DATA_SIZE, &f_size);
 
 			for(uint32_t ii = 0; ii<4096; ii++)
 			{
-				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
-				EXTI_ClearITPendingBit(EXTI_Line9);
-
 				buf = cab1.data[ii*3]<<8;
 				buf |= cab1.data[ii*3+1]<<16;
 				buf |= cab1.data[ii*3+2]<<24;
 
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-				SPI_I2S_SendData(SPI2, buf>>16);
-
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-				SPI_I2S_SendData(SPI2, buf);
+				SHARC_WaitForReady();
+				SHARC_SendData(buf>>16);
+				SHARC_SendData(buf);
 			}
 
 			if(cab_type!=2)
@@ -557,18 +547,13 @@ void EEPROM_LoadAllIr(void)
 
 			for(uint32_t ii = 0; ii<4096; ii++)
 			{
-				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
-				EXTI_ClearITPendingBit(EXTI_Line9);
-
 				buf = ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3]<<8;
 				buf |= ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3+1]<<16;
 				buf |= ccmCommonCabBuffer[CAB_DATA_SIZE + ii*3+2]<<24;
 
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-				SPI_I2S_SendData(SPI2, buf>>16);
-
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-				SPI_I2S_SendData(SPI2, buf);
+				SHARC_WaitForReady();
+				SHARC_SendData(buf>>16);
+				SHARC_SendData(buf);
 			}
 
 			f_lseek(&file, 30);
@@ -579,36 +564,26 @@ void EEPROM_LoadAllIr(void)
 
 			for(uint32_t ii = 0; ii<512; ii++)
 			{
-				while(EXTI_GetITStatus(EXTI_Line9)==RESET);
-				EXTI_ClearITPendingBit(EXTI_Line9);
 				buf = currentPreset.modules.rawData[ii];
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
-				SPI_I2S_SendData(SPI2, buf>>16);
-				while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-
-				SPI_I2S_SendData(SPI2, buf);
+				SHARC_WaitForReady();
+				SHARC_SendData(buf>>16);
+				SHARC_SendData(buf);
 			}
 			f_close(&file);
 		}
 
-		uint8_t prog_x = 40;
-		uint8_t prog_y = 40;
 		loadProgress++;
-		par_ind(prog_x, prog_y, loadProgress);
+		progressBar((168/2-50), 3, loadProgress);
 	}
-	while(EXTI_GetITStatus(EXTI_Line9)==RESET);
-	EXTI_ClearITPendingBit (EXTI_Line9);
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
-	SPI_I2S_SendData(SPI2, 100);
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
+	SHARC_WaitForReady();
+	SHARC_SendData(100);
+	SHARC_SendData(100);
 
-	SPI_I2S_SendData(SPI2, 100);
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
-
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
+
 	f_mount(0, "1:", 0);
 }

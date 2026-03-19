@@ -77,12 +77,6 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 	EEPROM_WritePreset(currentPresetNumber);
 
-	// Не работает. Возвращает сохранённое по звуку
-//	DSP_SendPresetData(currentPreset.modules.rawData);
-//
-//	DSP_SendPrimaryCabData(cab1.data, currentPresetNumber+1);
-//	if(cab_type == CAB_CONFIG_STEREO) DSP_SendSecondaryCabData(cab2.data, currentPresetNumber+1);
-
 	send_cab_data(0, currentPresetNumber+1, 0);
 	if(cab_type==CAB_CONFIG_STEREO)
 		send_cab_data1(0, currentPresetNumber+1);

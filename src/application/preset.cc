@@ -13,9 +13,24 @@
 
 Preset::TPreset __CCM_BSS__ currentPreset;
 
-Preset::TCabinet __CCM_BSS__ cab1;
-Preset::TCabinet __CCM_BSS__ cab2;
-uint8_t __CCM_BSS__ ccmCommonCabBuffer[4096 * 3 * 2];
+uint8_t __CCM_BSS__ ccmCommonCabBuffer[CAB_DATA_SIZE * 2];
+
+Preset::TCabinet __CCM_BSS__ cab1;// = {
+//	.data = &ccmCommonCabBuffer[0],
+//	.name = {
+//		.size = 0,
+//		.string = {0}
+//	}
+//};
+//
+Preset::TCabinet __CCM_BSS__ cab2;// = {
+//	.data = &ccmCommonCabBuffer[CAB_DATA_SIZE],
+//	.name = {
+//		.size = 0,
+//		.string = {0}
+//	}
+//};
+
 
 uint8_t Preset::impulsePath[512];
 

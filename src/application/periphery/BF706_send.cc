@@ -1,10 +1,9 @@
-#include "appdefs.h"
 #include "BF706_send.h"
+
+#include "sharc.h"
+
 #include "eepr.h"
-
 #include "system.h"
-
-
 #include "preset.h"
 #include "ui_task.h"
 
@@ -14,16 +13,12 @@ volatile uint8_t ext_send_fl;
 
 void dsp_send(uint8_t address, uint16_t data)
 {
-	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-	EXTI_ClearITPendingBit (EXTI_Line9);
+	SHARC_WaitForReady();
 
 	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
 
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, data);
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, address);
+	SHARC_SendData(data);
+	SHARC_SendData(address);
 
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
@@ -179,31 +174,6 @@ void send_cab_data1(uint8_t val, uint8_t num)
 		SPI_I2S_SendData(SPI2, send_buf);
 	}
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
-	GPIO_SetBits(GPIOA, GPIO_Pin_1);
-}
-
-void DSP_SendPresetData(uint8_t* data)
-{
-	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-	EXTI_ClearITPendingBit (EXTI_Line9);
-
-	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
-
-	for(uint32_t i = 0; i < 512; i++)
-	{
-//		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-//		EXTI_ClearITPendingBit(EXTI_Line9);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, DSP_ADDRESS_PRESET_FULL);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, data[i]);
-	}
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }

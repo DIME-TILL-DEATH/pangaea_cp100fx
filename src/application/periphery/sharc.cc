@@ -83,7 +83,8 @@ void SHARC_StartupLoad()
 
 void SHARC_WaitForReady()
 {
-
+	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
+	EXTI_ClearITPendingBit (EXTI_Line9);
 }
 
 void SHARC_SendData(uint16_t data)
@@ -92,34 +93,4 @@ void SHARC_SendData(uint16_t data)
 	SPI_I2S_SendData(SPI2, data);
 }
 
-void SHARC_dma_send_data(uint32_t* data_ptr, uint16_t size)
-{
-	SPI_Cmd(SPI2, DISABLE);
 
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
-	DMA_InitTypeDef DMA_InitStructure;
-	DMA_StructInit(&DMA_InitStructure);
-
-	DMA_Cmd(DMA1_Stream4, DISABLE);
-	DMA_DeInit (DMA1_Stream4);
-
-	DMA_InitStructure.DMA_Channel = DMA_Channel_0;
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)&SPI2->DR;
-	DMA_InitStructure.DMA_Memory0BaseAddr = (u32)data_ptr;
-	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-	DMA_InitStructure.DMA_BufferSize = size;
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
-	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;
-	DMA_Init(DMA1_Stream4, &DMA_InitStructure);
-
-	SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
-	SPI_Cmd(SPI2, ENABLE);
-	DMA_Cmd(DMA1_Stream4, ENABLE);
-
-//	while(DMA1_Stream4->NDTR > 0);
-}

@@ -62,6 +62,8 @@ int main(void)
 
 	HW_PinUsbInit();
 
+	System::setStartupValues();
+
 	startEventGroup = xEventGroupCreate();
 
 	FileSystemTask = new TFileSystemTask();

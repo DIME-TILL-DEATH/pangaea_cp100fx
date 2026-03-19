@@ -1,6 +1,6 @@
 #include "baseparam.h"
 
-#include "../../../tasks/display_task.h"
+#include "display_task.h"
 #include "BF706_send.h"
 #include "io_task.h"
 #include "eepr.h"

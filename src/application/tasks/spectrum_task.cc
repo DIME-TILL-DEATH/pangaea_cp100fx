@@ -2,11 +2,13 @@
 // http://www.codeproject.com/Articles/32172/FFT-Guitar-Tuner
 // http://habrahabr.ru/post/247385/
 // https://code.google.com/p/ctuner/source/browse/trunk/windows/Tuner.c
+#include "spectrum_task.h"
 
+#include "dsp.h"
 #include "filter.h"
+
 #include "rt_counter.h"
 #include "int2str.h"
-#include "spectrum_task.h"
 
 static const char *note_name_table[] =
 		{"C0", "C#0", "D0", "D#0", "E0", "F0", "F#0", "G0", "G#0", "A0", "A#0", "B0",
@@ -159,6 +161,9 @@ void SpectrumBuffsUpdate(float u)
 
 void TSpectrumTask::Code()
 {
+	GATE_ChangePreset();
+	COMP_Init();
+	COMP_ChangePreset(0, 0);
 
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_SPTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
