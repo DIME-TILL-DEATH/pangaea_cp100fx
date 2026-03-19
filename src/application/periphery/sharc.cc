@@ -104,7 +104,7 @@ void SHARC_LoadAllData()
 	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
 	for(uint8_t i = 0; i<99; i++)
 	{
-		if(EEPROM_loadPreset(i))
+		if(EEPROM_LoadPreset(i))
 		{
 			SHARC_WaitForReady();
 			SHARC_SendData(i);

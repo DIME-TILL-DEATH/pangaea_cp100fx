@@ -103,9 +103,7 @@ void PresetActionsMenu::keyDown()
 
 void PresetActionsMenu::updatePresetData()
 {
-	EEPROM_LoadPresetToBuffer(targetPresetNum, presetBuffer);
-
-	EEPROM_loadBriefPreset(targetPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadBriefPreset(targetPresetNum, &m_selectedPresetBrief);
 
 	DisplayTask->Clear_str(2, 0, Font::fntSystem, 14);
 	DisplayTask->Clear_str(2, 1, Font::fntSystem, 14);
@@ -133,8 +131,8 @@ void PresetActionsMenu::savePreset()
 	DisplayTask->Clear();
 	DisplayTask->StringOut(38, 2, Font::fnt12x13, 0, (uint8_t*)" Save");
 
-	currentPreset.modules.rawData[147] = Preset::delay_time;
-	currentPreset.modules.rawData[148] = Preset::delay_time>>8;
+	currentPreset.modules.rawData[147] = currentPreset.delayTime;
+	currentPreset.modules.rawData[148] = currentPreset.delayTime>>8;
 	EEPROM_WritePreset(targetPresetNum);
 
 	send_cab_data(0, targetPresetNum+1, 0);

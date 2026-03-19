@@ -2,11 +2,16 @@
 
 #include "eepr.h"
 #include "preset.h"
-#include "tasks/display_task.h"
+
+#include "display_task.h"
 
 volatile uint32_t tap_temp;
 uint8_t cab_type = 0;
 uint8_t tun_del_val;
+int16_t mstEqMidFreq;
+uint8_t __CCM_BSS__ sys_para[512] =
+{/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
+/*foot3*/0,/*calibrate*/0, 0, 0xff, 0xf};
 
 float tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 

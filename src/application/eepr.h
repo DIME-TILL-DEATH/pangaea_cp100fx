@@ -7,16 +7,15 @@
 
 extern const uint8_t prog_data_init[];
 
-extern int16_t mstEqMidFreq;
-
 void EEPROM_Start();
-void EEPROM_WriteSys(void);
-void EEPROM_WritePreset(uint8_t nu);
-bool EEPROM_loadPreset(uint8_t presetNum);
-void EEPROM_loadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData);
 
-void EEPROM_WriteTempPreset(uint8_t nu);
-void EEPROM_LoadPresetToBuffer(uint8_t presetNum, uint8_t* buffer);
-void EEPROM_PresetErase(uint8_t nu);
+bool EEPROM_LoadPreset(uint8_t presetNum);
+void EEPROM_LoadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData);
+
+void EEPROM_WriteSys(void);
+void EEPROM_WritePreset(uint8_t presetNum);
+
+void EEPROM_CopyPreset(uint8_t targetPresetNum, const Preset::TSelectionMask& selectionMask);
+void EEPROM_PresetErase(uint8_t presetNum);
 
 #endif

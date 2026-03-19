@@ -130,6 +130,8 @@ namespace System
 	const uint8_t maxBpm = 240;
 };
 
+
+extern int16_t mstEqMidFreq;
 extern uint8_t sys_para[];
 extern uint8_t cab_type;
 extern uint8_t tun_del_val;

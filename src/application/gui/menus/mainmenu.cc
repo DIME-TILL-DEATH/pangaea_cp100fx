@@ -37,7 +37,7 @@ void MainMenu::show(TShowMode swhoMode)
 	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	m_preselectedPresetNum = currentPresetNumber;
-	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 
 	DisplayTask->Clear();
 	refresh();
@@ -198,7 +198,7 @@ void MainMenu::presetUp()
 	if(m_preselectedPresetNum == 98) m_preselectedPresetNum = 0;
 	else m_preselectedPresetNum++;
 
-	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 	refresh();
 
 	restartBlinking(1);
@@ -209,7 +209,7 @@ void MainMenu::presetDown()
 	if(m_preselectedPresetNum == 0) m_preselectedPresetNum = 98;
 	else m_preselectedPresetNum -= 1;
 
-	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 	refresh();
 
 	restartBlinking(1);
@@ -225,7 +225,7 @@ void MainMenu::presetConfirm()
 {
 	currentPresetNumber = m_preselectedPresetNum;
 
-	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 
 	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
 	Preset::Change();
