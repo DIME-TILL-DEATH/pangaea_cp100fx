@@ -176,14 +176,6 @@ bool EEPROM_LoadPreset(uint8_t numPreset)
 	if(fs_res==FR_OK)
 	{
 		f_read(&file, &currentPreset, sizeof(Preset::TPresetData), &f_size);
-
-		kgp_sdk_libc::memcpy(&cab1.name, &currentPreset.cabBuf[CAB_DATA_SIZE], CAB_NAME_STRING_SIZE);
-
-		if(cab_type == CAB_CONFIG_STEREO)
-		{
-			kgp_sdk_libc::memcpy(&cab2.name, &currentPreset.cabBuf[2 *CAB_DATA_SIZE + CAB_NAME_STRING_SIZE], CAB_NAME_STRING_SIZE);
-		}
-
 		f_close(&file);
 		return true;
 	}

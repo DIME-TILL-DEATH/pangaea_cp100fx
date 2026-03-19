@@ -182,8 +182,8 @@ void MainMenu::refresh()
 	}
 	else
 	{
-		filled = cab1.name.size
-				|| (cab_type == CAB_CONFIG_STEREO ? cab2.name.size : 0);
+		filled = currentPreset.cab1NameSize
+				|| (cab_type == CAB_CONFIG_STEREO ? currentPreset.cab2NameSize : 0);
 	}
 
 	DisplayTask->Prog_ind(m_preselectedPresetNum, filled);

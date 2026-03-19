@@ -286,19 +286,6 @@ typedef struct
 }TPresetData;
 #pragma pack(pop)
 
-const uint8_t CabNameLength = CAB_NAME_STRING_SIZE - 1;
-typedef struct
-{
-	uint8_t size;
-	char string[CabNameLength];
-}TCabName;
-
-typedef struct
-{
-//	uint8_t* data;
-	TCabName name;
-}TCabinet;
-
 typedef struct
 {
 	uint8_t name[15];
@@ -344,8 +331,8 @@ void Erase();
 
 
 extern Preset::TPresetData currentPreset;
-extern Preset::TCabinet cab1;
-extern Preset::TCabinet cab2;
+//extern Preset::TCabinet cab1;
+//extern Preset::TCabinet cab2;
 
 
 extern volatile uint8_t currentPresetNumber;

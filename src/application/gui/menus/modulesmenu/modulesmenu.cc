@@ -181,8 +181,8 @@ void ModulesMenu::key2()
 
 	params[0] = new StringOutParam("Preset level");
 	params[0]->setDisplayPosition(ParamListMenu::leftPad + 4*6);
-	params[1] = new StringListParam("Control", &currentPreset.modules.rawData[PRESET_VOLUME_CONTROL], {"On ", "Off"}, 3);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &currentPreset.modules.rawData[PRESET_VOLUME]);
+	params[1] = new StringListParam("Control", &currentPreset.modulesBuf[PRESET_VOLUME_CONTROL], {"On ", "Off"}, 3);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &currentPreset.modulesBuf[PRESET_VOLUME]);
 	params[2]->setDspAddress(DSP_ADDRESS_PRESET_VOLUME, PARAM_EQUAL_POS);
 
 	ParamListMenu* menu = new ParamListMenu(this, MENU_PRESET_VOLUME);
@@ -237,7 +237,7 @@ void ModulesMenu::iconRefresh(uint8_t num)
 
 void ModulesMenu::enableCab(AbstractMenu* parent)
 {
-	if(cab1.name.size == 0)
+	if(currentPreset.cab1NameSize == 0)
 	{
 		if(TSDTestTask::sdInitState == 1)
 		{
@@ -251,7 +251,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			  DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "There is no directory");
 			  DisplayTask->StringOut(42, 3, Font::fntSystem, 0, "IMPULSE");
 			  UITask->Delay(1000);
-			  currentPreset.modules.rawData[cab] = 0;
+			  currentPreset.modulesBuf[cab] = 0;
 
 			  parent->refresh();
 		  }
@@ -263,7 +263,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			else DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "MicroSD is loading..");
 			UITask->Delay(1000);
 
-			currentPreset.modules.rawData[cab] = 0;
+			currentPreset.modulesBuf[cab] = 0;
 
 			parent->refresh();
 		}
@@ -280,15 +280,15 @@ void ModulesMenu::arrangeModules()
 	modules[i++] = PR;
 	modules[i++] = PA;
 
-	if(currentPreset.modules.paramData.eq_pre_post) modules[i++] = EQ;
-	if(currentPreset.modules.paramData.phaser_pre_post) modules[i++] = PH;
-	if(currentPreset.modules.paramData.flanger_pre_post) modules[i++] = FL;
+	if(currentPreset.paramData.eq_pre_post) modules[i++] = EQ;
+	if(currentPreset.paramData.phaser_pre_post) modules[i++] = PH;
+	if(currentPreset.paramData.flanger_pre_post) modules[i++] = FL;
 
 	modules[i++] = IR;
 
-	if(!currentPreset.modules.paramData.eq_pre_post) modules[i++] = EQ;
-	if(!currentPreset.modules.paramData.phaser_pre_post) modules[i++] = PH;
-	if(!currentPreset.modules.paramData.flanger_pre_post) modules[i++] = FL;
+	if(!currentPreset.paramData.eq_pre_post) modules[i++] = EQ;
+	if(!currentPreset.paramData.phaser_pre_post) modules[i++] = PH;
+	if(!currentPreset.paramData.flanger_pre_post) modules[i++] = FL;
 
 	modules[i++] = CH;
 	modules[i++] = DL;

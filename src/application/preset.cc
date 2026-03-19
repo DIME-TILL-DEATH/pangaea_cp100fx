@@ -14,13 +14,9 @@
 
 Preset::TPresetData __CCM_BSS__ currentPreset;
 
-Preset::TCabinet cab1;
-Preset::TCabinet cab2;
-
 uint16_t __CCM_BSS__ Preset::moog_time;
 uint16_t __CCM_BSS__ Preset::trem_time;
 
-//bool Preset::cab_data_ready;
 
 void Preset::Change()
 {
