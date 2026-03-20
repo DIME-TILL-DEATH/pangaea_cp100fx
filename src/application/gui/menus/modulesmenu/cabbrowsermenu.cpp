@@ -65,17 +65,15 @@ void CabBrowserMenu::show(TShowMode showMode)
 
 void CabBrowserMenu::keyUp()
 {
-//	DisplayTask->Clear();
-
 	if(m_cabNumber == 0)
 	{
-		DSP_SendPrimaryCabData(cab1.data);
-		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+		DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
+		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 	}
 	else
 	{
-		DSP_SendSecondaryCabData(cab2.data);
-		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+		DSP_SendSecondaryCabData(currentPreset.cab2Data);
+		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 	}
 	topLevelMenu->returnFromChildMenu();
 }
@@ -93,21 +91,24 @@ void CabBrowserMenu::encoderPressed()
 
 		if(m_cabNumber==0)
 		{
-			kgp_sdk_libc::memcpy(cab1.data, presetBuffer, 4096 * 3);
-			if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memcpy(cab1.data + 4096 * 3, presetBuffer + 4096 * 3, 4096 * 3);
+			kgp_sdk_libc::memcpy(currentPreset.cab1Data, tempCabBuffer, CAB_DATA_SIZE);
+			if(cab_type != CAB_CONFIG_STEREO)
+				kgp_sdk_libc::memcpy(currentPreset.cabAuxData, tempCabBuffer + CAB_DATA_SIZE, CAB_DATA_SIZE);
 
-			kgp_sdk_libc::memcpy(&cab1.name, selectedCabName, 64);
+			kgp_sdk_libc::memcpy(&currentPreset.cab1Name, selectedCabName, CAB_DATA_SIZE - 1);
+			currentPreset.cab1NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab1Name);
 
-			DSP_SendPrimaryCabData(cab1.data);
-			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+			DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
+			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 		}
 		else
 		{
-			kgp_sdk_libc::memcpy(cab2.data, presetBuffer, 4096 * 3);
-			kgp_sdk_libc::memcpy(&cab2.name, selectedCabName, 64);
+			kgp_sdk_libc::memcpy(currentPreset.cab2Data, tempCabBuffer, CAB_DATA_SIZE);
+			kgp_sdk_libc::memcpy(&currentPreset.cab2Name, selectedCabName, CAB_DATA_SIZE - 1);
+			currentPreset.cab2NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab2Name);
 
-			DSP_SendSecondaryCabData(cab2.data);
-			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			DSP_SendSecondaryCabData(currentPreset.cab2Data);
+			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 		}
 
 		topLevelMenu->returnFromChildMenu();
@@ -146,20 +147,20 @@ void CabBrowserMenu::processBrowserResponse()
 			kgp_sdk_libc::memcpy(selectedCabName, browserResponse.file.name, 64);
 
 			if(m_cabNumber == 0)
-				DSP_SendPrimaryCabData(browserResponse.file.buffer); //gui_send(16, 1);
+				DSP_SendPrimaryCabData(&browserResponse.file.buffer[0], &browserResponse.file.buffer[CAB_DATA_SIZE]); //gui_send(16, 1);
 			else
 				DSP_SendSecondaryCabData(browserResponse.file.buffer);
 
-			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
-			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 
 			break;
 		}
 
 		case TUITask::rpFileInvalid:
 		{
-			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]/2);
-			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]/2);
+			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]/2);
+			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]/2);
 
 			break;
 		}
