@@ -72,14 +72,15 @@ static void amtver_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	currentPreset.modules.rawData[147] = Preset::delay_time;
-	currentPreset.modules.rawData[148] = Preset::delay_time>>8;
+	currentPreset.modulesBuf[147] = currentPreset.delayTime;
+	currentPreset.modulesBuf[148] = currentPreset.delayTime >> 8;
 
 	EEPROM_WritePreset(currentPresetNumber);
 
-	send_cab_data(0, currentPresetNumber+1, 0);
+	// update DSP config? Really need?
+	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
 	if(cab_type==CAB_CONFIG_STEREO)
-		send_cab_data1(0, currentPresetNumber+1);
+		DSP_SendSecondaryCabData(currentPreset.cab2Data, currentPresetNumber+1);
 
 	Preset::Change();
 
@@ -137,11 +138,11 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 	{
 		if(cabNum==0)
 		{
-			msg_console("\r%s\n", cab1.name.string);
+			msg_console("\r%s\n", currentPreset.cab1Name);
 		}
 		else
 		{
-			msg_console("\r%s\n", cab2.name.string);
+			msg_console("\r%s\n", currentPreset.cab2Name);
 		}
 	}
 
@@ -152,10 +153,10 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		if(command == "set")
 		{
 			consoleBusy = true;
-			char fileName[Preset::CabNameLength];
-			kgp_sdk_libc::memset(fileName, 0, Preset::CabNameLength);
+			char fileName[CAB_NAME_STRING_SIZE - 1];
+			kgp_sdk_libc::memset(fileName, 0, CAB_NAME_STRING_SIZE - 1);
 
-			getDataPartFromStream(rl, fileName, Preset::CabNameLength);
+			getDataPartFromStream(rl, fileName, CAB_NAME_STRING_SIZE - 1);
 			consoleBusy = false;
 
 			fs_object_t fsObject;
@@ -163,7 +164,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 			fileBrowser->SelectFile(fsObject);
 
 			emb_string errStr;
-			if(!fileBrowser->GetDataFromFile(presetBuffer, errStr))
+			if(!fileBrowser->GetDataFromFile(tempCabBuffer, errStr))
 			{
 				msg_console(" error\r%s\n", errStr.c_str());
 				FileSystemTask->Resume();
@@ -172,23 +173,27 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 
 			if(cabNum==0)
 			{
-				kgp_sdk_libc::memcpy(cab1.data, presetBuffer, 4096 * 3);
-				if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memcpy(cab1.data + 4096 * 3, presetBuffer + 4096 * 3, 4096 * 3);
+				kgp_sdk_libc::memcpy(currentPreset.cab1Data, tempCabBuffer, CAB_DATA_SIZE);
+				if(cab_type != CAB_CONFIG_STEREO)
+				{
+					kgp_sdk_libc::memcpy(currentPreset.cabAuxData,
+							tempCabBuffer + CAB_DATA_SIZE, CAB_DATA_SIZE);
+				}
 
-				kgp_sdk_libc::memcpy(cab1.name.string, fileName, Preset::CabNameLength);
-				cab1.name.size = kgp_sdk_libc::strlen(fileName);
+				kgp_sdk_libc::memcpy(currentPreset.cab1Name, fileName, CAB_NAME_STRING_SIZE - 1);
+				currentPreset.cab1NameSize = kgp_sdk_libc::strlen(fileName);
 
-				DSP_SendPrimaryCabData(cab1.data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+				DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
-				kgp_sdk_libc::memcpy(cab2.data, presetBuffer, 4096 * 3);
-				kgp_sdk_libc::memcpy(cab2.name.string, fileName, Preset::CabNameLength);
-				cab2.name.size = kgp_sdk_libc::strlen(fileName);
+				kgp_sdk_libc::memcpy(currentPreset.cab2Data, tempCabBuffer, CAB_DATA_SIZE);
+				kgp_sdk_libc::memcpy(currentPreset.cab2Name, fileName, CAB_NAME_STRING_SIZE - 1);
+				currentPreset.cab1NameSize = kgp_sdk_libc::strlen(fileName);
 
-				DSP_SendSecondaryCabData(cab2.data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+				DSP_SendSecondaryCabData(currentPreset.cab2Data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 
 			msg_console(" set\r%s\n", fileName);
@@ -197,7 +202,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		if(command == "preview_start")
 		{
 			bufPos = 0;
-			kgp_sdk_libc::memset(presetBuffer, 0, 4096 * 3 * 2);
+			kgp_sdk_libc::memset(tempCabBuffer, 0, CAB_DATA_SIZE * 2);
 			msg_console("%d request_part\r\n", cabNum);
 		}
 
@@ -217,7 +222,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 				} while (streamPos < bytesToRecieve);
 				rl->RecvChar(c); // get last \n
 
-				kgp_sdk_libc::memcpy(presetBuffer + bufPos, buffer, bytesToRecieve);
+				kgp_sdk_libc::memcpy(tempCabBuffer + bufPos, buffer, bytesToRecieve);
 				bufPos += bytesToRecieve;
 				msg_console("%d request_part\r\n", cabNum);
 			}
@@ -231,13 +236,13 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		{
 			if(cabNum==0)
 			{
-				DSP_SendPrimaryCabData(presetBuffer);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+				DSP_SendPrimaryCabData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE]);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
-				DSP_SendSecondaryCabData(presetBuffer);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+				DSP_SendSecondaryCabData(tempCabBuffer);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 			msg_console("%d preview_end\r\n", cabNum);
 		}
@@ -246,13 +251,13 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		{
 			if(cabNum==0)
 			{
-				DSP_SendPrimaryCabData(cab1.data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+				DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
-				DSP_SendSecondaryCabData(cab2.data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+				DSP_SendSecondaryCabData(currentPreset.cab2Data);
+				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 			msg_console("%d restore\r\n", cabNum);
 		}
@@ -333,18 +338,18 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
 
 	consoleBusy = true;
-	char selectionMaskArray[sizeof(CopySelectMenu::TSelectionMask)];
-	getDataPartFromStream(rl, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
+	char selectionMaskArray[sizeof(Preset::TSelectionMask)];
+	getDataPartFromStream(rl, selectionMaskArray, sizeof(Preset::TSelectionMask));
 	consoleBusy = false;
 
 	msg_console("%s\r\n", args[0]);
 
-	for(uint8_t i=0; i < sizeof(CopySelectMenu::TSelectionMask); i++)
+	for(uint8_t i=0; i < sizeof(Preset::TSelectionMask); i++)
 	{
 		selectionMaskArray[i] -= '0';
 	}
-	CopySelectMenu::TSelectionMask selectionMask;
-	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
+	Preset::TSelectionMask selectionMask;
+	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(Preset::TSelectionMask));
 	CopySelectMenu::copyPreset(selectionMask, presetNum);
 
 //	msg_console("%s\r\n", args[0]);
@@ -446,7 +451,7 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	for (int p = 0; p < 99; p++)
 	{
 		Preset::TPresetBrief presetData;
-		EEPROM_loadBriefPreset(p, &presetData);
+		EEPROM_LoadBriefPreset(p, &presetData);
 
 		char *cab1NameSrc = presetData.cab1Name + 1;
 		char *cab2NameSrc = presetData.cab2Name + 1;
@@ -499,7 +504,7 @@ static void pbrief_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 		msg_console("%s", args[0]);
 
 		Preset::TPresetBrief presetData;
-		EEPROM_loadBriefPreset(presetNum, &presetData);
+		EEPROM_LoadBriefPreset(presetNum, &presetData);
 
 		char *cab1NameSrc = presetData.cab1Name + 1;
 		char *cab2NameSrc = presetData.cab2Name + 1;
@@ -544,14 +549,14 @@ static void pbrief_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
-	currentPreset.modules.paramData.delay_time = Preset::delay_time;
+	currentPreset.paramData.delay_time = currentPreset.delayTime;
 
 	msg_console("%s\r", args[0]);
 	for(size_t i = 0; i < 512; i++)
 	{
 		char hex[3] =
 		{0, 0, 0};
-		i2hex(currentPreset.modules.rawData[i], hex);
+		i2hex(currentPreset.modulesBuf[i], hex);
 		msg_console("%s", hex);
 	}
 	msg_console("\n");
@@ -765,13 +770,13 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 static void preset_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.paramData.preset_volume, rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.modules.paramData.preset_volume, 0);
+	default_param_handler(&currentPreset.paramData.preset_volume, rl, args, count);
+	DSP_ContrSendParameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.paramData.preset_volume, 0);
 }
 
 static void preset_volume_control_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.paramData.volume_control, rl, args, count);
+	default_param_handler(&currentPreset.paramData.volume_control, rl, args, count);
 }
 //------------------------------------------------------------------------------
 void ConsoleSetCmdHandlers(TReadLine *rl)

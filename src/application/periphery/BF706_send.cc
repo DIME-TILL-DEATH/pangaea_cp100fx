@@ -26,6 +26,7 @@ void dsp_send(uint8_t address, uint16_t data)
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }
 
+// To task!
 void DSP_GuiSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value)
 {
 	while((contr_fl) || (ext_send_fl));
@@ -44,229 +45,91 @@ void DSP_ContrSendParameter(dsp_module_address_t module_address, uint8_t paramet
 	contr_fl = 0;
 }
 
-void send_cab_data(uint8_t val, uint8_t presetNum, uint8_t menu_fl)
+
+void DSP_ExtSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value)
 {
-	uint32_t send_buf;
-
-	if(Preset::cab_data_ready != true && currentMenu->menuType() != MENU_COPY_SELECTION)
-	{
-		kgp_sdk_libc::memset(presetBuffer, 0, 24576);
-		presetBuffer[0] = 0xff;
-		presetBuffer[1] = 0xff;
-		presetBuffer[2] = 0x7f;
-	}
-
-	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-	EXTI_ClearITPendingBit (EXTI_Line9);
-
-	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, presetNum);
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, DSP_ADDRESS_CAB_DATA_PRIMARY);
-
-	uint32_t dataSize;
-
-	if(cab_type != 2)
-		dataSize = 8192;
-	else
-		dataSize = 4096;
-
-	for(uint32_t i = 0; i < dataSize; i++)
-	{
-		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-		EXTI_ClearITPendingBit(EXTI_Line9);
-
-		uint8_t* srcBuffer;
-
-		if(val)
-		{
-			if(i < 4096) srcBuffer = &presetBuffer[i * 3 + CAB1_DATA_OFFSET];
-			else
-			{
-				if(cab_type == 2) srcBuffer = &presetBuffer[(i - 4096) * 3 + CAB2_DATA_OFFSET];
-				else srcBuffer = &presetBuffer[(i - 4096) * 3 + CAB1_AUX_DATA_OFFSET];
-			}
-		}
-		else
-		{
-			if(i < 4096) srcBuffer = &cab1.data[i * 3];
-			else srcBuffer = &cab2.data[(i - 4096) * 3];
-		}
-
-		send_buf = srcBuffer[0] << 8;
-		send_buf |= srcBuffer[1] << 16;
-		send_buf |= srcBuffer[2] << 24;
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE)) {};
-		SPI_I2S_SendData(SPI2, send_buf >> 16);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE)) {};
-		SPI_I2S_SendData(SPI2, send_buf);
-	}
-
-	for(uint32_t i = 0; i < 512; i++)
-	{
-		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-		EXTI_ClearITPendingBit(EXTI_Line9);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, 0);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-
-		if(!menu_fl)
-			SPI_I2S_SendData(SPI2, currentPreset.modules.rawData[i]);
-		else
-			SPI_I2S_SendData(SPI2, presetBuffer[i + 30]);
-	}
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
-	GPIO_SetBits(GPIOA, GPIO_Pin_1);
+	while((gui_fl) || (contr_fl));
+	ext_send_fl = 1;
+	dsp_send(module_address, parameter_address | value << 8); //master_volum_contr(data);
+	ext_send_fl = 0;
 }
 
-void send_cab_data1(uint8_t val, uint8_t num)
+void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t* modulesData, uint8_t presetNum) // (0, presetNum, 0
 {
-	uint32_t send_buf;
-
-	if(Preset::cab_data_ready != true && currentMenu->menuType() != MENU_COPY)
-	{
-		kgp_sdk_libc::memset(presetBuffer, 0, 12288);
-		presetBuffer[0] = 0xff;
-		presetBuffer[1] = 0xff;
-		presetBuffer[2] = 0x7f;
-	}
-
-	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-	EXTI_ClearITPendingBit (EXTI_Line9);
+	if(!modulesData || !cabMainData || !cabAuxData) return;
+	SHARC_WaitForReady();
 
 	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
 
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, num);
+	SHARC_SendData(presetNum);
+	SHARC_SendData(DSP_ADDRESS_CAB_DATA_PRIMARY);
 
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, DSP_ADDRESS_CAB_DATA_SECONDARY);
-
-	for(int i = 0; i < 4096; i++)
-	{
-		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-		EXTI_ClearITPendingBit(EXTI_Line9);
-		if(val)
-		{
-			send_buf = presetBuffer[i * 3] << 8;
-			send_buf |= presetBuffer[i * 3 + 1] << 16;
-			send_buf |= presetBuffer[i * 3 + 2] << 24;
-		}
-		else
-		{
-			send_buf = cab2.data[i * 3] << 8;
-			send_buf |= cab2.data[i * 3 + 1] << 16;
-			send_buf |= cab2.data[i * 3 + 2] << 24;
-		}
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, send_buf >> 16);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, send_buf);
-	}
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
-	GPIO_SetBits(GPIOA, GPIO_Pin_1);
-}
-
-void DSP_SendPrimaryCabData(uint8_t* data, uint8_t presetNum) // (0, presetNum, 0
-{
-	if(!data) return;
-
-	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-	EXTI_ClearITPendingBit (EXTI_Line9);
-
-	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, presetNum);
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, DSP_ADDRESS_CAB_DATA_PRIMARY);
-
-	uint32_t dataSize;
-
-	if(cab_type != CAB_CONFIG_STEREO)
-		dataSize = 8192;
-	else
-		dataSize = 4096;
 
 	uint32_t sendBuf;
-	for(uint32_t i = 0; i < dataSize; i++)
+	for(uint32_t i = 0; i < 4096; i++)
 	{
-		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-		EXTI_ClearITPendingBit(EXTI_Line9);
+		sendBuf = cabMainData[i * 3] << 8;
+		sendBuf |= cabMainData[i * 3 + 1] << 16;
+		sendBuf |= cabMainData[i * 3 + 2] << 24;
 
-		sendBuf = data[i * 3] << 8;
-		sendBuf |= data[i * 3 + 1] << 16;
-		sendBuf |= data[i * 3 + 2] << 24;
+		SHARC_WaitForReady();
+		SHARC_SendData(sendBuf >> 16);
+		SHARC_SendData(sendBuf);
+	}
 
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, sendBuf >> 16);
+	if(cab_type != CAB_CONFIG_STEREO && cabAuxData)
+	{
+		for(uint32_t i = 0; i < 4096; i++)
+		{
+			sendBuf = cabAuxData[i * 3] << 8;
+			sendBuf |= cabAuxData[i * 3 + 1] << 16;
+			sendBuf |= cabAuxData[i * 3 + 2] << 24;
 
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, sendBuf);
+			SHARC_WaitForReady();
+			SHARC_SendData(sendBuf >> 16);
+			SHARC_SendData(sendBuf);
+		}
 	}
 
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
 	for(uint32_t i = 0; i < 512; i++)
 	{
-		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-		EXTI_ClearITPendingBit(EXTI_Line9);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, 0);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-
-		SPI_I2S_SendData(SPI2, currentPreset.modules.rawData[i]);
+		SHARC_WaitForReady();
+		SHARC_SendData(0);
+		SHARC_SendData(modulesData[i]);
 	}
 
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
+}
+
+void DSP_SendPrimaryCabData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t presetNum)
+{
+	DSP_SendPrimaryData(cabMainData, cabAuxData, currentPreset.modulesBuf, presetNum);
 }
 
 void DSP_SendSecondaryCabData(uint8_t* data, uint8_t presetNum)
 {
 	if(!data) return;
 
-	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-	EXTI_ClearITPendingBit (EXTI_Line9);
+	SHARC_WaitForReady();
 
 	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
 
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, presetNum);
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, DSP_ADDRESS_CAB_DATA_SECONDARY);
+	SHARC_SendData(presetNum);
+	SHARC_SendData(DSP_ADDRESS_CAB_DATA_SECONDARY);
 
 	uint32_t send_buf;
 	for(int i = 0; i < 4096; i++)
 	{
-		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-		EXTI_ClearITPendingBit(EXTI_Line9);
-
 		send_buf = data[i * 3] << 8;
 		send_buf |= data[i * 3 + 1] << 16;
 		send_buf |= data[i * 3 + 2] << 24;
 
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, send_buf >> 16);
-
-		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-		SPI_I2S_SendData(SPI2, send_buf);
+		SHARC_WaitForReady();
+		SHARC_SendData(send_buf >> 16);
+		SHARC_SendData(send_buf);
 	}
 
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
@@ -276,16 +139,12 @@ void DSP_SendSecondaryCabData(uint8_t* data, uint8_t presetNum)
 
 void DSP_ErasePrimaryCab(uint8_t presetNum)
 {
-	while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-	EXTI_ClearITPendingBit (EXTI_Line9);
+	SHARC_WaitForReady();
 
 	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
 
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, presetNum);
-
-	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-	SPI_I2S_SendData(SPI2, DSP_ADDRESS_CAB_DATA_PRIMARY);
+	SHARC_SendData(presetNum);
+	SHARC_SendData(DSP_ADDRESS_CAB_DATA_PRIMARY);
 
 	uint32_t dataSize;
 
@@ -297,8 +156,7 @@ void DSP_ErasePrimaryCab(uint8_t presetNum)
 	uint32_t sendBuf = 0x7fffff00;
 	for(uint32_t i = 0; i < dataSize; i++)
 	{
-		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-		EXTI_ClearITPendingBit(EXTI_Line9);
+		SHARC_WaitForReady();
 
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, sendBuf >> 16);
@@ -313,15 +171,14 @@ void DSP_ErasePrimaryCab(uint8_t presetNum)
 
 	for(uint32_t i = 0; i < 512; i++)
 	{
-		while(EXTI_GetITStatus(EXTI_Line9) == RESET);
-		EXTI_ClearITPendingBit(EXTI_Line9);
+		SHARC_WaitForReady();
 
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 		SPI_I2S_SendData(SPI2, 0);
 
 		while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
-		SPI_I2S_SendData(SPI2, currentPreset.modules.rawData[i]);
+		SPI_I2S_SendData(SPI2, currentPreset.modulesBuf[i]);
 	}
 
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
@@ -359,15 +216,5 @@ void DSP_EraseSecondaryCab(uint8_t presetNum)
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
-}
-
-volatile uint8_t master_volume_controller = 127;
-void ext_send(uint8_t data)
-{
-	while((gui_fl) || (contr_fl));
-	ext_send_fl = 1;
-	dsp_send(21, data); //master_volum_contr(data);
-	master_volume_controller = data;
-	ext_send_fl = 0;
 }
 

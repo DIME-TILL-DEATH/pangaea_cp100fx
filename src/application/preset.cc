@@ -17,13 +17,16 @@ Preset::TPresetData __CCM_BSS__ currentPreset;
 uint16_t __CCM_BSS__ Preset::moog_time;
 uint16_t __CCM_BSS__ Preset::trem_time;
 
+uint8_t __CCM_BSS__ tempCabBuffer[CAB_DATA_SIZE * 2];
+uint8_t __CCM_BSS__ tempDataBuffer[512]; // sizeof(TModulesData)
+
 
 void Preset::Change()
 {
 	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
 
 	pc_mute_fl = 0;
-	EEPROM_LoadPreset(currentPresetNumber);	// move to FileSystemTask
+	EEPROM_LoadPreset(currentPresetNumber);
 
 	// DSP binary not set this params?
 	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modulesBuf[PHASER_CENTER]);
@@ -53,7 +56,7 @@ void Preset::Change()
 	FRESULT fs_res = f_stat(startup.c_str(), &fno);
 	if(fs_res == FR_OK)
 	{
-		// pack name here!
+		// pack path here!
 		FileSystemTask->SendCommand(TFsBrowser::bcStartup);
 	}
 //------------------------------------------------------------

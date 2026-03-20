@@ -11,7 +11,7 @@
 #define CAB_DATA_SIZE 4096 * 3	// =12288
 
 #define PRESET_DATA_OFFSET PRESET_NAME_STRING_SIZE + PRESET_COMMENT_STRING_SIZE
-#define CAB1_DATA_OFFSET PRESET_DATA_OFFSET + 1024 + 2
+#define CAB1_DATA_OFFSET PRESET_DATA_OFFSET + 512*2 + 2
 #define CAB1_NAME_OFFSET CAB1_DATA_OFFSET + CAB_DATA_SIZE
 #define CAB2_DATA_OFFSET CAB1_NAME_OFFSET + CAB_NAME_STRING_SIZE
 #define CAB2_NAME_OFFSET CAB2_DATA_OFFSET + CAB_DATA_SIZE
@@ -331,8 +331,8 @@ void Erase();
 
 
 extern Preset::TPresetData currentPreset;
-//extern Preset::TCabinet cab1;
-//extern Preset::TCabinet cab2;
+extern uint8_t __CCM_BSS__ tempCabBuffer[];
+extern uint8_t __CCM_BSS__ tempDataBuffer[];
 
 
 extern volatile uint8_t currentPresetNumber;

@@ -177,7 +177,7 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 	fs_res = f_lseek(&f, 24);
 	uint32_t sample_rate;
 	fs_res = f_read(&f, (void*)&sample_rate, 4, &br);
-	if(sample_rate!=48000)
+	if(sample_rate != 48000)
 	{
 		err_msg = "unsupported format  (no 48000 sample rate sets)";
 		//rmsg(err_msg.c_str());
@@ -191,13 +191,13 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 
 	if(cab_type != CAB_CONFIG_STEREO)
 	{
-		if(file_size > 8192 * 3)
-			file_size = 8192 * 3;
+		if(file_size > CAB_DATA_SIZE * 2 * 3)
+			file_size = CAB_DATA_SIZE * 2 * 3;
 	}
 	else
 	{
-		if(file_size > 4096 * 3)
-			file_size = 4096 * 3;
+		if(file_size > CAB_DATA_SIZE * 3)
+			file_size = CAB_DATA_SIZE * 3;
 	}
 
 	// read cabinet data
@@ -234,10 +234,10 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 		response.file.type = object.type;
 
 		emb_string err;
-		if(GetDataFromFile(presetBuffer, err))
+		if(GetDataFromFile(tempCabBuffer, err))
 		{
 			response.responseType = TUITask::rpFileLoaded;
-			response.file.buffer = &presetBuffer[0];
+			response.file.buffer = &tempCabBuffer[0];
 
 			char nameBuffer[64];
 			uint8_t name_point = 0;
@@ -249,9 +249,6 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 			nameBuffer[0] = name_point;
 
 			kgp_sdk_libc::memcpy(response.file.name, nameBuffer, 64);
-
-
-			Preset::cab_data_ready = true;
 		}
 		else
 		{
@@ -316,11 +313,11 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 			{
 				emb_string tmp = global_path;
 				tmp.resize(_MAX_LFN);
-				kgp_sdk_libc::memcpy(Preset::impulsePath, tmp.c_str(), _MAX_LFN);
+				kgp_sdk_libc::memcpy(currentPreset.currentImpulsePath, tmp.c_str(), _MAX_LFN);
 
 				tmp = FileSystemTask->Object().name;
 				tmp.resize(_MAX_LFN);
-				kgp_sdk_libc::memcpy(Preset::impulsePath+256, tmp.c_str(), _MAX_LFN);
+				kgp_sdk_libc::memcpy(currentPreset.currentImpulseName, tmp.c_str(), _MAX_LFN);
 
 				TUITask::TResponse response;
 				response.responseType = TUITask::rpFileSelected;

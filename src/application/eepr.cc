@@ -105,9 +105,6 @@ void EEPROM_Start()
 	}
 
 	cab_type = sys_para[System::CAB_SIM_CONFIG];
-
-//	cab1.data = &currentPreset.cabBuf[0];
-//	cab2.data = &currentPreset.cabBuf[CAB_DATA_SIZE];
 }
 
 void EEPROM_WriteSys(void)

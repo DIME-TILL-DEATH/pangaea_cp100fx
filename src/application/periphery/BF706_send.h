@@ -26,6 +26,7 @@ enum dsp_module_address_t
 	DSP_ADDRESS_EARLY_REFLECTIONS,
 	DSP_ADDRESS_CAB_DATA_SECONDARY,
 	DSP_ADDRESS_MASTER = 19,
+	DSP_ADDRESS_MASTER_VOLUME_CONTROL = 21,
 	DSP_ADDRESS_EQ_BAND = 22,
 	DSP_ADDRESS_AMP_TYPE,
 	DSP_ADDRESS_DSP_RUN,
@@ -53,19 +54,17 @@ enum dsp_indicator_source_t
 	DSP_INDICATOR_IN
 };
 
-extern uint8_t spi_stat;
+void DSP_GuiSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value = 0);
+void DSP_ContrSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value = 0);
+void DSP_ExtSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value = 0);
 
-void DSP_GuiSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value);
-void DSP_ContrSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value);
+void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData,
+		uint8_t* modulesData, uint8_t presetNum = 0);
 
-void DSP_SendPrimaryCabData(uint8_t* data, uint8_t presetNum = 0);
+void DSP_SendPrimaryCabData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t presetNum = 0);
 void DSP_SendSecondaryCabData(uint8_t* data, uint8_t presetNum = 0); // 0 - currentPreset
 
 void DSP_ErasePrimaryCab(uint8_t presetNum);
 void DSP_EraseSecondaryCab(uint8_t presetNum);
-
-void send_cab_data(uint8_t val, uint8_t num, uint8_t menu_fl);
-
-void ext_send(uint8_t data);
 
 #endif /* BF706_SEND_H_ */
