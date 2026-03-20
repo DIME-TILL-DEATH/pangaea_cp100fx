@@ -3,7 +3,7 @@
 #include "console_helpers.h"
 
 #include "adc.h"
-#include "BF706_send.h"
+#include "sharc.h"
 
 #include "eepr.h"
 

@@ -1,19 +1,18 @@
 #include "mainmenu.h"
 
-#include "../../tasks/controllers_task.h"
-#include "../../tasks/display_task.h"
-#include "../../tasks/filesystem_task.h"
-#include "../../tasks/io_task.h"
-#include "../../tasks/midi_task.h"
-#include "../../tasks/ui_task.h"
-#include "../bitmaps/allFonts.h"
-#include "appdefs.h"
 #include "eepr.h"
-#include "BF706_send.h"
 #include "system.h"
-
 #include "modules.h"
 #include "footswitch.h"
+
+#include "controllers_task.h"
+#include "display_task.h"
+#include "filesystem_task.h"
+#include "io_task.h"
+#include "midi_task.h"
+#include "ui_task.h"
+
+#include "allFonts.h"
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"

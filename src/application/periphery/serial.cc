@@ -1,16 +1,18 @@
 #include "serial.h"
 
-#include "system.h"
+#include "sharc.h"
 
+#include "system.h"
 #include "compressor.h"
+#include "codec.h"
+#include "periphery.h"
 
 #include "display_task.h"
 #include "midi_task.h"
 #include "spectrum_task.h"
 #include "console.h"
 
-#include "codec.h"
-#include "periphery.h"
+
 
 //-------------------------------------------------SPI_init------------------------------------------------
 void HW_SpiInit(uint8_t type)

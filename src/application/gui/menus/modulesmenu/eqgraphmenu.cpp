@@ -1,14 +1,13 @@
 #include "eqgraphmenu.h"
 
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/io_task.h"
-#include "../../bitmaps/allFonts.h"
-#include "appdefs.h"
 #include "eepr.h"
-#include "BF706_send.h"
 #include "filter.h"
-
 #include "preset.h"
+
+#include "allFonts.h"
+
+#include "display_task.h"
+#include "io_task.h"
 
 const uint8_t EqGraphMenu::paramNames[][3];
 const uint8_t EqGraphMenu::bandNames[][6];

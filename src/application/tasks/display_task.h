@@ -3,6 +3,8 @@
 
 #include "appdefs.h"
 
+#include "sharc.h"
+
 #include "allFonts.h"
 
 #define FILE_NAME_LENGTH 64

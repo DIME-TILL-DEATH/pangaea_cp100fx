@@ -1,18 +1,13 @@
-
-#include "../gui/bitmaps/amt.h"
-#include "../gui/bitmaps/tun_bit.h"
 #include "console_handlers.h"
+
+#include "sharc.h"
 
 #include "eepr.h"
 #include "ff.h"
-
 #include "codec.h"
-#include "BF706_send.h"
-
-#include "controller.h"
-#include "midi_task.h"
-
 #include "system.h"
+#include "controller.h"
+
 #include "console_helpers.h"
 #include "resonance_filter_handlers.h"
 #include "gate_handlers.h"
@@ -28,13 +23,16 @@
 #include "early_handlers.h"
 #include "reverb_handlers.h"
 #include "tremolo_handlers.h"
-
 #include "syssettings_handlers.h"
-
-#include "copyselectmenu.h"
 
 #include "filesystem_task.h"
 #include "spectrum_task.h"
+#include "midi_task.h"
+
+#include "copyselectmenu.h"
+
+#include "amt.h"
+#include "tun_bit.h"
 
 
 bool consoleBusy = false;

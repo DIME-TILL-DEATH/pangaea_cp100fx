@@ -1,4 +1,5 @@
-#ifndef CC_H_
+#ifndef CONTROLLERS_TASK_H_
+#define CONTROLLERS_TASK_H_
 
 #include "appdefs.h"
 
@@ -46,6 +47,14 @@ private:
 		};
 	}TControllerCmd;
 
+	TQueue *queue;
+
+	static constexpr uint8_t maBufSize = 4;
+	float maMidiClockBuf[maBufSize] = {500};
+	uint8_t maMidiClockBufPos = 0;
+
+	void controllerSetData(uint8_t adr, uint8_t data);
+
 	TQueue::TQueueSendResult Command(TControllerCmd *cmd)
 	{
 		if(cortex_isr_num())
@@ -62,19 +71,8 @@ private:
 			return queue->SendToBack(cmd, 0);
 		}
 	}
-
-	TQueue *queue;
-
-	static constexpr uint8_t maBufSize = 4;
-	float maMidiClockBuf[maBufSize] = {500};
-	uint8_t maMidiClockBufPos = 0;
 };
 
-void controllerSetData(uint8_t adr, uint8_t data);
-
-extern volatile uint8_t midi_b[3];
-
-extern volatile uint16_t adc_bu;
 extern TControllersTask *ControllersTask;
 
-#endif /* CC_H_ */
+#endif /* CONTROLLERS_TASK_H_ */

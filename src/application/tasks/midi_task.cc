@@ -1,7 +1,6 @@
 #include "midi_task.h"
 
 #include "eepr.h"
-#include "BF706_send.h"
 
 #include "system.h"
 #include "preset.h"
@@ -16,8 +15,6 @@
 #include "controllersmenu.h"
 
 TMidiTask *MidiTask;
-
-volatile uint8_t pc_mute_fl;
 
 inline void uart_send(uint8_t val)
 {
@@ -130,13 +127,13 @@ void TMidiTask::Code()
 							if(currentMenu->menuType() == MENU_TUNER_EXT)
 							{
 								TunerExtMenu* tunerExtMenu = static_cast<TunerExtMenu*>(currentMenu);
-								tunerExtMenu->showInputMidiCC(midi_b[1]);
+								tunerExtMenu->showInputMidiCC(dataByte[1]);
 							}
 
 							if(currentMenu->menuType() == MENU_CONTROLLERS)
 							{
 								ControllersMenu* controllersMenu = static_cast<ControllersMenu*>(currentMenu);
-								controllersMenu->showInputMidiCC(midi_b[1]);
+								controllersMenu->showInputMidiCC(dataByte[1]);
 							}
 						}
 						uart_send(statusByte | rcvChannel);

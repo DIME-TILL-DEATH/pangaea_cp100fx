@@ -1,7 +1,6 @@
 #include "usbmenu.h"
 
 #include "codec.h"
-#include "BF706_send.h"
 
 #include "display_task.h"
 #include "usb_task.h"

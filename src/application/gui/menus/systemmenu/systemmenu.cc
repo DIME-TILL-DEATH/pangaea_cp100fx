@@ -1,7 +1,6 @@
 #include "systemmenu.h"
 
 #include "adc.h"
-#include "BF706_send.h"
 
 #include "system.h"
 #include "eepr.h"

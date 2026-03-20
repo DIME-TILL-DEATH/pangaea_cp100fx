@@ -3,14 +3,13 @@
 
 #include "abstractmenu.h"
 
-#include "display_task.h"
-#include "icons_bitmap.h"
-
+#include "sharc.h"
 
 #include "system.h"
-
-//#include "BF706_send.h"
 #include "modules.h"
+
+#include "display_task.h"
+#include "icons_bitmap.h"
 
 #include "baseparam.h"
 #include "stringlistparam.h"

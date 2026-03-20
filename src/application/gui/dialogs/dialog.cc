@@ -1,7 +1,5 @@
 #include "dialog.h"
 
-#include "BF706_send.h"
-
 #include "eepr.h"
 #include "preset.h"
 

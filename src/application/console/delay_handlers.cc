@@ -2,7 +2,7 @@
 
 #include "console_helpers.h"
 #include "modules.h"
-#include "BF706_send.h"
+#include "sharc.h"
 
 #include "eepr.h"
 

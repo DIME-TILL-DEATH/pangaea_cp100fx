@@ -1,26 +1,22 @@
 #include "footswitch.h"
 
-#include "appdefs.h"
 #include "eepr.h"
-#include "BF706_send.h"
-#include "controllers_task.h"
 #include "system.h"
-
 #include "preset.h"
 #include "footswitch.h"
 
-#include "gui/bitmaps/allFonts.h"
+#include "display_task.h"
+#include "controllers_task.h"
+#include "filesystem_task.h"
+#include "io_task.h"
+//#include "sdtest_task.h"
+#include "ui_task.h"
+#include "usb_task.h"
 #include "midi_task.h"
-#include "tunermenu.h"
 
-#include "system.h"
-#include "tasks/display_task.h"
-#include "tasks/filesystem_task.h"
-#include "tasks/io_task.h"
-#include "tasks/io_task.h"
-#include "tasks/sdtest_task.h"
-#include "tasks/ui_task.h"
-#include "tasks/usb_task.h"
+#include "allFonts.h"
+
+#include "tunermenu.h"
 
 volatile uint8_t num_key_prog;
 volatile uint8_t contr_pr[3];

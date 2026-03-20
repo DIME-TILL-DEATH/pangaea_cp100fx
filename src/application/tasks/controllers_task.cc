@@ -1,34 +1,26 @@
-#include "appdefs.h"
-#include "eepr.h"
-#include "BF706_send.h"
-#include "system.h"
-
-#include "modulesmenu.h"
-
-#include "controller.h"
 #include "controllers_task.h"
 
-#include "../gui/bitmaps/allFonts.h"
-#include "display_task.h"
-#include "display_task.h"
-#include "io_task.h"
-#include "midi_task.h"
+#include "sharc.h"
+
+#include "eepr.h"
+#include "system.h"
+#include "controller.h"
 #include "preset.h"
 #include "modules.h"
 
-#include "tapmenu.h"
 #include "ui_task.h"
+#include "display_task.h"
+#include "io_task.h"
+#include "midi_task.h"
+
+#include "allFonts.h"
+
+#include "tapmenu.h"
+#include "modulesmenu.h"
 
 TControllersTask *ControllersTask;
 
-volatile uint8_t midi_b[3];
-uint8_t mid_fl;
-uint8_t ext_fl;
-//uint8_t ext_f_fl;
-uint8_t ext_data;
-uint8_t ext_sourc = 255;
-
-void controllerSetData(uint8_t adr, uint8_t data)
+void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 {
 	float val = currentPreset.controller[adr].minVal + (currentPreset.controller[adr].maxVal - currentPreset.controller[adr].minVal) * data / 127.0f;
 

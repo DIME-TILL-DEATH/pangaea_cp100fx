@@ -1,11 +1,11 @@
 #include "preset.h"
 
 #include "adc.h"
+#include "sharc.h"
 
 #include "eepr.h"
-#include "BF706_send.h"
-
 #include "system.h"
+#include "modules.h"
 
 #include "io_task.h"
 #include "midi_task.h"
@@ -20,7 +20,7 @@ uint16_t __CCM_BSS__ Preset::trem_time;
 uint8_t __CCM_BSS__ tempCabBuffer[CAB_DATA_SIZE * 2];
 uint8_t __CCM_BSS__ tempDataBuffer[512]; // sizeof(TModulesData)
 
-
+volatile uint8_t pc_mute_fl;
 void Preset::Change()
 {
 	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);

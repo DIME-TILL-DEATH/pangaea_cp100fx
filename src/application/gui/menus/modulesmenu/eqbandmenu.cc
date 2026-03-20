@@ -1,18 +1,16 @@
 #include "eqbandmenu.h"
 
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/filesystem_task.h"
-#include "../../../tasks/io_task.h"
-#include "../../../tasks/ui_task.h"
-#include "../../bitmaps/allFonts.h"
-#include "appdefs.h"
 #include "eepr.h"
-#include "controllers_task.h"
-#include "BF706_send.h"
-
 #include "preset.h"
 
-//const uint8_t EqBandMenu::gerz[];
+#include "allFonts.h"
+
+#include "controllers_task.h"
+#include "display_task.h"
+#include "filesystem_task.h"
+#include "io_task.h"
+#include "ui_task.h"
+
 const uint8_t EqBandMenu::eq_p_l[][2];
 const uint8_t EqBandMenu::def_eq_band[][10];
 

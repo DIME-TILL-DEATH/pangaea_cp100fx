@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include "sharc.h"
+
 #include "eepr.h"
 #include "preset.h"
 

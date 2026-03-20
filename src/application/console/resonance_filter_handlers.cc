@@ -1,7 +1,7 @@
 #include "resonance_filter_handlers.h"
 #include "console_helpers.h"
 #include "modules.h"
-#include "BF706_send.h"
+#include "sharc.h"
 
 static void rf_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {

@@ -108,8 +108,6 @@ private:
 	TQueue *queue;
 };
 
-extern volatile uint8_t pc_mute_fl;
-
 extern TMidiTask *MidiTask;
 
 void ISR_midi_recieve();

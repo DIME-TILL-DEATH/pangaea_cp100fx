@@ -329,6 +329,7 @@ void Change();
 void Erase();
 }
 
+extern volatile uint8_t pc_mute_fl;
 
 extern Preset::TPresetData currentPreset;
 extern uint8_t __CCM_BSS__ tempCabBuffer[];

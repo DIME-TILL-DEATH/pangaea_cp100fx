@@ -1,15 +1,13 @@
 #include "mastereqmenu.h"
 
-#include "../../tasks/display_task.h"
-#include "../../tasks/io_task.h"
-#include "../bitmaps/allFonts.h"
 #include "modules.h"
-
-#include "appdefs.h"
 #include "eepr.h"
-#include "BF706_send.h"
-
 #include "system.h"
+
+#include "allFonts.h"
+
+#include "display_task.h"
+#include "io_task.h"
 
 #include "realparam.h"
 #include "customparam.h"

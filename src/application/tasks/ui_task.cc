@@ -4,7 +4,6 @@
 
 #include "adc.h"
 #include "ER_OLEDM023-1B.h"
-#include "BF706_send.h"
 #include "pot.h"
 #include "codec.h"
 

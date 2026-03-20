@@ -1,20 +1,15 @@
 #include "expressionmenu.h"
 
-//#include "allFonts.h"
-#include "icons_bitmap.h"
-
 #include "adc.h"
-#include "BF706_send.h"
 #include "gpio.h"
 #include "periphery.h"
 
 #include "system.h"
 #include "footswitch.h"
 
+#include "icons_bitmap.h"
+
 #include "display_task.h"
-//#include "io_task.h"
-//#include "ui_task.h"
-//#include "midi_task.h"
 
 const uint8_t ExpressionMenu::strOk[];
 const uint8_t ExpressionMenu::strSetMin[];
