@@ -143,7 +143,7 @@ static void expr_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 	{
 		ADC_Init(0);
 		sys_para[System::EXPR_TYPE] &= 0x7f;
-		ext_send(127);
+		DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 	}
 	else
 	{
@@ -162,7 +162,7 @@ static void expr_type_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 	sys_para[System::EXPR_TYPE] = (val & 0x7F) | (sys_para[System::EXPR_TYPE] & 0x80);
 
 	if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
-		ext_send(127);
+		DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 
 	EEPROM_WriteSys();
 }

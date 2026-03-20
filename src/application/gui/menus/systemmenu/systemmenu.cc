@@ -234,7 +234,7 @@ void SystemMenu::expressionDescrease(void* parameter)
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	ADC_Init(0);
 	*valuePtr &= 0x7f;
-	ext_send(127);
+	DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 }
 
 void SystemMenu::expressionIncrease(void* parameter)

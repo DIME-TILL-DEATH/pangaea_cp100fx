@@ -135,7 +135,7 @@ void PresetActionsMenu::savePreset()
 	currentPreset.modulesBuf[148] = currentPreset.delayTime>>8;
 	EEPROM_WritePreset(targetPresetNum);
 
-	send_cab_data(0, targetPresetNum+1, 0);
+	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
 	if(cab_type==CAB_CONFIG_STEREO)
 		DSP_SendSecondaryCabData(currentPreset.cab2Data, currentPresetNumber+1);
 

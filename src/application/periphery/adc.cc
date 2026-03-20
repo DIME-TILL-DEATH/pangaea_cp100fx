@@ -98,7 +98,7 @@ void ADC_Routine(void)
 	if((sys_para[System::EXPR_TYPE] & 0x7f) < 3)
 	{
 		if(pc_mute_fl)
-			ext_send(adc_bu2);
+			DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, adc_bu2);
 	}
 	else
 	{
