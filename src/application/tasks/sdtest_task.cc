@@ -7,7 +7,7 @@
 
 uint8_t TSDTestTask::sdInitState = 0;
 
-TSDTestTask *SDTestTask;
+TSDTestTask *SDTestTask = nullptr;
 
 //------------------------------------------------------------------------------
 TSDTestTask::TSDTestTask() :

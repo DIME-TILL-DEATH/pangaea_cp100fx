@@ -1,17 +1,17 @@
-#include "class/msc/usbd_msc_core.h"
+#include "usb_task.h"
 
+#include "class/msc/usbd_msc_core.h"
 #include "class/cdc/usbd_cdc_core.h"
 #include "class/cdc/usbd_cdc_if.h"
-#include "display_task.h"
 
 #include "usbd_usr.h"
 #include "usbd_desc.h"
 #include "usb_dcd_int.h"
-//#include "fs.h"
-#include "ui_task.h"
-#include "usb_task.h"
 
-TUsbTask *UsbTask;
+#include "display_task.h"
+#include "ui_task.h"
+
+TUsbTask *UsbTask = nullptr;
 
 //------------------------------------------------------------------------------
 TUsbTask::TUsbTask(TMode val) :

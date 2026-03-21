@@ -2,7 +2,7 @@
 
 #include "icons_bitmap.h"
 
-TDisplayTask* DisplayTask;
+TDisplayTask* DisplayTask = nullptr;
 
 TDisplayTask::TDisplayTask () :TTask()
 {

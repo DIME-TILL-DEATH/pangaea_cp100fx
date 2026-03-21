@@ -17,7 +17,7 @@
 #include "display_task.h"
 #include "io_task.h"
 
-TUITask *UITask;
+TUITask *UITask = nullptr;
 
 AbstractMenu *currentMenu = nullptr;
 MainMenu *mainMenu = nullptr;

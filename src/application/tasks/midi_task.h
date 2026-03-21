@@ -32,6 +32,7 @@ public:
 
 	void uartRcv(uint8_t data);
 	void uartSend(uint8_t data);
+
 	void pcSend(TPcType pcType, uint8_t presetNumber);
 	void exprSend(uint8_t data);
 	void fswPressed(uint8_t data, uint8_t state);
@@ -88,6 +89,9 @@ private:
 		};
 	}TMidiCmd;
 
+	TQueue *queue;
+
+	void sendBank();
 	TQueue::TQueueSendResult Command(TMidiCmd *cmd)
 	{
 		if(cortex_isr_num())
@@ -104,8 +108,6 @@ private:
 			return queue->SendToBack(cmd, 0);
 		}
 	}
-
-	TQueue *queue;
 };
 
 extern TMidiTask *MidiTask;

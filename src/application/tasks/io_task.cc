@@ -24,7 +24,7 @@
 #define FSW_UP_POS	2
 
 
-TIOTask *IOTask;
+TIOTask *IOTask = nullptr;
 //------------------------------------------------------------------------------
 TIOTask::TIOTask() :
 		TTask()

@@ -18,7 +18,7 @@
 #include "tapmenu.h"
 #include "modulesmenu.h"
 
-TControllersTask *ControllersTask;
+TControllersTask *ControllersTask = nullptr;
 
 void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 {

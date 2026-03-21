@@ -14,26 +14,26 @@
 #include "tunerextmenu.h"
 #include "controllersmenu.h"
 
-TMidiTask *MidiTask;
+TMidiTask *MidiTask = nullptr;
 
-inline void uart_send(uint8_t val)
+TMidiTask::TMidiTask() :
+		TTask()
+{
+}
+
+void TMidiTask::uartSend(uint8_t val)
 {
 	while(!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
 	USART_SendData(USART1, val);
 }
 
-inline void send_bank(void)
+void TMidiTask::sendBank()
 {
-	uart_send(0xb0 | sys_para[System::MIDI_CHANNEL]);
-	uart_send(0x0);
-	uart_send(0x0);
-	uart_send(0x20);
-	uart_send(0x0);
-}
-
-TMidiTask::TMidiTask() :
-		TTask()
-{
+	uartSend(0xb0 | sys_para[System::MIDI_CHANNEL]);
+	uartSend(0x0);
+	uartSend(0x0);
+	uartSend(0x20);
+	uartSend(0x0);
 }
 
 void TMidiTask::Code()
@@ -73,7 +73,7 @@ void TMidiTask::Code()
 						{
 							midiState = WAIT_BYTE1;
 						}
-						else uart_send(recievedByte);
+						else uartSend(recievedByte);
 						break;
 					}
 					case WAIT_BYTE1:
@@ -136,9 +136,9 @@ void TMidiTask::Code()
 								controllersMenu->showInputMidiCC(dataByte[1]);
 							}
 						}
-						uart_send(statusByte | rcvChannel);
-						uart_send(dataByte[0]);
-						uart_send(dataByte[1]);
+						uartSend(statusByte | rcvChannel);
+						uartSend(dataByte[0]);
+						uartSend(dataByte[1]);
 						midiState = WAIT_BYTE1;
 						break;
 					}
@@ -149,21 +149,21 @@ void TMidiTask::Code()
 			case PROGRAMM_CHANGE:
 			{
 				if(cmd.pcCmd.pcType == PC_INTERNAL)
-					send_bank();
+					sendBank();
 
-				uart_send(Midi::MIDI_STATUS_PC | sys_para[System::MIDI_CHANNEL]);
+				uartSend(Midi::MIDI_STATUS_PC | sys_para[System::MIDI_CHANNEL]);
 				switch(currentPreset.pcOut)
 				{
 					case Preset::PcOutType::MidiIn:
-						uart_send(cmd.pcCmd.presetNumber);
+						uartSend(cmd.pcCmd.presetNumber);
 					break;
 
 					case Preset::PcOutType::Map:
-						uart_send(sys_para[System::MIDI_MAP_START + currentPresetNumber]);
+						uartSend(sys_para[System::MIDI_MAP_START + currentPresetNumber]);
 					break;
 
 					case Preset::PcOutType::Set:
-						uart_send(currentPreset.set & 0x7f);
+						uartSend(currentPreset.set & 0x7f);
 					break;
 				}
 				break;
@@ -171,17 +171,17 @@ void TMidiTask::Code()
 
 			case EXPRESSION:
 			{
-				uart_send(Midi::MIDI_STATUS_CC | sys_para[System::MIDI_CHANNEL]);
-				uart_send(sys_para[System::EXPR_CCN] - 1);
-				uart_send(cmd.exprCmd.data);
+				uartSend(Midi::MIDI_STATUS_CC | sys_para[System::MIDI_CHANNEL]);
+				uartSend(sys_para[System::EXPR_CCN] - 1);
+				uartSend(cmd.exprCmd.data);
 				break;
 			}
 
 			case FOOTSWITCH:
 			{
-				uart_send(0xb0 | sys_para[System::MIDI_CHANNEL]);
-				uart_send(sys_para[cmd.fswCmd.fswType] - 1);
-				uart_send(127 * cmd.fswCmd.state);
+				uartSend(0xb0 | sys_para[System::MIDI_CHANNEL]);
+				uartSend(sys_para[cmd.fswCmd.fswType] - 1);
+				uartSend(127 * cmd.fswCmd.state);
 				break;
 			}
 		}
@@ -235,7 +235,7 @@ void ISR_midi_recieve()
 	{
 		if(uart_buf == Midi::MIDI_STATUS_SYSEX_STOP) sysEx_fl = 0;
 
-		uart_send(uart_buf);
+		MidiTask->uartSend(uart_buf);
 		return;
 	}
 
@@ -261,7 +261,7 @@ void ISR_midi_recieve()
 			}
 		}
 
-		uart_send(uart_buf);
+		MidiTask->uartSend(uart_buf);
 		return;
 	}
 
@@ -269,7 +269,7 @@ void ISR_midi_recieve()
 	if(uart_buf == Midi::MIDI_STATUS_SYSEX_START)
 	{
 		sysEx_fl = 1;
-		uart_send(uart_buf);
+		MidiTask->uartSend(uart_buf);
 	}
 	else
 	{
