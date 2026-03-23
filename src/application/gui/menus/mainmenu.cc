@@ -1,4 +1,3 @@
-#include <bitmaps.h>
 #include "mainmenu.h"
 
 #include "eepr.h"
@@ -12,6 +11,8 @@
 #include "io_task.h"
 #include "midi_task.h"
 #include "ui_task.h"
+
+#include "bitmaps.h"
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
@@ -32,7 +33,7 @@ void MainMenu::show(TShowMode swhoMode)
 	currentMenu = this;
 	shownChildMenu = nullptr;
 
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	m_preselectedPresetNum = currentPresetNumber;
 	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);

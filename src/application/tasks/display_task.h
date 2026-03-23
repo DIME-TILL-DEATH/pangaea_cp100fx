@@ -51,7 +51,8 @@ public:
 		dcFswInd,
 		dcPresetInd,
 		dcTunerInit,
-		dcTunerArrow,
+		dcTunerRefFreq,
+		dcTunerDraw,
 		dcIconAndArrows,
 		dcArrow,
 		dcCount,
@@ -181,6 +182,13 @@ public:
 
 	typedef struct
 	{
+		bool noteDefined;
+		float refFreq;
+		uint8_t arrowPos;
+	}TTunerParam;
+
+	typedef struct
+	{
 		TCommand cmd;
 		union
 		{
@@ -202,16 +210,9 @@ public:
 			TFswIndParam FswIndParam;
 			TArrowParam ArrowParam;
 			TIconAndArrowParam IconAndArrowParam;
+			TTunerParam TunerParam;
 		};
 	}TDisplayCmd;
-
-	enum TVolIndicatorType
-	{
-		VOL_INDICATOR_OFF = 0,
-		VOL_INDICATOR_IN,
-		VOL_INDICATOR_OUT,
-		VOL_INDICATOR_VOLUME
-	};
 
 	// send command from code/tasks
 	inline TQueue::TQueueSendResult Command(TDisplayCmd *cmd)
@@ -270,8 +271,8 @@ public:
 	void IconAndArrows(icon_t num, strelka_t strel);
 
 	void TunerInit();
-	void TunerDeinit();
-	void TunStrel();
+	void TunerRefFreq(float refFreq);
+	void TunerDraw(bool noteDefined, uint8_t arrowPos);
 
 	void Arrow(uint8_t x, uint8_t y, uint32_t dir);
 
@@ -280,13 +281,8 @@ private:
 	TQueue *queue;
 
 	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
-	uint8_t* m_volIndPar_ptr;
+	uint8_t* m_volIndPar_ptr{nullptr};
 	uint16_t m_indRefreshCounter;
-
-	bool m_tunerInitiated{false};
-
-	// move outside class, to /elements/
-	void DrawVolIndicator(uint8_t xPos, uint8_t indLength, TDisplayTask::TVolIndicatorType volIndicatorType);
 };
 
 extern volatile uint8_t ind_en;

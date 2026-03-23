@@ -1,10 +1,11 @@
 #include "abstractmenu.h"
 
-#include "../../tasks/display_task.h"
 #include "eepr.h"
-
 #include "preset.h"
 
+#include "bitmaps.h"
+
+#include "display_task.h"
 
 bool AbstractMenu::blinkFlag = false;
 uint8_t AbstractMenu::subMenusToRoot = 1;
@@ -26,7 +27,7 @@ void AbstractMenu::keyUp()
 void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 {
 	currentMenu = this;
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	switch(returnMode)
 	{

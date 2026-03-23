@@ -3,6 +3,8 @@
 #include "system.h"
 #include "eepr.h"
 
+#include "bitmaps.h"
+
 #include "stringlistparam.h"
 
 AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
@@ -27,7 +29,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	params[1] = new StringListParam("Source", &sys_para[System::ATTENUATOR_MODE], {"Global", "Preset"}, 7);
 	params[1]->setDisplayPosition(76);
 
-	setVolumeIndicator(TDisplayTask::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
+	setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
 
 	setParams(params, paramCount);
 	setIcon(false, ICON_NONE);
@@ -135,5 +137,5 @@ void AttenuatorMenu::exitMenu()
 		EEPROM_WritePreset(currentPresetNumber);
 
 	EEPROM_WriteSys();
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 }

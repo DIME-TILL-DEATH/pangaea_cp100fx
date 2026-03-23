@@ -12,6 +12,8 @@
 #include "ui_task.h"
 #include "sharc_task.h"
 
+#include "bitmaps.h"
+
 #include "stringlistparam.h"
 #include "stringoutparam.h"
 
@@ -53,7 +55,7 @@ void ModulesMenu::show(TShowMode showMode)
 
 	if(showMode == TShowMode::FirstShow) presetEdited = false;
 
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	DisplayTask->Clear();
 	refresh();
 
@@ -187,7 +189,7 @@ void ModulesMenu::key2()
 	{
 		menu->setParams(params, paramCount);
 		menu->setIcon(false, ICON_NONE);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
+		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
 	}
 
 	presetEdited = true;

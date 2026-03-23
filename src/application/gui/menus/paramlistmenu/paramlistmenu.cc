@@ -46,7 +46,7 @@ void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingPara
 	m_pagesCount = ceil((float)m_paramsCount/(float)paramsOnPage);
 }
 
-void ParamListMenu::setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType,
+void ParamListMenu::setVolumeIndicator(TVolIndicatorType volIndicatorType,
 		dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
 	m_volIndicatorType = volIndicatorType;

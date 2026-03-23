@@ -92,7 +92,7 @@ void UsbMenu::encoderPressed()
 		case TUsbTask::mMSC:
 		{
 			CODEC_Send(0xa102);
-			SharcTask->setParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
+			SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 0, 0);
 
 			DisplayTask->Clear();
 			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"cp100fx connected as");

@@ -6,6 +6,8 @@
 
 #include "sharc_task.h"
 
+#include "bitmaps.h"
+
 #include "submenuparam.h"
 #include "stringoutparam.h"
 #include "customparam.h"
@@ -114,7 +116,7 @@ AbstractMenu* GuiModules::createPreampMenu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_PREAMP);
+		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_PREAMP);
 	}
 
 	return menu;
@@ -144,7 +146,7 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_OUT, DSP_INDICATOR_AMP);
+		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_AMP);
 	}
 
 	return menu;
@@ -201,7 +203,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1, &currentPreset.modulesBuf[IR_VOLUME1]);
+		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1, &currentPreset.modulesBuf[IR_VOLUME1]);
 		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
@@ -237,7 +239,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TDisplayTask::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2, &currentPreset.modulesBuf[IR_VOLUME2]);
+		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2, &currentPreset.modulesBuf[IR_VOLUME2]);
 		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);

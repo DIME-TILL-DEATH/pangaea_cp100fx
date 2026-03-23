@@ -1,15 +1,16 @@
-#include <bitmaps.h>
-#include "amt.h"
+#include "bitmaps.h"
 
 #include "periphery.h"
+#include "serial.h"
 
 #include "preset.h"
 #include "footswitch.h"
-
 #include "system.h"
 
-uint32_t ind_out_l[2];
+#include "amt.h"
+#include "bitmaps.h"
 
+#include "display_task.h"
 
 uint8_t Font::symbolWidth(Font::TFontName fontName)
 {
@@ -431,3 +432,45 @@ void progress_bar(uint8_t col, uint8_t pag, uint32_t val)
 	}
 	GPIO_SetBits(GPIOB, CS);
 }
+
+void vol_indicator(uint8_t xPos, uint8_t indLength, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr)
+{
+	uint8_t volIndPosition = 32;
+
+	if(volIndPar_ptr) volIndPosition = (*volIndPar_ptr >> 1) + 1;
+	else volIndPosition = 0;
+
+	uint8_t outLevel;
+
+	if(ind_out_l[1] < 8388000)
+		outLevel = /*vsqrt*/(ind_out_l[1]) * ((float)(indLength - 1) / (8384000.0f));
+	else
+		outLevel = indLength - 1;
+
+//	ind_out_l[1] = 0;
+
+	LCD_SetColumnAddress(xPos);
+	LCD_SetPageAddress(3);
+
+	for(uint8_t i = 0; i < indLength; i++)
+	{
+		if(volIndicatorType == TVolIndicatorType::VOL_INDICATOR_VOLUME && i >= volIndPosition - 2 && i <= volIndPosition)
+		{
+			if(i == volIndPosition - 1) LCD_WriteData(0x42);
+			else LCD_WriteData(0x3c);
+		}
+		else
+		{
+			if((i == indLength - 1) || (i == 0))
+			{
+				LCD_WriteData(0x7e, 1); //3c
+			}
+			else
+			{
+				if(i < outLevel) LCD_WriteData(0x3c);
+				else LCD_WriteData(0x0);
+			}
+		}
+	}
+}
+

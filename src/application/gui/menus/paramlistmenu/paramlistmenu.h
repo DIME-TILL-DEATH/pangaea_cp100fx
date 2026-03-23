@@ -9,6 +9,8 @@
 #include "modules.h"
 
 #include "display_task.h"
+
+#include "bitmaps.h"
 #include "icons_bitmap.h"
 
 #include "baseparam.h"
@@ -22,7 +24,7 @@ public:
 	~ParamListMenu() override;
 
 	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount);
-	void setVolumeIndicator(TDisplayTask::TVolIndicatorType indicatorType,
+	void setVolumeIndicator(TVolIndicatorType indicatorType,
 			dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 
 	virtual void show(TShowMode showMode = FirstShow) override;
@@ -69,7 +71,7 @@ protected:
 
 	bool m_encoderKnobSelected;
 
-	TDisplayTask::TVolIndicatorType m_volIndicatorType{TDisplayTask::VOL_INDICATOR_OFF};
+	TVolIndicatorType m_volIndicatorType{TVolIndicatorType::VOL_INDICATOR_OFF};
 	dsp_indicator_source_t m_indicatorSource;
 	uint8_t* m_indicatorParam_ptr;
 

@@ -9,6 +9,8 @@ void HW_UartInit();
 
 void HW_ReadKeysEnable();
 
-extern volatile uint16_t key_reg_in;
+uint16_t HW_KeyInValue();
+
+extern uint32_t ind_out_l[2];
 
 #endif /* SERIAL_H_ */

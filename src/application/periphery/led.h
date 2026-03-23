@@ -1,0 +1,18 @@
+#ifndef LED_H_
+#define LED_H_
+
+#include "appdefs.h"
+
+typedef enum{
+	LED_TAP_GREEN = 1,
+	LED_FX_RED
+}TLedType;
+
+typedef enum{
+	DISABLED,
+	ENABLED
+}TLedState;
+
+void LED_SetState(TLedType ledType, TLedState ledState);
+
+#endif /* LED_H_ */

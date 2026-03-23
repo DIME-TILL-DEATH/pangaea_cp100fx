@@ -2,6 +2,7 @@
 
 #include "serial.h"
 #include "pot.h"
+#include "led.h"
 
 #include "serial.h"
 #include "footswitch.h"
@@ -88,9 +89,9 @@ void TIOTask::Code()
 				}
 
 				if(isLedOn)
-					GPIO_SetBits(GPIOB, GPIO_Pin_14);
+					LED_SetState(TLedType::LED_FX_RED, ENABLED);
 				else
-					GPIO_ResetBits(GPIOB, GPIO_Pin_14);
+					LED_SetState(TLedType::LED_FX_RED, DISABLED);
 				break;
 			}
 
@@ -176,7 +177,7 @@ void ISR_buttons_read()
 	DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
 	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TCIF6);
 
-	uint16_t key_reg = ~((key_reg_in & 0x7fff) ^ KEY_NO_PRESS_MASK);
+	uint16_t key_reg = ~((HW_KeyInValue() & 0x7fff) ^ KEY_NO_PRESS_MASK);
 
 	TKeysEvents keyEvents;
 	keyEvents.hold = keysHold;

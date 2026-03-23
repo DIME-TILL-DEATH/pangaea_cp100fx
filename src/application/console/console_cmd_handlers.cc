@@ -739,19 +739,14 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 			if(on)
 			{
 				CODEC_Send(0xa102);
-				SharcTask->setParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
-				tun_base_old = 0.0f;
-
+				SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 0, 0);
 				SpectrumTask->backgroundTunerEnabled = true;
 			}
 			else
 			{
-				SpectrumTask->backgroundTunerEnabled = false;
-
-				SharcTask->setParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
-
-				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
+				SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 1, 0);
 				CODEC_Send(0xa103);
+				SpectrumTask->backgroundTunerEnabled = false;
 			}
 			msg_console("%d", on);
 		}

@@ -2,8 +2,9 @@
 
 #include "system.h"
 #include "preset.h"
-
 #include "fs_browser.h"
+
+#include "bitmaps.h"
 
 #include "display_task.h"
 #include "filesystem_task.h"
@@ -23,7 +24,7 @@ void CabBrowserMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	if(TSDTestTask::sdInitState == 1)
 	{

@@ -14,7 +14,6 @@
 #include "console.h"
 
 
-
 //-------------------------------------------------SPI_init------------------------------------------------
 void HW_SpiInit(uint8_t type)
 {
@@ -198,6 +197,11 @@ void HW_UartInit()
 	NVIC_Init(&NVIC_InitStructure);
 }
 
+uint16_t HW_KeyInValue()
+{
+	return key_reg_in;
+}
+
 void HW_ReadKeysEnable()
 {
 	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
@@ -227,6 +231,7 @@ volatile uint32_t __CCM_BSS__ cl;
 volatile uint32_t __CCM_BSS__ cr;
 uint8_t dma_ht_fl;
 uint8_t tun_del;
+uint32_t ind_out_l[2];
 extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 {
 	if(tap_temp < 131071) tap_temp += 1;
@@ -259,7 +264,6 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 	if(ind_out_l[0] > ind_out_l[1])
 		ind_out_l[1] = ind_out_l[0];
 
-
 	DisplayTask->VolIndicatorTask();
 
 //--------------------Tuner------------------------------
@@ -268,9 +272,32 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 		SpectrumBuffsUpdate(COMP_Out(in));
 		if(tun_del > tun_del_val)
 		{
-			tun_del = 0;
+			if(SpectrumTask)
+			{
+				tun_del = 0;
 
-			DisplayTask->TunStrel();
+				uint8_t arrowPos;
+				int aa = SpectrumTask->freq_diff * 1000.0f;
+				float bb = aa/1000.0f;
+
+				if(SpectrumTask->freq_diff<0)
+				{
+					float a = SpectrumTask->HalfTone(SpectrumTask->note-1);
+					float b = SpectrumTask->HalfTone(SpectrumTask->note);
+					float c = (b-a)*0.5f;
+					arrowPos = (uint8_t)((64.0-(fabsf(bb)*(64.0/c))));
+				}
+				else
+				{
+					float a = SpectrumTask->HalfTone(SpectrumTask->note+1);
+					float b = SpectrumTask->HalfTone(SpectrumTask->note);
+					float c = (a-b)*0.5f;
+					arrowPos = (uint8_t)(((bb*(64.0/c)))+64.0);
+				}
+
+				DisplayTask->TunerDraw(SpectrumTask->noteDefined, arrowPos);
+				SpectrumTask->noteDefined = false;
+			}
 		}
 		tun_del++;
 		return;
@@ -296,7 +323,7 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 				{
 					SpectrumTask->backgroundTunerEnabled = false;
 
-					SharcTask->setParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
+					SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 1, 0);
 					GPIO_ResetBits(GPIOB, GPIO_Pin_11);
 					CODEC_Send(0xa103);
 				}

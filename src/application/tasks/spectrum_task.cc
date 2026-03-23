@@ -47,10 +47,7 @@ volatile size_t n = 256;   // frame overlap
 vec in_0[N];
 vec in_1[N];
 vec __CCM_BSS__ Wfwd[32];
-//float dBv[N];
-//float dBw[N];
 
-volatile uint8_t notee;
 
 TSpectrumTask::TSpectrumTask()
 {
@@ -132,7 +129,7 @@ void TSpectrumTask::ToneMeter()
 //		float c = (a-b)*0.5f;
 //		t_po = (uint8_t)(((bb*(64.0/c)))+64.0);
 //	}
-	notee = 1;
+	noteDefined = true;
 }
 
 void SpectrumBuffsUpdate(float u)

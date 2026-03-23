@@ -1,21 +1,38 @@
 #include "tuner_bitmap.h"
 
 #include "lcd.h"
+#include "led.h"
+#include "serial.h"
+
 #include "bitmaps.h"
 
 #include "spectrum_task.h"
 
+const  uint8_t scale_tun[] = {
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xE0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xF0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xF8, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xFC, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x81, 0x83, 0x87, 0x8F, 0x9F, 0xBF, 0x7F   // Code for char
+		        };
 
 void tuner_init(void)
 {
 	LCD_Clear();
-	tuner_scale();
+
+	LCD_SetColumnAddress(0);
+	LCD_SetPageAddress(2);
+	GPIO_ResetBits(GPIOB,CS);
+	for(uint8_t i = 0 ; i < 127 ; i++)
+	{
+		if(i < 64)
+			LCD_WriteData(scale_tun[i]);
+		else
+			LCD_WriteData(scale_tun[126 - i]);
+	}
+	GPIO_SetBits(GPIOB,CS);
 }
 
 const uint8_t di_tun[] = {
 		0x60, 0x06, 0x60, 0x3E, 0xE0, 0x3F, 0xFE, 0x3F, 0xFE, 0x07, 0x7E, 0x3E, 0xE0, 0x3F, 0xFE, 0x3F, 0xFE, 0x07, 0x7E, 0x06, 0x60, 0x06, 0x00, 0x00, 0x00, 0x00
         };
-void diez_tun(void)
+void tuner_diez(void)
 {
 	for(uint8_t i = 0 ; i < 2 ; i++)
 	{
@@ -27,6 +44,7 @@ void diez_tun(void)
 		GPIO_SetBits(GPIOB,CS);
 	}
 }
+
 const uint8_t not_tun[] = {
         0x00, 0x00, 0xF0, 0x01, 0xFC, 0x07, 0xFE, 0x0F, 0x0F, 0x1E, 0x07, 0x1C, 0x03, 0x18, 0x03, 0x18, 0x03, 0x18, 0x07, 0x1C, 0x0E, 0x0E, 0x0E, 0x0E, 0x0C, 0x06, 0x00, 0x00, 0x00, 0x00,  // Code for char C
         0x00, 0x00, 0x00, 0x00, 0xFF, 0x1F, 0xFF, 0x1F, 0xFF, 0x1F, 0x03, 0x18, 0x03, 0x18, 0x03, 0x18, 0x03, 0x18, 0x07, 0x1C, 0x0F, 0x1E, 0xFE, 0x0F, 0xFC, 0x07, 0xF8, 0x01, 0x00, 0x00,  // Code for char D
@@ -68,90 +86,47 @@ void tuner_note(void)
 				LCD_WriteData(tire[f*2 + i]);
 		}
 
-		if(((t_no == 1) || (t_no == 3) || (t_no == 6) || (t_no == 8) || (t_no == 10)) && (ind_out_l[1] > 500)) diez_tun();
+		if(((t_no == 1) || (t_no == 3) || (t_no == 6) || (t_no == 8) || (t_no == 10)) && (ind_out_l[1] > 500)) tuner_diez();
 		GPIO_SetBits(GPIOB,CS);
 	}
 	ind_out_l[1] = 0;
 }
 
-float tun_base_old;
-
 const uint8_t strelk_tun[] = {0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80};
 
-uint8_t t_po;
-uint8_t t_po1;
-void tuner_arrow(void)
+uint8_t arrow_pos_prev;
+void tuner_arrow(uint8_t arrow_pos)
 {
-	int aa = SpectrumTask->freq_diff*1000.0f;
-	float bb = aa/1000.0f;
+	if(ind_out_l[1] < 1500) arrow_pos = 64;
 
-	if(SpectrumTask->freq_diff<0)
-	{
-		float a = SpectrumTask->HalfTone(SpectrumTask->note-1);
-		float b = SpectrumTask->HalfTone(SpectrumTask->note);
-		float c = (b-a)*0.5f;
-		t_po = (uint8_t)((64.0-(fabsf(bb)*(64.0/c))));
-	}
-	else
-	{
-		float a = SpectrumTask->HalfTone(SpectrumTask->note+1);
-		float b = SpectrumTask->HalfTone(SpectrumTask->note);
-		float c = (a-b)*0.5f;
-		t_po = (uint8_t)(((bb*(64.0/c)))+64.0);
-	}
-
-	if(t_po1 != t_po)
+	if(arrow_pos_prev != arrow_pos)
 	{
 		LCD_SetPageAddress(3);
-		LCD_SetColumnAddress(t_po1 - 8);
+		LCD_SetColumnAddress(arrow_pos_prev - 8);
 
 		uint8_t nullData = 0;
 		LCD_WriteData(nullData, 15);
 
-		if(ind_out_l[1] < 1500)t_po = 64;
+		if(arrow_pos_prev < arrow_pos) arrow_pos_prev += ( arrow_pos - arrow_pos_prev)/4 + 1;
+		if(arrow_pos_prev > arrow_pos) arrow_pos_prev -= ( arrow_pos_prev - arrow_pos)/4 + 1;
 
-		if(t_po1 < t_po)t_po1 += ( t_po - t_po1)/4 + 1;
-		if(t_po1 > t_po)t_po1 -= ( t_po1 -t_po)/4 + 1;
-
-		if((t_po1 > 62) && (t_po1 < 66))GPIO_SetBits(GPIOB,GPIO_Pin_11);
-		else GPIO_ResetBits(GPIOB,GPIO_Pin_11);
-
-		LCD_SetColumnAddress(t_po1 - 8);
+		LCD_SetColumnAddress(arrow_pos_prev - 8);
 		GPIO_ResetBits(GPIOB,CS);
 		for(uint8_t i = 0 ; i < 15 ; i++)
 			LCD_WriteData(strelk_tun[i]);
 		GPIO_SetBits(GPIOB,CS);
 	}
 
-	if(notee)
+	// TODO: move outside
+	if(ind_out_l[1] > 1500)
 	{
-		notee = 0;
-		tuner_note();
-	}
-
-	if(tun_base_old != SpectrumTask->ref_freq)
-	{
-		tun_base_old = SpectrumTask->ref_freq;
-		param_ind_num_(10,0,(uint16_t)SpectrumTask->ref_freq);
-		Arsys_line(30, 0, (uint8_t*)"Hz", 0);
+		if((arrow_pos_prev > 62) && (arrow_pos_prev < 66)) LED_SetState(TLedType::LED_TAP_GREEN, TLedState::ENABLED);
+		else LED_SetState(TLedType::LED_TAP_GREEN, TLedState::DISABLED);
 	}
 }
-const  uint8_t scale_tun[] = {
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xE0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xF0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xF8, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xFC, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x81, 0x83, 0x87, 0x8F, 0x9F, 0xBF, 0x7F   // Code for char
-		        };
-void tuner_scale(void)
+
+void tuner_ref_freq(uint16_t refFreq)
 {
-	LCD_SetColumnAddress(0);
-	LCD_SetPageAddress(2);
-	GPIO_ResetBits(GPIOB,CS);
-	for(uint8_t i = 0 ; i < 127 ; i++)
-	{
-		if(i < 64)
-			LCD_WriteData(scale_tun[i]);
-		else
-			LCD_WriteData(scale_tun[126 - i]);
-	}
-	GPIO_SetBits(GPIOB,CS);
+	param_ind_num_(10, 0, refFreq);
+	Arsys_line(30, 0, (uint8_t*)"Hz", 0);
 }
-
-

@@ -22,7 +22,7 @@ public:
 	void key5() override;
 
 private:
-	void endTunerTask();
+	void exitTunerMenu();
 };
 
 #endif /* TUNERMENU_H_ */

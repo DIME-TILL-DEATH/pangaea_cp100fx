@@ -1,5 +1,7 @@
 #include "display_task.h"
 
+#include "serial.h"
+
 #include "sharc_task.h"
 
 #include "icons_bitmap.h"
@@ -74,8 +76,8 @@ void TDisplayTask::Code()
             break;
 
 			case dcVolInd:
-				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) DrawVolIndicator(64, 64, m_volIndicatorType);
-				else DrawVolIndicator(58, 50, m_volIndicatorType);
+				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) vol_indicator(64, 64, m_volIndicatorType, m_volIndPar_ptr);
+				else vol_indicator(58, 50, m_volIndicatorType, m_volIndPar_ptr);
             break;
 
 			case dcPresetInd:
@@ -160,11 +162,16 @@ void TDisplayTask::Code()
 
 			case dcTunerInit:
 				tuner_init();
-				m_tunerInitiated = true;
 			break;
 
-			case dcTunerArrow:
-				tuner_arrow();
+			case dcTunerDraw:
+				tuner_arrow(cmd.TunerParam.arrowPos);
+				if(cmd.TunerParam.noteDefined)
+					tuner_note();
+			break;
+
+			case dcTunerRefFreq:
+				tuner_ref_freq((uint16_t)cmd.TunerParam.refFreq);
 			break;
 
 			case dcFswInd:
@@ -424,18 +431,21 @@ void TDisplayTask::TunerInit(void)
 	cmd.cmd=dcTunerInit;
 	Command(&cmd);
 }
-void TDisplayTask::TunerDeinit()
+
+void TDisplayTask::TunerRefFreq(float refFreq)
 {
-	m_tunerInitiated = false;
 	TDisplayCmd cmd;
-	cmd.cmd=dcClear;
+	cmd.cmd=dcTunerRefFreq;
+	cmd.TunerParam.refFreq = refFreq;
 	Command(&cmd);
 }
 
-void TDisplayTask::TunStrel()
+void TDisplayTask::TunerDraw(bool noteDefined, uint8_t arrowPos)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcTunerArrow;
+	cmd.cmd=dcTunerDraw;
+	cmd.TunerParam.noteDefined = noteDefined;
+	cmd.TunerParam.arrowPos = arrowPos;
 	Command(&cmd);
 }
 
@@ -447,43 +457,3 @@ void TDisplayTask::Arrow(uint8_t x, uint8_t y , uint32_t dir)
 	cmd.ArrowParam.dir = dir;
 	Command(&cmd);
 }
-
-void TDisplayTask::DrawVolIndicator(uint8_t xPos, uint8_t indLength, TDisplayTask::TVolIndicatorType volIndicatorType)
-{
-	uint8_t volIndPosition = 32;
-
-	if(m_volIndPar_ptr) volIndPosition = (*m_volIndPar_ptr >> 1) + 1;
-	else volIndPosition = 0;
-
-	uint8_t outLevel;
-
-	if(ind_out_l[1] < 8388000)
-		outLevel = /*vsqrt*/(ind_out_l[1]) * ((float)(indLength - 1) / (8384000.0f));
-	else
-		outLevel = indLength - 1;
-
-	LCD_SetColumnAddress(xPos);
-	LCD_SetPageAddress(3);
-
-	for(uint8_t i = 0; i < indLength; i++)
-	{
-		if(m_volIndicatorType == TVolIndicatorType::VOL_INDICATOR_VOLUME && i >= volIndPosition - 2 && i <= volIndPosition)
-		{
-				if(i == volIndPosition - 1) LCD_WriteData(0x42);
-				else LCD_WriteData(0x3c);
-		}
-		else
-		{
-			if((i == indLength - 1) || (i == 0))
-			{
-				LCD_WriteData(0x7e, 1); //3c
-			}
-			else
-			{
-				if(i < outLevel) LCD_WriteData(0x3c);
-				else LCD_WriteData(0x0);
-			}
-		}
-	}
-}
-

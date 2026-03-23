@@ -11,9 +11,6 @@ class TSpectrumTask: public TTask
 public:
 
 	TSpectrumTask();
-	virtual ~TSpectrumTask()
-	{
-	}
 
 	bool backgroundTunerEnabled;
 	float ref_freq;
@@ -21,18 +18,9 @@ public:
 	char const *note_name;
 	int8_t cents;
 	size_t note;
+	bool noteDefined{false};
 
 	int16_t samplesCount{0};
-
-	kgp_math::fft& get_fft_0()
-	{
-		return fft_0;
-	}
-
-	kgp_math::fft& get_fft_1()
-	{
-		return fft_1;
-	}
 
 	float inline HalfTone(float index)
 	{
@@ -60,8 +48,6 @@ private:
 
 	void PrintBassGuitarTable();
 
-
-
 	void inline Tone2NoteAndDiff(float tone, size_t &note, float &freq_diff)
 	{
 		note = 0.5f+57+12*vdt::fast_logf(tone/ref_freq)/vdt::fast_logf(2.0f);
@@ -72,6 +58,7 @@ private:
 
 		freq_diff = tone-HalfTone(note);
 	}
+
 
 	size_t guitar_classic_index_table[6];
 	size_t guitar_bass_index_table[6];
@@ -84,7 +71,6 @@ private:
 
 	//float ffts_x2_uS , uS_find_tone, note_and_diff_uS ;
 };
-extern volatile uint8_t notee;
 extern TSpectrumTask *SpectrumTask;
 
 void SpectrumBuffsUpdate(float u);
