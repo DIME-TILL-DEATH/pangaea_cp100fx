@@ -1,5 +1,7 @@
 #include "display_task.h"
 
+#include "sharc_task.h"
+
 #include "icons_bitmap.h"
 
 TDisplayTask* DisplayTask = nullptr;
@@ -233,7 +235,7 @@ void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indic
 	m_volIndicatorType = volIndicatorType;
 	m_volIndPar_ptr = indicatorParPtr;
 
-	DSP_GuiSendParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
+	SharcTask->setParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
 
 	m_indRefreshCounter = 500;
 }

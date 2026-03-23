@@ -29,6 +29,7 @@
 #include "filesystem_task.h"
 #include "spectrum_task.h"
 #include "midi_task.h"
+#include "sharc_task.h"
 
 #include "copyselectmenu.h"
 
@@ -182,7 +183,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 				currentPreset.cab1NameSize = kgp_sdk_libc::strlen(fileName);
 
 				DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
@@ -191,7 +192,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 				currentPreset.cab1NameSize = kgp_sdk_libc::strlen(fileName);
 
 				DSP_SendSecondaryCabData(currentPreset.cab2Data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 
 			msg_console(" set\r%s\n", fileName);
@@ -235,12 +236,12 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 			if(cabNum==0)
 			{
 				DSP_SendPrimaryCabData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE]);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
 				DSP_SendSecondaryCabData(tempCabBuffer);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 			msg_console("%d preview_end\r\n", cabNum);
 		}
@@ -250,12 +251,12 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 			if(cabNum==0)
 			{
 				DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
 				DSP_SendSecondaryCabData(currentPreset.cab2Data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 			msg_console("%d restore\r\n", cabNum);
 		}
@@ -738,7 +739,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 			if(on)
 			{
 				CODEC_Send(0xa102);
-				DSP_ContrSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
+				SharcTask->setParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 				tun_base_old = 0.0f;
 
 				SpectrumTask->backgroundTunerEnabled = true;
@@ -747,7 +748,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 			{
 				SpectrumTask->backgroundTunerEnabled = false;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
+				SharcTask->setParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 
 				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
 				CODEC_Send(0xa103);
@@ -769,7 +770,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 static void preset_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.paramData.preset_volume, rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.paramData.preset_volume, 0);
+	SharcTask->setParameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.paramData.preset_volume, 0);
 }
 
 static void preset_volume_control_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)

@@ -1,4 +1,3 @@
-#include <bitmaps.h>
 #include "eqmenu.h"
 
 #include "eepr.h"
@@ -7,6 +6,8 @@
 
 #include "display_task.h"
 #include "io_task.h"
+#include "sharc_task.h"
+
 #include "eqbandmenu.h"
 
 const uint8_t lpf_hpf[][9] =
@@ -164,9 +165,9 @@ void EqMenu::encoderClockwise()
 	}
 
 	if(bandNum!=8)
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[eq1 + bandNum]);
+		SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[eq1 + bandNum]);
 	else
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, currentPreset.modulesBuf[eq_pr_po]);
+		SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, currentPreset.modulesBuf[eq_pr_po]);
 }
 
 void EqMenu::encoderCounterClockwise()
@@ -241,9 +242,9 @@ void EqMenu::encoderCounterClockwise()
 		}
 
 		if(bandNum!=8)
-			DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[eq1 + bandNum]);
+			SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[eq1 + bandNum]);
 		else
-			DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, currentPreset.modulesBuf[eq_pr_po]);
+			SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, currentPreset.modulesBuf[eq_pr_po]);
 	}
 }
 

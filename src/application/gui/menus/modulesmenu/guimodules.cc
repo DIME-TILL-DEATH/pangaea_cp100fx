@@ -1,25 +1,20 @@
 #include "guimodules.h"
 
 #include "eepr.h"
+#include "system.h"
+#include "preset.h"
+
+#include "sharc_task.h"
+
+#include "submenuparam.h"
+#include "stringoutparam.h"
+#include "customparam.h"
 
 #include "abstractmenu.h"
 #include "eqmenu.h"
 #include "eqgraphmenu.h"
 #include "cabbrowsermenu.h"
 #include "paramlistmenu.h"
-
-#include "submenuparam.h"
-#include "stringoutparam.h"
-#include "customparam.h"
-
-#include "system.h"
-
-#include "preset.h"
-
-//#include "modulesmenu.h"
-
-extern uint8_t cab_type;
-extern uint8_t name_run_fl;
 
 AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 {
@@ -432,8 +427,8 @@ void delayTimeDecrease(void* parameter)
 	currentPreset.modulesBuf[DELAY_TIME_LO] = currentPreset.delayTime & 0xFF;
 	currentPreset.modulesBuf[DELAY_TIME_HI] = currentPreset.delayTime >> 8;
 
-	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
-	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime & 0xFF);
+	SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+	SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime & 0xFF);
 }
 
 void delayTimeIncrease(void* parameter)
@@ -453,8 +448,8 @@ void delayTimeIncrease(void* parameter)
 	currentPreset.modulesBuf[DELAY_TIME_LO] = currentPreset.delayTime & 0xFF;
 	currentPreset.modulesBuf[DELAY_TIME_HI] = currentPreset.delayTime >> 8;
 
-	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
-	DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime & 0xFF);
+	SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+	SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime & 0xFF);
 }
 
 void delayTimePrint(void* parameter)

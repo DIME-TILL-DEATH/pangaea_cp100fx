@@ -1,4 +1,3 @@
-#include <bitmaps.h>
 #include "mastereqmenu.h"
 
 #include "modules.h"
@@ -7,6 +6,7 @@
 
 #include "display_task.h"
 #include "io_task.h"
+#include "sharc_task.h"
 
 #include "realparam.h"
 #include "customparam.h"
@@ -181,7 +181,7 @@ void MasterEqMenu::keyDown()
 
 	EEPROM_WriteSys();
 
-	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
+	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
 }
 
 void MasterEqMenu::key1()
@@ -232,6 +232,6 @@ void MasterEqMenu::setMidFreqCallback(void* parameter)
 	sys_para[System::MASTER_EQ_FREQ_LO] = mstEqMidFreq >> 8;
 	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xFF;
 
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
+	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
+	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
 }

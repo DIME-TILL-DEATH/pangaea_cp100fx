@@ -1,7 +1,6 @@
 #include "preset.h"
 
 #include "adc.h"
-#include "sharc.h"
 
 #include "eepr.h"
 #include "system.h"
@@ -10,6 +9,7 @@
 #include "io_task.h"
 #include "midi_task.h"
 #include "filesystem_task.h"
+#include "sharc_task.h"
 
 
 Preset::TPresetData __CCM_BSS__ currentPreset;
@@ -23,14 +23,14 @@ uint8_t __CCM_BSS__ tempDataBuffer[512]; // sizeof(TModulesData)
 volatile uint8_t pc_mute_fl;
 void Preset::Change()
 {
-	DSP_GuiSendParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
+	SharcTask->setParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
 
 	pc_mute_fl = 0;
 	EEPROM_LoadPreset(currentPresetNumber);
 
 	// DSP binary not set this params?
-	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modulesBuf[PHASER_CENTER]);
-	DSP_GuiSendParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modulesBuf[PHASER_WIDTH]);
+	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modulesBuf[PHASER_CENTER]);
+	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modulesBuf[PHASER_WIDTH]);
 
 	if(sys_para[System::EXPR_STORE_LEVEL])
 		ADC_Routine();

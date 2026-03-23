@@ -10,6 +10,7 @@
 #include "display_task.h"
 #include "midi_task.h"
 #include "spectrum_task.h"
+#include "sharc_task.h"
 #include "console.h"
 
 
@@ -295,7 +296,7 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 				{
 					SpectrumTask->backgroundTunerEnabled = false;
 
-					DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
+					SharcTask->setParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
 					GPIO_ResetBits(GPIOB, GPIO_Pin_11);
 					CODEC_Send(0xa103);
 				}

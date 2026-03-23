@@ -65,9 +65,6 @@ void SHARC_WaitForReady();
 void SHARC_SendData(uint16_t data);
 void SHARC_LoadAllData();
 
-void DSP_GuiSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value = 0);
-void DSP_ContrSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value = 0);
-void DSP_ExtSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value = 0);
 void DSP_SendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value = 0);
 
 void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData,

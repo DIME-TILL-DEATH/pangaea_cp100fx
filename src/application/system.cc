@@ -6,6 +6,7 @@
 #include "preset.h"
 
 #include "display_task.h"
+#include "sharc_task.h"
 
 volatile uint32_t tap_temp;
 uint8_t cab_type = 0;
@@ -67,8 +68,8 @@ void System::setMoogTime(float quarterInterval)
 	if(currentPreset.modulesBuf[RFILTER_LFO_TYPE] == 0)
 	{
 		Preset::moog_time = round(quarterInterval);
-		DSP_GuiSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time >> 8);
-		DSP_GuiSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, Preset::moog_time );
+		SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time >> 8);
+		SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, Preset::moog_time );
 	}
 }
 
@@ -79,8 +80,8 @@ void System::setDelayTime(float quarterInterval)
 	{
 		if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
 		{
-			DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
-			DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
+			SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+			SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
 		}
 		else
 		{
@@ -92,8 +93,8 @@ void System::setDelayTime(float quarterInterval)
 				currentPreset.delayTime = bpm_time[temp];
 				currentPreset.modulesBuf[BPM_DELAY] = 60000 / currentPreset.delayTime;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
-				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
+				SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+				SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
 			}
 		}
 	}
@@ -107,8 +108,8 @@ void System::setTremoloTime(float quarterInterval)
 	{
 		if(!sys_para[TIME_FORMAT])
 		{
-			DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, Preset::trem_time >> 8);
-			DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, Preset::trem_time);
+			SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, Preset::trem_time >> 8);
+			SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, Preset::trem_time);
 		}
 		else
 		{
@@ -118,8 +119,8 @@ void System::setTremoloTime(float quarterInterval)
 				while(Preset::trem_time < bpm_time[temp++]);
 				Preset::trem_time = bpm_time[temp];
 
-				DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, Preset::trem_time >> 8);
-				DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, Preset::trem_time);
+				SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, Preset::trem_time >> 8);
+				SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, Preset::trem_time);
 			}
 		}
 	}
@@ -137,7 +138,7 @@ void System::TapTempo(TapDestination tapDst)
 		{
 			sys_para[TAP_HIGH] = round(tap_global/8);
 
-			DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
+			SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
 
 			System::setMoogTime(tap_global);
 			System::setDelayTime(tap_global);

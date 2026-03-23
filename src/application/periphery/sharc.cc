@@ -1,4 +1,3 @@
-#include <bitmaps.h>
 #include "sharc.h"
 
 #include "periphery.h"
@@ -9,10 +8,7 @@
 #include "preset.h"
 #include "modules.h"
 
-#include "ui_task.h"
-
-// temporally dependencies
-#include "sharc_task.h"
+#include "bitmaps.h"
 
 void SHARC_SpiInit(TSharcSpiMode mode)
 {
@@ -169,56 +165,6 @@ void SHARC_LoadAllData()
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }
 
-//void dsp_send(uint8_t address, uint16_t data)
-//{
-//	SHARC_WaitForReady();
-//
-//	GPIO_ResetBits(GPIOA, GPIO_Pin_1);
-//
-//	SHARC_SendData(data);
-//	SHARC_SendData(address);
-//
-//	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
-//
-//	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
-//	GPIO_SetBits(GPIOA, GPIO_Pin_1);
-//}
-
-//// To task!
-//volatile uint8_t gui_fl;
-//volatile uint8_t contr_fl;
-//volatile uint8_t ext_send_fl;
-void DSP_GuiSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value)
-{
-	SharcTask->setParameter(module_address, parameter_address, value);
-//	while((contr_fl) || (ext_send_fl));
-//
-//	gui_fl = 1;
-//	dsp_send(module_address, parameter_address | value << 8);
-//	gui_fl = 0;
-}
-
-void DSP_ContrSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value)
-{
-	SharcTask->setParameter(module_address, parameter_address, value);
-//	while((gui_fl) || (ext_send_fl));
-//
-//	contr_fl = 1;
-//	dsp_send(module_address, parameter_address | value << 8);
-//	contr_fl = 0;
-}
-
-
-void DSP_ExtSendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value)
-{
-	SharcTask->setParameter(module_address, parameter_address, value);
-
-//	while((gui_fl) || (contr_fl));
-//	ext_send_fl = 1;
-//	dsp_send(module_address, parameter_address | value << 8); //master_volum_contr(data);
-//	ext_send_fl = 0;
-}
-
 void DSP_SendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value)
 {
 	SHARC_WaitForReady();
@@ -243,7 +189,6 @@ void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t* mod
 
 	SHARC_SendData(presetNum);
 	SHARC_SendData(DSP_ADDRESS_CAB_DATA_PRIMARY);
-
 
 	uint32_t sendBuf;
 	for(uint32_t i = 0; i < 4096; i++)

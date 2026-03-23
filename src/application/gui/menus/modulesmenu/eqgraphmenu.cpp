@@ -1,4 +1,3 @@
-#include <bitmaps.h>
 #include "eqgraphmenu.h"
 
 #include "eepr.h"
@@ -7,6 +6,7 @@
 
 #include "display_task.h"
 #include "io_task.h"
+#include "sharc_task.h"
 
 const uint8_t EqGraphMenu::paramNames[][3];
 const uint8_t EqGraphMenu::bandNames[][6];
@@ -113,10 +113,10 @@ void EqGraphMenu::encoderClockwise()
 
 				switch(bandNum)
 				{
-					default: DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]); break;
-					case 5: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, *eqFreq_ptr[bandNum]); break;
-					case 6: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, *eqFreq_ptr[bandNum]); break;
-					case 7: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, *eqFreq_ptr[bandNum]); break;
+					default: SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]); break;
+					case 5: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, *eqFreq_ptr[bandNum]); break;
+					case 6: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, *eqFreq_ptr[bandNum]); break;
+					case 7: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, *eqFreq_ptr[bandNum]); break;
 				}
 				break;
 			}
@@ -127,7 +127,7 @@ void EqGraphMenu::encoderClockwise()
 				if(currentPreset.modulesBuf[EQ_G0+bandNum] < 30)
 					currentPreset.modulesBuf[EQ_G0+bandNum]++;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
+				SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
 
 				break;
 			}
@@ -139,7 +139,7 @@ void EqGraphMenu::encoderClockwise()
 				if(a < 120) a = BaseParam::encSpeedInc(a, 60);
 				currentPreset.paramData.eq_q[bandNum] = a;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
+				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
 				break;
 			}
 		}
@@ -175,10 +175,10 @@ void EqGraphMenu::encoderCounterClockwise()
 				*eqFreq_ptr[bandNum] = a;
 				switch(bandNum)
 				{
-					default: DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]); break;
-					case 5: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, *eqFreq_ptr[bandNum]); break;
-					case 6: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, *eqFreq_ptr[bandNum]); break;
-					case 7: DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, *eqFreq_ptr[bandNum]); break;
+					default: SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]); break;
+					case 5: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, *eqFreq_ptr[bandNum]); break;
+					case 6: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, *eqFreq_ptr[bandNum]); break;
+					case 7: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, *eqFreq_ptr[bandNum]); break;
 				}
 				break;
 				break;
@@ -190,7 +190,7 @@ void EqGraphMenu::encoderCounterClockwise()
 				if(currentPreset.modulesBuf[EQ_G0+bandNum] > 0)
 					currentPreset.modulesBuf[EQ_G0+bandNum]--;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
+				SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
 				break;
 			}
 			case 3:
@@ -201,7 +201,7 @@ void EqGraphMenu::encoderCounterClockwise()
 				if(a > -60) a = BaseParam::encSpeedDec(a, -60);
 				currentPreset.paramData.eq_q[bandNum] = (uint8_t)a;
 
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
+				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
 				break;
 			}
 		}
@@ -224,14 +224,14 @@ void EqGraphMenu::key3()
 		currentPreset.modulesBuf[EQ_F0 + bandNum] = 0;
 		currentPreset.modulesBuf[EQ_Q0 + bandNum] = 0;
 
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, currentPreset.modulesBuf[EQ_F0 + bandNum]);
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
+		SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
+		SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, currentPreset.modulesBuf[EQ_F0 + bandNum]);
+		SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
 
 	}
 	else
 	{
-		DSP_GuiSendParameter(DSP_ADDRESS_EQ, bandNum, *eqFreq_ptr[bandNum]);
+		SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, *eqFreq_ptr[bandNum]);
 	}
 
 	printPage();

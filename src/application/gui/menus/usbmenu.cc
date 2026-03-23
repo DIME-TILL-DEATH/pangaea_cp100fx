@@ -4,6 +4,7 @@
 
 #include "display_task.h"
 #include "usb_task.h"
+#include "sharc_task.h"
 
 const uint8_t UsbMenu::strUsbMenu[][19];
 const uint8_t UsbMenu::strPositions[3];
@@ -91,7 +92,7 @@ void UsbMenu::encoderPressed()
 		case TUsbTask::mMSC:
 		{
 			CODEC_Send(0xa102);
-			DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
+			SharcTask->setParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
 
 			DisplayTask->Clear();
 			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"cp100fx connected as");

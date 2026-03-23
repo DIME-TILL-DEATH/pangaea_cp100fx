@@ -4,6 +4,7 @@
 
 #include "display_task.h"
 #include "io_task.h"
+#include "sharc_task.h"
 
 
 BaseParam::BaseParam(gui_param_type paramType, const char* name, void* paramValuePtr)
@@ -109,9 +110,9 @@ void BaseParam::setToDsp()
 	for(uint8_t i=0; i<m_byteSize; i++)
 	{
 		if(m_bytePosition == PARAM_EQUAL_POS)
-			DSP_GuiSendParameter(m_moduleAddress, *(m_valuePtr+i) + m_offset, 0);
+			SharcTask->setParameter(m_moduleAddress, *(m_valuePtr+i) + m_offset, 0);
 		else
-			DSP_GuiSendParameter(m_moduleAddress,	m_bytePosition + i,
+			SharcTask->setParameter(m_moduleAddress,	m_bytePosition + i,
 					*(m_valuePtr + m_byteSize - 1 - i) + m_offset);
 	}
 }

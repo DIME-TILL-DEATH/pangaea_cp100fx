@@ -9,6 +9,7 @@
 
 #include "icons_bitmap.h"
 
+#include "sharc_task.h"
 #include "display_task.h"
 
 const uint8_t ExpressionMenu::strOk[];
@@ -139,7 +140,7 @@ void ExpressionMenu::encoderClockwise()
 
 						HW_AdcPinInit();
 						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
-							DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
+							SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 					}
 				break;
 				case 2:
@@ -192,7 +193,7 @@ void ExpressionMenu::encoderCounterClockwise()
 								(uint8_t*)&strExprType[--sys_para[System::EXPR_TYPE] & 0x7f]);
 						HW_AdcPinInit();
 						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
-							DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
+							SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 					}
 				break;
 				case 2:

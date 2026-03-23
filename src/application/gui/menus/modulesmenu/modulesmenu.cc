@@ -1,4 +1,3 @@
-#include <bitmaps.h>
 #include "modulesmenu.h"
 
 #include "eepr.h"
@@ -11,13 +10,14 @@
 #include "io_task.h"
 #include "sdtest_task.h"
 #include "ui_task.h"
+#include "sharc_task.h"
+
+#include "stringlistparam.h"
+#include "stringoutparam.h"
 
 #include "paramlistmenu.h"
 #include "controllersmenu.h"
 #include "cabbrowsermenu.h"
-
-#include "stringlistparam.h"
-#include "stringoutparam.h"
 
 uint8_t ModulesMenu::m_numMenu = 0;
 
@@ -100,7 +100,7 @@ void ModulesMenu::encoderPressed()
 	presetEdited = true;
 
 	*modules[m_numMenu].enablePtr = !((bool)*modules[m_numMenu].enablePtr);
-	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, modules[m_numMenu].dspEnablePosition, *modules[m_numMenu].enablePtr);
+	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, modules[m_numMenu].dspEnablePosition, *modules[m_numMenu].enablePtr);
 
 	*(modulesPrevState[m_numMenu].enablePtr) = *(modules[m_numMenu].enablePtr);
 

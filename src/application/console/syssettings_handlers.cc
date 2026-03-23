@@ -1,19 +1,15 @@
-#include <tuner_bitmap.h>
 #include "syssettings_handlers.h"
-
 #include "console_helpers.h"
 
 #include "adc.h"
-#include "sharc.h"
 
 #include "eepr.h"
-
 #include "system.h"
 #include "modules.h"
 
 #include "display_task.h"
 #include "ui_task.h"
-
+#include "sharc_task.h"
 
 static void sys_settings_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
@@ -52,7 +48,7 @@ static void attenuator_mode_handler(TReadLine* rl, TReadLine::const_symbol_type_
 static void master_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_VOLUME], rl, args, count);
-	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
+	SharcTask->setParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
 	EEPROM_WriteSys();
 }
 
@@ -66,28 +62,28 @@ static void phones_volume_command_handler(TReadLine* rl, TReadLine::const_symbol
 static void meq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_ON], rl, args, count);
-	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
+	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
 	EEPROM_WriteSys();
 }
 
 static void meq_low_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_LOW], rl, args, count);
-	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_LOW]);
+	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_LOW]);
 	EEPROM_WriteSys();
 }
 
 static void meq_mid_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_MID], rl, args, count);
-	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_MID]);
+	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_MID]);
 	EEPROM_WriteSys();
 }
 
 static void meq_high_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_HIGH], rl, args, count);
-	DSP_GuiSendParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_HIGH]);
+	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_HIGH]);
 	EEPROM_WriteSys();
 }
 
@@ -107,22 +103,22 @@ static void meq_mid_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_
 	sys_para[System::MASTER_EQ_FREQ_LO] = mstEqMidFreq >> 8;
 	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xFF;
 
-	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
-	DSP_ContrSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
+	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
+	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
 	EEPROM_WriteSys();
 }
 
 static void cab_mode_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::CAB_SIM_DISABLED], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
+	SharcTask->setParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
 	EEPROM_WriteSys();
 }
 
 static void cab_num_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::CAB_SIM_CONFIG], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0);
+	SharcTask->setParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0);
 	EEPROM_WriteSys();
 	//Reset?????
 }
@@ -142,7 +138,7 @@ static void expr_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 	{
 		ADC_Init(0);
 		sys_para[System::EXPR_TYPE] &= 0x7f;
-		DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
+		SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 	}
 	else
 	{
@@ -161,7 +157,7 @@ static void expr_type_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 	sys_para[System::EXPR_TYPE] = (val & 0x7F) | (sys_para[System::EXPR_TYPE] & 0x80);
 
 	if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
-		DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
+		SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 
 	EEPROM_WriteSys();
 }
@@ -181,14 +177,14 @@ static void expr_slev_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 static void spdif_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::SPDIF_OUT_TYPE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
+	SharcTask->setParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
 	EEPROM_WriteSys();
 }
 
 static void tempo_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TAP_TYPE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
 	EEPROM_WriteSys();
 }
 

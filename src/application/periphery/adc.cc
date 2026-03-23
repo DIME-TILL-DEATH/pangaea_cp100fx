@@ -1,6 +1,5 @@
 #include "adc.h"
 
-#include "sharc.h"
 #include "gpio.h"
 
 #include "system.h"
@@ -8,6 +7,7 @@
 
 #include "controllers_task.h"
 #include "midi_task.h"
+#include "sharc_task.h"
 
 volatile uint16_t adc_low;
 volatile uint16_t adc_high;
@@ -99,7 +99,7 @@ void ADC_Routine(void)
 	if((sys_para[System::EXPR_TYPE] & 0x7f) < 3)
 	{
 		if(pc_mute_fl)
-			DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, adc_bu2);
+			SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, adc_bu2);
 	}
 	else
 	{

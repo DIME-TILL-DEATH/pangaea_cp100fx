@@ -5,6 +5,8 @@
 #include "system.h"
 #include "eepr.h"
 
+#include "sharc_task.h"
+
 #include "baseparam.h"
 #include "stringlistparam.h"
 #include "submenuparam.h"
@@ -233,7 +235,7 @@ void SystemMenu::expressionDescrease(void* parameter)
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	ADC_Init(0);
 	*valuePtr &= 0x7f;
-	DSP_ExtSendParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
+	SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 }
 
 void SystemMenu::expressionIncrease(void* parameter)
@@ -284,14 +286,14 @@ void SystemMenu::tempoDecrease(void* parameter)
 {
 	sys_para[System::TAP_HIGH] = 0;
 	if(sys_para[System::TAP_TYPE] > 0) sys_para[System::TAP_TYPE]--;
-	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
 }
 
 void SystemMenu::tempoIncrease(void* parameter)
 {
 //	sys_para[tap_hi] = 0; //???
 	if(sys_para[System::TAP_TYPE] < 2) sys_para[System::TAP_TYPE]++;
-	DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
 }
 
 void SystemMenu::tunerSpeedDescrease(void* parameter)

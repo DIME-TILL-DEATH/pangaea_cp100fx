@@ -1,78 +1,80 @@
 #include "reverb_handlers.h"
 #include "console_helpers.h"
+
 #include "modules.h"
-#include "sharc.h"
+
+#include "sharc_task.h"
 
 static void reverb_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[reve], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_REVERB, currentPreset.modulesBuf[ENABLE_REVERB]);
+	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_REVERB, currentPreset.modulesBuf[ENABLE_REVERB]);
 }
 
 static void reverb_mix_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_MIX], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_MIX_POS, currentPreset.modulesBuf[REVERB_MIX]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_MIX_POS, currentPreset.modulesBuf[REVERB_MIX]);
 }
 
 static void reverb_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_TYPE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_TYPE_POS, currentPreset.modulesBuf[REVERB_TYPE]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_TYPE_POS, currentPreset.modulesBuf[REVERB_TYPE]);
 }
 
 static void reverb_time_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_TIME], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_TIME_POS, currentPreset.modulesBuf[REVERB_TIME]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_TIME_POS, currentPreset.modulesBuf[REVERB_TIME]);
 }
 
 static void reverb_size_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_SIZE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_SIZE_POS, currentPreset.modulesBuf[REVERB_SIZE]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_SIZE_POS, currentPreset.modulesBuf[REVERB_SIZE]);
 }
 
 static void reverb_damping_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_DAMPING], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_DAMPING_POS, currentPreset.modulesBuf[REVERB_DAMPING]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_DAMPING_POS, currentPreset.modulesBuf[REVERB_DAMPING]);
 }
 
 static void reverb_hpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_HPF], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_HPF_POS, currentPreset.modulesBuf[REVERB_HPF]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_HPF_POS, currentPreset.modulesBuf[REVERB_HPF]);
 }
 
 static void reverb_lpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_LPF], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_LPF_POS, currentPreset.modulesBuf[REVERB_LPF]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_LPF_POS, currentPreset.modulesBuf[REVERB_LPF]);
 }
 
 static void reverb_detune_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_DETUNE], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_DETUNE_POS, currentPreset.modulesBuf[REVERB_DETUNE]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_DETUNE_POS, currentPreset.modulesBuf[REVERB_DETUNE]);
 }
 
 static void reverb_diffusion_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_DIFFUSION], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_DIFFUSION_POS, currentPreset.modulesBuf[REVERB_DIFFUSION]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_DIFFUSION_POS, currentPreset.modulesBuf[REVERB_DIFFUSION]);
 }
 
 static void reverb_predelay_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_PREDELAY], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_PREDELAY_POS, currentPreset.modulesBuf[REVERB_PREDELAY]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_PREDELAY_POS, currentPreset.modulesBuf[REVERB_PREDELAY]);
 }
 
 static void reverb_tail_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[REVERB_TAIL], rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_REVERB, REVERB_TAIL_POS, currentPreset.modulesBuf[REVERB_TAIL]);
+	SharcTask->setParameter(DSP_ADDRESS_REVERB, REVERB_TAIL_POS, currentPreset.modulesBuf[REVERB_TAIL]);
 }
 
 void set_reverb_handlers(TReadLine *rl)

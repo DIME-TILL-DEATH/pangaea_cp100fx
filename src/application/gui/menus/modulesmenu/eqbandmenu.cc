@@ -1,4 +1,3 @@
-#include <bitmaps.h>
 #include "eqbandmenu.h"
 
 #include "eepr.h"
@@ -9,6 +8,7 @@
 #include "filesystem_task.h"
 #include "io_task.h"
 #include "ui_task.h"
+#include "sharc_task.h"
 
 const uint8_t EqBandMenu::eq_p_l[][2];
 const uint8_t EqBandMenu::def_eq_band[][10];
@@ -81,7 +81,7 @@ void EqBandMenu::encoderClockwise()
 				a = BaseParam::encSpeedInc(a, 120);
 				currentPreset.modulesBuf[EQ_Q0 + m_bandNum] = a;
 				DisplayTask->EqQ(40, 1, a, m_bandNum);
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
+				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
 			}
 		}
 		else
@@ -92,7 +92,7 @@ void EqBandMenu::encoderClockwise()
 				currentPreset.modulesBuf[EQ_F0 + m_bandNum] = a;
 				DisplayTask->EqFreq(40, 0, a, m_bandNum);
 //				DisplayTask->StringOut(80, m_paramNum, Font::fntSystem, 0, (uint8_t*)gerz);
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
+				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
 			}
 		}
 	}
@@ -119,7 +119,7 @@ void EqBandMenu::encoderCounterClockwise()
 				a = BaseParam::encSpeedDec(a, -60);
 				currentPreset.modulesBuf[EQ_Q0 + m_bandNum] = a;
 				DisplayTask->EqQ(40, 1, a, m_bandNum);
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
+				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
 			}
 		}
 		else
@@ -129,7 +129,7 @@ void EqBandMenu::encoderCounterClockwise()
 				a = BaseParam::encSpeedDec(a, -100);
 				currentPreset.modulesBuf[EQ_F0 + m_bandNum] = a;
 				DisplayTask->EqFreq(40, 0, a, m_bandNum);
-				DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
+				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
 			}
 		}
 	}
@@ -151,6 +151,6 @@ void EqBandMenu::key3()
 	a = currentPreset.modulesBuf[EQ_Q0 + m_bandNum];
 	DisplayTask->EqQ(40, 1, a, m_bandNum);
 
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
+	SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
+	SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
 }

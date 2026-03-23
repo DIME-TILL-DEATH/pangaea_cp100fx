@@ -9,6 +9,7 @@
 #include "filesystem_task.h"
 #include "sdtest_task.h"
 #include "ui_task.h"
+#include "sharc_task.h"
 
 CabBrowserMenu::CabBrowserMenu(AbstractMenu *parent, uint8_t cabNumber)
 {
@@ -68,12 +69,12 @@ void CabBrowserMenu::keyUp()
 	if(m_cabNumber == 0)
 	{
 		DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
-		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 	}
 	else
 	{
 		DSP_SendSecondaryCabData(currentPreset.cab2Data);
-		DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 	}
 	topLevelMenu->returnFromChildMenu();
 }
@@ -99,7 +100,7 @@ void CabBrowserMenu::encoderPressed()
 			currentPreset.cab1NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab1Name);
 
 			DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
-			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+			SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 		}
 		else
 		{
@@ -108,7 +109,7 @@ void CabBrowserMenu::encoderPressed()
 			currentPreset.cab2NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab2Name);
 
 			DSP_SendSecondaryCabData(currentPreset.cab2Data);
-			DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+			SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 		}
 
 		topLevelMenu->returnFromChildMenu();
@@ -151,16 +152,16 @@ void CabBrowserMenu::processBrowserResponse()
 			else
 				DSP_SendSecondaryCabData(browserResponse.file.buffer);
 
-			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
-			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+			if(m_cabNumber == 0) SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+			else SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 
 			break;
 		}
 
 		case TUITask::rpFileInvalid:
 		{
-			if(m_cabNumber == 0) DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]/2);
-			else DSP_GuiSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]/2);
+			if(m_cabNumber == 0) SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]/2);
+			else SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]/2);
 
 			break;
 		}
