@@ -77,9 +77,9 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	EEPROM_WritePreset(currentPresetNumber);
 
 	// update DSP config? Really need?
-	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
+	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
 	if(cab_type==CAB_CONFIG_STEREO)
-		DSP_SendSecondaryCabData(currentPreset.cab2Data, currentPresetNumber+1);
+		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
 	Preset::Change();
 
@@ -182,7 +182,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 				kgp_sdk_libc::memcpy(currentPreset.cab1Name, fileName, CAB_NAME_STRING_SIZE - 1);
 				currentPreset.cab1NameSize = kgp_sdk_libc::strlen(fileName);
 
-				DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
+				SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
 				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
@@ -191,7 +191,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 				kgp_sdk_libc::memcpy(currentPreset.cab2Name, fileName, CAB_NAME_STRING_SIZE - 1);
 				currentPreset.cab1NameSize = kgp_sdk_libc::strlen(fileName);
 
-				DSP_SendSecondaryCabData(currentPreset.cab2Data);
+				SharcTask->sendCab2Data(currentPreset.cab2Data);
 				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 
@@ -235,12 +235,12 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		{
 			if(cabNum==0)
 			{
-				DSP_SendPrimaryCabData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE]);
+				SharcTask->sendCab1Data(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE]);
 				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
-				DSP_SendSecondaryCabData(tempCabBuffer);
+				SharcTask->sendCab2Data(tempCabBuffer);
 				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 			msg_console("%d preview_end\r\n", cabNum);
@@ -250,12 +250,12 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		{
 			if(cabNum==0)
 			{
-				DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
+				SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
 				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
-				DSP_SendSecondaryCabData(currentPreset.cab2Data);
+				SharcTask->sendCab2Data(currentPreset.cab2Data);
 				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
 			msg_console("%d restore\r\n", cabNum);

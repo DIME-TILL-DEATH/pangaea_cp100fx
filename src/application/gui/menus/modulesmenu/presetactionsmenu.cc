@@ -1,10 +1,12 @@
 #include "presetactionsmenu.h"
 
-#include "../../../tasks/controllers_task.h"
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/filesystem_task.h"
 #include "eepr.h"
-#include "eepr.h"
+
+#include "controllers_task.h"
+#include "display_task.h"
+#include "filesystem_task.h"
+#include "sharc_task.h"
+
 #include "modulesmenu.h"
 #include "copyselectmenu.h"
 
@@ -135,9 +137,9 @@ void PresetActionsMenu::savePreset()
 	currentPreset.modulesBuf[148] = currentPreset.delayTime>>8;
 	EEPROM_WritePreset(targetPresetNum);
 
-	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
+	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
 	if(cab_type==CAB_CONFIG_STEREO)
-		DSP_SendSecondaryCabData(currentPreset.cab2Data, currentPresetNumber+1);
+		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
 	currentPresetNumber = targetPresetNum;
 	Preset::Change();

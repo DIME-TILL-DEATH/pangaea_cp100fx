@@ -10,11 +10,24 @@ public:
 	TSharcTask();
 
 	void setParameter(dsp_module_address_t moduleAddress, uint8_t parameterAddress_data, uint8_t data = 0);
+	void sendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData,
+			uint8_t* modulesData, uint8_t presetNum = 0);
+
+	void sendCab1Data(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t presetNum = 0);
+	void sendCab2Data(uint8_t* data, uint8_t presetNum = 0); // 0 - currentPreset
+
+	void eraseCab1(uint8_t presetNum);
+	void eraseCab2(uint8_t presetNum);
 private:
 	void Code();
 
 	typedef enum{
-		SHARC_SET_PARAMETER
+		SHARC_SET_PARAMETER,
+		SHARC_SEND_PRIMARY_DATA,
+		SHARC_SEND_CAB1_DATA,
+		SHARC_SEND_CAB2_DATA,
+		SHARC_ERASE_CAB1,
+		SHARC_ERASE_CAB2
 	}TCmd;
 
 	typedef struct{
@@ -24,11 +37,19 @@ private:
 	}TParameterCmd;
 
 	typedef struct{
+		uint8_t* cabMainData;
+		uint8_t* cabAuxData;
+		uint8_t* modulesData;
+		uint8_t presetNum;
+	}TDataCmd;
+
+	typedef struct{
 		TCmd type;
 
 		union
 		{
 			TParameterCmd parameterCmd;
+			TDataCmd dataCmd;
 
 		};
 	}TSharcCmd;

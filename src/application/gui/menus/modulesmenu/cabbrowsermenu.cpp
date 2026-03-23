@@ -68,12 +68,12 @@ void CabBrowserMenu::keyUp()
 {
 	if(m_cabNumber == 0)
 	{
-		DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
+		SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
 		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 	}
 	else
 	{
-		DSP_SendSecondaryCabData(currentPreset.cab2Data);
+		SharcTask->sendCab2Data(currentPreset.cab2Data);
 		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 	}
 	topLevelMenu->returnFromChildMenu();
@@ -99,7 +99,7 @@ void CabBrowserMenu::encoderPressed()
 			kgp_sdk_libc::memcpy(&currentPreset.cab1Name, selectedCabName, CAB_DATA_SIZE - 1);
 			currentPreset.cab1NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab1Name);
 
-			DSP_SendPrimaryCabData(currentPreset.cab1Data, currentPreset.cabAuxData);
+			SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
 			SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 		}
 		else
@@ -108,7 +108,7 @@ void CabBrowserMenu::encoderPressed()
 			kgp_sdk_libc::memcpy(&currentPreset.cab2Name, selectedCabName, CAB_DATA_SIZE - 1);
 			currentPreset.cab2NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab2Name);
 
-			DSP_SendSecondaryCabData(currentPreset.cab2Data);
+			SharcTask->sendCab2Data(currentPreset.cab2Data);
 			SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 		}
 
@@ -148,9 +148,9 @@ void CabBrowserMenu::processBrowserResponse()
 			kgp_sdk_libc::memcpy(selectedCabName, browserResponse.file.name, 64);
 
 			if(m_cabNumber == 0)
-				DSP_SendPrimaryCabData(&browserResponse.file.buffer[0], &browserResponse.file.buffer[CAB_DATA_SIZE]); //gui_send(16, 1);
+				SharcTask->sendCab1Data(&browserResponse.file.buffer[0], &browserResponse.file.buffer[CAB_DATA_SIZE]); //gui_send(16, 1);
 			else
-				DSP_SendSecondaryCabData(browserResponse.file.buffer);
+				SharcTask->sendCab2Data(browserResponse.file.buffer);
 
 			if(m_cabNumber == 0) SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			else SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);

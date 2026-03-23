@@ -5,6 +5,7 @@
 #include "eepr.h"
 
 #include "display_task.h"
+#include "sharc_task.h"
 
 Preset::TSelectionMask CopySelectMenu::m_selectionMask =
 {
@@ -64,7 +65,7 @@ void CopySelectMenu::task()
 void CopySelectMenu::copyPreset(const Preset::TSelectionMask& selectionMask, uint8_t targetPresetNum)
 {
 	EEPROM_CopyPreset(targetPresetNum, selectionMask);
-	DSP_SendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &tempDataBuffer[0], targetPresetNum+1);
+	SharcTask->sendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &tempDataBuffer[0], targetPresetNum+1);
 
 //	Preset::Change(); // what for? Load initial? => send current whithout drawbacks
 

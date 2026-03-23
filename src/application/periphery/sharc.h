@@ -70,10 +70,6 @@ void DSP_SendParameter(dsp_module_address_t module_address, uint8_t parameter_ad
 void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData,
 		uint8_t* modulesData, uint8_t presetNum = 0);
 
-void DSP_SendPrimaryCabData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t presetNum = 0);
-void DSP_SendSecondaryCabData(uint8_t* data, uint8_t presetNum = 0); // 0 - currentPreset
-
-void DSP_ErasePrimaryCab(uint8_t presetNum);
-void DSP_EraseSecondaryCab(uint8_t presetNum);
+void DSP_SendCab2Data(uint8_t* data, uint8_t presetNum = 0); // 0 - currentPreset
 
 #endif /* SHARC_H_ */

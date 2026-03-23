@@ -78,10 +78,10 @@ void Preset::Erase()
 		currentPreset.controller[i].maxVal = 127;
 	}
 
-	DSP_ErasePrimaryCab(currentPresetNumber+1);
+	SharcTask->eraseCab1(currentPresetNumber+1);
 
 	if(cab_type == CAB_CONFIG_STEREO)
-		DSP_EraseSecondaryCab(currentPresetNumber+1);
+		SharcTask->eraseCab2(currentPresetNumber+1);
 }
 
 volatile uint8_t __CCM_BSS__ currentPresetNumber;

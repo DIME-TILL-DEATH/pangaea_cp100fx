@@ -243,12 +243,7 @@ void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t* mod
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }
 
-void DSP_SendPrimaryCabData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t presetNum)
-{
-	DSP_SendPrimaryData(cabMainData, cabAuxData, currentPreset.modulesBuf, presetNum);
-}
-
-void DSP_SendSecondaryCabData(uint8_t* data, uint8_t presetNum)
+void DSP_SendCab2Data(uint8_t* data, uint8_t presetNum)
 {
 	if(!data) return;
 
@@ -281,14 +276,4 @@ void DSP_SendSecondaryCabData(uint8_t* data, uint8_t presetNum)
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
-}
-
-void DSP_ErasePrimaryCab(uint8_t presetNum)
-{
-	DSP_SendPrimaryCabData(nullptr, nullptr, presetNum);
-}
-
-void DSP_EraseSecondaryCab(uint8_t presetNum)
-{
-	DSP_SendSecondaryCabData(nullptr, presetNum);
 }
