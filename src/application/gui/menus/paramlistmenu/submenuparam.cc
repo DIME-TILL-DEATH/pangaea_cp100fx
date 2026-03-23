@@ -26,7 +26,7 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 	switch(m_type)
 	{
 		case BaseParam::GUI_PARAMETER_PAN:
-			DisplayTask->ParamIndicPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_SUBMENU:
 			break;
@@ -40,7 +40,7 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 			}
 			else
 			{
-				DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, 60000/currentPreset.delayTime);
+				DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, 60000/currentPreset.delayTime);
 				DisplayTask->StringOut(m_xDisplayPosition + Font::symbolWidth(Font::fntSystem) * 4,
 										yDisplayPosition, Font::fntSystem, 0, (uint8_t*)"BPM>");
 			}

@@ -1,21 +1,20 @@
 #include "ui_task.h"
 
-#include "eepr.h"
-
 #include "adc.h"
-#include "ER_OLEDM023-1B.h"
+#include "lcd.h"
 #include "pot.h"
 #include "codec.h"
 
-#include "mainmenu.h"
-#include "usbmenu.h"
-
+#include "eepr.h"
 #include "preset.h"
 #include "system.h"
 #include "dsp.h"
 
 #include "display_task.h"
 #include "io_task.h"
+
+#include "mainmenu.h"
+#include "usbmenu.h"
 
 TUITask *UITask = nullptr;
 

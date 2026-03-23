@@ -1,3 +1,4 @@
+#include <bitmaps.h>
 #include "sharc.h"
 
 #include "periphery.h"
@@ -12,7 +13,6 @@
 
 // temporally dependencies
 #include "sharc_task.h"
-#include "par_bitmap.h"
 
 void SHARC_SpiInit(TSharcSpiMode mode)
 {
@@ -157,7 +157,7 @@ void SHARC_LoadAllData()
 		}
 
 		loadProgress++;
-		progressBar((168/2-50), 3, loadProgress);
+		progress_bar((168/2-50), 3, loadProgress);
 	}
 
 	SHARC_WaitForReady();

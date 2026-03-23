@@ -106,10 +106,10 @@ uint32_t t12x13_sym(uint8_t col , uint8_t pag , uint16_t sym , uint8_t curs)
 	{
 	  for(uint8_t j = 0 ; j < 2 ; j++)
 		{
-		  Set_Page_Address(j + pag);
-		  Set_Column_Address(i + col);
-		  if(curs == 0)oled023_1_write_data(Tahoma12x13[sym + j + i*2], 1);
-		  else oled023_1_write_data(0);
+		  LCD_SetPageAddress(j + pag);
+		  LCD_SetColumnAddress(i + col);
+		  if(curs == 0)LCD_WriteData(Tahoma12x13[sym + j + i*2]);
+		  else LCD_WriteData(0);
 		}
 	}
     return b;
@@ -133,11 +133,11 @@ void t12x13_clear(uint8_t col , uint8_t pag , uint8_t size)
 {
   for(uint8_t i = 0 ; i < 2 ; i ++)
     {
-      Set_Page_Address(pag+i);
+	  LCD_SetPageAddress(pag+i);
       for(uint8_t j = 0 ; j < size ; j++)
         {
-          Set_Column_Address(col+j);
-          oled023_1_write_data(0);
+    	  LCD_SetColumnAddress(col+j);
+          LCD_WriteData(0);
         }
     }
 }

@@ -1,10 +1,9 @@
+#include <bitmaps.h>
 #include "eqgraphmenu.h"
 
 #include "eepr.h"
 #include "filter.h"
 #include "preset.h"
-
-#include "allFonts.h"
 
 #include "display_task.h"
 #include "io_task.h"
@@ -59,7 +58,7 @@ void EqGraphMenu::task()
 
 		for(uint8_t i = 0; i<4; i++)
 		{
-			DisplayTask->Clear_str(9*6, i, Font::fntSystem, 13);
+			DisplayTask->ClearString(9*6, i, Font::fntSystem, 13);
 		}
 		Filter::calcEqResponse();
 		DisplayTask->EqResponse();
@@ -242,10 +241,10 @@ void EqGraphMenu::printPage()
 {
 	uint8_t paramXPos = 6*2;
 
-	DisplayTask->Clear_str(0, 0, Font::fntSystem, 5);
-	DisplayTask->Clear_str(0, 1, Font::fntSystem, 9);
-	DisplayTask->Clear_str(0, 2, Font::fntSystem, 8);
-	DisplayTask->Clear_str(0, 3, Font::fntSystem, 8);
+	DisplayTask->ClearString(0, 0, Font::fntSystem, 5);
+	DisplayTask->ClearString(0, 1, Font::fntSystem, 9);
+	DisplayTask->ClearString(0, 2, Font::fntSystem, 8);
+	DisplayTask->ClearString(0, 3, Font::fntSystem, 8);
 
 	DisplayTask->StringOut(0, 0, Font::fntSystem, (paramNum==0)*2, (uint8_t*)&paramNames[0]);
 	DisplayTask->StringOut(paramXPos, 0, Font::fntSystem, 0, (uint8_t*)&bandNames[bandNum]);

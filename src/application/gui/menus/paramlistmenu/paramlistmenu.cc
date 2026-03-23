@@ -1,10 +1,10 @@
+#include <bitmaps.h>
 #include "paramlistmenu.h"
 
 #include "../../../tasks/display_task.h"
 #include "../../../tasks/filesystem_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "../../bitmaps/allFonts.h"
 #include "eepr.h"
 #include "controllers_task.h"
 
@@ -237,7 +237,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 		if(m_pagesCount == 1) drawStrelka = STRELKA_NONE;
 
 		DisplayTask->Clear();
-		DisplayTask->Icon_Strel(m_icon, drawStrelka);
+		DisplayTask->IconAndArrows(m_icon, drawStrelka);
 
 	}
 	m_currentPageNumber = newPageNumber;

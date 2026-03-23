@@ -1,6 +1,4 @@
-#include "allFonts.h"
-
-
+#include <bitmaps.h>
 #include "amt.h"
 
 #include "periphery.h"
@@ -10,7 +8,6 @@
 
 #include "system.h"
 
-uint32_t ind_in_p[2];
 uint32_t ind_out_l[2];
 
 
@@ -25,21 +22,21 @@ uint8_t Font::symbolWidth(Font::TFontName fontName)
 	}
 }
 
-void disp_start(uint8_t num)
+void display_start(uint8_t num)
 {
 	uint16_t a = 0;
 	if(!num)
 	{
 		for(uint8_t j = 0; j < 4; j++)
 		{
-			Set_Page_Address(j);
-			Set_Column_Address(27);
+			LCD_SetPageAddress(j);
+			LCD_SetColumnAddress(27);
 			GPIO_ResetBits(GPIOB, CS);
 			GPIO_ResetBits(GPIOB, GPIO_Pin_12);
 			GPIO_SetBits(GPIOB, RS);
 			for(uint8_t i = 0; i < 75; i++)
 			{
-				oled023_1_write_data(amt_logo[a++]);
+				LCD_WriteData(amt_logo[a++]);
 				if(a > 299)
 					break;
 			}
@@ -51,11 +48,11 @@ void disp_start(uint8_t num)
 		uint8_t nullData = 0;
 		for(uint8_t i = 0; i < 128; i++)
 		{
-			Set_Column_Address(i);
+			LCD_SetColumnAddress(i);
 			for(uint8_t j = 0; j < 4; j++)
 			{
-				Set_Page_Address(j);
-				oled023_1_write_data(nullData, 1);
+				LCD_SetPageAddress(j);
+				LCD_WriteData(nullData);
 			}
 
 			HW_Delay(0x1ffff);
@@ -74,67 +71,67 @@ void disp_start(uint8_t num)
 
 void tap_ind(uint8_t cur)
 {
-	Set_Page_Address(3);
-	Set_Column_Address(90);
+	LCD_SetPageAddress(3);
+	LCD_SetColumnAddress(90);
 	for(uint8_t i = 0; i < 19; i++)
 	{
 		if(cur == 1)
-			oled023_1_write_data(0xc0);
+			LCD_WriteData(0xc0);
 		else
-			oled023_1_write_data(0);
+			LCD_WriteData(0);
 	}
-	Set_Page_Address(4);
-	Set_Column_Address(90);
+	LCD_SetPageAddress(4);
+	LCD_SetColumnAddress(90);
 	if(cur == 1)
 	{
-		oled023_1_write_data(0xff);
-		oled023_1_write_data(0xff);
+		LCD_WriteData(0xff);
+		LCD_WriteData(0xff);
 	}
 	else
 	{
-		oled023_1_write_data(0);
-		oled023_1_write_data(0);
+		LCD_WriteData(0);
+		LCD_WriteData(0);
 	}
-	Set_Page_Address(5);
-	Set_Column_Address(90);
+	LCD_SetPageAddress(5);
+	LCD_SetColumnAddress(90);
 	if(cur == 1)
 	{
-		oled023_1_write_data(7);
-		oled023_1_write_data(7);
+		LCD_WriteData(7);
+		LCD_WriteData(7);
 	}
 	else
 	{
-		oled023_1_write_data(0);
-		oled023_1_write_data(0);
+		LCD_WriteData(0);
+		LCD_WriteData(0);
 	}
-	Set_Column_Address(107);
+	LCD_SetColumnAddress(107);
 	if(cur == 1)
 	{
-		oled023_1_write_data(7);
-		oled023_1_write_data(7);
+		LCD_WriteData(7);
+		LCD_WriteData(7);
 	}
 	else
 	{
-		oled023_1_write_data(0);
-		oled023_1_write_data(0);
+		LCD_WriteData(0);
+		LCD_WriteData(0);
 	}
-	Set_Page_Address(4);
-	Set_Column_Address(107);
+	LCD_SetPageAddress(4);
+	LCD_SetColumnAddress(107);
 	if(cur == 1)
 	{
-		oled023_1_write_data(0xff);
-		oled023_1_write_data(0xff);
+		LCD_WriteData(0xff);
+		LCD_WriteData(0xff);
 	}
 	else
 	{
-		oled023_1_write_data(0);
-		oled023_1_write_data(0);
+		LCD_WriteData(0);
+		LCD_WriteData(0);
 	}
 }
 void mode_ind(uint8_t val)
 {
 	uint8_t a1, a2;
-	Set_Page_Address(0);
+	LCD_SetPageAddress(0);
 	switch(val)
 	{
 		case 0:
@@ -148,48 +145,48 @@ void mode_ind(uint8_t val)
 			a1 = a2 = 0;
 		break;
 	}
-	Set_Column_Address(2);
-	oled023_1_write_data(a1, 15);
+	LCD_SetColumnAddress(2);
+	LCD_WriteData(a1, 15);
 
-	Set_Column_Address(38);
-	oled023_1_write_data(a2, 15);
+	LCD_SetColumnAddress(38);
+	LCD_WriteData(a2, 15);
 
-	Set_Column_Address(74);
-	oled023_1_write_data(0x7, 15);
+	LCD_SetColumnAddress(74);
+	LCD_WriteData(0x7, 15);
 
 }
 
 void checkbox(uint8_t x, uint8_t y, uint8_t val)
 {
-	Set_Page_Address(y);
-	Set_Column_Address(x);
+	LCD_SetPageAddress(y);
+	LCD_SetColumnAddress(x);
 	GPIO_ResetBits(GPIOB, CS);
 	for(uint8_t i = 0; i < 7; i++)
 	{
 		if(!i || (i == 6))
-			oled023_1_send_data(0x7c);
+			LCD_WriteData(0x7c);
 		else
-			oled023_1_send_data((val * 0xfe) | 0x82);
+			LCD_WriteData((val * 0xfe) | 0x82);
 	}
 	GPIO_SetBits(GPIOB, CS);
 }
 
 void ind_foot_proc(uint8_t col, uint8_t val)
 {
-	Set_Page_Address(3);
-	Set_Column_Address(col);
+	LCD_SetPageAddress(3);
+	LCD_SetColumnAddress(col);
 	GPIO_ResetBits(GPIOB, CS);
 	for(uint8_t i = 0; i < 7; i++)
 	{
 		if(!i || (i == 6))
-			oled023_1_send_data(0x7c);
+			LCD_WriteData(0x7c);
 		else
-			oled023_1_send_data((val * 0xfe) | 0x82);
+			LCD_WriteData((val * 0xfe) | 0x82);
 	}
 	GPIO_SetBits(GPIOB, CS);
 }
 
-void ind_foot(uint8_t num, uint8_t pressState, uint8_t holdState)
+void fsw_ind(uint8_t num, uint8_t pressState, uint8_t holdState)
 {
 	struct{
 		uint8_t pressSinglePos;
@@ -214,12 +211,12 @@ void ind_foot(uint8_t num, uint8_t pressState, uint8_t holdState)
 		ind_foot_proc(indPos[num].holdDualPos, holdState);
 }
 
-void prog_ind(uint32_t val, bool filled)
+void preset_ind(uint32_t val, bool filled)
 {
 	val++;
 	uint8_t col = 87;
 	uint8_t prog_num[2];
-	Set_Page_Address(0);
+	LCD_SetPageAddress(0);
 	t33x30_clear(col, 0, 39);
 	prog_num[0] = val / 10;
 	prog_num[1] = val % 10;
@@ -227,7 +224,7 @@ void prog_ind(uint32_t val, bool filled)
 		col += t33x30_sym(col, 0, prog_num[i], filled);
 }
 
-void clear_str(uint8_t col, uint8_t pag, uint8_t font, uint8_t count)
+void clear_string(uint8_t col, uint8_t pag, uint8_t font, uint8_t count)
 {
 	switch(font)
 	{
@@ -243,7 +240,7 @@ void clear_str(uint8_t col, uint8_t pag, uint8_t font, uint8_t count)
 	}
 }
 
-void Arsys_ef(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs)
+void effect_icon(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs)
 {
 	uint8_t fl = 0;
 	uint32_t sym;
@@ -251,8 +248,8 @@ void Arsys_ef(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs)
 	sym = (sym - 32) * 6;
 	for(uint8_t i = 0; i < 8; i++)
 	{
-		Set_Column_Address(col + i);
-		Set_Page_Address(pag);
+		LCD_SetColumnAddress(col + i);
+		LCD_SetPageAddress(pag);
 		if(i > 1)
 		{
 			if((SystemFont5x7[sym + i - 2] & 0xc0) == 0)
@@ -262,53 +259,53 @@ void Arsys_ef(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs)
 			switch(curs)
 			{
 				case 0:
-					oled023_1_write_data((SystemFont5x7[sym + i - 2] << 2) | 1);
+					LCD_WriteData((SystemFont5x7[sym + i - 2] << 2) | 1);
 				break;
 				case 1:
-					oled023_1_write_data((~(SystemFont5x7[sym + i - 2] << 2)) | 3);
+					LCD_WriteData((~(SystemFont5x7[sym + i - 2] << 2)) | 3);
 					if(fl == 1)
 						fl = 0;
 					else
 						fl = 1;
 				break;
 				case 2:
-					oled023_1_write_data(1);
+					LCD_WriteData(1);
 					fl = 0;
 				break;
 			}
 		}
 		if((i == 1) && (curs != 1))
-			oled023_1_write_data(1);
+			LCD_WriteData(1);
 		else
-			oled023_1_write_data(0xff);
-		Set_Column_Address(col + i);
-		Set_Page_Address(pag + 1);
+			LCD_WriteData(0xff);
+		LCD_SetColumnAddress(col + i);
+		LCD_SetPageAddress(pag + 1);
 		if(i != 0)
 		{
 			if(i == 1)
 			{
 				if(curs != 1)
-					oled023_1_write_data(4);
+					LCD_WriteData(4);
 				else
-					oled023_1_write_data(7);
+					LCD_WriteData(7);
 			}
 			else
 			{
 				if(curs != 1)
-					oled023_1_write_data(4 + fl);
+					LCD_WriteData(4 + fl);
 				else
-					oled023_1_write_data((4 + fl) | 2);
+					LCD_WriteData((4 + fl) | 2);
 			}
 		}
 		else
-			oled023_1_write_data(7);
+			LCD_WriteData(7);
 	}
 	sym = adr[1];
 	sym = (sym - 32) * 6;
 	for(uint8_t i = 0; i < 7; i++)
 	{
-		Set_Column_Address(col + i + 8);
-		Set_Page_Address(pag);
+		LCD_SetColumnAddress(col + i + 8);
+		LCD_SetPageAddress(pag);
 		if(i < 6)
 		{
 			if((SystemFont5x7[sym + i] & 0xc0) == 0)
@@ -318,34 +315,34 @@ void Arsys_ef(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs)
 			switch(curs)
 			{
 				case 0:
-					oled023_1_write_data((SystemFont5x7[sym + i] << 2) | 1);
+					LCD_WriteData((SystemFont5x7[sym + i] << 2) | 1);
 				break;
 				case 1:
-					oled023_1_write_data((~(SystemFont5x7[sym + i] << 2)) | 3);
+					LCD_WriteData((~(SystemFont5x7[sym + i] << 2)) | 3);
 					if(fl == 1)
 						fl = 0;
 					else
 						fl = 1;
 				break;
 				case 2:
-					oled023_1_write_data(1);
+					LCD_WriteData(1);
 					fl = 0;
 				break;
 			}
 		}
 		if(i == 6)
-			oled023_1_write_data(0xff);
-		Set_Column_Address(col + i + 8);
-		Set_Page_Address(pag + 1);
+			LCD_WriteData(0xff);
+		LCD_SetColumnAddress(col + i + 8);
+		LCD_SetPageAddress(pag + 1);
 		if(i != 6)
 		{
 			if(curs != 1)
-				oled023_1_write_data(4 + fl);
+				LCD_WriteData(4 + fl);
 			else
-				oled023_1_write_data((4 + fl) | 2);
+				LCD_WriteData((4 + fl) | 2);
 		}
 		else
-			oled023_1_write_data(7);
+			LCD_WriteData(7);
 	}
 }
 
@@ -358,8 +355,8 @@ void del_sec_ind(uint8_t col, uint8_t pag, uint32_t d)
 	t3[3] = t3[2] % 100;
 	t3[2] = t3[3] / 10;
 	t3[3] = t3[3] % 10;
-	Set_Column_Address(col);
-	Set_Page_Address(pag);
+	LCD_SetColumnAddress(col);
+	LCD_SetPageAddress(pag);
 	col = Arsys_sym(col, pag, t3[0] + 48, 0);
 	col = Arsys_sym(col, pag, 44, 0);
 	for(uint8_t i = 1; i < 4; i++)
@@ -367,15 +364,15 @@ void del_sec_ind(uint8_t col, uint8_t pag, uint32_t d)
 	col = Arsys_sym(col, pag, 115, 0);
 }
 
-void del_tim_ind(uint8_t col, uint8_t pag, uint32_t d)
+void delay_time_ind(uint8_t col, uint8_t pag, uint32_t d)
 {
-	if(!sys_para[56])
+	if(!sys_para[System::TIME_FORMAT])
 		del_sec_ind(col, pag, d);
 	else
 	{
 		Arsys_line(90, pag, (uint8_t*)"bpm", 0);
-		Set_Column_Address(col);
-		Set_Page_Address(pag);
+		LCD_SetColumnAddress(col);
+		LCD_SetPageAddress(pag);
 		uint16_t t3[4];
 		volatile float a = 60.0f / (d * 0.001f);
 		uint16_t b = a;
@@ -417,4 +414,20 @@ void del_tim_ind(uint8_t col, uint8_t pag, uint32_t d)
 		for(uint8_t i = 0; i < 2; i++)
 			col = Arsys_sym(col, pag, t3[i] + 48, 0);
 	}
+}
+
+void progress_bar(uint8_t col, uint8_t pag, uint32_t val)
+{
+	LCD_SetColumnAddress(col);
+	LCD_SetPageAddress(pag);
+	GPIO_ResetBits(GPIOB, CS);
+	uint8_t width = 50;
+	for(uint8_t i = 0; i<50; i++)
+	{
+		if(((val/2)>=i)||(i==0)||(i==width-1))
+			LCD_WriteData(0x7e);
+		else
+			LCD_WriteData(0x42);
+	}
+	GPIO_SetBits(GPIOB, CS);
 }

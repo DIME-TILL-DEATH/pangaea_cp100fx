@@ -39,7 +39,7 @@ void ExpressionMenu::show(TShowMode swhoMode)
 	if(!sys_para[System::EXPR_CCN])
 		DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
 	else
-		DisplayTask->ParamIndicNum(84, 2, sys_para[System::EXPR_CCN]-1);
+		DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
 
 	if(!sys_para[System::EXPR_STORE_LEVEL])
 		DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"Off");
@@ -91,7 +91,7 @@ void ExpressionMenu::encoderPressed()
 			sys_para[System::EXPR_CAL_MIN_HI] = adc_bu;
 			sys_para[System::EXPR_CAL_MIN_LO] = adc_bu>>8;
 
-			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
+			DisplayTask->ClearString(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
 			HW_Delay(0x7fffff);
 			DisplayTask->StringOut(67, 1, Font::fntSystem, 2, (uint8_t*)strSetMmax);
@@ -104,7 +104,7 @@ void ExpressionMenu::encoderPressed()
 			sys_para[System::EXPR_CAL_MAX_HI] = adc_bu;
 			sys_para[System::EXPR_CAL_MAX_LO] = adc_bu>>8;
 
-			DisplayTask->Clear_str(67, 1, Font::fntSystem, 10);
+			DisplayTask->ClearString(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
 			HW_Delay(0x7fffff);
 			ADC_Calibrate();
@@ -149,7 +149,7 @@ void ExpressionMenu::encoderClockwise()
 						if(!sys_para[System::EXPR_CCN])
 							DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
 						else
-							DisplayTask->ParamIndicNum(84, 2, sys_para[System::EXPR_CCN]-1);
+							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
 					}
 				break;
 				case 3:
@@ -202,7 +202,7 @@ void ExpressionMenu::encoderCounterClockwise()
 						if(!sys_para[System::EXPR_CCN])
 							DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
 						else
-							DisplayTask->ParamIndicNum(84, 2, sys_para[System::EXPR_CCN]-1);
+							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
 					}
 				break;
 				case 3:

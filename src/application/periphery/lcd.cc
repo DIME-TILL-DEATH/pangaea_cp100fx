@@ -1,12 +1,12 @@
-#include "ER_OLEDM023-1B.h"
-
-#include "../gui/bitmaps/allFonts.h"
-#include "preset.h"
-#include "system.h"
-#include "eepr.h"
+#include <bitmaps.h>
+#include "lcd.h"
 
 #include "periphery.h"
 #include "gpio.h"
+
+#include "preset.h"
+#include "system.h"
+#include "eepr.h"
 
 
 uint8_t oled_ini[30] =
@@ -14,107 +14,7 @@ uint8_t oled_ini[30] =
 		0x81, 0x7f, 0xd9, 0xd2, 0xdb, 0x34, 0xa6, 0xa4, 0xc0, 0xaf};
 uint8_t led_buf[3];
 
-void oled023_1_send_data(uint32_t dat)
-{
-	while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
-	USART_SendData(USART3, __RBIT(dat) >> 24);
-	while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
-}
-
-void oled023_1_write_data(uint32_t data)
-{
-	oled023_1_write_data(data, 1);
-}
-
-void oled023_1_write_data(uint32_t data, uint16_t dataSize)
-{
-	GPIO_ResetBits(GPIOB, CS);
-
-	for(uint8_t i = 0; i < dataSize; i++)
-	{
-		while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
-		USART_SendData(USART3, __RBIT(data) >> 24);
-		while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
-	}
-	GPIO_SetBits(GPIOB, CS);
-}
-
-void oled023_1_write_data(const uint8_t* data_ptr, uint16_t dataSize)
-{
-	GPIO_ResetBits(GPIOB, CS);
-
-		for(uint8_t i = 0; i < dataSize; i++)
-		{
-			while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
-			USART_SendData(USART3, __RBIT(data_ptr[i]) >> 24);
-			while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
-		}
-		GPIO_SetBits(GPIOB, CS);
-}
-
-void oled023_1_write_instruction(uint32_t instr)
-{
-	GPIO_ResetBits(GPIOB, RS);
-	GPIO_ResetBits(GPIOB, CS);
-	while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
-	USART_SendData(USART3, __RBIT(instr) >> 24);
-	while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
-	GPIO_SetBits(GPIOB, CS);
-	GPIO_SetBits(GPIOB, RS);
-}
-
-void Set_Page_Address(unsigned char add)
-{
-	add = 0xb0 | add;
-	oled023_1_write_instruction(add);
-	NOP();
-}
-
-void Set_Column_Address(unsigned char add)
-{
-	if(disp_orient)
-		add += 4;
-	oled023_1_write_instruction((0x10 | (add >> 4)));
-	oled023_1_write_instruction((0x0f & add));
-}
-
-void Set_Col_Pag_Adress(uint8_t col, uint8_t pag)
-{
-	Set_Column_Address(col);
-	Set_Page_Address(pag);
-}
-
-void oled023_1_disp_clear(void)
-{
-	for(uint16_t j = 0; j < 4; j++)
-	{
-		Set_Page_Address(j);
-		Set_Column_Address(0);
-		uint8_t nullData = 0;
-		oled023_1_write_data(nullData, 128);
-	}
-}
-
-
-void oled023_1_disp_reset(void)
-{
-	GPIO_ResetBits(GPIOB, GPIO_Pin_15);
-	HW_Delay(0x6ff);
-
-	GPIO_SetBits(GPIOB, GPIO_Pin_15);
-	HW_Delay(0x6ff);
-
-	if(disp_orient)
-	{
-		oled_ini[11] = 0xa1;
-		oled_ini[28] = 0xc8;
-	}
-
-	for(int i = 0; i < 30; i++)
-		oled023_1_write_instruction(oled_ini[i]);
-}
-
-void oled023_1_disp_init(void)
+void LCD_Init(void)
 {
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOC, ENABLE);
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -171,7 +71,103 @@ void oled023_1_disp_init(void)
 		oled_ini[28] = 0xc8;
 	}
 	for(int i = 0; i < 30; i++)
-		oled023_1_write_instruction(oled_ini[i]);
+		LCD_WriteInstruction(oled_ini[i]);
 
-	oled023_1_disp_clear();
+	LCD_Clear();
 }
+
+void LCD_SendData(uint32_t dat)
+{
+	while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+	USART_SendData(USART3, __RBIT(dat) >> 24);
+	while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
+}
+
+void LCD_WriteData(uint32_t data, uint16_t count)
+{
+	GPIO_ResetBits(GPIOB, CS);
+
+	for(uint8_t i = 0; i < count; i++)
+	{
+		while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+		USART_SendData(USART3, __RBIT(data) >> 24);
+		while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
+	}
+	GPIO_SetBits(GPIOB, CS);
+}
+
+void LCD_WriteData(const uint8_t* data_ptr, uint16_t dataSize)
+{
+	GPIO_ResetBits(GPIOB, CS);
+
+		for(uint8_t i = 0; i < dataSize; i++)
+		{
+			while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+			USART_SendData(USART3, __RBIT(data_ptr[i]) >> 24);
+			while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
+		}
+		GPIO_SetBits(GPIOB, CS);
+}
+
+void LCD_WriteInstruction(uint32_t instr)
+{
+	GPIO_ResetBits(GPIOB, RS);
+	GPIO_ResetBits(GPIOB, CS);
+	while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+	USART_SendData(USART3, __RBIT(instr) >> 24);
+	while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
+	GPIO_SetBits(GPIOB, CS);
+	GPIO_SetBits(GPIOB, RS);
+}
+
+void LCD_SetPageAddress(unsigned char add)
+{
+	add = 0xb0 | add;
+	LCD_WriteInstruction(add);
+	NOP();
+}
+
+void LCD_SetColumnAddress(unsigned char add)
+{
+	if(disp_orient)
+		add += 4;
+	LCD_WriteInstruction((0x10 | (add >> 4)));
+	LCD_WriteInstruction((0x0f & add));
+}
+
+//void Set_Col_Pag_Adress(uint8_t col, uint8_t pag)
+//{
+//	LCD_SetColumnAddress(col);
+//	LCD_SetPageAddress(pag);
+//}
+
+void LCD_Clear(void)
+{
+	for(uint16_t j = 0; j < 4; j++)
+	{
+		LCD_SetPageAddress(j);
+		LCD_SetColumnAddress(0);
+		uint8_t nullData = 0;
+		LCD_WriteData(nullData, 128);
+	}
+}
+
+//
+//void oled023_1_disp_reset(void)
+//{
+//	GPIO_ResetBits(GPIOB, GPIO_Pin_15);
+//	HW_Delay(0x6ff);
+//
+//	GPIO_SetBits(GPIOB, GPIO_Pin_15);
+//	HW_Delay(0x6ff);
+//
+//	if(disp_orient)
+//	{
+//		oled_ini[11] = 0xa1;
+//		oled_ini[28] = 0xc8;
+//	}
+//
+//	for(int i = 0; i < 30; i++)
+//		LCD_WriteInstruction(oled_ini[i]);
+//}
+

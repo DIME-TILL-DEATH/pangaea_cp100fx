@@ -1,3 +1,4 @@
+#include <bitmaps.h>
 #include "modulesmenu.h"
 
 #include "eepr.h"
@@ -10,8 +11,6 @@
 #include "io_task.h"
 #include "sdtest_task.h"
 #include "ui_task.h"
-
-#include "allFonts.h"
 
 #include "paramlistmenu.h"
 #include "controllersmenu.h"
@@ -92,8 +91,8 @@ void ModulesMenu::task()
 		yCoord = 2;
 	}
 
-	if(blinkFlag == 0) DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
-	else DisplayTask->EfIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, 2);
+	if(blinkFlag == 0) DisplayTask->ModuleIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
+	else DisplayTask->ModuleIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, 2);
 }
 
 void ModulesMenu::encoderPressed()
@@ -230,7 +229,7 @@ void ModulesMenu::key5()
 
 void ModulesMenu::iconRefresh(uint8_t num)
 {
-	DisplayTask->EfIcon(2 + (num%7) * 18, (num/7) * 2,(uint8_t*)modules[num].name, *modules[num].enablePtr);
+	DisplayTask->ModuleIcon(2 + (num%7) * 18, (num/7) * 2,(uint8_t*)modules[num].name, *modules[num].enablePtr);
 }
 
 void ModulesMenu::enableCab(AbstractMenu* parent)

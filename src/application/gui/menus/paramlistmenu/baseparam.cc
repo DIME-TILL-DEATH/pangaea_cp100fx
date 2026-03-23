@@ -120,7 +120,7 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 {
 	if(m_disabled)
 	{
-		DisplayTask->Clear_str(m_xDisplayPosition, yDisplayPosition, Font::fntSystem, 8);
+		DisplayTask->ClearString(m_xDisplayPosition, yDisplayPosition, Font::fntSystem, 8);
 		return;
 	}
 
@@ -128,19 +128,19 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 	switch(m_type)
 	{
 		case BaseParam::GUI_PARAMETER_LEVEL:
-			DisplayTask->ParamIndic(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_MIX:
-			DisplayTask->ParamIndicMix(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_PAN:
-			DisplayTask->ParamIndicPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_VOLUME:
-			DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_NUM:
-			DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		default: break;
 	}

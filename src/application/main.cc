@@ -1,3 +1,4 @@
+
 #define __KLIBC_WRAPS_IMPL__
 
 #include "appdefs.h"
@@ -7,15 +8,15 @@
 
 #include "periphery.h"
 #include "AT45DB321.h"
-#include "ER_OLEDM023-1B.h"
+#include "lcd.h"
 #include "serial.h"
 #include "gpio.h"
 #include "hw_timers.h"
 #include "sharc.h"
 #include "codec.h"
 
-#include "allFonts.h"
-#include "par_bitmap.h"
+#include <bitmaps.h>
+#include <param_bitmap.h>
 
 #include "system.h"
 
@@ -27,6 +28,7 @@
 #include "controllers_task.h"
 #include "sdtest_task.h"
 #include "midi_task.h"
+#include "sharc_task.h"
 
 
 EventGroupHandle_t startEventGroup;
@@ -35,8 +37,8 @@ int main(void)
 {
 	sysclock = GetCpuClock();
 
-	oled023_1_disp_init();
-	disp_start(0);
+	LCD_Init();
+	display_start(0);
 
 	AT45DB321_Init();
 	HW_Delay(0xfffff);
@@ -57,7 +59,7 @@ int main(void)
 
 	CODEC_Start();
 
-	disp_start(1);
+	display_start(1);
 	SHARC_LoadAllData();
 
 	HW_PinUsbInit();
@@ -89,6 +91,9 @@ int main(void)
 
 	MidiTask = new TMidiTask();
 	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
+
+	SharcTask = new TSharcTask();
+	SharcTask->Create("ShaarcSendData", configMINIMAL_STACK_SIZE, 0);
 
 	TScheduler::StartScheduler();
 }

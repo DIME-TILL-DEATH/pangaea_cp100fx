@@ -1,3 +1,4 @@
+#include <bitmaps.h>
 #include "mainmenu.h"
 
 #include "eepr.h"
@@ -11,8 +12,6 @@
 #include "io_task.h"
 #include "midi_task.h"
 #include "ui_task.h"
-
-#include "allFonts.h"
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
@@ -50,15 +49,15 @@ void MainMenu::task()
 		{
 			bool filled = m_selectedPresetBrief.cab1Name[0]
 							|| (cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
-			DisplayTask->Prog_ind(m_preselectedPresetNum, filled);
+			DisplayTask->PresetInd(m_preselectedPresetNum, filled);
 		}
 		else
 		{
-			DisplayTask->Clear_str(87 , 0 , Font::fnt33x30 , 39);
+			DisplayTask->ClearString(87 , 0 , Font::fnt33x30 , 39);
 		}
-		DisplayTask->IndFoot(0, m_selectedPresetBrief.modules.foot_ind_press[0], m_selectedPresetBrief.modules.foot_ind_hold[0]);
-		DisplayTask->IndFoot(1, m_selectedPresetBrief.modules.foot_ind_press[1], m_selectedPresetBrief.modules.foot_ind_hold[1]);
-		DisplayTask->IndFoot(2, m_selectedPresetBrief.modules.foot_ind_press[2], m_selectedPresetBrief.modules.foot_ind_hold[2]);
+		DisplayTask->FswInd(0, m_selectedPresetBrief.modules.foot_ind_press[0], m_selectedPresetBrief.modules.foot_ind_hold[0]);
+		DisplayTask->FswInd(1, m_selectedPresetBrief.modules.foot_ind_press[1], m_selectedPresetBrief.modules.foot_ind_hold[1]);
+		DisplayTask->FswInd(2, m_selectedPresetBrief.modules.foot_ind_press[2], m_selectedPresetBrief.modules.foot_ind_hold[2]);
 	}
 }
 
@@ -167,8 +166,8 @@ void MainMenu::key5()
 
 void MainMenu::refresh()
 {
-	DisplayTask->Clear_str(2, 0, Font::fntSystem, 14);
-	DisplayTask->Clear_str(2, 1, Font::fntSystem, 14);
+	DisplayTask->ClearString(2, 0, Font::fntSystem, 14);
+	DisplayTask->ClearString(2, 1, Font::fntSystem, 14);
 
 	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.name);
 	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.comment);
@@ -185,11 +184,11 @@ void MainMenu::refresh()
 				|| (cab_type == CAB_CONFIG_STEREO ? currentPreset.cab2NameSize : 0);
 	}
 
-	DisplayTask->Prog_ind(m_preselectedPresetNum, filled);
+	DisplayTask->PresetInd(m_preselectedPresetNum, filled);
 
-	DisplayTask->IndFoot(0, currentPreset.paramData.foot_ind_press[0], currentPreset.paramData.foot_ind_hold[0]);
-	DisplayTask->IndFoot(1, currentPreset.paramData.foot_ind_press[1], currentPreset.paramData.foot_ind_hold[1]);
-	DisplayTask->IndFoot(2, currentPreset.paramData.foot_ind_press[2], currentPreset.paramData.foot_ind_hold[2]);
+	DisplayTask->FswInd(0, currentPreset.paramData.foot_ind_press[0], currentPreset.paramData.foot_ind_hold[0]);
+	DisplayTask->FswInd(1, currentPreset.paramData.foot_ind_press[1], currentPreset.paramData.foot_ind_hold[1]);
+	DisplayTask->FswInd(2, currentPreset.paramData.foot_ind_press[2], currentPreset.paramData.foot_ind_hold[2]);
 }
 
 void MainMenu::presetUp()

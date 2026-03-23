@@ -1,14 +1,15 @@
-#include "tun_bit.h"
+#include "tuner_bitmap.h"
 
-#include "ER_OLEDM023-1B.h"
+#include "lcd.h"
+#include "bitmaps.h"
 
 #include "spectrum_task.h"
 
 
-void tun_ini(void)
+void tuner_init(void)
 {
-	oled023_1_disp_clear();
-	scal_tun();
+	LCD_Clear();
+	tuner_scale();
 }
 
 const uint8_t di_tun[] = {
@@ -18,10 +19,11 @@ void diez_tun(void)
 {
 	for(uint8_t i = 0 ; i < 2 ; i++)
 	{
-		Set_Column_Address(74);
-		Set_Page_Address(i);
+		LCD_SetColumnAddress(74);
+		LCD_SetPageAddress(i);
 		GPIO_ResetBits(GPIOB,CS);
-		for(uint8_t f = 0; f < 13 ; f++) oled023_1_send_data(di_tun[f*2 + i]);
+		for(uint8_t f = 0; f < 13 ; f++)
+			LCD_WriteData(di_tun[f*2 + i]);
 		GPIO_SetBits(GPIOB,CS);
 	}
 }
@@ -39,31 +41,31 @@ volatile uint8_t t_no;
 const uint8_t tire[] = {0x00, 0x00, 0x00, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0xE0, 0x00, 0x00, 0x00};
 const uint8_t not_ind[] = {0,0,1,1,2,3,3,4,4,5,5,6};
 extern uint32_t ind_out_l[];
-void note_tun(void)
+void tuner_note(void)
 {
 	for(uint8_t i = 0 ; i < 2 ; i++)
 	{
-		Set_Column_Address(74);
-		Set_Page_Address(i);
+		LCD_SetColumnAddress(74);
+		LCD_SetPageAddress(i);
 		uint8_t nullData = 0;
-		oled023_1_write_data(nullData, 13);
+		LCD_WriteData(nullData, 13);
 	}
 
 	for(uint8_t i = 0 ; i < 2 ; i++)
 	{
-		Set_Column_Address(56);
-		Set_Page_Address(i);
+		LCD_SetColumnAddress(56);
+		LCD_SetPageAddress(i);
 		GPIO_ResetBits(GPIOB,CS);
 
 		if(ind_out_l[1] > 1500)
 		{
 			for(uint8_t f = 0; f < 15 ; f++)
-				oled023_1_send_data(not_tun[f*2 + i + not_ind[t_no]*30]);
+				LCD_WriteData(not_tun[f*2 + i + not_ind[t_no]*30]);
 		}
 		else
 		{
 			for(uint8_t f = 0; f < 15 ; f++)
-				oled023_1_send_data(tire[f*2 + i]);
+				LCD_WriteData(tire[f*2 + i]);
 		}
 
 		if(((t_no == 1) || (t_no == 3) || (t_no == 6) || (t_no == 8) || (t_no == 10)) && (ind_out_l[1] > 500)) diez_tun();
@@ -78,7 +80,7 @@ const uint8_t strelk_tun[] = {0x80, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC, 0xFE, 0xFF, 0x
 
 uint8_t t_po;
 uint8_t t_po1;
-void strel_tun(void)
+void tuner_arrow(void)
 {
 	int aa = SpectrumTask->freq_diff*1000.0f;
 	float bb = aa/1000.0f;
@@ -100,11 +102,11 @@ void strel_tun(void)
 
 	if(t_po1 != t_po)
 	{
-		Set_Page_Address(3);
-		Set_Column_Address(t_po1 - 8);
+		LCD_SetPageAddress(3);
+		LCD_SetColumnAddress(t_po1 - 8);
 
 		uint8_t nullData = 0;
-		oled023_1_write_data(nullData, 15);
+		LCD_WriteData(nullData, 15);
 
 		if(ind_out_l[1] < 1500)t_po = 64;
 
@@ -114,39 +116,40 @@ void strel_tun(void)
 		if((t_po1 > 62) && (t_po1 < 66))GPIO_SetBits(GPIOB,GPIO_Pin_11);
 		else GPIO_ResetBits(GPIOB,GPIO_Pin_11);
 
-		Set_Column_Address(t_po1 - 8);
+		LCD_SetColumnAddress(t_po1 - 8);
 		GPIO_ResetBits(GPIOB,CS);
-		for(uint8_t i = 0 ; i < 15 ; i++)oled023_1_send_data(strelk_tun[i]);
+		for(uint8_t i = 0 ; i < 15 ; i++)
+			LCD_WriteData(strelk_tun[i]);
 		GPIO_SetBits(GPIOB,CS);
 	}
 
 	if(notee)
 	{
 		notee = 0;
-		note_tun();
+		tuner_note();
 	}
 
 	if(tun_base_old != SpectrumTask->ref_freq)
 	{
 		tun_base_old = SpectrumTask->ref_freq;
-		inline void par_ind_num_(uint8_t col , uint8_t pag , uint16_t val);
-		inline void Arsys_line(uint8_t col , uint8_t pag , uint8_t* adr ,uint8_t curs);
-		par_ind_num_(10,0,(uint16_t)SpectrumTask->ref_freq);
+		param_ind_num_(10,0,(uint16_t)SpectrumTask->ref_freq);
 		Arsys_line(30, 0, (uint8_t*)"Hz", 0);
 	}
 }
 const  uint8_t scale_tun[] = {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xE0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xF0, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xF8, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0xFC, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x81, 0x83, 0x87, 0x8F, 0x9F, 0xBF, 0x7F   // Code for char
 		        };
-void scal_tun(void)
+void tuner_scale(void)
 {
-	Set_Column_Address(0);
-	Set_Page_Address(2);
+	LCD_SetColumnAddress(0);
+	LCD_SetPageAddress(2);
 	GPIO_ResetBits(GPIOB,CS);
 	for(uint8_t i = 0 ; i < 127 ; i++)
 	{
-		if(i < 64)oled023_1_send_data(scale_tun[i]);
-		else oled023_1_send_data(scale_tun[126 - i]);
+		if(i < 64)
+			LCD_WriteData(scale_tun[i]);
+		else
+			LCD_WriteData(scale_tun[126 - i]);
 	}
 	GPIO_SetBits(GPIOB,CS);
 }

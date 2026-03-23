@@ -1,7 +1,7 @@
-#include "allFonts.h"
+#include <bitmaps.h>
+#include <bitmaps.h>
 #include "../bitmaps/icons_bitmap.h"
 
-#include "../bitmaps/allFonts.h"
 
 const uint8_t icon_bit[] =
 {
@@ -76,9 +76,9 @@ void icon_print(icon_t num, strelka_t strel)
 
 	for(int i = 0; i < 2; i++)
 	{
-		Set_Page_Address(i + 1);
-		Set_Column_Address(col);
-		oled023_1_write_data(&icon_bit[addr], 17);
+		LCD_SetPageAddress(i + 1);
+		LCD_SetColumnAddress(col);
+		LCD_WriteData(&icon_bit[addr], 17);
 		addr += 17;
 	}
 	col += 3;
@@ -91,16 +91,16 @@ void icon_print(icon_t num, strelka_t strel)
 		{
 			arrow_print(col, 0, 1);
 
-			Set_Column_Address(col);
-			Set_Page_Address(3);
-			oled023_1_write_data(nullBuf, 12);
+			LCD_SetColumnAddress(col);
+			LCD_SetPageAddress(3);
+			LCD_WriteData(nullBuf, 12);
 			break;
 		}
 		case 2:
 		{
-			Set_Column_Address(col);
-			Set_Page_Address(0);
-			oled023_1_write_data(nullBuf, 12);
+			LCD_SetColumnAddress(col);
+			LCD_SetPageAddress(0);
+			LCD_WriteData(nullBuf, 12);
 
 			arrow_print(col, 3, 0);
 			break;
@@ -116,12 +116,12 @@ void icon_print(icon_t num, strelka_t strel)
 
 void arrow_print(uint8_t col, uint8_t pag, uint8_t dir)
 {
-	Set_Column_Address(col);
-	Set_Page_Address(pag);
+	LCD_SetColumnAddress(col);
+	LCD_SetPageAddress(pag);
 
 	if(dir)
-		oled023_1_write_data(&strelk[0], 12);
+		LCD_WriteData(&strelk[0], 12);
 	else
-		oled023_1_write_data(&strelk[12], 12);
+		LCD_WriteData(&strelk[12], 12);
 }
 

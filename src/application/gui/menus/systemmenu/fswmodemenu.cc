@@ -1,9 +1,9 @@
+#include <bitmaps.h>
 #include "fswmodemenu.h"
 
 #include "../../../tasks/display_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "../../bitmaps/allFonts.h"
 #include "eepr.h"
 #include "fswcontrolmenu.h"
 #include "footswitch.h"
@@ -182,7 +182,7 @@ void FswModeMenu::encoderCounterClockwise()
 		if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Double)
 		{
 			sys_para[System::FSW1_MODE + m_fswNumber]--;
-			DisplayTask->Clear_str(10, 2, Font::fntSystem, 35);
+			DisplayTask->ClearString(10, 2, Font::fntSystem, 35);
 			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
 		}
 	}

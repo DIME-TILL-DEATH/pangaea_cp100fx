@@ -1,10 +1,9 @@
+#include <bitmaps.h>
 #include "mastereqmenu.h"
 
 #include "modules.h"
 #include "eepr.h"
 #include "system.h"
-
-#include "allFonts.h"
 
 #include "display_task.h"
 #include "io_task.h"
@@ -224,7 +223,7 @@ void MasterEqMenu::printMidFreqCallback(void* parameter)
 
 	ksprintf(string, "%d %s", value, "Hz");
 
-	DisplayTask->Clear_str(60, 2, Font::fntSystem, 8);
+	DisplayTask->ClearString(60, 2, Font::fntSystem, 8);
 	DisplayTask->StringOut(60, 2, Font::fntSystem , 0, (uint8_t*)string);
 }
 

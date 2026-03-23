@@ -1,9 +1,8 @@
+#include <bitmaps.h>
 #include "eqbandmenu.h"
 
 #include "eepr.h"
 #include "preset.h"
-
-#include "allFonts.h"
 
 #include "controllers_task.h"
 #include "display_task.h"

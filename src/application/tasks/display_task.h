@@ -1,11 +1,11 @@
 #ifndef __DISPLAY_H__
 #define __DISPLAY_H__
 
+#include <bitmaps.h>
 #include "appdefs.h"
 
 #include "sharc.h"
 
-#include "allFonts.h"
 
 #define FILE_NAME_LENGTH 64
 
@@ -29,38 +29,30 @@ public:
 
 	typedef enum
 	{
-		dcWriteReg = 0,
-		dcClear,
-		dcClear_str,
+		dcClear = 0,
+		dcClearString,
 		dcSymbolOut,
 		dcStringOut,
-		dcNumberOut,
-		dcIndicator,
-		dcProg_ind,
-		dcEfIcon,
+		dcEffectIcon,
 		dcCheckBox,
-		dcSetColumn,
-		dcSetPagAdr,
-		dcEqIndic,
 		dcEqInit,
-		dcEqLH,
+		dcEqFilter,
 		dcEqPar,
 		dcEqResponse,
-		dcParamIndic,
-		dcParamIndicTransparent,
-		dcParamIndicNum,
-		dcParamIndicNote,
-		dcParamIndicPan,
-		dcParamIndicMix,
+		dcEqInd,
+		dcParamInd,
+		dcParamIndTransparent,
+		dcParamIndNum,
+		dcParamIndNote,
+		dcParamIndPan,
+		dcParamIndMix,
 		dcDelayTimeInd,
-		dcStart,
-		dcContrast,
-		dcTap_ind,
-		dcIcStrel,
-		dcTunIni,
-		dcTunStrel,
-		dcInd_foot,
-		dcReset,
+		dcVolInd,
+		dcFswInd,
+		dcPresetInd,
+		dcTunerInit,
+		dcTunerArrow,
+		dcIconAndArrows,
 		dcArrow,
 		dcCount,
 	}TCommand;
@@ -70,22 +62,7 @@ public:
 		uint8_t num;
 		uint8_t pressState;
 		uint8_t holdState;
-	}TInd_footParam;
-
-	typedef struct
-	{
-		uint8_t data;
-	}TContrastParam;
-
-	typedef struct
-	{
-		uint8_t data;
-	}TStartParam;
-
-	typedef struct
-	{
-		uint8_t data;
-	}TTap_indParam;
+	}TFswIndParam;
 
 	typedef struct
 	{
@@ -97,31 +74,31 @@ public:
 	{
 		TPos pos;
 		uint8_t data;
-	}TParamIndicPanParam;
+	}TParamIndPanParam;
 
 	typedef struct
 	{
 		TPos pos;
 		uint8_t data;
-	}TParamIndicMixParam;
+	}TParamIndMixParam;
 
 	typedef struct
 	{
 		TPos pos;
 		uint8_t data;
-	}TParamIndicParam;
+	}TParamIndParam;
 
 	typedef struct
 	{
 		TPos pos;
 		uint16_t data;
-	}TParamIndicNumParam;
+	}TParamIndNumParam;
 
 	typedef struct
 	{
 		TPos pos;
 		uint16_t data;
-	}TParamIndicNoteParam;
+	}TParamIndNoteParam;
 
 	typedef struct
 	{
@@ -134,7 +111,7 @@ public:
 		TPos pos;
 		Font::TFontStruct font;
 		uint8_t count;
-	}TClear_strParams;
+	}TClearStringParams;
 
 	typedef struct
 	{
@@ -152,23 +129,16 @@ public:
 
 	typedef struct
 	{
-		TPos pos;
-		Font::TFontStruct font;
-		uint32_t val;
-	} TNumberOutParams;
-
-	typedef struct
-	{
 		uint8_t prog;
 		uint8_t filled;
-	}TProg_indParam;
+	}TPresetIndParam;
 
 	typedef struct
 	{
 		TPos pos;
 		uint8_t *adr;
 		uint8_t cur;
-	}TEfIconParam;
+	}TEffectIconParam;
 
 	typedef struct
 	{
@@ -178,20 +148,10 @@ public:
 
 	typedef struct
 	{
-		uint8_t x;
-	}TSetColumnParam;
-
-	typedef struct
-	{
-		uint8_t x;
-	}TSetPagAdrParam;
-
-	typedef struct
-	{
 		TPos pos;
 		uint8_t data;
 		uint8_t cur;
-	}TEqIndicParam;
+	}TEqIndParam;
 
 	typedef struct
 	{
@@ -199,62 +159,49 @@ public:
 		int16_t num;
 		uint8_t type;
 		uint8_t band;
-	}TEqParParam;
+	}TEqQParam;
 
 	typedef struct
 	{
 		float num;
 		uint8_t type;
-	}TEqLHParam;
+	}TEqFilterParam;
 
 	typedef struct
 	{
 		icon_t num;
 		strelka_t str;
-	}TIcStrelParam;
-
-	typedef struct
-	{
-		uint8_t index;
-	}TPresetPreviewParam;
+	}TIconAndArrowParam;
 
 	typedef struct
 	{
 		TPos pos;
 		uint8_t dir;
-	}TStrelParam;
+	}TArrowParam;
 
 	typedef struct
 	{
 		TCommand cmd;
 		union
 		{
-			TWriteRegParams WriteRegParams;
-			TClear_strParams Clear_strParams;
+			TClearStringParams ClearStringParams;
 			TSymbolOutParams SymbolOutParams;
 			TStringOutParams StringOutParams;
-			TNumberOutParams NumberOutParams;
-			TProg_indParam Prog_indParam;
-			TEfIconParam EfIconParam;
+			TPresetIndParam PresetIndParam;
+			TEffectIconParam EffectIconParam;
 			TCheckBoxParam CheckBoxparam;
-			TSetColumnParam SetColumnParam;
-			TSetPagAdrParam SetPagAdrParam;
-			TEqIndicParam EqIndicParam;
-			TEqParParam EqParParam;
-			TEqLHParam EqLHParam;
-			TParamIndicParam ParamIndicParam;
-			TParamIndicNumParam ParamIndicNumParam;
-			TParamIndicNoteParam ParamIndicNoteParam;
-			TParamIndicPanParam ParamIndicPanParam;
-			TParamIndicMixParam ParamIndicMixParam;
+			TEqIndParam EqIndParam;
+			TEqQParam EqQParam;
+			TEqFilterParam EqFilterParam;
+			TParamIndParam ParamIndParam;
+			TParamIndNumParam ParamIndNumParam;
+			TParamIndNoteParam ParamIndNoteParam;
+			TParamIndPanParam ParamIndPanParam;
+			TParamIndMixParam ParamIndMixParam;
 			TDelayTimeIndParam DelayTimeIndParam;
-			TContrastParam ContrastParam;
-			TStartParam StartParam;
-			TTap_indParam Tap_indParam;
-			TIcStrelParam IcStrelParam;
-			TPresetPreviewParam PresetPreviewParam;
-			TInd_footParam Ind_footParam;
-			TStrelParam StrelParam;
+			TFswIndParam FswIndParam;
+			TArrowParam ArrowParam;
+			TIconAndArrowParam IconAndArrowParam;
 		};
 	}TDisplayCmd;
 
@@ -286,37 +233,8 @@ public:
 		}
 	}
 
-	// command for perform waiting
-	inline UBaseType_t CommandWaiting()
-	{
-		UBaseType_t result;
-		if(cortex_isr_num())
-		{
-			BaseType_t HigherPriorityTaskWoken;
-			result = queue->MessagesWaitingFromISR();
-			if(HigherPriorityTaskWoken)
-				TScheduler::Yeld();
-			return result;
-		}
-		else
-			result = queue->MessagesWaiting();
-
-		return result;
-	}
-
-	// read a free amount in comman queue
-	inline UBaseType_t FreeSpaceForCommand()
-	{
-		return queue->SpacesAvailable();
-	}
-
-	void WriteReg(TWriteRegDest dest, uint32_t data);
-
-	void SetColumn(uint8_t x);
-	void SetPagAdr(uint8_t x);
-
 	void Clear();
-	void Clear_str(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count);
+	void ClearString(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count);
 
 	void SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol);
 
@@ -324,46 +242,37 @@ public:
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const uint8_t *string);
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
 
-
 	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 	void VolIndicatorTask();
 
-	void EfIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
+	void ModuleIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
 
-	void EqIndic(uint8_t x, uint8_t y, uint8_t data, uint8_t cur);
+	void EqInit(void);
+	void EqInd(uint8_t x, uint8_t y, uint8_t data, uint8_t cur);
 	void EqFreq(uint8_t x, uint8_t y, int16_t val, uint8_t band);
 	void EqQ(uint8_t x, uint8_t y, int16_t val, uint8_t band);
-	void EqInit(void);
-	void EqLH(float num, uint8_t type);
+	void EqFilter(float num, uint8_t type);
 	void EqResponse();
 
 	void CheckBox(uint8_t x, uint8_t y, uint8_t checked);
 
-	void ParamIndic(uint8_t x, uint8_t y, uint8_t data);
-	void ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data);
-	void ParamIndicNum(uint8_t x, uint8_t y, uint16_t data);
-	void ParamIndicNote(uint8_t x, uint8_t y, uint16_t data);
-	void ParamIndicPan(uint8_t x, uint8_t y, uint8_t data);
-	void ParamIndicMix(uint8_t x, uint8_t y, uint8_t data);
+	void ParamInd(uint8_t x, uint8_t y, uint8_t data);
+	void ParamIndTransparent(uint8_t x, uint8_t y , uint8_t data);
+	void ParamIndNum(uint8_t x, uint8_t y, uint16_t data);
+	void ParamIndNote(uint8_t x, uint8_t y, uint16_t data);
+	void ParamIndPan(uint8_t x, uint8_t y, uint8_t data);
+	void ParamIndMix(uint8_t x, uint8_t y, uint8_t data);
 
-	void Prog_ind(uint8_t prog, bool filled = true);
-	void Tap_ind(uint8_t cur);
-	void IndFoot(uint8_t num, uint8_t pressState, uint8_t holdDualState);
+	void PresetInd(uint8_t prog, bool filled = true);
+	void FswInd(uint8_t num, uint8_t pressState, uint8_t holdDualState);
 	void DelayTimeInd(uint8_t x, uint8_t y, uint32_t data);
 
-	void StartScreen(uint8_t data);
-
-	void Contrast(uint8_t val);
-
-	void Icon_Strel(icon_t num, strelka_t strel);
+	void IconAndArrows(icon_t num, strelka_t strel);
 
 	void TunerInit();
 	void TunerDeinit();
 	void TunStrel();
 
-	void PresetPreview(uint8_t index);
-
-	void Display_Reset(void);
 	void Arrow(uint8_t x, uint8_t y, uint32_t dir);
 
 private:
@@ -376,7 +285,8 @@ private:
 
 	bool m_tunerInitiated{false};
 
-	void DrawVolIndicator(uint8_t xPos, uint8_t indLength);
+	// move outside class, to /elements/
+	void DrawVolIndicator(uint8_t xPos, uint8_t indLength, TDisplayTask::TVolIndicatorType volIndicatorType);
 };
 
 extern volatile uint8_t ind_en;

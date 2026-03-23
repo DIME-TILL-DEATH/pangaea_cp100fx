@@ -1,4 +1,4 @@
-#include "ER_OLEDM023-1B.h"
+#include "../../periphery/lcd.h"
 
 const uint8_t Tahoma33x30[] =
 {
@@ -112,8 +112,8 @@ uint32_t t33x30_sym(uint8_t col, uint8_t pag, uint16_t sym, bool filled)
 	uint8_t data;
 	for(uint8_t j = 0; j < 3; j++)
 	{
-		Set_Page_Address(j);
-		Set_Column_Address(col);
+		LCD_SetPageAddress(j);
+		LCD_SetColumnAddress(col);
 		for(uint32_t i = 0; i < 19; i++)
 		{
 			if(filled)
@@ -121,7 +121,7 @@ uint32_t t33x30_sym(uint8_t col, uint8_t pag, uint16_t sym, bool filled)
 			else
 				data = Tahoma33x30_[sym + i * 3 + j];
 
-			oled023_1_write_data(data, 1);
+			LCD_WriteData(data);
 		}
 	}
 	return 20;
@@ -131,10 +131,10 @@ void t33x30_clear(uint8_t col, uint8_t pag, uint8_t size)
 {
 	for(uint8_t i = 0; i < 4; i++)
 	{
-		Set_Page_Address(pag + i);
-		Set_Column_Address(col);
+		LCD_SetPageAddress(pag + i);
+		LCD_SetColumnAddress(col);
 
 		uint8_t nullData = 0;
-		oled023_1_write_data(nullData, size);
+		LCD_WriteData(nullData, size);
 	}
 }

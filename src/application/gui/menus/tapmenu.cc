@@ -1,7 +1,7 @@
+#include <bitmaps.h>
 #include "tapmenu.h"
 
 #include "../../tasks/display_task.h"
-#include "../bitmaps/allFonts.h"
 #include "system.h"
 #include "preset.h"
 

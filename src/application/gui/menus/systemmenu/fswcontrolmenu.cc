@@ -1,9 +1,9 @@
+#include <bitmaps.h>
 #include "fswcontrolmenu.h"
 
 #include "../../../tasks/display_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "../../bitmaps/allFonts.h"
 #include "eepr.h"
 
 #include "footswitch.h"
@@ -111,7 +111,7 @@ void FswControlMenu::encoderClockwise()
 			if(*(m_fswControls.fs) < 6) *(m_fswControls.fs) += 1;
 
 			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
-			DisplayTask->Clear_str(0, 2, Font::fntSystem, 21);
+			DisplayTask->ClearString(0, 2, Font::fntSystem, 21);
 
 			printPage();
 		}
@@ -127,7 +127,7 @@ void FswControlMenu::encoderClockwise()
 				if(a == 0)
 					DisplayTask->StringOut(76, 2, Font::fntSystem, 0, "Off");
 				else
-					DisplayTask->ParamIndicNum(76, 2, a-1);
+					DisplayTask->ParamIndNum(76, 2, a-1);
 			}
 
 			if(*(m_fswControls.fs) >= Footswitch::FswType::PresetMap1)
@@ -175,7 +175,7 @@ void FswControlMenu::encoderCounterClockwise()
 		if(*(m_fswControls.fs)>0) *(m_fswControls.fs) -= 1;
 
 		DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strFswType[*(m_fswControls.fs)][0]);
-		DisplayTask->Clear_str(0, 2, Font::fntSystem, 21);
+		DisplayTask->ClearString(0, 2, Font::fntSystem, 21);
 
 		printPage();
 	}
@@ -191,7 +191,7 @@ void FswControlMenu::encoderCounterClockwise()
 			if(!a)
 				DisplayTask->StringOut(76, 2, Font::fntSystem, 0, "Off");
 			else
-				DisplayTask->ParamIndicNum(76, 2, a-1);
+				DisplayTask->ParamIndNum(76, 2, a-1);
 		}
 		if(*(m_fswControls.fs) >= Footswitch::FswType::PresetMap1)
 		{
@@ -254,6 +254,6 @@ void FswControlMenu::printPage()
 		if(!*(m_fswControls.k1_cc))
 			DisplayTask->StringOut(76, 2, Font::fntSystem, 0, "Off");
 		else
-			DisplayTask->ParamIndicNum(76, 2, *(m_fswControls.k1_cc)-1);
+			DisplayTask->ParamIndNum(76, 2, *(m_fswControls.k1_cc)-1);
 	}
 }

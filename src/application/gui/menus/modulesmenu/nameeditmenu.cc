@@ -1,3 +1,4 @@
+#include <bitmaps.h>
 #include "nameeditmenu.h"
 
 #include "../../../tasks/controllers_task.h"
@@ -5,7 +6,6 @@
 #include "../../../tasks/filesystem_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "../../bitmaps/allFonts.h"
 #include "appdefs.h"
 #include "eepr.h"
 #include "preset.h"

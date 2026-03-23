@@ -1,9 +1,9 @@
+#include <bitmaps.h>
 #include "fswtypemenu.h"
 
 #include "../../../tasks/display_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "../../bitmaps/allFonts.h"
 #include "eepr.h"
 
 #include "fswmodemenu.h"
@@ -26,7 +26,7 @@ void FswTypeMenu::show(TShowMode showMode)
 	DisplayTask->Clear();
 	for(uint8_t i = 0; i<4; i++)
 		DisplayTask->StringOut(3, i, Font::fntSystem, 0, (uint8_t*)&strFswMenu[i]);
-	DisplayTask->ParamIndic(58, 3, sys_para[System::FSW_SPEED]);
+	DisplayTask->ParamInd(58, 3, sys_para[System::FSW_SPEED]);
 
 	restartBlinking(0);
 }
@@ -76,7 +76,7 @@ void FswTypeMenu::encoderClockwise()
 		if(sys_para[System::FSW_SPEED]<127)
 		{
 			sys_para[System::FSW_SPEED] = BaseParam::encSpeedInc(sys_para[System::FSW_SPEED], 127);
-			DisplayTask->ParamIndic(58, 3, sys_para[System::FSW_SPEED]);
+			DisplayTask->ParamInd(58, 3, sys_para[System::FSW_SPEED]);
 		}
 	}
 
@@ -97,7 +97,7 @@ void FswTypeMenu::encoderCounterClockwise()
 		if(sys_para[System::FSW_SPEED])
 		{
 			sys_para[System::FSW_SPEED] = BaseParam::encSpeedDec(sys_para[System::FSW_SPEED], 0);
-			DisplayTask->ParamIndic(58, 3, sys_para[System::FSW_SPEED]);
+			DisplayTask->ParamInd(58, 3, sys_para[System::FSW_SPEED]);
 		}
 	}
 

@@ -28,15 +28,8 @@ void TDisplayTask::Code()
 
 		switch(cmd.cmd)
 		{
-			case dcWriteReg:
-				if (cmd.WriteRegParams.dest == wrdCmd)
-					oled023_1_write_instruction(cmd.WriteRegParams.data);
-				else
-					oled023_1_write_data(cmd.WriteRegParams.data, 1);
-			break;
-
 			case dcClear:
-				oled023_1_disp_clear();
+				LCD_Clear();
 			break;
 
 			case dcSymbolOut:
@@ -78,142 +71,106 @@ void TDisplayTask::Code()
 				}
             break;
 
-			case dcNumberOut:
-				switch(cmd.StringOutParams.font.name)
-				{
-					case Font::fnt12x13:
-						//t12x13_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y, cmd.StringOutParams.string );
-					break;
-					case Font::fnt33x30:
-						//t33x30_line(cmd.NumberOutParams.pos.x , cmd.NumberOutParams.pos.y , cmd.NumberOutParams.val);
-					break;
-					case Font::fntSystem:
-						//Arsys_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y , cmd.StringOutParams.string,cmd.StringOutParams.font.state);
-					break;
-					default: break;
-             }
-            break ;
-
-			case dcIndicator:
-				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) DrawVolIndicator(64, 64);
-				else DrawVolIndicator(58, 50);
+			case dcVolInd:
+				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) DrawVolIndicator(64, 64, m_volIndicatorType);
+				else DrawVolIndicator(58, 50, m_volIndicatorType);
             break;
 
-			case dcProg_ind:
+			case dcPresetInd:
 			{
-				prog_ind(cmd.Prog_indParam.prog, cmd.Prog_indParam.filled);
+				preset_ind(cmd.PresetIndParam.prog, cmd.PresetIndParam.filled);
 				break;
 			}
 
-			case dcClear_str:
-				clear_str(cmd.Clear_strParams.pos.x, cmd.Clear_strParams.pos.y,
-						cmd.Clear_strParams.font.name, cmd.Clear_strParams.count);
+			case dcClearString:
+				clear_string(cmd.ClearStringParams.pos.x, cmd.ClearStringParams.pos.y,
+						cmd.ClearStringParams.font.name, cmd.ClearStringParams.count);
 			break;
 
-			case dcEfIcon:
-				Arsys_ef(cmd.EfIconParam.pos.x , cmd.EfIconParam.pos.y,
-						cmd.EfIconParam.adr , cmd.EfIconParam.cur);
+			case dcEffectIcon:
+				effect_icon(cmd.EffectIconParam.pos.x , cmd.EffectIconParam.pos.y,
+						cmd.EffectIconParam.adr , cmd.EffectIconParam.cur);
 			break;
 
 			case dcCheckBox:
 				checkbox(cmd.CheckBoxparam.pos.x, cmd.CheckBoxparam.pos.y, cmd.CheckBoxparam.checked);
 			break;
 
-			case dcSetColumn:
-				Set_Column_Address(cmd.SetColumnParam.x);
-			break;
-
-			case dcSetPagAdr:
-				Set_Page_Address(cmd.SetPagAdrParam.x);
-			break;
-
-			case dcEqIndic:
-				eq_ind(cmd.EqIndicParam.pos.x, cmd.EqIndicParam.pos.y,
-						cmd.EqIndicParam.data, cmd.EqIndicParam.cur);
+			case dcEqInd:
+				eq_ind(cmd.EqIndParam.pos.x, cmd.EqIndParam.pos.y,
+						cmd.EqIndParam.data, cmd.EqIndParam.cur);
 			break;
 
 			case dcEqPar:
-				eq_par(cmd.EqParParam.pos.x, cmd.EqParParam.pos.y,
-						cmd.EqParParam.num, cmd.EqParParam.type, cmd.EqParParam.band);
+				eq_par(cmd.EqQParam.pos.x, cmd.EqQParam.pos.y,
+						cmd.EqQParam.num, cmd.EqQParam.type, cmd.EqQParam.band);
 			break;
 
 			case dcEqInit:
 				eq_init();
 			break;
 
-			case dcEqLH:
-				lo_hi_par(cmd.EqLHParam.num , cmd.EqLHParam.type);
+			case dcEqFilter:
+				lo_hi_par(cmd.EqFilterParam.num , cmd.EqFilterParam.type);
 			break;
 
 			case dcEqResponse:
 				eq_response();
 			break;
 
-			case dcParamIndic:
-				par_ind(cmd.ParamIndicParam.pos.x, cmd.ParamIndicParam.pos.y,
-						cmd.ParamIndicParam.data);
+			case dcParamInd:
+				param_ind(cmd.ParamIndParam.pos.x, cmd.ParamIndParam.pos.y,
+						cmd.ParamIndParam.data);
 			break;
 
-			case dcParamIndicTransparent:
-				p_ind(cmd.ParamIndicParam.pos.x, cmd.ParamIndicParam.pos.y,
-						cmd.ParamIndicParam.data);
+			case dcParamIndTransparent:
+				param_transparent_ind(cmd.ParamIndParam.pos.x, cmd.ParamIndParam.pos.y,
+						cmd.ParamIndParam.data);
 			break;
 
-			case dcParamIndicNum:
-				par_ind_num_(cmd.ParamIndicNumParam.pos.x, cmd.ParamIndicNumParam.pos.y,
-						cmd.ParamIndicNumParam.data);
+			case dcParamIndNum:
+				param_ind_num_(cmd.ParamIndNumParam.pos.x, cmd.ParamIndNumParam.pos.y,
+						cmd.ParamIndNumParam.data);
 			break;
 
-			case dcParamIndicNote:
-				par_ind_note(cmd.ParamIndicNumParam.pos.x, cmd.ParamIndicNumParam.pos.y,
-						cmd.ParamIndicNumParam.data);
+			case dcParamIndNote:
+				param_ind_note(cmd.ParamIndNumParam.pos.x, cmd.ParamIndNumParam.pos.y,
+						cmd.ParamIndNumParam.data);
 			break;
 
-			case dcParamIndicPan:
-				par_ind_pan(cmd.ParamIndicPanParam.pos.x, cmd.ParamIndicPanParam.pos.y,
-						cmd.ParamIndicPanParam.data);
+			case dcParamIndPan:
+				param_ind_pan(cmd.ParamIndPanParam.pos.x, cmd.ParamIndPanParam.pos.y,
+						cmd.ParamIndPanParam.data);
 			break;
 
-			case dcParamIndicMix:
-				par_ind_mix(cmd.ParamIndicPanParam.pos.x, cmd.ParamIndicPanParam.pos.y,
-						cmd.ParamIndicPanParam.data);
+			case dcParamIndMix:
+				param_ind_mix(cmd.ParamIndPanParam.pos.x, cmd.ParamIndPanParam.pos.y,
+						cmd.ParamIndPanParam.data);
 			break;
 			case dcDelayTimeInd:
-				del_tim_ind(cmd.DelayTimeIndParam.pos.x, cmd.DelayTimeIndParam.pos.y,
+				delay_time_ind(cmd.DelayTimeIndParam.pos.x, cmd.DelayTimeIndParam.pos.y,
 						cmd.DelayTimeIndParam.data);
 			break;
 
-			case dcStart:
-				disp_start(cmd.StartParam.data);
+			case dcIconAndArrows:
+				icon_print(cmd.IconAndArrowParam.num, cmd.IconAndArrowParam.str);
 			break;
 
-			case dcTap_ind:
-				tap_ind(cmd.Tap_indParam.data);
-			break;
-
-			case dcIcStrel:
-				icon_print(cmd.IcStrelParam.num, cmd.IcStrelParam.str);
-			break;
-
-			case dcTunIni:
-				tun_ini();
+			case dcTunerInit:
+				tuner_init();
 				m_tunerInitiated = true;
 			break;
 
-			case dcTunStrel:
-				strel_tun();
+			case dcTunerArrow:
+				tuner_arrow();
 			break;
 
-			case dcInd_foot:
-				ind_foot(cmd.Ind_footParam.num, cmd.Ind_footParam.pressState, cmd.Ind_footParam.holdState);
-			break;
-
-			case dcReset:
-				oled023_1_disp_reset();
+			case dcFswInd:
+				fsw_ind(cmd.FswIndParam.num, cmd.FswIndParam.pressState, cmd.FswIndParam.holdState);
 			break;
 
 			case dcArrow:
-				arrow_print(cmd.StrelParam.pos.x, cmd.StrelParam.pos.y, cmd.StrelParam.dir);
+				arrow_print(cmd.ArrowParam.pos.x, cmd.ArrowParam.pos.y, cmd.ArrowParam.dir);
 			break;
 
 			default:
@@ -222,23 +179,16 @@ void TDisplayTask::Code()
     }
 }
 
-void TDisplayTask::IndFoot(uint8_t num, uint8_t pressState, uint8_t holdState)
+void TDisplayTask::FswInd(uint8_t num, uint8_t pressState, uint8_t holdState)
 {
 	TDisplayCmd cmd ;
-	cmd.cmd=dcInd_foot;
-	cmd.Ind_footParam.num = num;
-	cmd.Ind_footParam.pressState = pressState;
-	cmd.Ind_footParam.holdState = holdState;
+	cmd.cmd=dcFswInd;
+	cmd.FswIndParam.num = num;
+	cmd.FswIndParam.pressState = pressState;
+	cmd.FswIndParam.holdState = holdState;
 	Command(&cmd);
 }
-void TDisplayTask::WriteReg(TWriteRegDest dest , uint32_t data )
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcWriteReg;
-	cmd.WriteRegParams.dest = dest;
-	cmd.WriteRegParams.data = data;
-	Command(&cmd);
-}
+
 void TDisplayTask::Clear()
 {
 	TDisplayCmd cmd;
@@ -246,13 +196,6 @@ void TDisplayTask::Clear()
 	Command( &cmd );
 }
 
-void TDisplayTask::Tap_ind(uint8_t cur)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcTap_ind;
-	cmd.Tap_indParam.data = cur;
-	Command( &cmd );
-}
 void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol)
 {
 	TDisplayCmd cmd;
@@ -288,7 +231,6 @@ void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8
 void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
 	m_volIndicatorType = volIndicatorType;
-
 	m_volIndPar_ptr = indicatorParPtr;
 
 	DSP_GuiSendParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
@@ -315,34 +257,34 @@ void TDisplayTask::VolIndicatorTask()
 	}
 
 	TDisplayCmd cmd;
-	cmd.cmd=dcIndicator;
+	cmd.cmd=dcVolInd;
 	Command(&cmd);
 }
 
-void TDisplayTask::Prog_ind(uint8_t prog, bool filled)
+void TDisplayTask::PresetInd(uint8_t prog, bool filled)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcProg_ind;
-	cmd.Prog_indParam.prog = prog;
-	cmd.Prog_indParam.filled = filled;
+	cmd.cmd=dcPresetInd;
+	cmd.PresetIndParam.prog = prog;
+	cmd.PresetIndParam.filled = filled;
 	Command(&cmd);
 }
-void TDisplayTask::Clear_str(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count)
+void TDisplayTask::ClearString(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcClear_str;
-	cmd.Clear_strParams.pos = {x,y};
-	cmd.Clear_strParams.font.name = name;
-	cmd.Clear_strParams.count = count;
+	cmd.cmd=dcClearString;
+	cmd.ClearStringParams.pos = {x,y};
+	cmd.ClearStringParams.font.name = name;
+	cmd.ClearStringParams.count = count;
 	Command(&cmd);
 }
-void TDisplayTask::EfIcon(uint8_t x, uint8_t y , uint8_t* adr , uint8_t cur)
+void TDisplayTask::ModuleIcon(uint8_t x, uint8_t y , uint8_t* adr , uint8_t cur)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcEfIcon;
-	cmd.EfIconParam.pos = {x,y};
-	cmd.EfIconParam.adr = adr;
-	cmd.EfIconParam.cur = cur;
+	cmd.cmd=dcEffectIcon;
+	cmd.EffectIconParam.pos = {x,y};
+	cmd.EffectIconParam.adr = adr;
+	cmd.EffectIconParam.cur = cur;
 	Command(&cmd);
 }
 
@@ -355,44 +297,30 @@ void TDisplayTask::CheckBox(uint8_t x, uint8_t y, uint8_t checked)
 	Command(&cmd);
 }
 
-void TDisplayTask::SetColumn(uint8_t x)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcSetColumn;
-	cmd.SetColumnParam.x = x;
-	Command(&cmd);
-}
-void TDisplayTask::SetPagAdr(uint8_t x)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcSetPagAdr;
-	cmd.SetPagAdrParam.x = x;
-	Command(&cmd);
-}
 void TDisplayTask::EqInit()
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcEqInit;
 	Command(&cmd);
 }
-void TDisplayTask::EqIndic(uint8_t x, uint8_t y , uint8_t data , uint8_t cur )
+void TDisplayTask::EqInd(uint8_t x, uint8_t y , uint8_t data , uint8_t cur )
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcEqIndic;
-	cmd.EqIndicParam.pos = {x,y};
-	cmd.EqIndicParam.data = data;
-	cmd.EqIndicParam.cur = cur;
+	cmd.cmd=dcEqInd;
+	cmd.EqIndParam.pos = {x,y};
+	cmd.EqIndParam.data = data;
+	cmd.EqIndParam.cur = cur;
 	Command(&cmd);
 }
 void TDisplayTask::EqFreq(uint8_t col , uint8_t pag , int16_t num, uint8_t band)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcEqPar;
-	cmd.EqParParam.pos.x = col;
-	cmd.EqParParam.pos.y = pag;
-	cmd.EqParParam.num = num;
-	cmd.EqParParam.type = 0;
-	cmd.EqParParam.band = band;
+	cmd.EqQParam.pos.x = col;
+	cmd.EqQParam.pos.y = pag;
+	cmd.EqQParam.num = num;
+	cmd.EqQParam.type = 0;
+	cmd.EqQParam.band = band;
 	Command(&cmd);
 }
 
@@ -400,19 +328,19 @@ void TDisplayTask::EqQ(uint8_t col , uint8_t pag , int16_t num, uint8_t band)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcEqPar;
-	cmd.EqParParam.pos.x = col;
-	cmd.EqParParam.pos.y = pag;
-	cmd.EqParParam.num = num;
-	cmd.EqParParam.type = 1;
-	cmd.EqParParam.band = band;
+	cmd.EqQParam.pos.x = col;
+	cmd.EqQParam.pos.y = pag;
+	cmd.EqQParam.num = num;
+	cmd.EqQParam.type = 1;
+	cmd.EqQParam.band = band;
 	Command(&cmd);
 }
-void TDisplayTask::EqLH(float num , uint8_t type)
+void TDisplayTask::EqFilter(float num , uint8_t type)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcEqLH;
-	cmd.EqLHParam.num = num;
-	cmd.EqLHParam.type = type;
+	cmd.cmd=dcEqFilter;
+	cmd.EqFilterParam.num = num;
+	cmd.EqFilterParam.type = type;
 	Command(&cmd);
 }
 
@@ -423,52 +351,52 @@ void TDisplayTask::EqResponse()
 	Command(&cmd);
 }
 
-void TDisplayTask::ParamIndic(uint8_t x, uint8_t y , uint8_t data)
+void TDisplayTask::ParamInd(uint8_t x, uint8_t y , uint8_t data)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcParamIndic;
-	cmd.ParamIndicParam.pos = {x,y};
-	cmd.ParamIndicParam.data = data;
+	cmd.cmd=dcParamInd;
+	cmd.ParamIndParam.pos = {x,y};
+	cmd.ParamIndParam.data = data;
 	Command(&cmd);
 }
-void TDisplayTask::ParamIndicTransparent(uint8_t x, uint8_t y , uint8_t data)
+void TDisplayTask::ParamIndTransparent(uint8_t x, uint8_t y , uint8_t data)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcParamIndicTransparent;
-	cmd.ParamIndicParam.pos = {x,y};
-	cmd.ParamIndicParam.data = data;
+	cmd.cmd=dcParamIndTransparent;
+	cmd.ParamIndParam.pos = {x,y};
+	cmd.ParamIndParam.data = data;
 	Command(&cmd);
 }
-void TDisplayTask::ParamIndicNum(uint8_t x, uint8_t y , uint16_t data)
+void TDisplayTask::ParamIndNum(uint8_t x, uint8_t y , uint16_t data)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcParamIndicNum;
-	cmd.ParamIndicNumParam.pos = {x,y};
-	cmd.ParamIndicNumParam.data = data;
+	cmd.cmd=dcParamIndNum;
+	cmd.ParamIndNumParam.pos = {x,y};
+	cmd.ParamIndNumParam.data = data;
 	Command(&cmd);
 }
-void TDisplayTask::ParamIndicNote(uint8_t x, uint8_t y , uint16_t data)
+void TDisplayTask::ParamIndNote(uint8_t x, uint8_t y , uint16_t data)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcParamIndicNote;
-	cmd.ParamIndicNoteParam.pos = {x,y};
-	cmd.ParamIndicNoteParam.data = data;
+	cmd.cmd=dcParamIndNote;
+	cmd.ParamIndNoteParam.pos = {x,y};
+	cmd.ParamIndNoteParam.data = data;
 	Command(&cmd);
 }
-void TDisplayTask::ParamIndicPan(uint8_t x, uint8_t y , uint8_t data)
+void TDisplayTask::ParamIndPan(uint8_t x, uint8_t y , uint8_t data)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcParamIndicPan;
-	cmd.ParamIndicPanParam.pos = {x,y};
-	cmd.ParamIndicPanParam.data = data;
+	cmd.cmd=dcParamIndPan;
+	cmd.ParamIndPanParam.pos = {x,y};
+	cmd.ParamIndPanParam.data = data;
 	Command(&cmd);
 }
-void TDisplayTask::ParamIndicMix(uint8_t x, uint8_t y , uint8_t data)
+void TDisplayTask::ParamIndMix(uint8_t x, uint8_t y , uint8_t data)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcParamIndicMix;
-	cmd.ParamIndicMixParam.pos = {x,y};
-	cmd.ParamIndicMixParam.data = data;
+	cmd.cmd=dcParamIndMix;
+	cmd.ParamIndMixParam.pos = {x,y};
+	cmd.ParamIndMixParam.data = data;
 	Command(&cmd);
 }
 void TDisplayTask::DelayTimeInd(uint8_t x, uint8_t y , uint32_t data)
@@ -479,33 +407,19 @@ void TDisplayTask::DelayTimeInd(uint8_t x, uint8_t y , uint32_t data)
 	cmd.DelayTimeIndParam.data = data;
 	Command(&cmd);
 }
-void TDisplayTask::StartScreen(uint8_t data)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcStart;
-	cmd.StartParam.data = data;
-	Command(&cmd);
-}
 
-void TDisplayTask::Contrast(uint8_t val)
+void TDisplayTask::IconAndArrows(icon_t num , strelka_t strel)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcContrast;
-	cmd.ContrastParam.data = val;
-	Command(&cmd);
-}
-void TDisplayTask::Icon_Strel(icon_t num , strelka_t strel)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcIcStrel;
-	cmd.IcStrelParam.num = num;
-	cmd.IcStrelParam.str = strel;
+	cmd.cmd=dcIconAndArrows;
+	cmd.IconAndArrowParam.num = num;
+	cmd.IconAndArrowParam.str = strel;
 	Command(&cmd);
 }
 void TDisplayTask::TunerInit(void)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcTunIni;
+	cmd.cmd=dcTunerInit;
 	Command(&cmd);
 }
 void TDisplayTask::TunerDeinit()
@@ -519,26 +433,20 @@ void TDisplayTask::TunerDeinit()
 void TDisplayTask::TunStrel()
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcTunStrel;
+	cmd.cmd=dcTunerArrow;
 	Command(&cmd);
 }
 
-void TDisplayTask::Display_Reset(void)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcReset;
-	Command(&cmd);
-}
 void TDisplayTask::Arrow(uint8_t x, uint8_t y , uint32_t dir)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcArrow;
-	cmd.StrelParam.pos = {x,y};
-	cmd.StrelParam.dir = dir;
+	cmd.ArrowParam.pos = {x,y};
+	cmd.ArrowParam.dir = dir;
 	Command(&cmd);
 }
 
-void TDisplayTask::DrawVolIndicator(uint8_t xPos, uint8_t indLength)
+void TDisplayTask::DrawVolIndicator(uint8_t xPos, uint8_t indLength, TDisplayTask::TVolIndicatorType volIndicatorType)
 {
 	uint8_t volIndPosition = 32;
 
@@ -552,28 +460,26 @@ void TDisplayTask::DrawVolIndicator(uint8_t xPos, uint8_t indLength)
 	else
 		outLevel = indLength - 1;
 
-	ind_in_p[1] = ind_out_l[1] = 0;
-
-	Set_Column_Address(xPos);
-	Set_Page_Address(3);
+	LCD_SetColumnAddress(xPos);
+	LCD_SetPageAddress(3);
 
 	for(uint8_t i = 0; i < indLength; i++)
 	{
 		if(m_volIndicatorType == TVolIndicatorType::VOL_INDICATOR_VOLUME && i >= volIndPosition - 2 && i <= volIndPosition)
 		{
-				if(i == volIndPosition - 1) oled023_1_write_data(0x42);
-				else oled023_1_write_data(0x3c);
+				if(i == volIndPosition - 1) LCD_WriteData(0x42);
+				else LCD_WriteData(0x3c);
 		}
 		else
 		{
 			if((i == indLength - 1) || (i == 0))
 			{
-				oled023_1_write_data(0x7e, 1); //3c
+				LCD_WriteData(0x7e, 1); //3c
 			}
 			else
 			{
-				if(i < outLevel) oled023_1_write_data(0x3c);
-				else oled023_1_write_data(0x0);
+				if(i < outLevel) LCD_WriteData(0x3c);
+				else LCD_WriteData(0x0);
 			}
 		}
 	}

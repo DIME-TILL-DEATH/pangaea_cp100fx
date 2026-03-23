@@ -1,3 +1,4 @@
+#include <tuner_bitmap.h>
 #include "console_handlers.h"
 
 #include "sharc.h"
@@ -32,7 +33,6 @@
 #include "copyselectmenu.h"
 
 #include "amt.h"
-#include "tun_bit.h"
 
 
 bool consoleBusy = false;

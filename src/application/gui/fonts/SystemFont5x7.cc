@@ -1,6 +1,6 @@
+#include <bitmaps.h>
 #include "SystemFont5x7.h"
 
-#include "allFonts.h"
 
 uint32_t Arsys_sym(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 {
@@ -11,8 +11,8 @@ uint32_t Arsys_sym(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 		curs = 2;
 	}
 	sym = (sym - 32) * 6;
-	Set_Page_Address(pag);
-	Set_Column_Address(col);
+	LCD_SetPageAddress(pag);
+	LCD_SetColumnAddress(col);
 	for(uint8_t i = 0; i < 6; i++)
 	{
 		j = SystemFont5x7[sym + i];
@@ -20,7 +20,7 @@ uint32_t Arsys_sym(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 		if(curs == 2) j = (~j) & 0x7f;
 		if(curs == 3) j = 0;
 
-		oled023_1_write_data(j, 1);
+		LCD_WriteData(j);
 	}
 	return col + 6;
 }
@@ -29,8 +29,8 @@ uint32_t Arsys_sym_up(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 {
 	uint8_t j;
 	sym = (sym - 32) * 6;
-	Set_Page_Address(pag);
-	Set_Column_Address(col);
+	LCD_SetPageAddress(pag);
+	LCD_SetColumnAddress(col);
 	for(uint8_t i = 0; i < 6; i++)
 	{
 		j = SystemFont5x7[sym + i] << 4;
@@ -38,7 +38,7 @@ uint32_t Arsys_sym_up(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 			j |= 0x80;
 		if(curs == 2)
 			j = ~j;
-		oled023_1_write_data(j);
+		LCD_WriteData(j);
 	}
 	return col + 6;
 }
@@ -47,8 +47,8 @@ uint32_t Arsys_sym_down(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 {
 	uint8_t j;
 	sym = (sym - 32) * 6;
-	Set_Page_Address(pag);
-	Set_Column_Address(col);
+	LCD_SetPageAddress(pag);
+	LCD_SetColumnAddress(col);
 	for(uint8_t i = 0; i < 6; i++)
 	{
 		j = SystemFont5x7[sym + i] >> 4;
@@ -56,7 +56,7 @@ uint32_t Arsys_sym_down(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 			j |= 0x80;
 		if(curs == 2)
 			j = ~j;
-		oled023_1_write_data(j, 1);
+		LCD_WriteData(j);
 	}
 	return col + 6;
 }

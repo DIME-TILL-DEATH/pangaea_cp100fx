@@ -1,3 +1,4 @@
+#include <bitmaps.h>
 #include "footswitch.h"
 
 #include "eepr.h"
@@ -13,8 +14,6 @@
 #include "ui_task.h"
 #include "usb_task.h"
 #include "midi_task.h"
-
-#include "allFonts.h"
 
 #include "tunermenu.h"
 
@@ -108,7 +107,8 @@ void Footswitch::press_execute(uint8_t num)
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num, currentPreset.paramData.foot_ind_press[num], currentPreset.paramData.foot_ind_hold[num]);
+					UITask->task();
+//					DisplayTask->FswInd(num, currentPreset.paramData.foot_ind_press[num], currentPreset.paramData.foot_ind_hold[num]);
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.paramData.foot_ind_press[num]);
@@ -250,7 +250,8 @@ void Footswitch::hold_execute(uint8_t num)
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					DisplayTask->IndFoot(num, currentPreset.paramData.foot_ind_press[num], currentPreset.paramData.foot_ind_hold[num]);
+					UITask->task();
+//					DisplayTask->FswInd(num, currentPreset.paramData.foot_ind_press[num], currentPreset.paramData.foot_ind_hold[num]);
 
 				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_HOLD_CC + num, currentPreset.paramData.foot_ind_hold[num]);

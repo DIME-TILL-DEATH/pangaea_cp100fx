@@ -77,7 +77,7 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 	{
 		case TDisplayType::Number:
 		{
-			DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		}
 
@@ -90,19 +90,19 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 
 		case TDisplayType::Level:
 		{
-			DisplayTask->ParamIndic(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		}
 
 		case TDisplayType::Mix:
 		{
-			DisplayTask->ParamIndicMix(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		}
 
 		case TDisplayType::Pan:
 		{
-			DisplayTask->ParamIndicPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
 			break;
 		}
 

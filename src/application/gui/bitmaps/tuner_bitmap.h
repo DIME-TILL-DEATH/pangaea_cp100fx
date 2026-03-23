@@ -9,9 +9,9 @@ extern uint8_t t_po1;
 extern volatile uint8_t notee;
 extern float tun_base_old;
 
-void tun_ini(void);
-void scal_tun(void);
-void strel_tun(void);
-void note_tun(void);
+void tuner_init(void);
+void tuner_scale(void);
+void tuner_arrow(void);
+void tuner_note(void);
 
 #endif

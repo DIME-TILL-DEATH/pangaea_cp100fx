@@ -1,3 +1,4 @@
+#include <tuner_bitmap.h>
 #include "syssettings_handlers.h"
 
 #include "console_helpers.h"
@@ -9,8 +10,6 @@
 
 #include "system.h"
 #include "modules.h"
-
-#include "tun_bit.h"
 
 #include "display_task.h"
 #include "ui_task.h"

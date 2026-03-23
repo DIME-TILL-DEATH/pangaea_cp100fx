@@ -114,12 +114,6 @@ namespace System
 		EQ_SCREEN_BARS
 	}EqScreenMode;
 
-	typedef enum
-	{
-		FX_LED_MODE_DEFAULT = 0,
-		FX_LED_MODE_CUSTOM
-	};
-
 	void setStartupValues();
 	void setMoogTime(float quarterInterval);
 	void setDelayTime(float quarterInterval);

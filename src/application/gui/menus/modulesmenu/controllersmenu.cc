@@ -1,10 +1,10 @@
+#include <bitmaps.h>
 #include "controllersmenu.h"
 
 #include "../../../tasks/controllers_task.h"
 #include "../../../tasks/display_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "../../bitmaps/allFonts.h"
 #include "eepr.h"
 
 #include "footswitch.h"
@@ -41,7 +41,7 @@ void ControllersMenu::show(TShowMode swhoMode)
 		switch(i)
 		{
 			case ControllerMenuParams::Controller:
-				DisplayTask->ParamIndicNum(45, 0, 1);
+				DisplayTask->ParamIndNum(45, 0, 1);
 			break;
 
 			case ControllerMenuParams::Source:
@@ -52,7 +52,7 @@ void ControllersMenu::show(TShowMode swhoMode)
 				else if(currentPreset.controller[0].src >= Controller::Src::CC1)
 				{
 					DisplayTask->StringOut(45, 1, Font::fntSystem, 0, "CC#");
-					DisplayTask->ParamIndicNum(69, 1, currentPreset.controller[0].src - Controller::Src::CC1);
+					DisplayTask->ParamIndNum(69, 1, currentPreset.controller[0].src - Controller::Src::CC1);
 				}
 				else
 				{
@@ -72,7 +72,7 @@ void ControllersMenu::show(TShowMode swhoMode)
 void ControllersMenu::showInputMidiCC(uint8_t midiCC)
 {
 	DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)"Midi in CC#->");
-	DisplayTask->ParamIndicNum(100, 3, midiCC);
+	DisplayTask->ParamIndNum(100, 3, midiCC);
 }
 
 void ControllersMenu::task()
@@ -116,19 +116,19 @@ void ControllersMenu::encoderClockwise()
 			if(m_parNum == ControllerMenuParams::MinValue)
 			{
 				DisplayTask->Clear();
-				DisplayTask->Icon_Strel(ICON_CC, STRELKA_UP);
+				DisplayTask->IconAndArrows(ICON_CC, STRELKA_UP);
 				DisplayTask->StringOut(0, 1, Font::fntSystem, 0, &strControllersMenu[m_parNum + 1][0]);
 				DisplayTask->StringOut(0, 2, Font::fntSystem, 0, &strControllersMenu[m_parNum + 2][0]);
 				DisplayTask->StringOut(0, 3, Font::fntSystem, 0, &strControllersMenu[m_parNum + 3][0]);
 
-				DisplayTask->ParamIndic(45, 0, currentPreset.controller[m_controllerNum].minVal);
-				DisplayTask->ParamIndic(45, 1, currentPreset.controller[m_controllerNum].maxVal);
+				DisplayTask->ParamInd(45, 0, currentPreset.controller[m_controllerNum].minVal);
+				DisplayTask->ParamInd(45, 1, currentPreset.controller[m_controllerNum].maxVal);
 				DisplayTask->StringOut(45, 2, Font::fntSystem, 0, &strOutPcList[currentPreset.pcOut][0]);
 
 				if(currentPreset.set & 0x80)
-					DisplayTask->ParamIndicNum(45, 3, (currentPreset.set & 0x7f) + 1);
+					DisplayTask->ParamIndNum(45, 3, (currentPreset.set & 0x7f) + 1);
 				else
-					DisplayTask->ParamIndicNum(45, 3, currentPresetNumber + 1);
+					DisplayTask->ParamIndNum(45, 3, currentPresetNumber + 1);
 			}
 			restartBlinking(0);
 		}
@@ -140,8 +140,8 @@ void ControllersMenu::encoderClockwise()
 			case ControllerMenuParams::Controller:
 				if(m_controllerNum < Controller::controllersCount-1)
 				{
-					DisplayTask->ParamIndicNum(45, 0, ++m_controllerNum + 1);
-					DisplayTask->Clear_str(45, 1, Font::fntSystem, 13);
+					DisplayTask->ParamIndNum(45, 0, ++m_controllerNum + 1);
+					DisplayTask->ClearString(45, 1, Font::fntSystem, 13);
 
 					printSources();
 
@@ -153,7 +153,7 @@ void ControllersMenu::encoderClockwise()
 			case ControllerMenuParams::Source:
 				if(currentPreset.controller[m_controllerNum].src < Controller::Src::LAST_CONTROLLER)
 				{
-					DisplayTask->Clear_str(45, 1, Font::fntSystem, 13);
+					DisplayTask->ClearString(45, 1, Font::fntSystem, 13);
 					currentPreset.controller[m_controllerNum].src = BaseParam::encSpeedInc(currentPreset.controller[m_controllerNum].src, Controller::Src::LAST_CONTROLLER);
 
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::Expression)
@@ -185,12 +185,12 @@ void ControllersMenu::encoderClockwise()
 						&& currentPreset.controller[m_controllerNum].src < Controller::Src::NOTE)
 					{
 						DisplayTask->StringOut(45, 1, Font::fntSystem, 0, "CC#");
-						DisplayTask->ParamIndicNum(69, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::CC1);
+						DisplayTask->ParamIndNum(69, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::CC1);
 					}
 					else if(currentPreset.controller[m_controllerNum].src >= Controller::Src::NOTE)
 					{
 						DisplayTask->StringOut(45, 1, Font::fntSystem, 0, "Note ");
-						DisplayTask->ParamIndicNote(71, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::NOTE);
+						DisplayTask->ParamIndNote(71, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::NOTE);
 					}
 					else
 					{
@@ -211,7 +211,7 @@ void ControllersMenu::encoderClockwise()
 				if(currentPreset.controller[m_controllerNum].minVal < 127)
 				{
 					currentPreset.controller[m_controllerNum].minVal = BaseParam::encSpeedInc(currentPreset.controller[m_controllerNum].minVal, 127);
-					DisplayTask->ParamIndic(45, 0, currentPreset.controller[m_controllerNum].minVal);
+					DisplayTask->ParamInd(45, 0, currentPreset.controller[m_controllerNum].minVal);
 				}
 			break;
 
@@ -219,7 +219,7 @@ void ControllersMenu::encoderClockwise()
 				if(currentPreset.controller[m_controllerNum].maxVal < 127)
 				{
 					currentPreset.controller[m_controllerNum].maxVal = BaseParam::encSpeedInc(currentPreset.controller[m_controllerNum].maxVal, 127);
-					DisplayTask->ParamIndic(45, 1, currentPreset.controller[m_controllerNum].maxVal);
+					DisplayTask->ParamInd(45, 1, currentPreset.controller[m_controllerNum].maxVal);
 				}
 			break;
 
@@ -241,7 +241,7 @@ void ControllersMenu::encoderClockwise()
 				if(a < 127)
 				{
 					a = BaseParam::encSpeedInc(a, 127);
-					DisplayTask->ParamIndicNum(45, 3, a + 1);
+					DisplayTask->ParamIndNum(45, 3, a + 1);
 					currentPreset.set = a | 0x80;
 				}
 			break;
@@ -276,9 +276,9 @@ void ControllersMenu::encoderCounterClockwise()
 			case ControllerMenuParams::Controller:
 				if(m_controllerNum > 0)
 				{
-					DisplayTask->Clear_str(45, 1, Font::fntSystem, 13);
+					DisplayTask->ClearString(45, 1, Font::fntSystem, 13);
 					m_controllerNum--;
-					DisplayTask->ParamIndicNum(45, 0, m_controllerNum + 1);
+					DisplayTask->ParamIndNum(45, 0, m_controllerNum + 1);
 
 					printSources();
 
@@ -290,7 +290,7 @@ void ControllersMenu::encoderCounterClockwise()
 			case ControllerMenuParams::Source:
 				if(currentPreset.controller[m_controllerNum].src > 0)
 				{
-					DisplayTask->Clear_str(45, 1, Font::fntSystem, 13);
+					DisplayTask->ClearString(45, 1, Font::fntSystem, 13);
 					currentPreset.controller[m_controllerNum].src = BaseParam::encSpeedDec(currentPreset.controller[m_controllerNum].src, 0);
 
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswUp)
@@ -330,14 +330,14 @@ void ControllersMenu::encoderCounterClockwise()
 				if(currentPreset.controller[m_controllerNum].minVal > 0)
 				{
 					currentPreset.controller[m_controllerNum].minVal = BaseParam::encSpeedDec(currentPreset.controller[m_controllerNum].minVal, 0);
-					DisplayTask->ParamIndic(45, 0, currentPreset.controller[m_controllerNum].minVal);
+					DisplayTask->ParamInd(45, 0, currentPreset.controller[m_controllerNum].minVal);
 				}
 			break;
 			case ControllerMenuParams::MaxValue:
 				if(currentPreset.controller[m_controllerNum].maxVal > 0)
 				{
 					currentPreset.controller[m_controllerNum].maxVal = BaseParam::encSpeedDec(currentPreset.controller[m_controllerNum].maxVal, 0);
-					DisplayTask->ParamIndic(45, 1, currentPreset.controller[m_controllerNum].maxVal);
+					DisplayTask->ParamInd(45, 1, currentPreset.controller[m_controllerNum].maxVal);
 				}
 			break;
 			case ControllerMenuParams::PcOut:
@@ -357,7 +357,7 @@ void ControllersMenu::encoderCounterClockwise()
 				if(a > 0)
 				{
 					a = BaseParam::encSpeedDec(a, 0);
-					DisplayTask->ParamIndicNum(45, 3, a + 1);
+					DisplayTask->ParamIndNum(45, 3, a + 1);
 					currentPreset.set = a | 0x80;
 				}
 			break;
@@ -375,12 +375,12 @@ void ControllersMenu::printSources()
 			&& currentPreset.controller[m_controllerNum].src < Controller::Src::NOTE)
 	{
 		DisplayTask->StringOut(45, 1, Font::fntSystem, 0, "CC#");
-		DisplayTask->ParamIndicNum(69, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::CC1);
+		DisplayTask->ParamIndNum(69, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::CC1);
 	}
 	else if(currentPreset.controller[m_controllerNum].src >= Controller::Src::NOTE)
 	{
 		DisplayTask->StringOut(45, 1, Font::fntSystem, 0, "Note ");
-		DisplayTask->ParamIndicNote(71, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::NOTE);
+		DisplayTask->ParamIndNote(71, 1, currentPreset.controller[m_controllerNum].src - Controller::Src::NOTE);
 	}
 	else
 	{

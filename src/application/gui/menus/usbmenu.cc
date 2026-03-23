@@ -25,7 +25,7 @@ void UsbMenu::show(TShowMode showMode)
 	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, 0, &strUsbMenu[0][0]);
 	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, 0, &strUsbMenu[1][0]);
 	DisplayTask->StringOut(strPositions[2], 3, Font::fntSystem, 0, &strUsbMenu[2][0]);
-	DisplayTask->ParamIndicNum(strPositions[2] + 18*6, 3, m_countOff);
+	DisplayTask->ParamIndNum(strPositions[2] + 18*6, 3, m_countOff);
 }
 
 void UsbMenu::task()
@@ -67,7 +67,7 @@ void UsbMenu::task()
 			if(m_countOff > 0)
 			{
 				m_countOff--;
-				DisplayTask->ParamIndicNum(strPositions[2] + 18*6, 3, m_countOff/2);
+				DisplayTask->ParamIndNum(strPositions[2] + 18*6, 3, m_countOff/2);
 			}
 			else
 			{
@@ -77,7 +77,7 @@ void UsbMenu::task()
 	}
 	else
 	{
-		DisplayTask->Clear_str(0, 3, Font::fntSystem, 22*6);
+		DisplayTask->ClearString(0, 3, Font::fntSystem, 22*6);
 	}
 }
 

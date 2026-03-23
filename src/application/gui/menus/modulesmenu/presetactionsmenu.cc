@@ -37,11 +37,11 @@ void PresetActionsMenu::task()
 	if(blinkFlag==0)
 	{
 		bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
-		DisplayTask->Prog_ind(targetPresetNum, filled);
+		DisplayTask->PresetInd(targetPresetNum, filled);
 	}
 	else if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update)==1)
 	{
-		DisplayTask->Clear_str(87, 0, Font::fnt33x30, 39);
+		DisplayTask->ClearString(87, 0, Font::fnt33x30, 39);
 	}
 }
 
@@ -105,8 +105,8 @@ void PresetActionsMenu::updatePresetData()
 {
 	EEPROM_LoadBriefPreset(targetPresetNum, &m_selectedPresetBrief);
 
-	DisplayTask->Clear_str(2, 0, Font::fntSystem, 14);
-	DisplayTask->Clear_str(2, 1, Font::fntSystem, 14);
+	DisplayTask->ClearString(2, 0, Font::fntSystem, 14);
+	DisplayTask->ClearString(2, 1, Font::fntSystem, 14);
 
 	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.name);
 	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.comment);
@@ -117,7 +117,7 @@ void PresetActionsMenu::updatePresetData()
 		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Save to ->");
 
 	bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
-	DisplayTask->Prog_ind(targetPresetNum, filled);
+	DisplayTask->PresetInd(targetPresetNum, filled);
 
 	TIM_SetCounter(TIM6, 0x8000);
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);

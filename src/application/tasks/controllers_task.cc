@@ -1,3 +1,4 @@
+#include <bitmaps.h>
 #include "controllers_task.h"
 
 #include "sharc.h"
@@ -12,8 +13,6 @@
 #include "display_task.h"
 #include "io_task.h"
 #include "midi_task.h"
-
-#include "allFonts.h"
 
 #include "tapmenu.h"
 #include "modulesmenu.h"

@@ -1,6 +1,6 @@
+#include <bitmaps.h>
 #include "../bitmaps/eq_bitmap.h"
 
-#include "../bitmaps/allFonts.h"
 #include "../bitmaps/icons_bitmap.h"
 #include "appdefs.h"
 #include "filter.h"
@@ -65,8 +65,8 @@ uint8_t eq_ind(uint8_t col , uint8_t pag , uint32_t val , uint8_t cur )
       for(uint8_t j = 0 ; j < 4 ; j++)
         {
           data = eq_bit[val * 4 + j];
-          Set_Column_Address(col + i);
-          Set_Page_Address(pag + j);
+          LCD_SetColumnAddress(col + i);
+          LCD_SetPageAddress(pag + j);
           if(cur == 1){
           if((i != 2) && (i != 5) && (i != 8) && (i != 11))
             {
@@ -81,55 +81,55 @@ uint8_t eq_ind(uint8_t col , uint8_t pag , uint32_t val , uint8_t cur )
                 }
            }
           }
-          oled023_1_write_data(data);
+          LCD_WriteData(data);
         }
     }
   return col + 14;
 }
 void eq_init(void)
 {
-	oled023_1_disp_clear();
+	LCD_Clear();
     Arsys_line(6,0,(uint8_t*)_15,0);
     Arsys_line(0,3,(uint8_t*)__15,0);
     Arsys_sym_up(9,1,48,0);
     Arsys_sym_down(9,2,48,0);
-    Set_Page_Address(1);
-    Set_Column_Address(20);
-    oled023_1_write_data(0x80, 63);
+    LCD_SetPageAddress(1);
+    LCD_SetColumnAddress(20);
+    LCD_WriteData(0x80, 63);
 
     for(uint8_t i = 0 ; i < 4 ; i++)
       {
-        Set_Page_Address(i);
+        LCD_SetPageAddress(i);
         for(uint8_t j = 0 ; j < 4 ; j++)
           {
-            Set_Column_Address(20 + j);
+            LCD_SetColumnAddress(20 + j);
             if(i < 2)
               {
                 if(j > 1)
                   {
-                    if((i & 1) == 0)oled023_1_write_data(0x21);
-                    else oled023_1_write_data(0x84);
+                    if((i & 1) == 0)LCD_WriteData(0x21);
+                    else LCD_WriteData(0x84);
                   }
                 else {
-                    if((i & 1) == 0)oled023_1_write_data(0x1);
-                    else oled023_1_write_data(0x80);
+                    if((i & 1) == 0)LCD_WriteData(0x1);
+                    else LCD_WriteData(0x80);
                 }
               }
             else {
                 if(j > 1)
                   {
-                    if((i & 1) == 0)oled023_1_write_data(0x10);
-                    else oled023_1_write_data(0x42);
+                    if((i & 1) == 0)LCD_WriteData(0x10);
+                    else LCD_WriteData(0x42);
                   }
                 else {
-                    if((i & 1) == 0)oled023_1_write_data(0x0);
-                    else oled023_1_write_data(0x40);
+                    if((i & 1) == 0)LCD_WriteData(0x0);
+                    else LCD_WriteData(0x40);
                 }
             }
             if(j == 3)
               {
-                if(i < 3)oled023_1_write_data(0xff);
-                else oled023_1_write_data(0x7f);
+                if(i < 3)LCD_WriteData(0xff);
+                else LCD_WriteData(0x7f);
               }
           }
       }
@@ -183,7 +183,7 @@ void eq_response()
 
 	for(uint8_t i = 0; i<Filter::EqPointsNumber; i++)
 	{
-		Set_Column_Address(9*6 + i);
+		LCD_SetColumnAddress(9*6 + i);
 		uint8_t yPosition = graphCenter - std::round(Filter::eqResponsePoints[i]);
 		if(std::abs(prevY - yPosition) > 1)
 		{
@@ -202,15 +202,15 @@ void eq_response()
 			{
 				if(pageData[a] == 0) continue;
 
-				Set_Column_Address(9*6 + i);
-				Set_Page_Address(a);
-				oled023_1_write_data(pageData[a]);
+				LCD_SetColumnAddress(9*6 + i);
+				LCD_SetPageAddress(a);
+				LCD_WriteData(pageData[a]);
 			}
 		}
 		else
 		{
-			Set_Page_Address(yPosition/8);
-			oled023_1_write_data(1 << yPosition%8);
+			LCD_SetPageAddress(yPosition/8);
+			LCD_WriteData(1 << yPosition%8);
 		}
 
 		prevY = yPosition;
@@ -219,8 +219,8 @@ void eq_response()
 	// Delimiter
 	for(uint8_t i=0; i < 4; i++)
 	{
-		Set_Column_Address(9*6);
-		Set_Page_Address(i);
-		oled023_1_write_data(0xFF);
+		LCD_SetColumnAddress(9*6);
+		LCD_SetPageAddress(i);
+		LCD_WriteData(0xFF);
 	}
 }
