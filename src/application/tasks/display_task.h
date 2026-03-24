@@ -1,11 +1,9 @@
 #ifndef __DISPLAY_H__
 #define __DISPLAY_H__
 
-#include <bitmaps.h>
 #include "appdefs.h"
 
-#include "sharc.h"
-
+#include "bitmaps.h"
 
 #define FILE_NAME_LENGTH 64
 
@@ -14,12 +12,8 @@ class TDisplayTask: public TTask
 public:
 	TDisplayTask();
 
-	typedef enum
-	{
-		wrdCmd = 0,
-		wrdData,
-		wrdCount
-	}TWriteRegDest;
+	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
+	void VolIndRoutine(int32_t indValue);
 
 	typedef struct
 	{
@@ -37,7 +31,7 @@ public:
 		dcCheckBox,
 		dcEqInit,
 		dcEqFilter,
-		dcEqPar,
+		dcEqParam,
 		dcEqResponse,
 		dcEqInd,
 		dcParamInd,
@@ -60,10 +54,24 @@ public:
 
 	typedef struct
 	{
-		uint8_t num;
-		uint8_t pressState;
-		uint8_t holdState;
-	}TFswIndParam;
+		TPos pos;
+		Font::TFontStruct font;
+		uint8_t count;
+	}TClearStringParams;
+
+	typedef struct
+	{
+		TPos pos;
+		Font::TFontStruct font;
+		uint8_t symbol;
+	}TSymbolOutParams;
+
+	typedef struct
+	{
+		TPos pos;
+		Font::TFontStruct font;
+		uint8_t string[FILE_NAME_LENGTH];
+	}TStringOutParams;
 
 	typedef struct
 	{
@@ -103,36 +111,21 @@ public:
 
 	typedef struct
 	{
-		TWriteRegDest dest;
-		uint32_t data;
-	}TWriteRegParams;
-
-	typedef struct
-	{
-		TPos pos;
-		Font::TFontStruct font;
-		uint8_t count;
-	}TClearStringParams;
-
-	typedef struct
-	{
-		TPos pos;
-		Font::TFontStruct font;
-		uint8_t symbol;
-	}TSymbolOutParams;
-
-	typedef struct
-	{
-		TPos pos;
-		Font::TFontStruct font;
-		uint8_t string[FILE_NAME_LENGTH];
-	}TStringOutParams;
-
-	typedef struct
-	{
 		uint8_t prog;
 		uint8_t filled;
 	}TPresetIndParam;
+
+	typedef struct
+	{
+		uint32_t indValue;
+	}TVolIndParam;
+
+	typedef struct
+	{
+		uint8_t num;
+		uint8_t pressState;
+		uint8_t holdState;
+	}TFswIndParam;
 
 	typedef struct
 	{
@@ -207,32 +200,13 @@ public:
 			TParamIndPanParam ParamIndPanParam;
 			TParamIndMixParam ParamIndMixParam;
 			TDelayTimeIndParam DelayTimeIndParam;
+			TVolIndParam VolIndParam;
 			TFswIndParam FswIndParam;
 			TArrowParam ArrowParam;
 			TIconAndArrowParam IconAndArrowParam;
 			TTunerParam TunerParam;
 		};
 	}TDisplayCmd;
-
-	// send command from code/tasks
-	inline TQueue::TQueueSendResult Command(TDisplayCmd *cmd)
-	{
-		if(cortex_isr_num())
-		{
-			// send comand from ISR
-			BaseType_t HigherPriorityTaskWoken;
-			TQueue::TQueueSendResult result;
-			result = queue->SendToBackFromISR(cmd, &HigherPriorityTaskWoken);
-			if(HigherPriorityTaskWoken)
-				TScheduler::Yeld();
-			return result;
-		}
-		else
-		{
-			// thread mode
-			return queue->SendToBack(cmd, 0);
-		}
-	}
 
 	void Clear();
 	void ClearString(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count);
@@ -243,10 +217,7 @@ public:
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const uint8_t *string);
 	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
 
-	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
-	void VolIndicatorTask();
-
-	void ModuleIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
+	void EffectIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
 
 	void EqInit(void);
 	void EqInd(uint8_t x, uint8_t y, uint8_t data, uint8_t cur);
@@ -263,10 +234,10 @@ public:
 	void ParamIndNote(uint8_t x, uint8_t y, uint16_t data);
 	void ParamIndPan(uint8_t x, uint8_t y, uint8_t data);
 	void ParamIndMix(uint8_t x, uint8_t y, uint8_t data);
+	void DelayTimeInd(uint8_t x, uint8_t y, uint32_t data);
 
 	void PresetInd(uint8_t prog, bool filled = true);
 	void FswInd(uint8_t num, uint8_t pressState, uint8_t holdDualState);
-	void DelayTimeInd(uint8_t x, uint8_t y, uint32_t data);
 
 	void IconAndArrows(icon_t num, strelka_t strel);
 
@@ -277,15 +248,31 @@ public:
 	void Arrow(uint8_t x, uint8_t y, uint32_t dir);
 
 private:
-	void Code();
 	TQueue *queue;
 
 	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
 	uint8_t* m_volIndPar_ptr{nullptr};
 	uint16_t m_indRefreshCounter;
-};
+	uint32_t m_indPeakValue{0};
 
-extern volatile uint8_t ind_en;
+	void Code() override;
+	TQueue::TQueueSendResult Command(TDisplayCmd *cmd)
+	{
+		if(cortex_isr_num())
+		{
+			BaseType_t HigherPriorityTaskWoken;
+			TQueue::TQueueSendResult result;
+			result = queue->SendToBackFromISR(cmd, &HigherPriorityTaskWoken);
+			if(HigherPriorityTaskWoken)
+				TScheduler::Yeld();
+			return result;
+		}
+		else
+		{
+			return queue->SendToBack(cmd, 0);
+		}
+	}
+};
 
 extern TDisplayTask *DisplayTask;
 

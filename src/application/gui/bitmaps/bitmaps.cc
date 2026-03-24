@@ -433,7 +433,7 @@ void progress_bar(uint8_t col, uint8_t pag, uint32_t val)
 	GPIO_SetBits(GPIOB, CS);
 }
 
-void vol_indicator(uint8_t xPos, uint8_t indLength, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr)
+void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indValue, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr)
 {
 	uint8_t volIndPosition = 32;
 
@@ -442,12 +442,10 @@ void vol_indicator(uint8_t xPos, uint8_t indLength, TVolIndicatorType volIndicat
 
 	uint8_t outLevel;
 
-	if(ind_out_l[1] < 8388000)
-		outLevel = /*vsqrt*/(ind_out_l[1]) * ((float)(indLength - 1) / (8384000.0f));
+	if(indValue < 8388000)
+		outLevel = /*vsqrt*/(indValue) * ((float)(indLength - 1) / (8384000.0f));
 	else
 		outLevel = indLength - 1;
-
-	ind_out_l[1] = 0;
 
 	LCD_SetColumnAddress(xPos);
 	LCD_SetPageAddress(3);

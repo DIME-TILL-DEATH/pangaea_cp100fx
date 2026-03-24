@@ -93,8 +93,8 @@ void ModulesMenu::task()
 		yCoord = 2;
 	}
 
-	if(blinkFlag == 0) DisplayTask->ModuleIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
-	else DisplayTask->ModuleIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, 2);
+	if(blinkFlag == 0) DisplayTask->EffectIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, *modules[m_numMenu].enablePtr);
+	else DisplayTask->EffectIcon(xCoord, yCoord, (uint8_t*)modules[m_numMenu].name, 2);
 }
 
 void ModulesMenu::encoderPressed()
@@ -231,7 +231,7 @@ void ModulesMenu::key5()
 
 void ModulesMenu::iconRefresh(uint8_t num)
 {
-	DisplayTask->ModuleIcon(2 + (num%7) * 18, (num/7) * 2,(uint8_t*)modules[num].name, *modules[num].enablePtr);
+	DisplayTask->EffectIcon(2 + (num%7) * 18, (num/7) * 2,(uint8_t*)modules[num].name, *modules[num].enablePtr);
 }
 
 void ModulesMenu::enableCab(AbstractMenu* parent)

@@ -64,6 +64,6 @@ void tap_ind(uint8_t cur);
 void fsw_ind(uint8_t num, uint8_t pressState, uint8_t holdState);
 void arrow_print(uint8_t col, uint8_t pag, uint8_t dir);
 void delay_time_ind(uint8_t col, uint8_t pag, uint32_t d);
-void vol_indicator(uint8_t xPos, uint8_t indLength, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr);
+void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indValue, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr);
 
 #endif

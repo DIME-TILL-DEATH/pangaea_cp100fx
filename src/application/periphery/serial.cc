@@ -1,16 +1,14 @@
-#include <tuner_task.h>
 #include "serial.h"
 
+#include "periphery.h"
 #include "sharc.h"
 
 #include "system.h"
-#include "compressor.h"
 #include "codec.h"
-#include "periphery.h"
 
 #include "display_task.h"
 #include "midi_task.h"
-#include "sharc_task.h"
+#include "tuner_task.h"
 #include "console.h"
 
 
@@ -225,8 +223,6 @@ extern "C" void DMA1_Stream5_IRQHandler()
 	ISR_buttons_read();
 }
 
-
-uint32_t ind_out_l[2];
 extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 {
 	uint8_t dma_ht_fl;
@@ -253,12 +249,7 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 	int32_t ccr = cr;
 	ccr = ccr >> 8;
 
-	uint32_t absInVal = abs(ccl);
-	if(absInVal > ind_out_l[1])
-		ind_out_l[1] = absInVal;
-
-	DisplayTask->VolIndicatorTask();
-
+	DisplayTask->VolIndRoutine(ccl);
 	if(TunerTask->IsrRoutine(ccl)) return;
 
 	dac_data[dma_ht_fl].left.sample = ror16(cr);

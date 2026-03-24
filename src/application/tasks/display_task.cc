@@ -14,9 +14,48 @@ TDisplayTask::TDisplayTask () :TTask()
 	m_indRefreshCounter = 0;
 }
 
+void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
+{
+	m_volIndicatorType = volIndicatorType;
+	m_volIndPar_ptr = indicatorParPtr;
+
+	SharcTask->setParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
+
+	m_indRefreshCounter = 500;
+}
+
+void TDisplayTask::VolIndRoutine(int32_t indValue)
+{
+	uint32_t absInVal = abs(indValue);
+	if(absInVal > m_indPeakValue)
+	m_indPeakValue = absInVal;
+
+	if(m_indRefreshCounter < 4000)
+	{
+		m_indRefreshCounter++;
+		return;
+	}
+	m_indRefreshCounter = 0;
+
+	switch(m_volIndicatorType)
+	{
+		case VOL_INDICATOR_OFF: return;
+		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Input"); break;
+		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Output"); break;
+		case VOL_INDICATOR_VOLUME: break;
+	}
+
+	TDisplayCmd cmd;
+	cmd.cmd=dcVolInd;
+	cmd.VolIndParam.indValue = m_indPeakValue;
+	Command(&cmd);
+
+	m_indPeakValue = 0;
+}
+
 void TDisplayTask::Code()
 {
-	TDisplayCmd cmd ;
+	TDisplayCmd cmd;
 
 	queue = new TQueue(40, sizeof(TDisplayCmd));
 	if (!queue) Suspend();
@@ -76,8 +115,11 @@ void TDisplayTask::Code()
             break;
 
 			case dcVolInd:
-				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) vol_indicator(64, 64, m_volIndicatorType, m_volIndPar_ptr);
-				else vol_indicator(58, 50, m_volIndicatorType, m_volIndPar_ptr);
+				TPos pos;
+				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) pos = {64, 64};
+				else pos = {58, 50};
+
+				vol_indicator(pos.x, pos.y, cmd.VolIndParam.indValue, m_volIndicatorType, m_volIndPar_ptr);
             break;
 
 			case dcPresetInd:
@@ -105,7 +147,7 @@ void TDisplayTask::Code()
 						cmd.EqIndParam.data, cmd.EqIndParam.cur);
 			break;
 
-			case dcEqPar:
+			case dcEqParam:
 				eq_par(cmd.EqQParam.pos.x, cmd.EqQParam.pos.y,
 						cmd.EqQParam.num, cmd.EqQParam.type, cmd.EqQParam.band);
 			break;
@@ -236,39 +278,6 @@ void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8
 	Command(&cmd);
 }
 
-void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
-{
-	m_volIndicatorType = volIndicatorType;
-	m_volIndPar_ptr = indicatorParPtr;
-
-	SharcTask->setParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
-
-	m_indRefreshCounter = 500;
-}
-
-void TDisplayTask::VolIndicatorTask()
-{
-	if(m_indRefreshCounter < 4000)
-	{
-		m_indRefreshCounter++;
-		return;
-	}
-
-	m_indRefreshCounter = 0;
-
-	switch(m_volIndicatorType)
-	{
-		case VOL_INDICATOR_OFF: return;
-		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Input"); break;
-		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Output"); break;
-		case VOL_INDICATOR_VOLUME: break;
-	}
-
-	TDisplayCmd cmd;
-	cmd.cmd=dcVolInd;
-	Command(&cmd);
-}
-
 void TDisplayTask::PresetInd(uint8_t prog, bool filled)
 {
 	TDisplayCmd cmd;
@@ -286,7 +295,7 @@ void TDisplayTask::ClearString(uint8_t x, uint8_t y, Font::TFontName name, uint8
 	cmd.ClearStringParams.count = count;
 	Command(&cmd);
 }
-void TDisplayTask::ModuleIcon(uint8_t x, uint8_t y , uint8_t* adr , uint8_t cur)
+void TDisplayTask::EffectIcon(uint8_t x, uint8_t y , uint8_t* adr , uint8_t cur)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcEffectIcon;
@@ -323,7 +332,7 @@ void TDisplayTask::EqInd(uint8_t x, uint8_t y , uint8_t data , uint8_t cur )
 void TDisplayTask::EqFreq(uint8_t col , uint8_t pag , int16_t num, uint8_t band)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcEqPar;
+	cmd.cmd=dcEqParam;
 	cmd.EqQParam.pos.x = col;
 	cmd.EqQParam.pos.y = pag;
 	cmd.EqQParam.num = num;
@@ -335,7 +344,7 @@ void TDisplayTask::EqFreq(uint8_t col , uint8_t pag , int16_t num, uint8_t band)
 void TDisplayTask::EqQ(uint8_t col , uint8_t pag , int16_t num, uint8_t band)
 {
 	TDisplayCmd cmd;
-	cmd.cmd=dcEqPar;
+	cmd.cmd=dcEqParam;
 	cmd.EqQParam.pos.x = col;
 	cmd.EqQParam.pos.y = pag;
 	cmd.EqQParam.num = num;

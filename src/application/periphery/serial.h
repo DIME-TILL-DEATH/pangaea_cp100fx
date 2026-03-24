@@ -11,6 +11,4 @@ void HW_ReadKeysEnable();
 
 uint16_t HW_KeyInValue();
 
-extern uint32_t ind_out_l[2];
-
 #endif /* SERIAL_H_ */

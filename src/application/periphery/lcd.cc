@@ -75,13 +75,13 @@ void LCD_Init(void)
 
 	LCD_Clear();
 }
-
-void LCD_SendData(uint32_t dat)
-{
-	while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
-	USART_SendData(USART3, __RBIT(dat) >> 24);
-	while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
-}
+//
+//void LCD_SendData(uint32_t dat)
+//{
+//	while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+//	USART_SendData(USART3, __RBIT(dat) >> 24);
+//	while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
+//}
 
 void LCD_WriteData(uint32_t data, uint16_t count)
 {
@@ -93,6 +93,7 @@ void LCD_WriteData(uint32_t data, uint16_t count)
 		USART_SendData(USART3, __RBIT(data) >> 24);
 		while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
 	}
+
 	GPIO_SetBits(GPIOB, CS);
 }
 
@@ -100,13 +101,13 @@ void LCD_WriteData(const uint8_t* data_ptr, uint16_t dataSize)
 {
 	GPIO_ResetBits(GPIOB, CS);
 
-		for(uint8_t i = 0; i < dataSize; i++)
-		{
-			while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
-			USART_SendData(USART3, __RBIT(data_ptr[i]) >> 24);
-			while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
-		}
-		GPIO_SetBits(GPIOB, CS);
+	for(uint8_t i = 0; i < dataSize; i++)
+	{
+		while(!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
+		USART_SendData(USART3, __RBIT(data_ptr[i]) >> 24);
+		while(!USART_GetFlagStatus(USART3, USART_FLAG_TC));
+	}
+	GPIO_SetBits(GPIOB, CS);
 }
 
 void LCD_WriteInstruction(uint32_t instr)
@@ -135,12 +136,6 @@ void LCD_SetColumnAddress(unsigned char add)
 	LCD_WriteInstruction((0x0f & add));
 }
 
-//void Set_Col_Pag_Adress(uint8_t col, uint8_t pag)
-//{
-//	LCD_SetColumnAddress(col);
-//	LCD_SetPageAddress(pag);
-//}
-
 void LCD_Clear(void)
 {
 	for(uint16_t j = 0; j < 4; j++)
@@ -151,23 +146,4 @@ void LCD_Clear(void)
 		LCD_WriteData(nullData, 128);
 	}
 }
-
-//
-//void oled023_1_disp_reset(void)
-//{
-//	GPIO_ResetBits(GPIOB, GPIO_Pin_15);
-//	HW_Delay(0x6ff);
-//
-//	GPIO_SetBits(GPIOB, GPIO_Pin_15);
-//	HW_Delay(0x6ff);
-//
-//	if(disp_orient)
-//	{
-//		oled_ini[11] = 0xa1;
-//		oled_ini[28] = 0xc8;
-//	}
-//
-//	for(int i = 0; i < 30; i++)
-//		LCD_WriteInstruction(oled_ini[i]);
-//}
 

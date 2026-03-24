@@ -8,7 +8,7 @@
 
 void LCD_Init(void);
 void LCD_Clear(void);
-void LCD_SendData(uint32_t data);
+//void LCD_SendData(uint32_t data);
 void LCD_WriteData(uint32_t data, uint16_t count = 1);
 void LCD_WriteData(const uint8_t* data_ptr, uint16_t dataSize);
 void LCD_WriteInstruction(uint32_t instr);
