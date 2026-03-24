@@ -76,18 +76,6 @@ public:
 	typedef struct
 	{
 		TPos pos;
-		uint32_t data;
-	}TDelayTimeIndParam;
-
-	typedef struct
-	{
-		TPos pos;
-		uint8_t data;
-	}TParamIndPanParam;
-
-	typedef struct
-	{
-		TPos pos;
 		uint8_t data;
 	}TParamIndMixParam;
 
@@ -99,26 +87,9 @@ public:
 
 	typedef struct
 	{
-		TPos pos;
-		uint16_t data;
-	}TParamIndNumParam;
-
-	typedef struct
-	{
-		TPos pos;
-		uint16_t data;
-	}TParamIndNoteParam;
-
-	typedef struct
-	{
 		uint8_t prog;
 		uint8_t filled;
 	}TPresetIndParam;
-
-	typedef struct
-	{
-		uint32_t indValue;
-	}TVolIndParam;
 
 	typedef struct
 	{
@@ -195,12 +166,6 @@ public:
 			TEqQParam EqQParam;
 			TEqFilterParam EqFilterParam;
 			TParamIndParam ParamIndParam;
-			TParamIndNumParam ParamIndNumParam;
-			TParamIndNoteParam ParamIndNoteParam;
-			TParamIndPanParam ParamIndPanParam;
-			TParamIndMixParam ParamIndMixParam;
-			TDelayTimeIndParam DelayTimeIndParam;
-			TVolIndParam VolIndParam;
 			TFswIndParam FswIndParam;
 			TArrowParam ArrowParam;
 			TIconAndArrowParam IconAndArrowParam;

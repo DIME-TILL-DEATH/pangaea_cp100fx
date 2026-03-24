@@ -1,5 +1,5 @@
-#include <bitmaps.h>
-#include <param_bitmap.h>
+#include "bitmaps.h"
+#include "param_bitmap.h"
 
 const uint8_t dry[] = "Dry";
 const uint8_t wet[] = "Wet";
@@ -9,7 +9,6 @@ void param_ind(uint8_t col, uint8_t pag, uint32_t val)
 {
 	LCD_SetColumnAddress(col);
 	LCD_SetPageAddress(pag);
-	GPIO_ResetBits(GPIOB, CS);
 	uint8_t width = 33;
 	for(uint8_t i = 0; i<width; i++)
 	{
@@ -18,11 +17,10 @@ void param_ind(uint8_t col, uint8_t pag, uint32_t val)
 		else
 			LCD_WriteData(0x42);
 	}
-	GPIO_SetBits(GPIOB, CS);
-	param_ind_num_(col+width+1, pag, val);
+	param_ind_num(col+width+1, pag, val);
 }
 
-void param_ind_num_(uint8_t col, uint8_t pag, uint16_t val)
+void param_ind_num(uint8_t col, uint8_t pag, uint32_t val)
 {
 	uint8_t prog_num[3];
 	uint8_t a;
@@ -44,10 +42,8 @@ void param_ind_num_(uint8_t col, uint8_t pag, uint16_t val)
 		col = Arsys_sym(col, pag, prog_num[i]+48, 0);
 }
 
-void param_ind_note(uint8_t col, uint8_t pag, uint8_t note)
+void param_ind_note(uint8_t col, uint8_t pag, uint32_t note)
 {
-//	kgp_sdk_libc::memset(str, 0, 8);
-
 	const char* note_list[12] =
 	{ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 

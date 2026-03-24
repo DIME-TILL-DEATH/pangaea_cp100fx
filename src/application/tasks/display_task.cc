@@ -47,7 +47,7 @@ void TDisplayTask::VolIndRoutine(int32_t indValue)
 
 	TDisplayCmd cmd;
 	cmd.cmd=dcVolInd;
-	cmd.VolIndParam.indValue = m_indPeakValue;
+	cmd.ParamIndParam.data = m_indPeakValue;
 	Command(&cmd);
 
 	m_indPeakValue = 0;
@@ -119,7 +119,7 @@ void TDisplayTask::Code()
 				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) pos = {64, 64};
 				else pos = {58, 50};
 
-				vol_indicator(pos.x, pos.y, cmd.VolIndParam.indValue, m_volIndicatorType, m_volIndPar_ptr);
+				vol_indicator(pos.x, pos.y, cmd.ParamIndParam.data, m_volIndicatorType, m_volIndPar_ptr);
             break;
 
 			case dcPresetInd:
@@ -175,27 +175,27 @@ void TDisplayTask::Code()
 			break;
 
 			case dcParamIndNum:
-				param_ind_num_(cmd.ParamIndNumParam.pos.x, cmd.ParamIndNumParam.pos.y,
-						cmd.ParamIndNumParam.data);
+				param_ind_num(cmd.ParamIndParam.pos.x, cmd.ParamIndParam.pos.y,
+						cmd.ParamIndParam.data);
 			break;
 
 			case dcParamIndNote:
-				param_ind_note(cmd.ParamIndNumParam.pos.x, cmd.ParamIndNumParam.pos.y,
-						cmd.ParamIndNumParam.data);
+				param_ind_note(cmd.ParamIndParam.pos.x, cmd.ParamIndParam.pos.y,
+						cmd.ParamIndParam.data);
 			break;
 
 			case dcParamIndPan:
-				param_ind_pan(cmd.ParamIndPanParam.pos.x, cmd.ParamIndPanParam.pos.y,
-						cmd.ParamIndPanParam.data);
+				param_ind_pan(cmd.ParamIndParam.pos.x, cmd.ParamIndParam.pos.y,
+						cmd.ParamIndParam.data);
 			break;
 
 			case dcParamIndMix:
-				param_ind_mix(cmd.ParamIndPanParam.pos.x, cmd.ParamIndPanParam.pos.y,
-						cmd.ParamIndPanParam.data);
+				param_ind_mix(cmd.ParamIndParam.pos.x, cmd.ParamIndParam.pos.y,
+						cmd.ParamIndParam.data);
 			break;
 			case dcDelayTimeInd:
-				delay_time_ind(cmd.DelayTimeIndParam.pos.x, cmd.DelayTimeIndParam.pos.y,
-						cmd.DelayTimeIndParam.data);
+				delay_time_ind(cmd.ParamIndParam.pos.x, cmd.ParamIndParam.pos.y,
+						cmd.ParamIndParam.data);
 			break;
 
 			case dcIconAndArrows:
@@ -388,40 +388,40 @@ void TDisplayTask::ParamIndNum(uint8_t x, uint8_t y , uint16_t data)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcParamIndNum;
-	cmd.ParamIndNumParam.pos = {x,y};
-	cmd.ParamIndNumParam.data = data;
+	cmd.ParamIndParam.pos = {x,y};
+	cmd.ParamIndParam.data = data;
 	Command(&cmd);
 }
 void TDisplayTask::ParamIndNote(uint8_t x, uint8_t y , uint16_t data)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcParamIndNote;
-	cmd.ParamIndNoteParam.pos = {x,y};
-	cmd.ParamIndNoteParam.data = data;
+	cmd.ParamIndParam.pos = {x,y};
+	cmd.ParamIndParam.data = data;
 	Command(&cmd);
 }
 void TDisplayTask::ParamIndPan(uint8_t x, uint8_t y , uint8_t data)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcParamIndPan;
-	cmd.ParamIndPanParam.pos = {x,y};
-	cmd.ParamIndPanParam.data = data;
+	cmd.ParamIndParam.pos = {x,y};
+	cmd.ParamIndParam.data = data;
 	Command(&cmd);
 }
 void TDisplayTask::ParamIndMix(uint8_t x, uint8_t y , uint8_t data)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcParamIndMix;
-	cmd.ParamIndMixParam.pos = {x,y};
-	cmd.ParamIndMixParam.data = data;
+	cmd.ParamIndParam.pos = {x,y};
+	cmd.ParamIndParam.data = data;
 	Command(&cmd);
 }
 void TDisplayTask::DelayTimeInd(uint8_t x, uint8_t y , uint32_t data)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcDelayTimeInd;
-	cmd.DelayTimeIndParam.pos = {x,y};
-	cmd.DelayTimeIndParam.data = data;
+	cmd.ParamIndParam.pos = {x,y};
+	cmd.ParamIndParam.data = data;
 	Command(&cmd);
 }
 
