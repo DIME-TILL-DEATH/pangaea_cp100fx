@@ -9,8 +9,8 @@
 #include "sharc_task.h"
 
 volatile uint32_t tap_temp;
-uint8_t cab_type = 0;
-uint8_t tun_del_val;
+uint8_t System::cab_type = 0;
+uint8_t System::tun_del_val;
 int16_t mstEqMidFreq;
 uint8_t __CCM_BSS__ sys_para[512] =
 {/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,

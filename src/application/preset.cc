@@ -80,7 +80,7 @@ void Preset::Erase()
 
 	SharcTask->eraseCab1(currentPresetNumber+1);
 
-	if(cab_type == CAB_CONFIG_STEREO)
+	if(System::cab_type == CAB_CONFIG_STEREO)
 		SharcTask->eraseCab2(currentPresetNumber+1);
 }
 

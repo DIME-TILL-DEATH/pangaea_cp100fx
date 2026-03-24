@@ -1,3 +1,4 @@
+#include <tuner_task.h>
 #include "serial.h"
 
 #include "sharc.h"
@@ -9,7 +10,6 @@
 
 #include "display_task.h"
 #include "midi_task.h"
-#include "spectrum_task.h"
 #include "sharc_task.h"
 #include "console.h"
 
@@ -225,15 +225,12 @@ extern "C" void DMA1_Stream5_IRQHandler()
 	ISR_buttons_read();
 }
 
-int32_t __CCM_BSS__ ccl;
-int32_t __CCM_BSS__ ccr;
-volatile uint32_t __CCM_BSS__ cl;
-volatile uint32_t __CCM_BSS__ cr;
-uint8_t dma_ht_fl;
-uint8_t tun_del;
+
 uint32_t ind_out_l[2];
 extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 {
+	uint8_t dma_ht_fl;
+
 	if(tap_temp < 131071) tap_temp += 1;
 
 	if(DMA_GetITStatus(DMA1_Stream2, DMA_IT_HTIF2))
@@ -247,93 +244,22 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 		dma_ht_fl = 1;
 	}
 
-	GPIO_SetBits(GPIOC, GPIO_Pin_5); // LED4G
+	GPIO_SetBits(GPIOC, GPIO_Pin_5); // LED4G(mono) - LED ST(stereo)
 
-	cr = ror16(adc_data[dma_ht_fl].left.sample);
-	cl = ror16(adc_data[dma_ht_fl].right.sample);
-	ccl = cl;
+	uint32_t cr = ror16(adc_data[dma_ht_fl].left.sample);
+	uint32_t cl = ror16(adc_data[dma_ht_fl].right.sample);
+	int32_t ccl = cl;
 	ccl = ccl >> 8;
-	ccr = cr;
+	int32_t ccr = cr;
 	ccr = ccr >> 8;
-//-------------------------------------------------------
-	float in = ccl * 0.000000119f;
 
-//---------------------Vol indicator----------------------------
-
-	ind_out_l[0] = abs(ccl);
-	if(ind_out_l[0] > ind_out_l[1])
-		ind_out_l[1] = ind_out_l[0];
+	uint32_t absInVal = abs(ccl);
+	if(absInVal > ind_out_l[1])
+		ind_out_l[1] = absInVal;
 
 	DisplayTask->VolIndicatorTask();
 
-//--------------------Tuner------------------------------
-	if(currentMenu->menuType() == MENU_TUNER)
-	{
-		SpectrumBuffsUpdate(COMP_Out(in));
-		if(tun_del > tun_del_val)
-		{
-			if(SpectrumTask)
-			{
-				tun_del = 0;
-
-				uint8_t arrowPos;
-				int aa = SpectrumTask->freq_diff * 1000.0f;
-				float bb = aa/1000.0f;
-
-				if(SpectrumTask->freq_diff<0)
-				{
-					float a = SpectrumTask->HalfTone(SpectrumTask->note-1);
-					float b = SpectrumTask->HalfTone(SpectrumTask->note);
-					float c = (b-a)*0.5f;
-					arrowPos = (uint8_t)((64.0-(fabsf(bb)*(64.0/c))));
-				}
-				else
-				{
-					float a = SpectrumTask->HalfTone(SpectrumTask->note+1);
-					float b = SpectrumTask->HalfTone(SpectrumTask->note);
-					float c = (a-b)*0.5f;
-					arrowPos = (uint8_t)(((bb*(64.0/c)))+64.0);
-				}
-
-				DisplayTask->TunerDraw(SpectrumTask->noteDefined, arrowPos);
-				SpectrumTask->noteDefined = false;
-			}
-		}
-		tun_del++;
-		return;
-	}
-
-	if(ConsoleTask)
-	{
-		if(SpectrumTask->backgroundTunerEnabled)
-		{
-			SpectrumBuffsUpdate(COMP_Out(in));
-			if(tun_del > tun_del_val)
-			{
-				tun_del = 0;
-				if(SpectrumTask->samplesCount > 0)
-				{
-					SpectrumTask->samplesCount--;
-					if(ind_out_l[0] > 1500)
-						ConsoleTask->UnsafePrintF("tn get\r%s\r%d\n", SpectrumTask->note_name, SpectrumTask->cents);
-					else
-						ConsoleTask->UnsafePrintF("tn get\r-\r0\n");
-				}
-				else
-				{
-					SpectrumTask->backgroundTunerEnabled = false;
-
-					SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 1, 0);
-					GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-					CODEC_Send(0xa103);
-				}
-			}
-			tun_del++;
-			return;
-		}
-	}
-
-	GPIOB->BSRRH |= GPIO_Pin_11;
+	if(TunerTask->IsrRoutine(ccl)) return;
 
 	dac_data[dma_ht_fl].left.sample = ror16(cr);
 	dac_data[dma_ht_fl].right.sample = ror16(cr);

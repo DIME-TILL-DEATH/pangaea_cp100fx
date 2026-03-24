@@ -155,7 +155,7 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 {
 	AbstractMenu* menu;
-	if(cab_type==2)
+	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		const uint8_t paramNum = 2;
 		BaseParam* params[paramNum];
@@ -187,7 +187,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab1BrowserMenu);
 
-	if(cab_type==2)
+	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN1]);
 		params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN1_POS);
@@ -223,7 +223,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab2BrowserMenu);
 
-	if(cab_type==2)
+	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN2]);
 		params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN2_POS);

@@ -49,7 +49,7 @@ void MainMenu::task()
 		if(blinkFlag == 0)
 		{
 			bool filled = m_selectedPresetBrief.cab1Name[0]
-							|| (cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+							|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
 			DisplayTask->PresetInd(m_preselectedPresetNum, filled);
 		}
 		else
@@ -177,12 +177,12 @@ void MainMenu::refresh()
 	if(currentPresetNumber != m_preselectedPresetNum)
 	{
 		filled = m_selectedPresetBrief.cab1Name[0]
-				|| (cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+				|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
 	}
 	else
 	{
 		filled = currentPreset.cab1NameSize
-				|| (cab_type == CAB_CONFIG_STEREO ? currentPreset.cab2NameSize : 0);
+				|| (System::cab_type == CAB_CONFIG_STEREO ? currentPreset.cab2NameSize : 0);
 	}
 
 	DisplayTask->PresetInd(m_preselectedPresetNum, filled);

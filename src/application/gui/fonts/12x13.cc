@@ -98,7 +98,7 @@ const uint8_t Tahoma12x13[] = {
         0x0A, 0xC0, 0x01, 0x60, 0x00, 0x60, 0x00, 0x60, 0x00, 0xE0, 0x00, 0xC0, 0x01, 0x80, 0x01, 0x80, 0x01, 0x80, 0x01, 0xE0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // Code for char ~
         0x0B, 0x00, 0x00, 0xFE, 0x07, 0x02, 0x04, 0x02, 0x04, 0x02, 0x04, 0x02, 0x04, 0x02, 0x04, 0x02, 0x04, 0x02, 0x04, 0x02, 0x04, 0xFE, 0x07, 0x00, 0x00, 0x00, 0x00   // Code for char 
         };
-uint32_t t12x13_sym(uint8_t col , uint8_t pag , uint16_t sym , uint8_t curs)
+uint32_t t12x13_symbol(uint8_t col , uint8_t pag , uint16_t sym , uint8_t curs)
 {
     sym = (sym - 32)*27;
     uint32_t b = Tahoma12x13[sym++]+2;
@@ -118,7 +118,7 @@ void t12x13_line_name(uint32_t col , uint8_t pag , uint8_t* adr )
 {
   for(uint8_t i = 0; i < 16 ; i++)
     {
-      col +=t12x13_sym(col,pag,adr[i],0);
+      col +=t12x13_symbol(col,pag,adr[i],0);
     }
 }
 void t12x13_line(uint32_t col , uint8_t pag , uint8_t* adr , uint8_t curs)
@@ -126,7 +126,7 @@ void t12x13_line(uint32_t col , uint8_t pag , uint8_t* adr , uint8_t curs)
   uint8_t i = 0;
   while(adr[i])
     {
-      col +=t12x13_sym(col,pag,adr[i++],curs);
+      col +=t12x13_symbol(col,pag,adr[i++],curs);
     }
 }
 void t12x13_clear(uint8_t col , uint8_t pag , uint8_t size)

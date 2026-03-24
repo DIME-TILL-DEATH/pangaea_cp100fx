@@ -447,7 +447,7 @@ void vol_indicator(uint8_t xPos, uint8_t indLength, TVolIndicatorType volIndicat
 	else
 		outLevel = indLength - 1;
 
-//	ind_out_l[1] = 0;
+	ind_out_l[1] = 0;
 
 	LCD_SetColumnAddress(xPos);
 	LCD_SetPageAddress(3);

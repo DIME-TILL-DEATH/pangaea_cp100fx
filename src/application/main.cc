@@ -24,7 +24,7 @@
 #include "display_task.h"
 #include "io_task.h"
 #include "ui_task.h"
-#include "spectrum_task.h"
+#include <tuner_task.h>
 #include "controllers_task.h"
 #include "sdtest_task.h"
 #include "midi_task.h"
@@ -80,8 +80,8 @@ int main(void)
 	UITask = new TUITask();
 	UITask->Create("CS", 30*configMINIMAL_STACK_SIZE, 0);
 
-	SpectrumTask = new TSpectrumTask();
-	SpectrumTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
+	TunerTask = new TTunerTask();
+	TunerTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
 
 	ControllersTask = new TControllersTask();
 	ControllersTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);

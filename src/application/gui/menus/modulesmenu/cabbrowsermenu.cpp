@@ -94,7 +94,7 @@ void CabBrowserMenu::encoderPressed()
 		if(m_cabNumber==0)
 		{
 			kgp_sdk_libc::memcpy(currentPreset.cab1Data, tempCabBuffer, CAB_DATA_SIZE);
-			if(cab_type != CAB_CONFIG_STEREO)
+			if(System::cab_type != CAB_CONFIG_STEREO)
 				kgp_sdk_libc::memcpy(currentPreset.cabAuxData, tempCabBuffer + CAB_DATA_SIZE, CAB_DATA_SIZE);
 
 			kgp_sdk_libc::memcpy(&currentPreset.cab1Name, selectedCabName, CAB_DATA_SIZE - 1);

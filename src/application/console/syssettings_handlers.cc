@@ -203,7 +203,7 @@ static void swap_conf_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 static void tuner_speed_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TUNER_SPEED], rl, args, count);
-	tun_del_val = (127-sys_para[System::TUNER_SPEED])*(90.0f/127.0f)+10.0f;
+	System::tun_del_val = (127-sys_para[System::TUNER_SPEED])*(90.0f/127.0f)+10.0f;
 	EEPROM_WriteSys();
 }
 

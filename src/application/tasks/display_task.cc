@@ -40,7 +40,7 @@ void TDisplayTask::Code()
 				switch(cmd.SymbolOutParams.font.name)
 				{
 					case Font::fnt12x13 :
-						t12x13_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
+						t12x13_symbol(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
 								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
 					break;
 					case Font::fnt33x30:
@@ -166,8 +166,7 @@ void TDisplayTask::Code()
 
 			case dcTunerDraw:
 				tuner_arrow(cmd.TunerParam.arrowPos);
-				if(cmd.TunerParam.noteDefined)
-					tuner_note();
+				tuner_note(cmd.TunerParam.noteName);
 			break;
 
 			case dcTunerRefFreq:
@@ -440,12 +439,12 @@ void TDisplayTask::TunerRefFreq(float refFreq)
 	Command(&cmd);
 }
 
-void TDisplayTask::TunerDraw(bool noteDefined, uint8_t arrowPos)
+void TDisplayTask::TunerDraw(uint8_t arrowPos, const char* noteName)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcTunerDraw;
-	cmd.TunerParam.noteDefined = noteDefined;
 	cmd.TunerParam.arrowPos = arrowPos;
+	cmd.TunerParam.noteName = noteName;
 	Command(&cmd);
 }
 

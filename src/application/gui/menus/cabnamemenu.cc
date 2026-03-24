@@ -23,7 +23,7 @@ void CabNameMenu::task()
 		else
 		{
 			m_delay = 1;
-			if((m_currentShowCab) && cab_type)
+			if((m_currentShowCab) && System::cab_type)
 			{
 				if(currentPreset.cab2NameSize)
 				{
@@ -37,7 +37,7 @@ void CabNameMenu::task()
 			{
 				if(currentPreset.cab1NameSize)
 				{
-					if(cab_type == CAB_CONFIG_STEREO)
+					if(System::cab_type == CAB_CONFIG_STEREO)
 					{
 						DisplayTask->Clear();
 						DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)"1 - ");
@@ -75,7 +75,7 @@ void CabNameMenu::show(TShowMode showMode)
 
 		if(currentPreset.cab1NameSize)
 		{
-			if(cab_type == CAB_CONFIG_STEREO)
+			if(System::cab_type == CAB_CONFIG_STEREO)
 			{
 				DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)"1 - ");
 				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)currentPreset.cab1Name);
@@ -84,7 +84,7 @@ void CabNameMenu::show(TShowMode showMode)
 		}
 		else
 		{
-			if(cab_type == CAB_CONFIG_STEREO)
+			if(System::cab_type == CAB_CONFIG_STEREO)
 			{
 				DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)"2 - ");
 				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)currentPreset.cab2Name);

@@ -1,10 +1,10 @@
+#include <tuner_task.h>
 #include "tunermenu.h"
 
 #include "codec.h"
 #include "led.h"
 
 #include "display_task.h"
-#include "spectrum_task.h"
 #include "sharc_task.h"
 
 TunerMenu::TunerMenu(AbstractMenu *parent)
@@ -17,29 +17,27 @@ void TunerMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
-	CODEC_Send(0xa102);
-	SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 0);	// blinking TAP off
-	SharcTask->setParameter(DSP_ADDRESS_IND_SRC, DSP_INDICATOR_IN, 0);
+	TunerTask->Enable(TTunerTask::TUNER_GUI);
 
 	DisplayTask->TunerInit();
-	DisplayTask->TunerRefFreq(SpectrumTask->ref_freq);
+	DisplayTask->TunerRefFreq(TunerTask->refFreq);
 }
 
 void TunerMenu::encoderClockwise()
 {
-	if(SpectrumTask->ref_freq<450.0f)
+	if(TunerTask->refFreq<450.0f)
 	{
-		SpectrumTask->ref_freq += 1.0f;
-		DisplayTask->TunerRefFreq(SpectrumTask->ref_freq);
+		TunerTask->refFreq += 1.0f;
+		DisplayTask->TunerRefFreq(TunerTask->refFreq);
 	}
 }
 
 void TunerMenu::encoderCounterClockwise()
 {
-	if(SpectrumTask->ref_freq>430.0f)
+	if(TunerTask->refFreq>430.0f)
 	{
-		DisplayTask->TunerRefFreq(SpectrumTask->ref_freq);
-		SpectrumTask->ref_freq -= 1.0f;
+		DisplayTask->TunerRefFreq(TunerTask->refFreq);
+		TunerTask->refFreq -= 1.0f;
 	}
 }
 
@@ -86,9 +84,7 @@ void TunerMenu::key5()
 
 void TunerMenu::exitTunerMenu()
 {
-	SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 1);
+	TunerTask->Disable();
 	LED_SetState(TLedType::LED_TAP_GREEN, TLedState::DISABLED);
-	CODEC_Send(0xa103);
-
 	DisplayTask->Clear();
 }

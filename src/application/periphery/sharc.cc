@@ -64,7 +64,7 @@ void SHARC_StartupLoad()
 #endif
 
 #ifdef __MONO_MOD__
-	if(cab_type != CAB_CONFIG_STEREO)
+	if(System::cab_type != CAB_CONFIG_STEREO)
 	{
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_start;
 		extern uint8_t _binary_Pangaea_CP100FX_1_ldr_end;
@@ -124,7 +124,7 @@ void SHARC_LoadAllData()
 
 			for(uint32_t ii = 0; ii<4096; ii++) //CAB_DATA_SIZE / 3
 			{
-				if(cab_type == CAB_CONFIG_STEREO)
+				if(System::cab_type == CAB_CONFIG_STEREO)
 				{
 					buf = currentPreset.cab2Data[ii*3]<<8;
 					buf |= currentPreset.cab2Data[ii*3+1]<<16;
@@ -209,7 +209,7 @@ void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t* mod
 		SHARC_SendData(sendBuf);
 	}
 
-	if(cab_type != CAB_CONFIG_STEREO)
+	if(System::cab_type != CAB_CONFIG_STEREO)
 	{
 		for(uint32_t i = 0; i < 4096; i++)
 		{

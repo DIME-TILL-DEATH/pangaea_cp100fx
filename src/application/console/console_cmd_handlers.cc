@@ -1,4 +1,5 @@
 #include <tuner_bitmap.h>
+#include <tuner_task.h>
 #include "console_handlers.h"
 
 #include "sharc.h"
@@ -27,7 +28,6 @@
 #include "syssettings_handlers.h"
 
 #include "filesystem_task.h"
-#include "spectrum_task.h"
 #include "midi_task.h"
 #include "sharc_task.h"
 
@@ -78,7 +78,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 	// update DSP config? Really need?
 	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
-	if(cab_type==CAB_CONFIG_STEREO)
+	if(System::cab_type==CAB_CONFIG_STEREO)
 		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
 	Preset::Change();
@@ -173,7 +173,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 			if(cabNum==0)
 			{
 				kgp_sdk_libc::memcpy(currentPreset.cab1Data, tempCabBuffer, CAB_DATA_SIZE);
-				if(cab_type != CAB_CONFIG_STEREO)
+				if(System::cab_type != CAB_CONFIG_STEREO)
 				{
 					kgp_sdk_libc::memcpy(currentPreset.cabAuxData,
 							tempCabBuffer + CAB_DATA_SIZE, CAB_DATA_SIZE);
@@ -714,7 +714,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 		if(command == "ref")
 		{
-			uint16_t refFreq = SpectrumTask->ref_freq;
+			uint16_t refFreq = TunerTask->refFreq;
 			msg_console("%d", refFreq);
 		}
 	}
@@ -727,7 +727,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		{
 			char *end;
 			uint16_t refFreq = kgp_sdk_libc::strtol(args[2], &end, 10);
-			SpectrumTask->ref_freq = refFreq;
+			TunerTask->refFreq = refFreq;
 			msg_console("%d", refFreq);
 		}
 
@@ -738,15 +738,11 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 			if(on)
 			{
-				CODEC_Send(0xa102);
-				SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 0, 0);
-				SpectrumTask->backgroundTunerEnabled = true;
+				TunerTask->Enable(TTunerTask::TUNER_CONSOLE);
 			}
 			else
 			{
-				SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 1, 0);
-				CODEC_Send(0xa103);
-				SpectrumTask->backgroundTunerEnabled = false;
+				TunerTask->Disable();
 			}
 			msg_console("%d", on);
 		}
@@ -755,7 +751,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		{
 			char *end;
 			uint16_t count = kgp_sdk_libc::strtol(args[2], &end, 16);
-			SpectrumTask->samplesCount = count;
+			TunerTask->Enable(TTunerTask::TUNER_CONSOLE, count);
 
 		}
 	}

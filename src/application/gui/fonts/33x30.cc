@@ -1,4 +1,6 @@
-#include "../../periphery/lcd.h"
+#include "33x30.h"
+
+#include "lcd.h"
 
 const uint8_t Tahoma33x30[] =
 {

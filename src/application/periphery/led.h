@@ -5,6 +5,8 @@
 
 typedef enum{
 	LED_TAP_GREEN = 1,
+	LED_TAP_RED, // unavaliable. Controlling by SHARC
+	LED_FX_GREEN,
 	LED_FX_RED
 }TLedType;
 

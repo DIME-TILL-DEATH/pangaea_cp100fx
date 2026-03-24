@@ -1,6 +1,7 @@
 #include "presetactionsmenu.h"
 
 #include "eepr.h"
+#include "system.h"
 
 #include "controllers_task.h"
 #include "display_task.h"
@@ -9,8 +10,6 @@
 
 #include "modulesmenu.h"
 #include "copyselectmenu.h"
-
-extern uint8_t cab_type;
 
 PresetActionsMenu::PresetActionsMenu(AbstractMenu *parent, TActionType actionType)
 {
@@ -138,7 +137,7 @@ void PresetActionsMenu::savePreset()
 	EEPROM_WritePreset(targetPresetNum);
 
 	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
-	if(cab_type==CAB_CONFIG_STEREO)
+	if(System::cab_type == CAB_CONFIG_STEREO)
 		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
 	currentPresetNumber = targetPresetNum;

@@ -302,7 +302,7 @@ void SystemMenu::tunerSpeedDescrease(void* parameter)
 	if(*valuePtr > 0)
 	{
 		*valuePtr = BaseParam::encSpeedDec(*valuePtr, 0);
-		tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
+		System::tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
 	}
 }
 
@@ -312,6 +312,6 @@ void SystemMenu::tunerSpeedIncrease(void* parameter)
 	if(*valuePtr < 127)
 	{
 		*valuePtr = BaseParam::encSpeedInc(*valuePtr, 127);
-		tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
+		System::tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
 	}
 }

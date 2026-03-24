@@ -182,9 +182,9 @@ public:
 
 	typedef struct
 	{
-		bool noteDefined;
 		float refFreq;
 		uint8_t arrowPos;
+		const char* noteName;
 	}TTunerParam;
 
 	typedef struct
@@ -272,7 +272,7 @@ public:
 
 	void TunerInit();
 	void TunerRefFreq(float refFreq);
-	void TunerDraw(bool noteDefined, uint8_t arrowPos);
+	void TunerDraw(uint8_t arrowPos, const char* noteName);
 
 	void Arrow(uint8_t x, uint8_t y, uint32_t dir);
 

@@ -104,7 +104,7 @@ void EEPROM_Start()
 		EEPROM_WriteSys();
 	}
 
-	cab_type = sys_para[System::CAB_SIM_CONFIG];
+	System::cab_type = sys_para[System::CAB_SIM_CONFIG];
 }
 
 void EEPROM_WriteSys(void)
@@ -200,7 +200,7 @@ bool EEPROM_LoadPreset(uint8_t numPreset)
 		currentPreset.cab1Data[1] = 0xff;
 		currentPreset.cab1Data[2] = 0x7f;
 
-		if(cab_type==2)
+		if(System::cab_type == CAB_CONFIG_STEREO)
 		{
 			currentPreset.cab2Data[0] = 0xff;
 			currentPreset.cab2Data[1] = 0xff;
