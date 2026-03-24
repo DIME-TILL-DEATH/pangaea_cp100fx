@@ -23,8 +23,7 @@ public:
 	static uint8_t sdInitState;
 
 private:
-
-	void Code();
+	void Code() override;
 	TSemaphore *sem;
 };
 

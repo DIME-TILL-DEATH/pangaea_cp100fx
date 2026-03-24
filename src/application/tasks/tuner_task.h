@@ -22,9 +22,15 @@ public:
 	bool IsrRoutine(int32_t inSample);
 
 private:
+	static constexpr float Fs = 3999.91f;
+	static constexpr size_t N = 512;     // sample count
+	static constexpr size_t n = 256;   // frame overlap
+
 	size_t guitar_classic_index_table[6];
 	size_t guitar_bass_index_table[6];
 
+	vec in_0[N];
+	vec in_1[N];
 	kgp_math::fft fft_0;
 	kgp_math::fft fft_1;
 

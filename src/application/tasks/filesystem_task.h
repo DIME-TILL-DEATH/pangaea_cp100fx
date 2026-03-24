@@ -1,5 +1,5 @@
-#ifndef __FS_H__
-#define __FS_H__
+#ifndef __FILESYSTEM_TASK_H__
+#define __FILESYSTEM_TASK_H__
 
 #include "appdefs.h"
 #include "fs_browser.h"
@@ -25,7 +25,7 @@ public:
 	fs_object_t& Object() { return object; }
 
 private:
-	void Code();
+	void Code() override;
 	TQueue *queue;
 	fs_object_t object;
 
@@ -35,4 +35,4 @@ private:
 extern TFileSystemTask *FileSystemTask;
 extern TFsBrowser *fileBrowser;
 
-#endif /*__FS_H__*/
+#endif /*__FILESYSTEM_TASK_H__*/

@@ -1,5 +1,5 @@
-#ifndef __MIDI_SEND_H__
-#define __MIDI_SEND_H__
+#ifndef __MIDI_TASK_H__
+#define __MIDI_TASK_H__
 
 #include "appdefs.h"
 
@@ -38,7 +38,7 @@ public:
 	void fswPressed(uint8_t data, uint8_t state);
 
 private:
-	void Code();
+
 
 	enum MidiState
 	{
@@ -46,11 +46,6 @@ private:
 		WAIT_BYTE1,
 		WAIT_BYTE2
 	};
-
-	MidiState midiState = PROCESS_STATUS_BYTE;
-	uint8_t statusByte;
-	uint8_t dataByte[2];
-	uint8_t rcvChannel;
 
 	typedef enum{
 		UART_IN,
@@ -91,7 +86,13 @@ private:
 
 	TQueue *queue;
 
+	MidiState midiState = PROCESS_STATUS_BYTE;
+	uint8_t statusByte;
+	uint8_t dataByte[2];
+	uint8_t rcvChannel;
+
 	void sendBank();
+	void Code() override;
 	TQueue::TQueueSendResult Command(TMidiCmd *cmd)
 	{
 		if(cortex_isr_num())
@@ -114,4 +115,4 @@ extern TMidiTask *MidiTask;
 
 void ISR_midi_recieve();
 
-#endif /* __MIDI_SEND_H__ */
+#endif /* __MIDI_TASK_H__ */

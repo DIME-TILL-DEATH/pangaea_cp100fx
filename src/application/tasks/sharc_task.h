@@ -19,7 +19,7 @@ public:
 	void eraseCab1(uint8_t presetNum);
 	void eraseCab2(uint8_t presetNum);
 private:
-	void Code();
+	void Code() override;
 
 	typedef enum{
 		SHARC_SET_PARAMETER,

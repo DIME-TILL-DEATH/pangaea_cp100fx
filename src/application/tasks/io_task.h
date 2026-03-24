@@ -1,5 +1,5 @@
-#ifndef __ENC_H__
-#define __ENC_H__
+#ifndef __IO_TASK_H__
+#define __IO_TASK_H__
 
 #include "appdefs.h"
 
@@ -101,7 +101,7 @@ public:
 	};
 
 private:
-	void Code();
+	void Code() override;
 
 	TQueue::TQueueSendResult Command(TIOCmd *cmd)
 	{
@@ -129,4 +129,4 @@ void ISR_fsw_hold_timer();
 
 extern TIOTask *IOTask;
 
-#endif /*__ENC_H__*/
+#endif /*__IO_TASK_H__*/

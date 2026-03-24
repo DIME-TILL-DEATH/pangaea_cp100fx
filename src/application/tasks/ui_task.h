@@ -1,5 +1,5 @@
-#ifndef __CS_H__
-#define __CS_H__
+#ifndef __UI_TASK_H__
+#define __UI_TASK_H__
 
 #include "appdefs.h"
 
@@ -108,7 +108,7 @@ public:
 	}
 
 private:
-	void Code();
+	void Code() override;
 
 	TQueue::TQueueSendResult Command(TUICmd *cmd)
 	{
@@ -137,4 +137,4 @@ extern AbstractMenu *currentMenu;
 extern MainMenu *mainMenu;
 extern UsbMenu *usbMenu;
 
-#endif /*__CS_H__*/
+#endif /*__UI_TASK_H__*/

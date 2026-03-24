@@ -31,11 +31,6 @@ static const char *note_name_table[] ={
 
 TTunerTask *TunerTask = nullptr;
 
-volatile float Fs = 3999.91f;
-const size_t N = 512;     // sample count
-volatile size_t n = 256;   // frame overlap
-vec in_0[N];
-vec in_1[N];
 vec __CCM_BSS__ Wfwd[32];
 
 TTunerTask::TTunerTask()

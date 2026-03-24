@@ -1,5 +1,5 @@
-#ifndef CONTROLLERS_TASK_H_
-#define CONTROLLERS_TASK_H_
+#ifndef __CONTROLLERS_TASK_H_
+#define __CONTROLLERS_TASK_H_
 
 #include "appdefs.h"
 
@@ -13,8 +13,6 @@ public:
 	void midiCalcTempo(uint16_t* data, uint8_t size);
 
 private:
-	void Code();
-
 	typedef enum{
 		CONTROLLER_MIDI,
 		CONTROLLER_EXTERNAL,
@@ -55,6 +53,7 @@ private:
 
 	void controllerSetData(uint8_t adr, uint8_t data);
 
+	void Code() override;
 	TQueue::TQueueSendResult Command(TControllerCmd *cmd)
 	{
 		if(cortex_isr_num())
