@@ -1,8 +1,9 @@
 #ifndef SRC_APPLICATION_GUI_MENUS_USBMENU_H_
 #define SRC_APPLICATION_GUI_MENUS_USBMENU_H_
 
-#include "../../tasks/usb_task.h"
 #include "abstractmenu.h"
+
+#include "usb_task.h"
 
 class UsbMenu: public AbstractMenu
 {

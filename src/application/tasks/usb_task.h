@@ -4,8 +4,6 @@
 #include "appdefs.h"
 #include "console.h"
 
-extern TConsoleTask::readline_io_t cdc_io;
-
 class TUsbTask: public TTask
 {
 public:
@@ -17,34 +15,22 @@ public:
 	};
 
 	TUsbTask();
-	virtual ~TUsbTask();
+	~TUsbTask();
 
 	TUsbTask(TMode val);
 
 	void SendDataCDC(uint8_t *data, size_t len);
 
-	inline size_t RxQueueWaiting()
-	{
-		return rx_queue->MessagesWaiting();
-	}
-	inline char RxQueueRecv()
-	{
-		char c;
-		rx_queue->Receive(&c, portMAX_DELAY);
-		return c;
-	}
+	size_t RxQueueWaiting();
+	char RxQueueRecv();
 	TQueue::TQueueSendResult RxSend(uint8_t *buf, uint32_t len);
-
-	inline void* UsbOtgDevHandle()
-	{
-		return USB_OTG_dev;
-	}
+	void* UsbOtgDevHandle();
 private:
-	void Code();
+	void Code() override;
 	void *USB_OTG_dev;
 
-	TQueue *rx_queue;
-
+	TQueue *rx_queue{nullptr};
+	TConsoleTask::readline_io_t* cdc_io{nullptr};
 };
 
 extern TUsbTask *UsbTask;

@@ -5,6 +5,7 @@
 #include "display_task.h"
 #include "usb_task.h"
 #include "sharc_task.h"
+#include "console.h"
 
 const uint8_t UsbMenu::strUsbMenu[][19];
 const uint8_t UsbMenu::strPositions[3];
@@ -145,11 +146,6 @@ void UsbMenu::startUsb()
 	if(usb_connect_type == TUsbTask::mCDC)
 	{
 		UsbTask = new TUsbTask(TUsbTask::mCDC);
-
-		ConsoleTask = new TConsoleTask(256);
-		ConsoleTask->SetIo(&cdc_io);
-		ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
-		ConsoleTask->Echo(false);
 	}
 	else
 	{
