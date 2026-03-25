@@ -107,8 +107,7 @@ void Footswitch::press_execute(uint8_t num)
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					UITask->task();
-//					DisplayTask->FswInd(num, currentPreset.paramData.foot_ind_press[num], currentPreset.paramData.foot_ind_hold[num]);
+					UITask->refreshMenu();
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.paramData.foot_ind_press[num]);
@@ -250,8 +249,7 @@ void Footswitch::hold_execute(uint8_t num)
 				}
 
 				if(currentMenu->menuType() == MENU_MAIN)
-					UITask->task();
-//					DisplayTask->FswInd(num, currentPreset.paramData.foot_ind_press[num], currentPreset.paramData.foot_ind_hold[num]);
+					UITask->refreshMenu();
 
 				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_HOLD_CC + num, currentPreset.paramData.foot_ind_hold[num]);
