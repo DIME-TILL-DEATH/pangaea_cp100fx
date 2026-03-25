@@ -20,7 +20,7 @@ void MidiMapMenu::show(TShowMode swhoMode)
 
 	DisplayTask->Clear();
 	DisplayTask->ParamIndNum(3, 0, m_pcNum + 1);
-	DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)"->");
+	DisplayTask->StringOut(24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"->");
 	DisplayTask->ParamIndNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
 }
 

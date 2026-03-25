@@ -1,14 +1,13 @@
-#include <bitmaps.h>
 #include "fswtypemenu.h"
 
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/io_task.h"
-#include "../../../tasks/ui_task.h"
+#include "system.h"
 #include "eepr.h"
 
-#include "fswmodemenu.h"
+#include "tasks/display_task.h"
+#include "tasks/io_task.h"
+#include "tasks/ui_task.h"
 
-#include "system.h"
+#include "fswmodemenu.h"
 
 const uint8_t FswTypeMenu::strFswMenu[][12];
 
@@ -25,7 +24,7 @@ void FswTypeMenu::show(TShowMode showMode)
 
 	DisplayTask->Clear();
 	for(uint8_t i = 0; i<4; i++)
-		DisplayTask->StringOut(3, i, Font::fntSystem, 0, (uint8_t*)&strFswMenu[i]);
+		DisplayTask->StringOut(3, i, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strFswMenu[i]);
 	DisplayTask->ParamInd(58, 3, sys_para[System::FSW_SPEED]);
 
 	restartBlinking(0);
@@ -35,7 +34,7 @@ void FswTypeMenu::task()
 {
 	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2 * blinkFlag, (uint8_t*)&strFswMenu[m_parNum]);
+		DisplayTask->StringOut(3, m_parNum, Font::fntSystem, FONT_BLINKING, (uint8_t*)&strFswMenu[m_parNum]);
 	}
 }
 
@@ -51,12 +50,12 @@ void FswTypeMenu::encoderPressed()
 		if(!m_encoderKnobSelected)
 		{
 			m_encoderKnobSelected = 1;
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2, (uint8_t*)&strFswMenu[m_parNum]);
+			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&strFswMenu[m_parNum]);
 		}
 		else
 		{
 			m_encoderKnobSelected = 0;
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&strFswMenu[m_parNum]);
+			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strFswMenu[m_parNum]);
 		}
 	}
 	restartBlinking(0);
@@ -68,7 +67,7 @@ void FswTypeMenu::encoderClockwise()
 	{
 		if(m_parNum<3)
 		{
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&strFswMenu[m_parNum++]);
+			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strFswMenu[m_parNum++]);
 		}
 	}
 	else
@@ -89,7 +88,7 @@ void FswTypeMenu::encoderCounterClockwise()
 	{
 		if(m_parNum>0)
 		{
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&strFswMenu[m_parNum--]);
+			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strFswMenu[m_parNum--]);
 		}
 	}
 	else

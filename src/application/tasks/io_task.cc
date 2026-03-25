@@ -46,7 +46,6 @@ void TIOTask::Code()
 	xEventGroupSync(startEventGroup, EVENT_BIT_IOTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
 	HW_ReadKeysEnable();
-
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 
 	TIOCmd cmd;
@@ -154,7 +153,7 @@ void ISR_encoder_read()
 
 			encEvents.updated = 1;
 
-			UITask->encoderEvents(encEvents);
+			if(UITask) UITask->encoderEvents(encEvents);
 		}
 	}
 
@@ -164,7 +163,7 @@ void ISR_encoder_read()
 		if(drebezg(EXTI_Line15)==1)
 		{
 			encEvents.pressed = 1;
-			UITask->encoderEvents(encEvents);
+			if(UITask) UITask->encoderEvents(encEvents);
 		}
 	}
 }
@@ -190,7 +189,7 @@ void ISR_buttons_read()
 	keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
 	keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
 
-	UITask->keysEvents(keyEvents);
+	if(UITask) UITask->keysEvents(keyEvents);
 
 	TFswEvents fswEvents;
 
@@ -204,7 +203,7 @@ void ISR_buttons_read()
 	{
 		if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
 		{
-			IOTask->fswSinglePressed(fswEvents);
+			if(IOTask) IOTask->fswSinglePressed(fswEvents);
 
 			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
 			TIM_SetCounter(TIM3, sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
@@ -215,7 +214,7 @@ void ISR_buttons_read()
 			if(TIM3->CR1 & TIM_CR1_CEN)
 			{
 				fswEvents.fsw = holdedFsw;
-				IOTask->fswDualPressed(fswEvents);
+				if(IOTask) IOTask->fswDualPressed(fswEvents);
 
 				TIM_Cmd(TIM3, DISABLE);
 			}

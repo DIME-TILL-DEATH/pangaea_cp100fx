@@ -109,13 +109,13 @@ void PresetActionsMenu::updatePresetData()
 	DisplayTask->ClearString(2, 0, Font::fntSystem, 14);
 	DisplayTask->ClearString(2, 1, Font::fntSystem, 14);
 
-	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.name);
-	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.comment);
+	DisplayTask->StringOut(2, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_selectedPresetBrief.name);
+	DisplayTask->StringOut(2, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_selectedPresetBrief.comment);
 
 	if(m_actionType==TActionType::Copy)
-		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Copy to ->");
+		DisplayTask->StringOut(10, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Copy to ->");
 	else
-		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Save to ->");
+		DisplayTask->StringOut(10, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Save to ->");
 
 	bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
 	DisplayTask->PresetInd(targetPresetNum, filled);
@@ -130,7 +130,7 @@ void PresetActionsMenu::updatePresetData()
 void PresetActionsMenu::savePreset()
 {
 	DisplayTask->Clear();
-	DisplayTask->StringOut(38, 2, Font::fnt12x13, 0, (uint8_t*)" Save");
+	DisplayTask->StringOut(38, 2, Font::fnt12x13, Font::fnsNormal, (uint8_t*)" Save");
 
 	currentPreset.modulesBuf[147] = currentPreset.delayTime;
 	currentPreset.modulesBuf[148] = currentPreset.delayTime>>8;

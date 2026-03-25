@@ -17,33 +17,6 @@
 
 #define disp_orient 0
 
-namespace Font
-{
-typedef enum
-{
-	fnsBlack = 0,
-	fnsWhite,
-	fnsBlackUnderline,
-	fnsCount
-} TFontState;
-
-typedef enum
-{
-	fnt12x13 = 0,
-	fnt33x30,
-	fntSystem,
-	fntCount
-} TFontName;
-
-typedef struct
-{
-	TFontName name;
-	uint8_t curs;
-} TFontStruct;
-
-uint8_t symbolWidth(TFontName fontName);
-};
-
 typedef enum
 {
 	VOL_INDICATOR_OFF = 0,

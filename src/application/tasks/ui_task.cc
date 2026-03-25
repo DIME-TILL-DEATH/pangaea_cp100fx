@@ -37,28 +37,28 @@ TUITask::~TUITask()
 
 void TUITask::Code()
 {
+	mainMenu = new MainMenu();
+	currentMenu = mainMenu;
+
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_UITASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
 	Preset::Change();
 	CODEC_Send(0xa301);
 
-	mainMenu = new MainMenu();
-	usbMenu = new UsbMenu(mainMenu);
-
-	currentMenu = mainMenu;
 	mainMenu->show();
 
 	// enable blink timer
 	TIM_SetCounter(TIM4, 0);
-	TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 	TIM_Cmd(TIM4, ENABLE);
+	TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 
 	//enable running string timer
 	TIM_Cmd(TIM5, ENABLE);
 	TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
 
 	TUICmd cmd;
+	usbMenu = new UsbMenu(mainMenu);
 
 	while(1)
 	{
@@ -74,7 +74,7 @@ void TUITask::Code()
 
 			case UI_RETURN_FROM_MENU:
 			{
-				currentMenu->keyUp();
+				currentMenu->returnToParent();
 				break;
 			}
 
@@ -89,59 +89,15 @@ void TUITask::Code()
 			{
 				if((GPIOA->IDR & GPIO_Pin_9) && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
 				{
-					currentMenu->showChild(usbMenu);
+					if(usbMenu) currentMenu->showChild(usbMenu);
 				}
-
 				currentMenu->task();
 				break;
 			}
 
 			case UI_KEYS_EVENTS:
 			{
-				if(cmd.keysEvents.hold) break;
-
-				if(cmd.keysEvents.keyUp)
-				{
-					currentMenu->keyUp();
-					break;
-				}
-
-				if(cmd.keysEvents.keyDown)
-				{
-					currentMenu->keyDown();
-					break;
-				}
-
-				if(cmd.keysEvents.key1)
-				{
-					currentMenu->key1();
-					break;
-				}
-
-				if(cmd.keysEvents.key2)
-				{
-					currentMenu->key2();
-					break;
-				}
-
-				if(cmd.keysEvents.key3)
-				{
-					currentMenu->key3();
-					break;
-				}
-
-				if(cmd.keysEvents.key4)
-				{
-					currentMenu->key4();
-					break;
-				}
-
-				if(cmd.keysEvents.key5)
-				{
-					currentMenu->key5();
-					break;
-				}
-
+				currentMenu->keyEvent(cmd.keysEvents);
 				break;
 			}
 

@@ -24,9 +24,9 @@ void UsbMenu::show(TShowMode showMode)
 	autoconnectOn = true;
 
 	DisplayTask->Clear();
-	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, 0, &strUsbMenu[0][0]);
-	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, 0, &strUsbMenu[1][0]);
-	DisplayTask->StringOut(strPositions[2], 3, Font::fntSystem, 0, &strUsbMenu[2][0]);
+	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, Font::fnsNormal, &strUsbMenu[0][0]);
+	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, Font::fnsNormal, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[2], 3, Font::fntSystem, Font::fnsNormal, &strUsbMenu[2][0]);
 	DisplayTask->ParamIndNum(strPositions[2] + 18*6, 3, m_countOff);
 }
 
@@ -60,7 +60,7 @@ void UsbMenu::task()
 		return;
 	}
 
-	DisplayTask->StringOut(strPositions[m_parNum], m_parNum, Font::fntSystem, 2 * blinkFlag, &strUsbMenu[m_parNum][0]);
+	DisplayTask->StringOut(strPositions[m_parNum], m_parNum, Font::fntSystem, FONT_BLINKING, &strUsbMenu[m_parNum][0]);
 
 	if(autoconnectOn)
 	{
@@ -96,16 +96,16 @@ void UsbMenu::encoderPressed()
 			SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 0, 0);
 
 			DisplayTask->Clear();
-			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"cp100fx connected as");
-			DisplayTask->StringOut(30, 2, Font::fntSystem, 0, (uint8_t*)"mass storage");
+			DisplayTask->StringOut(6, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"cp100fx connected as");
+			DisplayTask->StringOut(30, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"mass storage");
 			break;
 		}
 
 		case TUsbTask::mCDC:
 		{
 			DisplayTask->Clear();
-			DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)"cp100fx connected as");
-			DisplayTask->StringOut(34, 2, Font::fntSystem, 0, (uint8_t*)"serial port");
+			DisplayTask->StringOut(6, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"cp100fx connected as");
+			DisplayTask->StringOut(34, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"serial port");
 
 			// Memory leak
 //			currentMenu = mainMenu;
@@ -123,7 +123,7 @@ void UsbMenu::encoderClockwise()
 
 	if(m_parNum < 1) m_parNum++;
 
-	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, 0, &strUsbMenu[0][0]);
+	DisplayTask->StringOut(strPositions[0], 0, Font::fntSystem, Font::fnsNormal, &strUsbMenu[0][0]);
 	restartBlinking(0);
 
 	autoconnectOn = false;
@@ -135,7 +135,7 @@ void UsbMenu::encoderCounterClockwise()
 
 	if(m_parNum > 0) m_parNum--;
 
-	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, 0, &strUsbMenu[1][0]);
+	DisplayTask->StringOut(strPositions[1], 1, Font::fntSystem, Font::fnsNormal, &strUsbMenu[1][0]);
 	restartBlinking(0);
 
 	autoconnectOn = false;

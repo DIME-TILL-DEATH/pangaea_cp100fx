@@ -230,6 +230,7 @@ volatile uint8_t sysEx_fl = 0;
 void ISR_midi_recieve()
 {
 	uint8_t uart_buf = USART1->DR; // auto drop USART_IT_RXNE
+	if(!MidiTask) return;
 
 	if(sysEx_fl) // retranslate while SysEx not end
 	{

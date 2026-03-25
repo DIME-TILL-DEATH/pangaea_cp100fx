@@ -1,6 +1,6 @@
-#include <bitmaps.h>
 #include "SystemFont5x7.h"
 
+#include "lcd.h"
 
 uint32_t Arsys_sym(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 {
@@ -10,10 +10,10 @@ uint32_t Arsys_sym(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 		sym &= ~0x80;
 		curs = 2;
 	}
-	sym = (sym - 32) * 6;
+	sym = (sym - 32) * FONT_SYSTEM5X7_WIDTH;
 	LCD_SetPageAddress(pag);
 	LCD_SetColumnAddress(col);
-	for(uint8_t i = 0; i < 6; i++)
+	for(uint8_t i = 0; i < FONT_SYSTEM5X7_WIDTH; i++)
 	{
 		j = SystemFont5x7[sym + i];
 		if(curs == 1) j |= 0x80;
@@ -28,10 +28,10 @@ uint32_t Arsys_sym(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 uint32_t Arsys_sym_up(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 {
 	uint8_t j;
-	sym = (sym - 32) * 6;
+	sym = (sym - 32) * FONT_SYSTEM5X7_WIDTH;
 	LCD_SetPageAddress(pag);
 	LCD_SetColumnAddress(col);
-	for(uint8_t i = 0; i < 6; i++)
+	for(uint8_t i = 0; i < FONT_SYSTEM5X7_WIDTH; i++)
 	{
 		j = SystemFont5x7[sym + i] << 4;
 		if(curs == 1)
@@ -40,16 +40,16 @@ uint32_t Arsys_sym_up(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 			j = ~j;
 		LCD_WriteData(j);
 	}
-	return col + 6;
+	return col + FONT_SYSTEM5X7_WIDTH;
 }
 
 uint32_t Arsys_sym_down(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 {
 	uint8_t j;
-	sym = (sym - 32) * 6;
+	sym = (sym - 32) * FONT_SYSTEM5X7_WIDTH;
 	LCD_SetPageAddress(pag);
 	LCD_SetColumnAddress(col);
-	for(uint8_t i = 0; i < 6; i++)
+	for(uint8_t i = 0; i < FONT_SYSTEM5X7_WIDTH; i++)
 	{
 		j = SystemFont5x7[sym + i] >> 4;
 		if(curs == 1)
@@ -58,7 +58,7 @@ uint32_t Arsys_sym_down(uint8_t col, uint8_t pag, uint16_t sym, uint8_t curs)
 			j = ~j;
 		LCD_WriteData(j);
 	}
-	return col + 6;
+	return col + FONT_SYSTEM5X7_WIDTH;
 }
 
 void Arsys_line(uint8_t col, uint8_t pag, uint8_t *adr, uint8_t curs)

@@ -36,13 +36,13 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 			if(!sys_para[System::TIME_FORMAT])
 			{
 				DisplayTask->DelayTimeInd(m_xDisplayPosition, yDisplayPosition, currentPreset.delayTime);
-				DisplayTask->StringOut(m_xDisplayPosition + 35, yDisplayPosition, Font::fntSystem , 0 , (uint8_t*)" >");
+				DisplayTask->StringOut(m_xDisplayPosition + 35, yDisplayPosition, Font::fntSystem , Font::fnsNormal , (uint8_t*)" >");
 			}
 			else
 			{
 				DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, 60000/currentPreset.delayTime);
 				DisplayTask->StringOut(m_xDisplayPosition + Font::symbolWidth(Font::fntSystem) * 4,
-										yDisplayPosition, Font::fntSystem, 0, (uint8_t*)"BPM>");
+										yDisplayPosition, Font::fntSystem, Font::fnsNormal, (uint8_t*)"BPM>");
 			}
 			break;
 		}

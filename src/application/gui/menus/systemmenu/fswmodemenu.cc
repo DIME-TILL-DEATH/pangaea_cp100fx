@@ -28,13 +28,13 @@ void FswModeMenu::show(TShowMode showMode)
 
 	DisplayTask->Clear();
 
-	DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &strMode[0]);
-	DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
+	DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
+	DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
 
 	if(sys_para[System::FSW1_MODE+m_fswNumber])
 	{
-		DisplayTask->StringOut(10, 2, Font::fntSystem, 0, &strReleaseHold[0][0]);
-		DisplayTask->StringOut(80, 2, Font::fntSystem, 0, &strReleaseHold[1][0]);
+		DisplayTask->StringOut(10, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[0][0]);
+		DisplayTask->StringOut(80, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[1][0]);
 	}
 
 	restartBlinking(0);
@@ -46,14 +46,14 @@ void FswModeMenu::task()
 	{
 		if(!m_parNum)
 		{
-			DisplayTask->StringOut(3, 0, Font::fntSystem, 2 * blinkFlag, &strMode[0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, FONT_BLINKING, &strMode[0]);
 		}
 		else
 		{
 			if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Double)
-				DisplayTask->StringOut(10+(m_parNum-1)*70, 2 , Font::fntSystem, 2 * blinkFlag, &strReleaseHold[m_parNum-1][0]);
+				DisplayTask->StringOut(10+(m_parNum-1)*70, 2 , Font::fntSystem, FONT_BLINKING, &strReleaseHold[m_parNum-1][0]);
 			else
-				DisplayTask->StringOut(40, 0, Font::fntSystem, 2 * blinkFlag, &strModeType[0][0]);
+				DisplayTask->StringOut(40, 0, Font::fntSystem, FONT_BLINKING, &strModeType[0][0]);
 		}
 	}
 }
@@ -64,21 +64,21 @@ void FswModeMenu::encoderPressed()
 	{
 		m_encoderKnobSelected = 0;
 		if(m_parNum == 0)
-			DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &strMode[0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
 		else
-			DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, 0, &strReleaseHold[m_parNum-1][0]);
+			DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[m_parNum-1][0]);
 	}
 	else
 	{
 		if(m_parNum == 0)
 		{
-			DisplayTask->StringOut(3, 0, Font::fntSystem, 2, &strMode[0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsHighlight, &strMode[0]);
 			m_encoderKnobSelected = 1;
 		}
 		else
 		{
 			DisplayTask->Clear();
-			DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &Footswitch::expr_menu_str[0][0]);
+			DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &Footswitch::expr_menu_str[0][0]);
 
 			TFswControls fswControls;
 			if(m_parNum == 1)
@@ -111,12 +111,12 @@ void FswModeMenu::encoderClockwise()
 			{
 				if(m_parNum == 0)
 				{
-					DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &strMode[0]);
+					DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
 
 				}
 				else
 				{
-					DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, 0, &strReleaseHold[m_parNum - 1][0]);
+					DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[m_parNum - 1][0]);
 				}
 				m_parNum++;
 
@@ -129,12 +129,12 @@ void FswModeMenu::encoderClockwise()
 			{
 				if(m_parNum == 0)
 				{
-					DisplayTask->StringOut(3, 0, Font::fntSystem, 0, &strMode[0]);
+					DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
 					m_parNum++;
 				}
 				else
 				{
-					DisplayTask->StringOut(40, 0, Font::fntSystem, 2, &strModeType[0][0]);
+					DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsHighlight, &strModeType[0][0]);
 				}
 				restartBlinking(0);
 			}
@@ -145,9 +145,9 @@ void FswModeMenu::encoderClockwise()
 		if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Single)
 		{
 			sys_para[System::FSW1_MODE + m_fswNumber]++;
-			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[System::FSW1_MODE+m_fswNumber]][0]);
-			DisplayTask->StringOut(10, 2, Font::fntSystem, 0, &strReleaseHold[0][0]);
-			DisplayTask->StringOut(80, 2, Font::fntSystem, 0, &strReleaseHold[1][0]);
+			DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE+m_fswNumber]][0]);
+			DisplayTask->StringOut(10, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[0][0]);
+			DisplayTask->StringOut(80, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[1][0]);
 		}
 	}
 
@@ -162,7 +162,7 @@ void FswModeMenu::encoderCounterClockwise()
 		{
 			if(m_parNum > 0)
 			{
-				DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, 0, &strReleaseHold[m_parNum-1][0]);
+				DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[m_parNum-1][0]);
 				m_parNum--;
 				restartBlinking(0);
 			}
@@ -172,7 +172,7 @@ void FswModeMenu::encoderCounterClockwise()
 			if(m_parNum > 0)
 			{
 				m_parNum--;
-				DisplayTask->StringOut(40, 0, Font::fntSystem, 0, (uint8_t*)&strModeType[m_parNum]);
+				DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strModeType[m_parNum]);
 				restartBlinking(0);
 			}
 		}
@@ -183,7 +183,7 @@ void FswModeMenu::encoderCounterClockwise()
 		{
 			sys_para[System::FSW1_MODE + m_fswNumber]--;
 			DisplayTask->ClearString(10, 2, Font::fntSystem, 35);
-			DisplayTask->StringOut(40, 0, Font::fntSystem, 0, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
+			DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
 		}
 	}
 

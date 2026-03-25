@@ -37,7 +37,7 @@ void StringOutParam::printParam(uint8_t yDisplayPosition)
 {
 	m_yDisplayPosition = yDisplayPosition;
 
-	if(!m_running) DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, Font::fntSystem, 0, (uint8_t*)m_stringPtr);
+	if(!m_running) DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_stringPtr);
 }
 
 void StringOutParam::task()
@@ -73,5 +73,5 @@ void StringOutParam::task()
 		}
 	}
 
-	DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, Font::fntSystem, 0, (uint8_t*)nameBuffer);
+	DisplayTask->StringOut(m_xDisplayPosition, m_yDisplayPosition, Font::fntSystem, Font::fnsNormal, (uint8_t*)nameBuffer);
 }

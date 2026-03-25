@@ -17,6 +17,23 @@ gui_menu_type AbstractMenu::menuType()
 
 void AbstractMenu::keyUp()
 {
+	returnToParent();
+}
+
+void AbstractMenu::setTopLevelMenu(AbstractMenu* parent)
+{
+	topLevelMenu = parent;
+}
+
+void AbstractMenu::showChild(AbstractMenu* child)
+{
+	shownChildMenu = child;
+	currentMenu = this;
+	child->show();
+}
+
+void AbstractMenu::returnToParent()
+{
 	if(topLevelMenu)
 	{
 		currentMenu = topLevelMenu;
@@ -75,17 +92,57 @@ void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 	}
 }
 
-void AbstractMenu::setTopLevelMenu(AbstractMenu* parent)
+void AbstractMenu::keyEvent(const TKeysEvents& keysEvents)
 {
-	topLevelMenu = parent;
-}
+	if(keysEvents.hold) return;
 
-void AbstractMenu::showChild(AbstractMenu* child)
+	if(keysEvents.keyUp)
+	{
+		keyUp();
+		return;
+	}
+
+	if(keysEvents.keyDown)
+	{
+		keyDown();
+		return;
+	}
+
+	if(keysEvents.key1)
+	{
+		key1();
+		return;
+	}
+
+	if(keysEvents.key2)
+	{
+		key2();
+		return;
+	}
+
+	if(keysEvents.key3)
+	{
+		key3();
+		return;
+	}
+
+	if(keysEvents.key4)
+	{
+		key4();
+		return;
+	}
+
+	if(keysEvents.key5)
+	{
+		key5();
+		return;
+	}
+};
+
+void AbstractMenu::encoderEvent(const TEncoderEvents& encoderEvents)
 {
-	shownChildMenu = child;
-	currentMenu = this;
-	child->show();
-}
+
+};
 
 void AbstractMenu::setRunningString(StringOutParam* runningString)
 {

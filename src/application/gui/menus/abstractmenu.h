@@ -1,11 +1,10 @@
 #ifndef ABSTRACTMENU_H_
 #define ABSTRACTMENU_H_
 
-#include "../../tasks/io_task.h"
 #include "appdefs.h"
 
 #include "stringoutparam.h"
-
+#include "io_task.h"
 
 enum gui_menu_type
 {
@@ -84,6 +83,7 @@ public:
 	virtual void show(TShowMode swhoMode = FirstShow) {};
 	virtual void refresh() {};
 	virtual void returnFromChildMenu(TReturnMode returnMode = DeleteChild);
+	virtual void returnToParent();
 	virtual void task() {};
 
 	virtual void encoderPressed() {};
@@ -99,7 +99,8 @@ public:
 	virtual void key4() {};
 	virtual void key5() {};
 
-	virtual void combinationalEvent(const TKeysEvents& keyEvents) {};
+	virtual void keyEvent(const TKeysEvents& keysEvents);
+	virtual void encoderEvent(const TEncoderEvents& encoderEvents);
 
 	gui_menu_type menuType();
 

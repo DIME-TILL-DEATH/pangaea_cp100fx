@@ -113,7 +113,7 @@ void ParamListMenu::task()
 	if(!m_encoderKnobSelected)
 	{
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-								blinkFlag * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+								FONT_BLINKING, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 }
 
@@ -134,13 +134,13 @@ void ParamListMenu::encoderPressed()
 		{
 			m_encoderKnobSelected = true;
 			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-									2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+					Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 		else
 		{
 			m_encoderKnobSelected = false;
 			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-									0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+					Font::fnsNormal, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 	}
 
@@ -253,7 +253,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 
 		m_paramsList[displayParamNum]->printParam(i);
-		DisplayTask->StringOut(leftPad, i, Font::fntSystem , 2 * highlight, (uint8_t*)(m_paramsList[displayParamNum]->name()));
+		DisplayTask->StringOut(leftPad, i, Font::fntSystem , (Font::TFontState)(Font::fnsHighlight * highlight), (uint8_t*)(m_paramsList[displayParamNum]->name()));
 	}
 }
 

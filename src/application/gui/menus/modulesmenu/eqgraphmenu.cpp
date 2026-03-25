@@ -49,7 +49,7 @@ void EqGraphMenu::task()
 {
 	if(!encoderKnobSelected)
 	{
-		DisplayTask->StringOut(0, paramNum, Font::fntSystem, blinkFlag * 2, (uint8_t*)&paramNames[paramNum]);
+		DisplayTask->StringOut(0, paramNum, Font::fntSystem, FONT_BLINKING, (uint8_t*)&paramNames[paramNum]);
 	}
 
 	if(updateResponse)
@@ -246,31 +246,31 @@ void EqGraphMenu::printPage()
 	DisplayTask->ClearString(0, 2, Font::fntSystem, 8);
 	DisplayTask->ClearString(0, 3, Font::fntSystem, 8);
 
-	DisplayTask->StringOut(0, 0, Font::fntSystem, (paramNum==0)*2, (uint8_t*)&paramNames[0]);
-	DisplayTask->StringOut(paramXPos, 0, Font::fntSystem, 0, (uint8_t*)&bandNames[bandNum]);
+	DisplayTask->StringOut(0, 0, Font::fntSystem, (Font::TFontState)((paramNum==0) * Font::fnsHighlight), (uint8_t*)&paramNames[0]);
+	DisplayTask->StringOut(paramXPos, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)&bandNames[bandNum]);
 
 	if(bandNum == 7)
 	{
-		DisplayTask->StringOut(0, 1, Font::fntSystem, (paramNum==1)*2, (uint8_t*)&"P:");
+		DisplayTask->StringOut(0, 1, Font::fntSystem, (Font::TFontState)((paramNum==1) * Font::fnsHighlight), (uint8_t*)&"P:");
 
-		if(*eqFreq_ptr[bandNum]) DisplayTask->StringOut(paramXPos, 1, Font::fntSystem, 0, (uint8_t*)&" PRE");
-		else DisplayTask->StringOut(paramXPos, 1, Font::fntSystem, 0, (uint8_t*)&" POST");
+		if(*eqFreq_ptr[bandNum]) DisplayTask->StringOut(paramXPos, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)&" PRE");
+		else DisplayTask->StringOut(paramXPos, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)&" POST");
 
 	}
 	else
 	{
-		DisplayTask->StringOut(0, 1, Font::fntSystem, (paramNum==1)*2, (uint8_t*)&paramNames[1]);
+		DisplayTask->StringOut(0, 1, Font::fntSystem, (Font::TFontState)((paramNum==3) * Font::fnsHighlight), (uint8_t*)&paramNames[1]);
 		DisplayTask->EqFreq(paramXPos, 1, *eqFreq_ptr[bandNum], bandNum);
 	}
 
 	if(bandNum<5)
 	{
-		DisplayTask->StringOut(0, 2, Font::fntSystem, (paramNum==2)*2, (uint8_t*)&paramNames[2]);
+		DisplayTask->StringOut(0, 2, Font::fntSystem, (Font::TFontState)((paramNum==2) * Font::fnsHighlight), (uint8_t*)&paramNames[2]);
 		char numBuf[15];
 		ksprintf(numBuf, "%ddB", currentPreset.paramData.eq_gain[bandNum]-15);
-		DisplayTask->StringOut(paramXPos, 2, Font::fntSystem, 0, (uint8_t*)numBuf);
+		DisplayTask->StringOut(paramXPos, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)numBuf);
 
-		DisplayTask->StringOut(0, 3, Font::fntSystem, (paramNum==3)*2, (uint8_t*)&paramNames[3]);
+		DisplayTask->StringOut(0, 3, Font::fntSystem, (Font::TFontState)((paramNum==3) * Font::fnsHighlight), (uint8_t*)&paramNames[3]);
 		DisplayTask->EqQ(paramXPos, 3, (int8_t)currentPreset.paramData.eq_q[bandNum], bandNum);
 	}
 	updateResponse = true;

@@ -44,42 +44,37 @@ void TunerMenu::encoderCounterClockwise()
 void TunerMenu::keyUp()
 {
 	exitTunerMenu();
-	if(topLevelMenu)
-	{
-		currentMenu = topLevelMenu;
-		topLevelMenu->returnFromChildMenu();
-	}
+	returnToParent();
 }
 
 void TunerMenu::key1()
 {
 	exitTunerMenu();
-	topLevelMenu->returnFromChildMenu();
+	returnToParent();
 }
 
 void TunerMenu::key2()
 {
 	exitTunerMenu();
-	topLevelMenu->returnFromChildMenu();
+	returnToParent();
 }
 
 void TunerMenu::key3()
 {
 	exitTunerMenu();
-	topLevelMenu->returnFromChildMenu();
+	returnToParent();
 }
 
 void TunerMenu::key4()
 {
 	exitTunerMenu();
-	topLevelMenu->returnFromChildMenu();
+	returnToParent();
 }
 
 void TunerMenu::key5()
 {
 	exitTunerMenu();
-	restartBlinking(0);
-	topLevelMenu->returnFromChildMenu();
+	returnToParent();
 }
 
 void TunerMenu::exitTunerMenu()

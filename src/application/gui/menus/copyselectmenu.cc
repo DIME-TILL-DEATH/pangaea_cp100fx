@@ -78,7 +78,7 @@ void CopySelectMenu::encoderPressed()
 		case ActionOk:
 		{
 			DisplayTask->Clear();
-			DisplayTask->StringOut(38, 2, Font::fnt12x13, 0, (uint8_t*)"Copy OK!");
+			DisplayTask->StringOut(38, 2, Font::fnt12x13, Font::fnsNormal, (uint8_t*)"Copy OK!");
 			copyPreset(m_selectionMask, m_targetPresetNum);
 			m_copied = 1;
 			restartBlinking(0);
@@ -135,19 +135,19 @@ void CopySelectMenu::printElement(const SelectionElement& element, uint8_t numOn
 		case ActionSelectAll:
 		case ActionDeselectAll:
 		{
-			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)element.name);
+			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, FONT_BLINKING, (uint8_t*)element.name);
 			break;
 		}
 		case StringShort:
 		{
-			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)element.name);
+			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, FONT_BLINKING, (uint8_t*)element.name);
 			DisplayTask->CheckBox(numOnPage%2 * 6 * 10 + 6 * 6, numOnPage / 2, *element.checked_ptr);
 //			DisplayTask->StringOut((numOnPage%2 + 1) * 6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)"ch");
 			break;
 		}
 		case StringLong:
 		{
-			DisplayTask->StringOut(0, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)element.name);
+			DisplayTask->StringOut(0, numOnPage / 2, Font::fntSystem, FONT_BLINKING, (uint8_t*)element.name);
 			DisplayTask->CheckBox(12 * 8, numOnPage / 2, *element.checked_ptr);
 //			DisplayTask->StringOut(6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)"ch");
 			break;

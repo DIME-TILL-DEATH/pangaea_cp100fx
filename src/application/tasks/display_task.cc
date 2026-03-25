@@ -40,8 +40,8 @@ void TDisplayTask::VolIndRoutine(int32_t indValue)
 	switch(m_volIndicatorType)
 	{
 		case VOL_INDICATOR_OFF: return;
-		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Input"); break;
-		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, 0, (uint8_t*)"Output"); break;
+		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Input"); break;
+		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Output"); break;
 		case VOL_INDICATOR_VOLUME: break;
 	}
 
@@ -80,7 +80,7 @@ void TDisplayTask::Code()
 				{
 					case Font::fnt12x13 :
 						t12x13_symbol(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
-								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
+								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.state);
 					break;
 					case Font::fnt33x30:
 					{
@@ -90,7 +90,7 @@ void TDisplayTask::Code()
 					}
 					case Font::fntSystem:
 						Arsys_sym(cmd.SymbolOutParams.pos.x, cmd.SymbolOutParams.pos.y,
-								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.curs);
+								cmd.SymbolOutParams.symbol, cmd.SymbolOutParams.font.state);
 					break;
 					default: break;
 				}
@@ -101,14 +101,14 @@ void TDisplayTask::Code()
 				{
 					case Font::fnt12x13:
 						t12x13_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y,
-								cmd.StringOutParams.string , cmd.StringOutParams.font.curs);
+								cmd.StringOutParams.string , cmd.StringOutParams.font.state);
 					break;
 					case Font::fnt33x30:
 
 					break;
 					case Font::fntSystem:
 						Arsys_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y ,
-								cmd.StringOutParams.string,cmd.StringOutParams.font.curs);
+								cmd.StringOutParams.string,cmd.StringOutParams.font.state);
 					break;
 					default: break;
 				}
@@ -246,34 +246,34 @@ void TDisplayTask::Clear()
 	Command( &cmd );
 }
 
-void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol)
+void TDisplayTask::SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState curs, uint8_t symbol)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcSymbolOut;
 	cmd.SymbolOutParams.pos = {x,y};
 	cmd.SymbolOutParams.font.name = name;
-	cmd.SymbolOutParams.font.curs = curs;
+	cmd.SymbolOutParams.font.state = curs;
 	cmd.SymbolOutParams.symbol = symbol;
 	Command(&cmd);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , const char* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , Font::TFontState curs , const char* string)
 {
 	StringOut(x, y, name, curs, (uint8_t*)string);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , const uint8_t* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , Font::TFontState curs , const uint8_t* string)
 {
 	StringOut(x, y, name, curs, (uint8_t*)string);
 }
 
-void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , uint8_t curs , uint8_t* string)
+void TDisplayTask::StringOut(uint8_t x, uint8_t y , Font::TFontName name , Font::TFontState curs , uint8_t* string)
 {
 	TDisplayCmd cmd ;
 	cmd.cmd=dcStringOut;
 	cmd.StringOutParams.pos = {x,y};
 	cmd.StringOutParams.font.name = name;
-	cmd.StringOutParams.font.curs = curs;
+	cmd.StringOutParams.font.state = curs;
 	kgp_sdk_libc::strncpy ( (char*)cmd.StringOutParams.string, (const char*)string, FILE_NAME_LENGTH) ;
 	Command(&cmd);
 }

@@ -32,20 +32,20 @@ void ExpressionMenu::show(TShowMode swhoMode)
 	DisplayTask->Clear();
 	for(uint8_t i = 0; i<4; i++)
 	{
-		DisplayTask->StringOut(3, i, Font::fntSystem, 0, (uint8_t*)&Footswitch::expr_menu_str[i]);
+		DisplayTask->StringOut(3, i, Font::fntSystem, Font::fnsNormal, (uint8_t*)&Footswitch::expr_menu_str[i]);
 	}
 
-	DisplayTask->StringOut(60, 0, Font::fntSystem, 0, (uint8_t*)&strExprType[sys_para[System::EXPR_TYPE] & 0x7f]);
+	DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strExprType[sys_para[System::EXPR_TYPE] & 0x7f]);
 
 	if(!sys_para[System::EXPR_CCN])
-		DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
+		DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
 	else
 		DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
 
 	if(!sys_para[System::EXPR_STORE_LEVEL])
-		DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"Off");
+		DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
 	else
-		DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"On ");
+		DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"On ");
 }
 
 void ExpressionMenu::task()
@@ -53,17 +53,17 @@ void ExpressionMenu::task()
 	switch(m_menuState)
 	{
 		case ParamChoice:
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2*blinkFlag, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
+			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, FONT_BLINKING, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
 		break;
 
 		case ParamTuning: break;
 
 		case CalMin:
-			DisplayTask->StringOut(67, 1, Font::fntSystem, 2*blinkFlag, (uint8_t*)strSetMin);
+			DisplayTask->StringOut(67, 1, Font::fntSystem, FONT_BLINKING, (uint8_t*)strSetMin);
 		break;
 
 		case CalMax:
-			DisplayTask->StringOut(67, 1, Font::fntSystem, 2*blinkFlag, (uint8_t*)strSetMmax);
+			DisplayTask->StringOut(67, 1, Font::fntSystem, FONT_BLINKING, (uint8_t*)strSetMmax);
 		break;
 	}
 }
@@ -76,12 +76,13 @@ void ExpressionMenu::encoderPressed()
 			if(m_parNum == 1)
 			{
 				m_menuState = CalMin;
-				DisplayTask->StringOut(67, 1, Font::fntSystem, 3, (uint8_t*)strSetMin);
+				DisplayTask->StringOut(67, 1, Font::fntSystem, Font::fnsInvisible, (uint8_t*)strSetMin);
 			}
 			else
 			{
 				m_menuState = ParamTuning;
 			}
+			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
 		break;
 
 		case ParamTuning:
@@ -93,9 +94,9 @@ void ExpressionMenu::encoderPressed()
 			sys_para[System::EXPR_CAL_MIN_LO] = adc_bu>>8;
 
 			DisplayTask->ClearString(67, 1, Font::fntSystem, 10);
-			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
+			DisplayTask->StringOut(92, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)strOk);
 			HW_Delay(0x7fffff);
-			DisplayTask->StringOut(67, 1, Font::fntSystem, 2, (uint8_t*)strSetMmax);
+			DisplayTask->StringOut(67, 1, Font::fntSystem, Font::fnsHighlight, (uint8_t*)strSetMmax);
 			ADC_Calibrate();
 
 			m_menuState = CalMax;
@@ -106,7 +107,7 @@ void ExpressionMenu::encoderPressed()
 			sys_para[System::EXPR_CAL_MAX_LO] = adc_bu>>8;
 
 			DisplayTask->ClearString(67, 1, Font::fntSystem, 10);
-			DisplayTask->StringOut(92, 1, Font::fntSystem, 0, (uint8_t*)strOk);
+			DisplayTask->StringOut(92, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)strOk);
 			HW_Delay(0x7fffff);
 			ADC_Calibrate();
 			m_menuState = ParamChoice;
@@ -123,8 +124,8 @@ void ExpressionMenu::encoderClockwise()
 		case ParamChoice:
 			if(m_parNum<3)
 			{
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&Footswitch::expr_menu_str[m_parNum++]);
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
+				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&Footswitch::expr_menu_str[m_parNum++]);
+				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
 				restartBlinking(0);
 			}
 		break;
@@ -135,7 +136,7 @@ void ExpressionMenu::encoderClockwise()
 				case 0:
 					if((sys_para[System::EXPR_TYPE]&0x7f) < 4)
 					{
-						DisplayTask->StringOut(60, 0, Font::fntSystem, 0,
+						DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal,
 								(uint8_t*)strExprType[++sys_para[System::EXPR_TYPE] & 0x7f]);
 
 						HW_AdcPinInit();
@@ -148,7 +149,7 @@ void ExpressionMenu::encoderClockwise()
 					{
 						sys_para[System::EXPR_CCN] = BaseParam::encSpeedInc(sys_para[System::EXPR_CCN], 100);
 						if(!sys_para[System::EXPR_CCN])
-							DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
+							DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
 						else
 							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
 					}
@@ -157,7 +158,7 @@ void ExpressionMenu::encoderClockwise()
 					if(!sys_para[System::EXPR_STORE_LEVEL])
 					{
 						sys_para[System::EXPR_STORE_LEVEL]++;
-						DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"On ");
+						DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"On ");
 					}
 				break;
 			}
@@ -177,8 +178,8 @@ void ExpressionMenu::encoderCounterClockwise()
 		case ParamChoice:
 			if(m_parNum>0)
 			{
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 0, (uint8_t*)&Footswitch::expr_menu_str[m_parNum--]);
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, 2, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
+				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&Footswitch::expr_menu_str[m_parNum--]);
+				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
 				restartBlinking(0);
 			}
 		break;
@@ -189,7 +190,7 @@ void ExpressionMenu::encoderCounterClockwise()
 				case 0:
 					if((sys_para[System::EXPR_TYPE]&0x7f)>1)
 					{
-						DisplayTask->StringOut(60, 0, Font::fntSystem, 0,
+						DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal,
 								(uint8_t*)&strExprType[--sys_para[System::EXPR_TYPE] & 0x7f]);
 						HW_AdcPinInit();
 						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
@@ -201,7 +202,7 @@ void ExpressionMenu::encoderCounterClockwise()
 					{
 						sys_para[System::EXPR_CCN] = BaseParam::encSpeedDec(sys_para[System::EXPR_CCN], 0);
 						if(!sys_para[System::EXPR_CCN])
-							DisplayTask->StringOut(84, 2, Font::fntSystem, 0, (uint8_t*)"Off");
+							DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
 						else
 							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
 					}
@@ -210,7 +211,7 @@ void ExpressionMenu::encoderCounterClockwise()
 					if(sys_para[System::EXPR_STORE_LEVEL])
 					{
 						sys_para[System::EXPR_STORE_LEVEL]--;
-						DisplayTask->StringOut(84, 3, Font::fntSystem, 0, (uint8_t*)"Off");
+						DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
 					}
 				break;
 			}

@@ -247,8 +247,8 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 		  else
 		  {
 			  DisplayTask->Clear();
-			  DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "There is no directory");
-			  DisplayTask->StringOut(42, 3, Font::fntSystem, 0, "IMPULSE");
+			  DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, "There is no directory");
+			  DisplayTask->StringOut(42, 3, Font::fntSystem, Font::fnsNormal, "IMPULSE");
 			  UITask->Delay(1000);
 			  currentPreset.modulesBuf[cab] = 0;
 
@@ -258,8 +258,8 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 		else
 		{
 			DisplayTask->Clear();
-			if(!TSDTestTask::sdInitState) DisplayTask->StringOut(6, 1, Font::fntSystem, 0, "MicroSD is not ready");
-			else DisplayTask->StringOut(0, 1, Font::fntSystem, 0, "MicroSD is loading..");
+			if(!TSDTestTask::sdInitState) DisplayTask->StringOut(6, 1, Font::fntSystem, Font::fnsNormal, "MicroSD is not ready");
+			else DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, "MicroSD is loading..");
 			UITask->Delay(1000);
 
 			currentPreset.modulesBuf[cab] = 0;

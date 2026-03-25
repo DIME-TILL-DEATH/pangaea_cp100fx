@@ -4,6 +4,7 @@
 #include "appdefs.h"
 
 #include "bitmaps.h"
+#include "font.h"
 
 #define FILE_NAME_LENGTH 64
 
@@ -176,11 +177,11 @@ public:
 	void Clear();
 	void ClearString(uint8_t x, uint8_t y, Font::TFontName name, uint8_t count);
 
-	void SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t symbol);
+	void SymbolOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState curs, uint8_t symbol);
 
-	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, uint8_t *string);
-	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const uint8_t *string);
-	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, uint8_t curs, const char *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState curs, uint8_t *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState curs, const uint8_t *string);
+	void StringOut(uint8_t x, uint8_t y, Font::TFontName name, Font::TFontState curs, const char *string);
 
 	void EffectIcon(uint8_t x, uint8_t y, uint8_t *adr, uint8_t cur);
 

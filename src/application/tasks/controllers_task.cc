@@ -216,7 +216,7 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 				if(currentMenu->menuType() != MENU_TAP_SCREEN)
 					currentMenu->showChild(new TapMenu(currentMenu, System::TapDestination::TAP_RFILTER));
 				else
-					currentMenu->keyDown();
+					currentMenu->keyDown();	// thread safe
 			}
 			else
 			{

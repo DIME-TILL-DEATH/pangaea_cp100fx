@@ -1,5 +1,6 @@
 #include "bitmaps.h"
 #include "param_bitmap.h"
+#include "font.h"
 
 const uint8_t dry[] = "Dry";
 const uint8_t wet[] = "Wet";
@@ -9,25 +10,24 @@ void param_ind(uint8_t col, uint8_t pag, uint32_t val)
 {
 	LCD_SetColumnAddress(col);
 	LCD_SetPageAddress(pag);
-	uint8_t width = 33;
-	for(uint8_t i = 0; i<width; i++)
+	for(uint8_t i = 0; i < IND_WIDTH; i++)
 	{
-		if(((val>>2)>=i)||(i==0)||(i==width-1))
+		if(((val>>2)>=i)||(i==0)||(i==IND_WIDTH-1))
 			LCD_WriteData(0x7e);
 		else
 			LCD_WriteData(0x42);
 	}
-	param_ind_num(col+width+1, pag, val);
+	param_ind_num(col+IND_WIDTH+1, pag, val);
 }
 
 void param_ind_num(uint8_t col, uint8_t pag, uint32_t val)
 {
-	uint8_t prog_num[3];
+	uint8_t resultVal[3];
 	uint8_t a;
 	Arsys_clean_(col, pag, 3);
-	prog_num[0] = val/100;
-	prog_num[1] = (val%100)/10;
-	prog_num[2] = (val%100)%10;
+	resultVal[0] = val/100;
+	resultVal[1] = (val%100)/10;
+	resultVal[2] = (val%100)%10;
 	if(val>99)
 		a = 0;
 	else
@@ -39,7 +39,7 @@ void param_ind_num(uint8_t col, uint8_t pag, uint32_t val)
 	}
 	col += (a*3);
 	for(uint8_t i = a; i<3; i++)
-		col = Arsys_sym(col, pag, prog_num[i]+48, 0);
+		col = Arsys_sym(col, pag, resultVal[i]+48, 0);
 }
 
 void param_ind_note(uint8_t col, uint8_t pag, uint32_t note)
@@ -69,7 +69,7 @@ void param_ind_note(uint8_t col, uint8_t pag, uint32_t note)
 
 uint8_t ind_num_pan(uint8_t col, uint8_t pag, uint8_t val)
 {
-	uint8_t prog_num[2];
+	uint8_t resultVal[2];
 	uint8_t a;
 	uint8_t b;
 	if(val<63)
@@ -84,16 +84,17 @@ uint8_t ind_num_pan(uint8_t col, uint8_t pag, uint8_t val)
 		if(!val)
 			b = 2;
 	}
-	Arsys_clean_(col, pag, 3);
-	prog_num[0] = val/10;
-	prog_num[1] = val%10;
+	Arsys_clean_(col+IND_WIDTH+1, pag, 3);
+	resultVal[0] = val/10;
+	resultVal[1] = val%10;
 	if(val<10)
 		a = 1;
 	else
 		a = 0;
-	col += (a*3+3);
+	col += (a*3+3)+IND_WIDTH+1;
+
 	for(uint8_t i = a; i<2; i++)
-		col = Arsys_sym(col, pag, prog_num[i]+48, 0);
+		col = Arsys_sym(col, pag, resultVal[i]+48, 0);
 	return b;
 }
 
@@ -125,13 +126,13 @@ void param_ind_pan(uint8_t col, uint8_t pag, uint32_t val)
 	switch(ind_num_pan(col, pag, val))
 	{
 		case 0:
-			Arsys_sym(col-40, pag, 76, 0);
+			Arsys_sym(col-Font::symbolWidth(Font::fntSystem), pag, (uint16_t)'L', 0);
 		break;
 		case 1:
-			Arsys_sym(col-40, pag, 82, 0);
+			Arsys_sym(col-Font::symbolWidth(Font::fntSystem), pag, (uint16_t)'R', 0);
 		break;
 		case 2:
-			Arsys_sym(col-40, pag, 32, 0);
+			Arsys_sym(col-Font::symbolWidth(Font::fntSystem), pag, (uint16_t)'C', 0);
 		break;
 	}
 }
@@ -144,15 +145,15 @@ void param_ind_mix(uint8_t col, uint8_t pag, uint32_t val)
 	{
 		case 0:
 			if(col<98)
-				Arsys_line(col-54, pag, (uint8_t*)dry, 0);
+				Arsys_line(col-Font::symbolWidth(Font::fntSystem)*3, pag, (uint8_t*)dry, 0);
 		break;
 		case 1:
 			if(col<98)
-				Arsys_line(col-54, pag, (uint8_t*)wet, 0);
+				Arsys_line(col-Font::symbolWidth(Font::fntSystem)*3, pag, (uint8_t*)wet, 0);
 		break;
 		case 2:
 			if(col<98)
-				Arsys_line(col-54, pag, (uint8_t*)dw_, 0);
+				Arsys_line(col-Font::symbolWidth(Font::fntSystem)*3, pag, (uint8_t*)dw_, 0);
 		break;
 	}
 }

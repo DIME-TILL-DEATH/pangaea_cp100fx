@@ -41,13 +41,13 @@ void SystemMenu::encoderPressed()
 		{
 			m_encoderKnobSelected = true;
 			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-									2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+					Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 		else
 		{
 			m_encoderKnobSelected = false;
 			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-									0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+					Font::fnsNormal, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 		}
 	}
 
@@ -226,8 +226,8 @@ AbstractMenu* SystemMenu::createMidiPcMapMenu(AbstractMenu* parent)
 void SystemMenu::expressionPrint(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr&0x80) DisplayTask->StringOut(78, 3, Font::fntSystem, 0, (uint8_t*)"On >");
-	else DisplayTask->StringOut(78, 3, Font::fntSystem, 0, (uint8_t*)"Off ");
+	if(*valuePtr&0x80) DisplayTask->StringOut(78, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"On >");
+	else DisplayTask->StringOut(78, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off ");
 }
 
 void SystemMenu::expressionDescrease(void* parameter)
@@ -257,8 +257,8 @@ void SystemMenu::expressionKeyDown(void* parameter)
 void SystemMenu::tunerExtPrint(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr&0x80) DisplayTask->StringOut(78, 1, Font::fntSystem, 0, (uint8_t*)"On >");
-	else DisplayTask->StringOut(78, 1, Font::fntSystem, 0, (uint8_t*)"Off " );
+	if(*valuePtr&0x80) DisplayTask->StringOut(78, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"On >");
+	else DisplayTask->StringOut(78, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off " );
 }
 
 void SystemMenu::tunerExtDescrease(void* parameter)

@@ -463,7 +463,7 @@ void delayTimePrint(void* parameter)
 	else
 	{
 		DisplayTask->ParamIndNum(58, 0, 60000/currentPreset.delayTime);
-		DisplayTask->StringOut(58 + 24, 0, Font::fntSystem, 0, (uint8_t*)"BPM");
+		DisplayTask->StringOut(58 + 24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"BPM");
 	}
 }
 

@@ -98,11 +98,11 @@ void Dialog::show(TShowMode showMode)
 	m_paramNum = m_btnCount - 1;
 
 	DisplayTask->Clear();
-	DisplayTask->StringOut(strPos, 2, Font::fntSystem, 0, (uint8_t*)m_questionString1);
-	DisplayTask->StringOut(strPos, 3, Font::fntSystem, 0, (uint8_t*)m_questionString2);
+	DisplayTask->StringOut(strPos, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_questionString1);
+	DisplayTask->StringOut(strPos, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_questionString2);
 
 	for(uint8_t i = 0; i<m_btnCount; i++)
-		DisplayTask->StringOut(m_btnPositions[i], 0, Font::fntSystem, 0, (uint8_t*)m_btnNames[i]);
+		DisplayTask->StringOut(m_btnPositions[i], 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_btnNames[i]);
 
 	restartBlinking(1);
 }
@@ -132,7 +132,7 @@ void Dialog::keyUp()
 
 void Dialog::task()
 {
-	DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, 3*blinkFlag, (uint8_t*)m_btnNames[m_paramNum]);
+	DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, FONT_BLINKING_INVISIBLE, (uint8_t*)m_btnNames[m_paramNum]);
 }
 
 void Dialog::encoderPressed()
@@ -201,7 +201,7 @@ void Dialog::encoderPressed()
 void Dialog::encoderClockwise()
 {
 	if(m_paramNum < m_btnCount-1)
-		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, 0, (uint8_t*)m_btnNames[m_paramNum++]);
+		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_btnNames[m_paramNum++]);
 
 	restartBlinking(1);
 }
@@ -209,7 +209,7 @@ void Dialog::encoderClockwise()
 void Dialog::encoderCounterClockwise()
 {
 	if(m_paramNum > 0)
-		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, 0, (uint8_t*)m_btnNames[m_paramNum--]);
+		DisplayTask->StringOut(m_btnPositions[m_paramNum], 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_btnNames[m_paramNum--]);
 
 	restartBlinking(0);
 }

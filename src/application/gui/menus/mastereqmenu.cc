@@ -72,8 +72,8 @@ void MasterEqMenu::show(TShowMode showMode)
 	DisplayTask->Clear();
 	if(!sys_para[System::MASTER_EQ_ON])
 	{
-		DisplayTask->StringOut(12, 1, Font::fntSystem, 0, (uint8_t*)"Master EQ Bypass");
-		DisplayTask->StringOut(1, 3, Font::fntSystem, 0, (uint8_t*)"EQ on/off press EDIT");
+		DisplayTask->StringOut(12, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Master EQ Bypass");
+		DisplayTask->StringOut(1, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"EQ on/off press EDIT");
 	}
 	else
 	{
@@ -87,7 +87,7 @@ void MasterEqMenu::task()
 
 	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem, blinkFlag * 2, m_paramsList[m_currentParamNum]->name());
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem, FONT_BLINKING, m_paramsList[m_currentParamNum]->name());
 	}
 }
 
@@ -99,13 +99,13 @@ void MasterEqMenu::encoderPressed()
 	{
 		m_encoderKnobSelected = true;
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-								2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+				Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 	else
 	{
 		m_encoderKnobSelected = false;
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-								0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+				Font::fnsNormal, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 
 	restartBlinking(1);
@@ -224,7 +224,7 @@ void MasterEqMenu::printMidFreqCallback(void* parameter)
 	ksprintf(string, "%d %s", value, "Hz");
 
 	DisplayTask->ClearString(60, 2, Font::fntSystem, 8);
-	DisplayTask->StringOut(60, 2, Font::fntSystem , 0, (uint8_t*)string);
+	DisplayTask->StringOut(60, 2, Font::fntSystem , Font::fnsNormal, (uint8_t*)string);
 }
 
 void MasterEqMenu::setMidFreqCallback(void* parameter)

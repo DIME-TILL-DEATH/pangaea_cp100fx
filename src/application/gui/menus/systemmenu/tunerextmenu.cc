@@ -15,6 +15,6 @@ TunerExtMenu::TunerExtMenu(AbstractMenu* parent)
 
 void TunerExtMenu::showInputMidiCC(uint8_t midiCC)
 {
-	DisplayTask->StringOut(12, 3, Font::fntSystem, 0, (uint8_t*)"Midi in CC#->");
+	DisplayTask->StringOut(12, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Midi in CC#->");
 	DisplayTask->ParamIndNum(100, 3, midiCC);
 }

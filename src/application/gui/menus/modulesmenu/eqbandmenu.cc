@@ -26,22 +26,22 @@ void EqBandMenu::show(TShowMode showMode)
 	currentMenu = this;
 
 	DisplayTask->Clear();
-	DisplayTask->StringOut(6, 0, Font::fntSystem, 0, (uint8_t*)eq_p_l);
+	DisplayTask->StringOut(6, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)eq_p_l);
 	int8_t a = currentPreset.modulesBuf[f1+m_bandNum];
 	DisplayTask->EqFreq(40, 0, a, m_bandNum);
-	DisplayTask->StringOut(6, 1, Font::fntSystem, 0, (uint8_t*)eq_p_l+2);
+	DisplayTask->StringOut(6, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)eq_p_l+2);
 	a = currentPreset.modulesBuf[q1+m_bandNum];
 	DisplayTask->EqQ(40, 1, a, m_bandNum);
 //	DisplayTask->StringOut(80, 0, Font::fntSystem, 0, (uint8_t*)gerz);
-	DisplayTask->StringOut(0, 2, Font::fntSystem, 0, (uint8_t*)"Press EQ for Default");
-	DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)&def_eq_band[m_bandNum]);
-	DisplayTask->StringOut(78, 3, Font::fntSystem, 0, (uint8_t*)"Q 0.70");
+	DisplayTask->StringOut(0, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Press EQ for Default");
+	DisplayTask->StringOut(0, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)&def_eq_band[m_bandNum]);
+	DisplayTask->StringOut(78, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Q 0.70");
 }
 
 void EqBandMenu::task()
 {
 	if(!encoderKnobSelected)
-		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 2*blinkFlag, (uint8_t*)&eq_p_l[m_paramNum]);
+		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, FONT_BLINKING, (uint8_t*)&eq_p_l[m_paramNum]);
 }
 
 void EqBandMenu::encoderPressed()
@@ -49,11 +49,11 @@ void EqBandMenu::encoderPressed()
 	if(encoderKnobSelected==0)
 	{
 		encoderKnobSelected = 1;
-		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 2, (uint8_t*)&eq_p_l[m_paramNum]);
+		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&eq_p_l[m_paramNum]);
 	}
 	else
 	{
-		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 0, (uint8_t*)&eq_p_l[m_paramNum]);
+		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&eq_p_l[m_paramNum]);
 		encoderKnobSelected = 0;
 	}
 
@@ -66,8 +66,8 @@ void EqBandMenu::encoderClockwise()
 	{
 		if(m_paramNum<1)
 		{
-			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 0, (uint8_t*)&eq_p_l[m_paramNum++]);
-			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 2, (uint8_t*)&eq_p_l[m_paramNum]);
+			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&eq_p_l[m_paramNum++]);
+			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&eq_p_l[m_paramNum]);
 			restartBlinking(0);
 		}
 	}
@@ -104,8 +104,8 @@ void EqBandMenu::encoderCounterClockwise()
 	{
 		if(m_paramNum>0)
 		{
-			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 0, (uint8_t*)&eq_p_l[m_paramNum--]);
-			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, 2, (uint8_t*)&eq_p_l[m_paramNum]);
+			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&eq_p_l[m_paramNum--]);
+			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&eq_p_l[m_paramNum]);
 			restartBlinking(0);
 		}
 	}

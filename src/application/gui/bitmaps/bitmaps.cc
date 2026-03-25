@@ -12,17 +12,6 @@
 
 #include "display_task.h"
 
-uint8_t Font::symbolWidth(Font::TFontName fontName)
-{
-	switch(fontName)
-	{
-		case Font::fntSystem:
-			return 6;
-		default:
-			return 6;
-	}
-}
-
 void display_start(uint8_t num)
 {
 	uint16_t a = 0;

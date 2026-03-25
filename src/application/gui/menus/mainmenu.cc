@@ -170,8 +170,8 @@ void MainMenu::refresh()
 	DisplayTask->ClearString(2, 0, Font::fntSystem, 14);
 	DisplayTask->ClearString(2, 1, Font::fntSystem, 14);
 
-	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.name);
-	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.comment);
+	DisplayTask->StringOut(2, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_selectedPresetBrief.name);
+	DisplayTask->StringOut(2, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_selectedPresetBrief.comment);
 
 	bool filled;
 	if(currentPresetNumber != m_preselectedPresetNum)
