@@ -13,6 +13,8 @@ public:
 
 	void show(TShowMode showMode = FirstShow) override;
 
+	void returnToParent() override;
+
 	void keyUp() override;
 
 	void key1() override;

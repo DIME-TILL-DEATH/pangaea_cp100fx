@@ -45,12 +45,13 @@ void Footswitch::press_execute(uint8_t num)
 						{
 							mainMenu->presetDown();
 
-							if((sys_para[System::FSW2_PRESS_TYPE] && !sys_para[System::SWAP_SWITCH])
-									|| (sys_para[System::FSW3_PRESS_TYPE] && sys_para[System::SWAP_SWITCH]))
+							if((sys_para[System::FSW2_PRESS_TYPE] != Footswitch::Default && sys_para[System::SWAP_SWITCH] == 0)
+									|| (sys_para[System::FSW3_PRESS_TYPE] != Footswitch::Default && sys_para[System::SWAP_SWITCH] == 1))
 							{
 								encEvents.pressed = 1;
 								UITask->encoderEvents(encEvents);
 							}
+
 							break;
 						}
 						case 1:
@@ -115,8 +116,7 @@ void Footswitch::press_execute(uint8_t num)
 			break;
 
 			case Footswitch::Tuner:
-				currentMenu->showChild(new TunerMenu(currentMenu));
-				UITask->task();
+				UITask->showMenu(new TunerMenu(currentMenu));
 			break;
 
 			default: // Preset maps
@@ -258,7 +258,7 @@ void Footswitch::hold_execute(uint8_t num)
 			}
 
 			case Footswitch::Tuner:
-				currentMenu->showChild(new TunerMenu(currentMenu));
+				UITask->showMenu(new TunerMenu(currentMenu));
 			break;
 
 			default:

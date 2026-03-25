@@ -15,8 +15,8 @@
 #include "sharc.h"
 #include "codec.h"
 
-#include <bitmaps.h>
-#include <param_bitmap.h>
+#include "bitmaps.h"
+#include "param_bitmap.h"
 
 #include "system.h"
 
@@ -72,16 +72,16 @@ int main(void)
 	FileSystemTask->Create("FS", 40*configMINIMAL_STACK_SIZE, 0);
 
 	DisplayTask = new TDisplayTask();
-	DisplayTask->Create("DISP", 60*configMINIMAL_STACK_SIZE, 0);
+	DisplayTask->Create("DISP", 60*configMINIMAL_STACK_SIZE, 1);
 
 	IOTask = new TIOTask();
-	IOTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 0);
+	IOTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 4);
 
 	UITask = new TUITask();
-	UITask->Create("CS", 30*configMINIMAL_STACK_SIZE, 0);
+	UITask->Create("CS", 30*configMINIMAL_STACK_SIZE, 2);
 
 	TunerTask = new TTunerTask();
-	TunerTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
+	TunerTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 3);
 
 	ControllersTask = new TControllersTask();
 	ControllersTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
@@ -90,10 +90,10 @@ int main(void)
 	SDTestTask->Create("SD_TEST", configMINIMAL_STACK_SIZE, 0);
 
 	MidiTask = new TMidiTask();
-	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
+	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 5);
 
 	SharcTask = new TSharcTask();
-	SharcTask->Create("ShaarcSendData", configMINIMAL_STACK_SIZE, 0);
+	SharcTask->Create("ShaarcSendData", 10*configMINIMAL_STACK_SIZE, 0);
 
 	TScheduler::StartScheduler();
 }

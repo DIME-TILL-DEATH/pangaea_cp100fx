@@ -43,38 +43,42 @@ void TunerMenu::encoderCounterClockwise()
 
 void TunerMenu::keyUp()
 {
-	exitTunerMenu();
 	returnToParent();
 }
 
 void TunerMenu::key1()
 {
-	exitTunerMenu();
 	returnToParent();
 }
 
 void TunerMenu::key2()
 {
-	exitTunerMenu();
 	returnToParent();
 }
 
 void TunerMenu::key3()
 {
-	exitTunerMenu();
 	returnToParent();
 }
 
 void TunerMenu::key4()
 {
-	exitTunerMenu();
 	returnToParent();
 }
 
 void TunerMenu::key5()
 {
-	exitTunerMenu();
 	returnToParent();
+}
+
+void TunerMenu::returnToParent()
+{
+	exitTunerMenu();
+	if(topLevelMenu)
+	{
+		currentMenu = topLevelMenu;
+		topLevelMenu->returnFromChildMenu();
+	}
 }
 
 void TunerMenu::exitTunerMenu()

@@ -53,12 +53,17 @@ public:
 
 	typedef enum{
 		UI_REFRESH_MENU,
+		UI_SHOW_MENU,
 		UI_RETURN_FROM_MENU,
-		UI_RUNNING_STRING,
 		UI_TASK,
+		UI_RUNNING_STRING,
 		UI_KEYS_EVENTS,
 		UI_ENCODER_EVENTS
 	}TCSCmdType;
+
+	typedef struct{
+		AbstractMenu* menu;
+	}TShowMenuParams;
 
 	typedef struct{
 		TCSCmdType type;
@@ -66,12 +71,20 @@ public:
 		union{
 			TKeysEvents keysEvents;
 			TEncoderEvents encoderEvents;
+			TShowMenuParams showMenuParams;
 		};
 	}TUICmd;
 
 	void refreshMenu(){
 		TUICmd cmd;
 		cmd.type = UI_REFRESH_MENU;
+		Command(&cmd);
+	}
+
+	void showMenu(AbstractMenu* menu){
+		TUICmd cmd;
+		cmd.type = UI_SHOW_MENU;
+		cmd.showMenuParams.menu = menu;
 		Command(&cmd);
 	}
 

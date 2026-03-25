@@ -26,7 +26,7 @@ TUITask::TUITask() :
 		TTask()
 {
 	responseQueue = new TQueue(4, sizeof(TResponse));
-	cmdQueue = new TQueue(8, sizeof(TUICmd));
+	cmdQueue = new TQueue(32, sizeof(TUICmd));
 }
 
 TUITask::~TUITask()
@@ -72,16 +72,19 @@ void TUITask::Code()
 				break;
 			}
 
-			case UI_RETURN_FROM_MENU:
+			case UI_SHOW_MENU:
 			{
-				currentMenu->returnToParent();
+				if(cmd.showMenuParams.menu)
+				{
+					currentMenu = cmd.showMenuParams.menu;
+					cmd.showMenuParams.menu->show();
+				}
 				break;
 			}
 
-			case UI_RUNNING_STRING:
+			case UI_RETURN_FROM_MENU:
 			{
-				StringOutParam *runningString = currentMenu->getRunningString();
-				if(runningString) runningString->task();
+				currentMenu->returnToParent();
 				break;
 			}
 
@@ -95,6 +98,13 @@ void TUITask::Code()
 				break;
 			}
 
+			case UI_RUNNING_STRING:
+			{
+				StringOutParam *runningString = currentMenu->getRunningString();
+				if(runningString) runningString->task();
+				break;
+			}
+
 			case UI_KEYS_EVENTS:
 			{
 				currentMenu->keyEvent(cmd.keysEvents);
@@ -103,17 +113,7 @@ void TUITask::Code()
 
 			case UI_ENCODER_EVENTS:
 			{
-				if(cmd.encoderEvents.pressed)
-					currentMenu->encoderPressed();
-
-				if(cmd.encoderEvents.updated)
-				{
-					if(cmd.encoderEvents.state == ENC_COUNTERCLOCKWISE_STEP)
-						currentMenu->encoderCounterClockwise();
-
-					if(cmd.encoderEvents.state == ENC_CLOCKWISE_STEP)
-						currentMenu->encoderClockwise();
-				}
+				currentMenu->encoderEvent(cmd.encoderEvents);
 				break;
 			}
 		}

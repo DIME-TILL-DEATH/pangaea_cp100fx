@@ -76,9 +76,9 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 			if(sys_para[System::TAP_SCREEN_POPUP] == System::TAP_SCREEN_ON)
 			{
 				if(currentMenu->menuType() != MENU_TAP_SCREEN)
-					currentMenu->showChild(new TapMenu(currentMenu, System::TapDestination::TAP_DELAY));
+					UITask->showMenu(new TapMenu(currentMenu, System::TapDestination::TAP_DELAY));
 				else
-					currentMenu->keyDown();
+					currentMenu->keyDown(); // thread safe in MENU_TAP_SCREEN
 			}
 			else
 			{
@@ -165,9 +165,9 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 			if(sys_para[System::TAP_SCREEN_POPUP] == System::TAP_SCREEN_ON)
 			{
 				if(currentMenu->menuType() != MENU_TAP_SCREEN)
-					currentMenu->showChild(new TapMenu(currentMenu, System::TapDestination::TAP_TREMOLO));
+					UITask->showMenu(new TapMenu(currentMenu, System::TapDestination::TAP_TREMOLO));
 				else
-					currentMenu->keyDown();
+					currentMenu->keyDown(); // thread safe in MENU_TAP_SCREEN
 			}
 			else
 			{
@@ -214,9 +214,9 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 			if(sys_para[System::TAP_SCREEN_POPUP] == System::TAP_SCREEN_ON)
 			{
 				if(currentMenu->menuType() != MENU_TAP_SCREEN)
-					currentMenu->showChild(new TapMenu(currentMenu, System::TapDestination::TAP_RFILTER));
+					UITask->showMenu(new TapMenu(currentMenu, System::TapDestination::TAP_RFILTER));
 				else
-					currentMenu->keyDown();	// thread safe
+					currentMenu->keyDown();	// thread safe in MENU_TAP_SCREEN
 			}
 			else
 			{
@@ -416,7 +416,6 @@ void TControllersTask::Code()
 				}
 				roundedInterval = roundedInterval/cmd.tempoCmd.size;
 
-				maMidiClockBuf[maMidiClockBufPos++] = roundedInterval * 24 / 100;
 				if(maMidiClockBufPos == maBufSize) maMidiClockBufPos = 0;
 
 				float result = 0;
@@ -431,7 +430,7 @@ void TControllersTask::Code()
 			}
 		}
 
-		if(currentMenu->menuType() != MENU_MAIN) // block blinking and loadBrief request
+		if(currentMenu->menuType() != MENU_MAIN) // block blinking on EXPR pedal
 			UITask->refreshMenu();
 	}
 }

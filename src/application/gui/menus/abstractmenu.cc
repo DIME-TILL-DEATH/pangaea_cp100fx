@@ -141,7 +141,17 @@ void AbstractMenu::keyEvent(const TKeysEvents& keysEvents)
 
 void AbstractMenu::encoderEvent(const TEncoderEvents& encoderEvents)
 {
+	if(encoderEvents.pressed)
+		encoderPressed();
 
+	if(encoderEvents.updated)
+	{
+		if(encoderEvents.state == ENC_COUNTERCLOCKWISE_STEP)
+			encoderCounterClockwise();
+
+		if(encoderEvents.state == ENC_CLOCKWISE_STEP)
+			encoderClockwise();
+	}
 };
 
 void AbstractMenu::setRunningString(StringOutParam* runningString)

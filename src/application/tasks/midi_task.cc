@@ -87,8 +87,7 @@ void TMidiTask::Code()
 							Preset::Change();
 							pcSend(TPcType::PC_EXTERNAL, dataByte[0]);
 
-							currentMenu->show();
-							currentMenu->refresh();
+							UITask->refreshMenu();
 							break;
 						}
 
@@ -114,13 +113,9 @@ void TMidiTask::Code()
 						if((dataByte[0] == (sys_para[System::TUNER_EXTERNAL] & 0x7f)) && (sys_para[System::TUNER_EXTERNAL] & 0x80))
 						{
 							if(currentMenu->menuType() != MENU_TUNER)
-							{
-								currentMenu->showChild(new TunerMenu(currentMenu));
-							}
+								UITask->showMenu(new TunerMenu(currentMenu));
 							else
-							{
-								currentMenu->keyUp();
-							}
+								UITask->returnFromMenu();
 						}
 						else
 						{
