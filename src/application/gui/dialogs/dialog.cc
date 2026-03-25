@@ -140,7 +140,7 @@ void Dialog::encoderPressed()
 	switch(m_paramNum)
 	{
 		case 0:
-			Preset::Change();
+			Preset::Change(currentPresetNumber);
 
 
 			switch(m_dialogType)
@@ -170,7 +170,7 @@ void Dialog::encoderPressed()
 				case TDialogType::ErasePreset:
 				{
 					Preset::Erase();
-					Preset::Change();
+					Preset::Change(currentPresetNumber);
 					topLevelMenu->returnFromChildMenu();
 					break;
 				}

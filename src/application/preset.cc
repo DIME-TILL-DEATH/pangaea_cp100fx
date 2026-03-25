@@ -20,9 +20,13 @@ uint16_t __CCM_BSS__ Preset::trem_time;
 uint8_t __CCM_BSS__ tempCabBuffer[CAB_DATA_SIZE * 2];
 uint8_t __CCM_BSS__ tempDataBuffer[512]; // sizeof(TModulesData)
 
+volatile uint8_t __CCM_BSS__ currentPresetNumber;
+
 volatile uint8_t pc_mute_fl;
-void Preset::Change()
+void Preset::Change(uint8_t presetNumber)
 {
+	currentPresetNumber = presetNumber;
+
 	SharcTask->setParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
 
 	pc_mute_fl = 0;
@@ -83,5 +87,3 @@ void Preset::Erase()
 	if(System::cab_type == CAB_CONFIG_STEREO)
 		SharcTask->eraseCab2(currentPresetNumber+1);
 }
-
-volatile uint8_t __CCM_BSS__ currentPresetNumber;

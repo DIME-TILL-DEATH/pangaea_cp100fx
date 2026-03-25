@@ -58,7 +58,11 @@ public:
 		UI_TASK,
 		UI_RUNNING_STRING,
 		UI_KEYS_EVENTS,
-		UI_ENCODER_EVENTS
+		UI_ENCODER_EVENTS,
+		UI_FSW_SINGLE_MODE_PRESS,
+		UI_FSW_DUAL_MODE_PRESS,
+		UI_FSW_DUAL_MODE_HOLD,
+		UI_CHANGE_PRESET
 	}TCSCmdType;
 
 	typedef struct{
@@ -66,12 +70,18 @@ public:
 	}TShowMenuParams;
 
 	typedef struct{
+		uint8_t presetNumber;
+	}TChangePresetParams;
+
+	typedef struct{
 		TCSCmdType type;
 
 		union{
 			TKeysEvents keysEvents;
 			TEncoderEvents encoderEvents;
+			TFswEvents fswEvents;
 			TShowMenuParams showMenuParams;
+			TChangePresetParams changePresetParams;
 		};
 	}TUICmd;
 
@@ -119,6 +129,33 @@ public:
 		cmd.encoderEvents = events;
 		Command(&cmd);
 	}
+	void changePreset(uint8_t presetNumber){
+		TUICmd cmd;
+		cmd.type = UI_ENCODER_EVENTS;
+		cmd.changePresetParams.presetNumber = presetNumber;
+		Command(&cmd);
+	}
+
+	void fswSinglePressed(const TFswEvents& fswEvents){
+		TUICmd cmd;
+		cmd.type = UI_FSW_SINGLE_MODE_PRESS;
+		cmd.fswEvents = fswEvents;
+		Command(&cmd);
+	};
+
+	void fswDualPressed(const TFswEvents& fswEvents){
+		TUICmd cmd;
+		cmd.type = UI_FSW_DUAL_MODE_PRESS;
+		cmd.fswEvents = fswEvents;
+		Command(&cmd);
+	};
+
+	void fswDualHolded(const TFswEvents& fswEvents){
+		TUICmd cmd;
+		cmd.type = UI_FSW_DUAL_MODE_HOLD;
+		cmd.fswEvents = fswEvents;
+		Command(&cmd);
+	};
 
 private:
 	void Code() override;

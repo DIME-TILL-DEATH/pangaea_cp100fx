@@ -217,6 +217,7 @@ void MainMenu::presetDown()
 void MainMenu::presetChoose(uint8_t presetNum)
 {
 	m_preselectedPresetNum = presetNum;
+	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 	refresh();
 }
 
@@ -227,7 +228,7 @@ void MainMenu::presetConfirm()
 	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
 
 	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-	Preset::Change();
+	Preset::Change(currentPresetNumber);
 	MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
 
 	show();

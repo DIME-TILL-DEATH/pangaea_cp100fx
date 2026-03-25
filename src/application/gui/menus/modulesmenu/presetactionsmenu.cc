@@ -141,5 +141,5 @@ void PresetActionsMenu::savePreset()
 		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
 	currentPresetNumber = targetPresetNum;
-	Preset::Change();
+	Preset::Change(currentPresetNumber);
 }

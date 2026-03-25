@@ -325,7 +325,7 @@ extern uint16_t moog_time;
 extern uint16_t trem_time;
 
 
-void Change();
+void Change(uint8_t presetNumber);
 void Erase();
 }
 

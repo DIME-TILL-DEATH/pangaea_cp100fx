@@ -237,7 +237,7 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 
 //-------------------------------------------------------------------------------------------------------------------
 		case Controller::Dst::VolCtrlOnOff:
-				currentPreset.modulesBuf[PRESET_VOLUME_CONTROL] = (val < 64.0f) ? 0 : 1;
+			currentPreset.modulesBuf[PRESET_VOLUME_CONTROL] = (val < 64.0f) ? 0 : 1;
 		break;
 
 		case Controller::Dst::Cab1Volume:

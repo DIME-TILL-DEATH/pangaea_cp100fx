@@ -6,6 +6,7 @@
 #include "codec.h"
 
 #include "eepr.h"
+#include "footswitch.h"
 #include "preset.h"
 #include "system.h"
 #include "dsp.h"
@@ -43,7 +44,7 @@ void TUITask::Code()
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_UITASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
-	Preset::Change();
+	Preset::Change(currentPresetNumber);
 	CODEC_Send(0xa301);
 
 	mainMenu->show();
@@ -114,6 +115,33 @@ void TUITask::Code()
 			case UI_ENCODER_EVENTS:
 			{
 				currentMenu->encoderEvent(cmd.encoderEvents);
+				break;
+			}
+
+			case UI_FSW_SINGLE_MODE_PRESS:
+			{
+				if(sys_para[System::FSW1_MODE + cmd.fswEvents.fsw] == Footswitch::FswMode::Single)
+					Footswitch::press_execute(cmd.fswEvents.fsw);
+				break;
+			}
+
+			case UI_FSW_DUAL_MODE_PRESS:
+			{
+				if(sys_para[System::FSW1_MODE + cmd.fswEvents.fsw] == Footswitch::FswMode::Double)
+					Footswitch::press_execute(cmd.fswEvents.fsw);
+				break;
+			}
+
+			case UI_FSW_DUAL_MODE_HOLD:
+			{
+				if(sys_para[System::FSW1_MODE + cmd.fswEvents.fsw] == Footswitch::FswMode::Double)
+					Footswitch::hold_execute(cmd.fswEvents.fsw);
+				break;
+			}
+
+			case UI_CHANGE_PRESET:
+			{
+				Preset::Change(cmd.changePresetParams.presetNumber);
 				break;
 			}
 		}

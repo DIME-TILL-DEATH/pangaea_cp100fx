@@ -30,6 +30,7 @@
 #include "filesystem_task.h"
 #include "midi_task.h"
 #include "sharc_task.h"
+#include "ui_task.h"
 
 #include "copyselectmenu.h"
 
@@ -81,7 +82,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	if(System::cab_type==CAB_CONFIG_STEREO)
 		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
-	Preset::Change();
+	UITask->changePreset(currentPresetNumber);
 
 	msg_console("%s\r\n", args[0]);
 }
@@ -357,7 +358,7 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 static void erase_preset_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
 {
 	Preset::Erase();
-	Preset::Change();
+	UITask->changePreset(currentPresetNumber);
 	msg_console("%s\r\n", args[0]);
 }
 
@@ -431,7 +432,7 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 		currentPresetNumber = kgp_sdk_libc::strtol(args[1], &end, 16);
 
 		sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-		Preset::Change();
+		UITask->changePreset(currentPresetNumber);
 		MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
 
 		msg_console("%s\r\n", args[0]);

@@ -84,10 +84,11 @@ void TMidiTask::Code()
 						{
 							currentPresetNumber = sys_para[System::MIDI_MAP_START + dataByte[0]] % 100;
 							sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-							Preset::Change();
-							pcSend(TPcType::PC_EXTERNAL, dataByte[0]);
 
+							UITask->changePreset(currentPresetNumber);
 							UITask->refreshMenu();
+
+							pcSend(TPcType::PC_EXTERNAL, dataByte[0]);
 							break;
 						}
 

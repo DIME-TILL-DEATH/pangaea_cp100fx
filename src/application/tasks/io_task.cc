@@ -55,27 +55,6 @@ void TIOTask::Code()
 		//------------------------------------------Keys------------------------------------------------
 		switch(cmd.type)
 		{
-			case IO_FSW_SINGLE_MODE_PRESS:
-			{
-				if(sys_para[System::FSW1_MODE + cmd.fswEvents.fsw] == Footswitch::FswMode::Single)
-					Footswitch::press_execute(cmd.fswEvents.fsw);
-				break;
-			}
-
-			case IO_FSW_DUAL_MODE_PRESS:
-			{
-				if(sys_para[System::FSW1_MODE + cmd.fswEvents.fsw] == Footswitch::FswMode::Double)
-					Footswitch::press_execute(cmd.fswEvents.fsw);
-				break;
-			}
-
-			case IO_FSW_DUAL_MODE_HOLD:
-			{
-				if(sys_para[System::FSW1_MODE + cmd.fswEvents.fsw] == Footswitch::FswMode::Double)
-					Footswitch::hold_execute(cmd.fswEvents.fsw);
-				break;
-			}
-
 			case IO_LED_TASK:
 			{
 				uint8_t isLedOn = 0;
@@ -203,7 +182,7 @@ void ISR_buttons_read()
 	{
 		if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
 		{
-			if(IOTask) IOTask->fswSinglePressed(fswEvents);
+			if(UITask) UITask->fswSinglePressed(fswEvents);
 
 			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
 			TIM_SetCounter(TIM3, sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
@@ -214,7 +193,7 @@ void ISR_buttons_read()
 			if(TIM3->CR1 & TIM_CR1_CEN)
 			{
 				fswEvents.fsw = holdedFsw;
-				if(IOTask) IOTask->fswDualPressed(fswEvents);
+				if(UITask) UITask->fswDualPressed(fswEvents);
 
 				TIM_Cmd(TIM3, DISABLE);
 			}
@@ -240,7 +219,7 @@ void ISR_fsw_hold_timer()
 	{
 		TFswEvents fswEvents;
 		fswEvents.fsw = holdedFsw;
-		IOTask->fswDualHolded(fswEvents);
+		if(UITask) UITask->fswDualHolded(fswEvents);
 	}
 	TIM_SetCounter(TIM3, 0);
 	TIM_Cmd(TIM3, DISABLE);

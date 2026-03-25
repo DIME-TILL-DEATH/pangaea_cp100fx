@@ -52,9 +52,6 @@ public:
 	~TIOTask();
 
 	typedef enum{
-		IO_FSW_SINGLE_MODE_PRESS,
-		IO_FSW_DUAL_MODE_PRESS,
-		IO_FSW_DUAL_MODE_HOLD,
 		IO_LED_TASK,
 		IO_POT_WRITE
 	}TIOCmdType;
@@ -76,27 +73,6 @@ public:
 	void potWrite(){
 		TIOCmd cmd;
 		cmd.type = IO_POT_WRITE;
-		Command(&cmd);
-	};
-
-	void fswSinglePressed(const TFswEvents& fswEvents){
-		TIOCmd cmd;
-		cmd.type = IO_FSW_SINGLE_MODE_PRESS;
-		cmd.fswEvents = fswEvents;
-		Command(&cmd);
-	};
-
-	void fswDualPressed(const TFswEvents& fswEvents){
-		TIOCmd cmd;
-		cmd.type = IO_FSW_DUAL_MODE_PRESS;
-		cmd.fswEvents = fswEvents;
-		Command(&cmd);
-	};
-
-	void fswDualHolded(const TFswEvents& fswEvents){
-		TIOCmd cmd;
-		cmd.type = IO_FSW_DUAL_MODE_HOLD;
-		cmd.fswEvents = fswEvents;
 		Command(&cmd);
 	};
 
