@@ -141,7 +141,8 @@ void TUITask::Code()
 
 			case UI_CHANGE_PRESET:
 			{
-				Preset::Change(cmd.changePresetParams.presetNumber);
+				mainMenu->presetChoose(cmd.changePresetParams.presetNumber);
+				mainMenu->presetConfirm();
 				break;
 			}
 		}

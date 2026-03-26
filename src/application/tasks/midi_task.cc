@@ -86,9 +86,6 @@ void TMidiTask::Code()
 							sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
 
 							UITask->changePreset(currentPresetNumber);
-							UITask->refreshMenu();
-
-							pcSend(TPcType::PC_EXTERNAL, dataByte[0]);
 							break;
 						}
 

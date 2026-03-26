@@ -129,12 +129,6 @@ public:
 		cmd.encoderEvents = events;
 		Command(&cmd);
 	}
-	void changePreset(uint8_t presetNumber){
-		TUICmd cmd;
-		cmd.type = UI_ENCODER_EVENTS;
-		cmd.changePresetParams.presetNumber = presetNumber;
-		Command(&cmd);
-	}
 
 	void fswSinglePressed(const TFswEvents& fswEvents){
 		TUICmd cmd;
@@ -156,6 +150,13 @@ public:
 		cmd.fswEvents = fswEvents;
 		Command(&cmd);
 	};
+
+	void changePreset(uint8_t presetNumber){
+		TUICmd cmd;
+		cmd.type = UI_CHANGE_PRESET;
+		cmd.changePresetParams.presetNumber = presetNumber;
+		Command(&cmd);
+	}
 
 private:
 	void Code() override;
