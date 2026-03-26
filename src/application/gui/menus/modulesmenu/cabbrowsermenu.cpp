@@ -71,6 +71,12 @@ void CabBrowserMenu::keyUp()
 	{
 		SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
 		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+
+		if(currentPreset.cab1NameSize == 0)
+		{
+			currentPreset.paramData.switches.cab = 0;
+			SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CAB, currentPreset.paramData.switches.cab);
+		}
 	}
 	else
 	{
@@ -125,7 +131,7 @@ void CabBrowserMenu::encoderPressed()
 
 void CabBrowserMenu::encoderCounterClockwise()
 {
-	FileSystemTask->SendCommand(TFsBrowser::bcUp);
+	FileSystemTask->SendCommand(TFsBrowser::bcPrev);
 
 	processBrowserResponse();
 	refresh();
@@ -133,7 +139,7 @@ void CabBrowserMenu::encoderCounterClockwise()
 
 void CabBrowserMenu::encoderClockwise()
 {
-	FileSystemTask->SendCommand(TFsBrowser::bcDown);
+	FileSystemTask->SendCommand(TFsBrowser::bcNext);
 
 	processBrowserResponse();
 	refresh();

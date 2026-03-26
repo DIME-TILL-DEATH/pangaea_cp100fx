@@ -67,9 +67,27 @@ void System::setMoogTime(float quarterInterval)
 {
 	if(currentPreset.modulesBuf[RFILTER_LFO_TYPE] == 0)
 	{
-		Preset::moog_time = round(quarterInterval);
-		SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time >> 8);
-		SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, Preset::moog_time );
+		if(Preset::moog_time < 2731)
+		{
+			Preset::moog_time = round(quarterInterval);
+			if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+			{
+				SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time >> 8);
+				SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, Preset::moog_time );
+			}
+			else
+			{
+				if(Preset::moog_time < 2728 && Preset::moog_time > 249)
+				{
+					uint8_t temp = 0;
+					while(Preset::moog_time < bpm_time[temp++]);
+					Preset::moog_time = bpm_time[temp];
+
+					SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time>> 8);
+					SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, Preset::moog_time);
+				}
+			}
+		}
 	}
 }
 

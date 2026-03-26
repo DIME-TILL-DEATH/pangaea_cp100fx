@@ -250,7 +250,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			  DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, "There is no directory");
 			  DisplayTask->StringOut(42, 3, Font::fntSystem, Font::fnsNormal, "IMPULSE");
 			  UITask->Delay(1000);
-			  currentPreset.modulesBuf[cab] = 0;
+			  currentPreset.paramData.switches.cab = 0;
 
 			  parent->refresh();
 		  }
@@ -262,7 +262,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			else DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, "MicroSD is loading..");
 			UITask->Delay(1000);
 
-			currentPreset.modulesBuf[cab] = 0;
+			currentPreset.paramData.switches.cab = 0;
 
 			parent->refresh();
 		}
