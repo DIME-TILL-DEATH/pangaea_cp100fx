@@ -251,7 +251,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 		uint8_t displayParamNum = i + m_currentPageNumber * paramsOnPage;
 
 		bool highlight = (m_currentParamNum == displayParamNum) && (m_paramsCount > 1);
-		highlight *= blinkFlag;
+		if(!m_encoderKnobSelected) highlight &= blinkFlag;
 
 		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 

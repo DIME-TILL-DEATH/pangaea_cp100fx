@@ -95,9 +95,11 @@ void CabBrowserMenu::encoderPressed()
 		{
 			kgp_sdk_libc::memcpy(currentPreset.cab1Data, tempCabBuffer, CAB_DATA_SIZE);
 			if(System::cab_type != CAB_CONFIG_STEREO)
+			{
 				kgp_sdk_libc::memcpy(currentPreset.cabAuxData, tempCabBuffer + CAB_DATA_SIZE, CAB_DATA_SIZE);
+			}
 
-			kgp_sdk_libc::memcpy(&currentPreset.cab1Name, selectedCabName, CAB_DATA_SIZE - 1);
+			kgp_sdk_libc::memcpy(&currentPreset.cab1Name, selectedCabName, CAB_NAME_STRING_SIZE - 1);
 			currentPreset.cab1NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab1Name);
 
 			SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
@@ -106,7 +108,7 @@ void CabBrowserMenu::encoderPressed()
 		else
 		{
 			kgp_sdk_libc::memcpy(currentPreset.cab2Data, tempCabBuffer, CAB_DATA_SIZE);
-			kgp_sdk_libc::memcpy(&currentPreset.cab2Name, selectedCabName, CAB_DATA_SIZE - 1);
+			kgp_sdk_libc::memcpy(&currentPreset.cab2Name, selectedCabName, CAB_NAME_STRING_SIZE - 1);
 			currentPreset.cab2NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab2Name);
 
 			SharcTask->sendCab2Data(currentPreset.cab2Data);
@@ -173,10 +175,18 @@ void CabBrowserMenu::processBrowserResponse()
 
 void CabBrowserMenu::refresh()
 {
-	//	Delay(10);
 		DisplayTask->Clear();
-		DisplayTask->StringOut(4, 0, Font::fntSystem, Font::fnsNormal,
-				(uint8_t*)FileSystemTask->Object().dir.c_str());
-		DisplayTask->StringOut(4, 1, Font::fntSystem, Font::fnsNormal,
-				(uint8_t*)FileSystemTask->Object().name.c_str());
+		char dirNameBuf[32];
+		kgp_sdk_libc::memset(dirNameBuf, 0, 32);
+		kgp_sdk_libc::memcpy(dirNameBuf, FileSystemTask->Object().dir.c_str(), symbolsOnLine(Font::fntSystem));
+
+		if(FileSystemTask->Object().dir.length() > symbolsOnLine(Font::fntSystem))
+		{
+			dirNameBuf[symbolsOnLine(Font::fntSystem) - 2] = '.';
+			dirNameBuf[symbolsOnLine(Font::fntSystem) - 3] = '.';
+			dirNameBuf[symbolsOnLine(Font::fntSystem) - 4] = '.';
+		}
+
+		DisplayTask->StringOut(4, 0, Font::fntSystem, Font::fnsNormal, dirNameBuf);
+		DisplayTask->StringOut(4, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)FileSystemTask->Object().name.c_str());
 }

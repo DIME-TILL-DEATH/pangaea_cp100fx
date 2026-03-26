@@ -30,6 +30,7 @@ typedef struct
 } TFontStruct;
 
 uint8_t symbolWidth(TFontName fontName);
+uint8_t symbolsOnLine(TFontName fontName);
 };
 
 #endif /* FONT_H_ */

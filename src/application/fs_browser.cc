@@ -239,16 +239,9 @@ void TFsBrowser::LoadCab(fs_object_t &object)
 			response.responseType = TUITask::rpFileLoaded;
 			response.file.buffer = &tempCabBuffer[0];
 
-			char nameBuffer[64];
-			uint8_t name_point = 0;
-
-			while(object.name[name_point] && (name_point<62))
-				nameBuffer[name_point] = object.name[name_point++]; //name_buf_temp[name_point+1] = object.name[name_point++];
-
-			nameBuffer[++name_point] = 0;
-			nameBuffer[0] = name_point;
-
-			kgp_sdk_libc::memcpy(response.file.name, nameBuffer, 64);
+			kgp_sdk_libc::memset(response.file.name, 0 , CAB_NAME_STRING_SIZE);
+			kgp_sdk_libc::memcpy(response.file.name, object.name.c_str(), CAB_NAME_STRING_SIZE - 1);
+			response.file.name[CAB_NAME_STRING_SIZE - 1 - 1] = 0;
 		}
 		else
 		{

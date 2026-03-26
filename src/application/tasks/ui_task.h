@@ -26,7 +26,7 @@ public:
 	typedef struct
 	{
 		fs_object_type_t type;
-		char name[64];
+		char name[CAB_NAME_STRING_SIZE];
 		uint8_t *buffer;
 	} TResponseFile;
 
