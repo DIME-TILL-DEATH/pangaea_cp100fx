@@ -92,7 +92,7 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 					tmp.resize(_MAX_LFN);
 					kgp_sdk_libc::memcpy(currentPreset.currentImpulseName, tmp.c_str(), _MAX_LFN);
 
-					response.responseType = TUITask::rpFileLoaded;
+					response.responseType = TUITask::rpFileSelected;
 					response.file.buffer = &tempCabBuffer[0];
 
 					kgp_sdk_libc::memset(response.file.name, 0 , CAB_NAME_STRING_SIZE);

@@ -152,6 +152,8 @@ void ISR_encoder_read()
 
 volatile TFSWNum holdedFsw = TFSWNum::FSW_NONE;
 volatile bool keysHold = false;
+
+uint16_t prevKeyReg;
 void ISR_buttons_read()
 {
 	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
@@ -171,7 +173,9 @@ void ISR_buttons_read()
 	keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
 	keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
 
-	if(UITask) UITask->keysEvents(keyEvents);
+	if(UITask && key_reg != prevKeyReg) UITask->keysEvents(keyEvents);
+
+	prevKeyReg = key_reg;
 
 	TFswEvents fswEvents;
 
