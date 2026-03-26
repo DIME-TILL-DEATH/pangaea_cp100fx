@@ -72,17 +72,18 @@ int main(void)
 	FileSystemTask->Create("FS", 40*configMINIMAL_STACK_SIZE, 0);
 
 	DisplayTask = new TDisplayTask();
-	DisplayTask->Create("DISP", 60*configMINIMAL_STACK_SIZE, 1);
+	DisplayTask->Create("DISP", 60*configMINIMAL_STACK_SIZE, 2);
 
 	IOTask = new TIOTask();
-	IOTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 4);
+	IOTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 3);
 
 	UITask = new TUITask();
-	UITask->Create("CS", 30*configMINIMAL_STACK_SIZE, 2);
+	UITask->Create("CS", 30*configMINIMAL_STACK_SIZE, 3);
 
 	TunerTask = new TTunerTask();
 	TunerTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 3);
 
+	//ControllerTask lower priority than UITask, becourse in UITask preset switching. No one can interrupt it
 	ControllersTask = new TControllersTask();
 	ControllersTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
 

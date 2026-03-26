@@ -191,29 +191,29 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 
 	if(System::cab_type != CAB_CONFIG_STEREO)
 	{
-		if(file_size > CAB_DATA_SIZE * 2 * 3)
-			file_size = CAB_DATA_SIZE * 2 * 3;
+		if(file_size > CAB_DATA_SIZE * 2)
+			file_size = CAB_DATA_SIZE * 2;
 	}
 	else
 	{
-		if(file_size > CAB_DATA_SIZE * 3)
-			file_size = CAB_DATA_SIZE * 3;
+		if(file_size > CAB_DATA_SIZE )
+			file_size = CAB_DATA_SIZE;
 	}
 
 	// read cabinet data
-	kgp_sdk_libc::memset(buff, 0, 8192 * 3);
+	kgp_sdk_libc::memset(buff, 0, CAB_DATA_SIZE * 2);
 	fs_res = f_lseek(&f, 44);
 	while(1)
 	{
 		if(file_size > 512)
 		{
-			f_read(&f, (void*)buff, 512, &br);
+			f_read(&f, buff, 512, &br);
 			buff += 512;
 			file_size -= 512;
 		}
 		else
 		{
-			f_read(&f, (void*)buff, file_size, &br);
+			f_read(&f, buff, file_size, &br);
 			break;
 		}
 	}

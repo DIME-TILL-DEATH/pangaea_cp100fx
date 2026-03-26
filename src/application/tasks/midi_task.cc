@@ -120,13 +120,13 @@ void TMidiTask::Code()
 							if(currentMenu->menuType() == MENU_TUNER_EXT)
 							{
 								TunerExtMenu* tunerExtMenu = static_cast<TunerExtMenu*>(currentMenu);
-								tunerExtMenu->showInputMidiCC(dataByte[1]);
+								tunerExtMenu->showInputMidiCC(dataByte[0]);
 							}
 
 							if(currentMenu->menuType() == MENU_CONTROLLERS)
 							{
 								ControllersMenu* controllersMenu = static_cast<ControllersMenu*>(currentMenu);
-								controllersMenu->showInputMidiCC(dataByte[1]);
+								controllersMenu->showInputMidiCC(dataByte[0]);
 							}
 						}
 						uartSend(statusByte | rcvChannel);
