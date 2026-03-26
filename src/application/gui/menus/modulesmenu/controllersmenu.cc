@@ -41,27 +41,15 @@ void ControllersMenu::show(TShowMode swhoMode)
 		switch(i)
 		{
 			case ControllerMenuParams::Controller:
-				DisplayTask->ParamIndNum(45, 0, 1);
+				DisplayTask->ParamIndNum(45, 0, m_controllerNum + 1);
 			break;
 
 			case ControllerMenuParams::Source:
-				if(currentPreset.controller[0].src == Controller::Src::Off)
-				{
-					DisplayTask->StringOut(45, 1, Font::fntSystem, Font::fnsNormal, "Off      ");
-				}
-				else if(currentPreset.controller[0].src >= Controller::Src::CC1)
-				{
-					DisplayTask->StringOut(45, 1, Font::fntSystem, Font::fnsNormal, "CC#");
-					DisplayTask->ParamIndNum(69, 1, currentPreset.controller[0].src - Controller::Src::CC1);
-				}
-				else
-				{
-					DisplayTask->StringOut(45, 1, Font::fntSystem, Font::fnsNormal, &strControllerExt[currentPreset.controller[0].src - 1][0]);
-				}
+				printSources();
 			break;
 
 			case ControllerMenuParams::Destination:
-				DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strMidiDstList[currentPreset.controller[0].dst][0]);
+				DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
 			break;
 		}
 	}
@@ -142,7 +130,8 @@ void ControllersMenu::encoderClockwise()
 			case ControllerMenuParams::Controller:
 				if(m_controllerNum < Controller::controllersCount-1)
 				{
-					DisplayTask->ParamIndNum(45, 0, ++m_controllerNum + 1);
+					m_controllerNum++;
+					DisplayTask->ParamIndNum(45, 0, m_controllerNum + 1);
 					DisplayTask->ClearString(45, 1, Font::fntSystem, 13);
 
 					printSources();
@@ -166,19 +155,19 @@ void ControllersMenu::encoderClockwise()
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswDown)
 					{
-						if(sys_para[System::FSW1_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW1_PRESS_TYPE] != Footswitch::Controller && sys_para[System::FSW1_HOLD_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src++;
 
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswConfirm)
 					{
-						if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::Controller && sys_para[System::FSW2_HOLD_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src++;
 
 					}
-					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswDown)
+					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswUp)
 					{
-						if(sys_para[System::FSW3_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW3_PRESS_TYPE] != Footswitch::Controller && sys_para[System::FSW3_HOLD_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src++;
 
 					}
@@ -297,17 +286,17 @@ void ControllersMenu::encoderCounterClockwise()
 
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswUp)
 					{
-						if(sys_para[System::FSW3_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW3_PRESS_TYPE] != Footswitch::Controller && sys_para[System::FSW3_HOLD_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src--;
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswConfirm)
 					{
-						if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::Controller && sys_para[System::FSW2_HOLD_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src--;
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::FswDown)
 					{
-						if(sys_para[System::FSW1_PRESS_TYPE] != Footswitch::Controller)
+						if(sys_para[System::FSW1_PRESS_TYPE] != Footswitch::Controller && sys_para[System::FSW1_HOLD_TYPE] != Footswitch::Controller)
 							currentPreset.controller[m_controllerNum].src--;
 					}
 					if(currentPreset.controller[m_controllerNum].src == Controller::Src::Expression)

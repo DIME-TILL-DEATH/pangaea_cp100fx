@@ -62,6 +62,8 @@ void ParamListMenu::setIcon(bool drawIcon, icon_t icon)
 
 void ParamListMenu::show(TShowMode showMode)
 {
+	blinkFlag = 1;
+
 	currentMenu = this;
 
 	DisplayTask->Clear();
@@ -249,6 +251,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 		uint8_t displayParamNum = i + m_currentPageNumber * paramsOnPage;
 
 		bool highlight = (m_currentParamNum == displayParamNum) && (m_paramsCount > 1);
+		highlight *= blinkFlag;
 
 		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 
