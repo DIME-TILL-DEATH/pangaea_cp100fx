@@ -77,13 +77,7 @@ public:
 	typedef struct
 	{
 		TPos pos;
-		uint8_t data;
-	}TParamIndMixParam;
-
-	typedef struct
-	{
-		TPos pos;
-		uint8_t data;
+		uint32_t data;
 	}TParamIndParam;
 
 	typedef struct
