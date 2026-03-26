@@ -25,7 +25,7 @@ namespace System
 		SPDIF_OUT_TYPE,
 
 		/*num CC to express and foot*/
-		EXPR_CCN,
+		EXPR_CC_NUM,
 		FSW1_CTRL_PRESS_CC, FSW2_CTRL_PRESS_CC, FSW3_CTRL_PRESS_CC,
 
 		MIDI_PC_IND, /*service*/

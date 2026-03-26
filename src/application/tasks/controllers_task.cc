@@ -366,7 +366,7 @@ void TControllersTask::midiCalcTempo(uint16_t* data, uint8_t size)
 
 void TControllersTask::Code()
 {
-	queue = new TQueue(32, sizeof(TControllerCmd));
+	queue = new TQueue(64, sizeof(TControllerCmd));
 	if(!queue) Suspend();
 	if(!queue->IsCreated()) Suspend();
 
@@ -380,7 +380,6 @@ void TControllersTask::Code()
 	while(1)
 	{
 		queue->Receive(&cmd, portMAX_DELAY);
-		while(!pc_mute_fl);
 
 		switch(cmd.type)
 		{

@@ -27,7 +27,7 @@ TUITask::TUITask() :
 		TTask()
 {
 	responseQueue = new TQueue(4, sizeof(TResponse));
-	cmdQueue = new TQueue(32, sizeof(TUICmd));
+	cmdQueue = new TQueue(16, sizeof(TUICmd));
 }
 
 TUITask::~TUITask()

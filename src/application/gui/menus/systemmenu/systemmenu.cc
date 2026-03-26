@@ -233,7 +233,7 @@ void SystemMenu::expressionPrint(void* parameter)
 void SystemMenu::expressionDescrease(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	ADC_Init(0);
+	ADC_SetState(0);
 	*valuePtr &= 0x7f;
 	SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 }
@@ -242,7 +242,7 @@ void SystemMenu::expressionIncrease(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	*valuePtr |= 0x80;
-	ADC_Init(1);
+	ADC_SetState(1);
 }
 
 void SystemMenu::expressionKeyDown(void* parameter)

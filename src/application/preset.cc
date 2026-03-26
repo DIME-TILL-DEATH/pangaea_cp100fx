@@ -22,22 +22,17 @@ uint8_t __CCM_BSS__ tempDataBuffer[512]; // sizeof(TModulesData)
 
 volatile uint8_t __CCM_BSS__ currentPresetNumber;
 
-volatile uint8_t pc_mute_fl;
 void Preset::Change(uint8_t presetNumber)
 {
 	currentPresetNumber = presetNumber;
 
 	SharcTask->setParameter(DSP_ADDRESS_MUTE, currentPresetNumber, 0);
 
-	pc_mute_fl = 0;
 	EEPROM_LoadPreset(currentPresetNumber);
 
 	// DSP binary not set this params?
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modulesBuf[PHASER_CENTER]);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modulesBuf[PHASER_WIDTH]);
-
-	if(sys_para[System::EXPR_STORE_LEVEL])
-		ADC_Routine();
 
 	if(sys_para[System::ATTENUATOR_MODE])
 		IOTask->potWrite();
@@ -63,8 +58,9 @@ void Preset::Change(uint8_t presetNumber)
 		// pack path here!
 		FileSystemTask->SendCommand(TFsBrowser::bcStartup);
 	}
+
+	EXPR_StoreLevel();
 //------------------------------------------------------------
-	pc_mute_fl = 1;
 }
 
 void Preset::Erase()

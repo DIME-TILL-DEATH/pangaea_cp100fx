@@ -1,5 +1,6 @@
 #include "io_task.h"
 
+#include "adc.h"
 #include "serial.h"
 #include "pot.h"
 #include "led.h"
@@ -47,6 +48,8 @@ void TIOTask::Code()
 
 	HW_ReadKeysEnable();
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+
+	ADC_SetState(sys_para[System::EXPR_TYPE] & 0x80);
 
 	TIOCmd cmd;
 	while(1)

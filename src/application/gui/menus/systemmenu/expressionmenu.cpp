@@ -37,10 +37,10 @@ void ExpressionMenu::show(TShowMode swhoMode)
 
 	DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strExprType[sys_para[System::EXPR_TYPE] & 0x7f]);
 
-	if(!sys_para[System::EXPR_CCN])
+	if(!sys_para[System::EXPR_CC_NUM])
 		DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
 	else
-		DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
+		DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CC_NUM]-1);
 
 	if(!sys_para[System::EXPR_STORE_LEVEL])
 		DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
@@ -97,7 +97,7 @@ void ExpressionMenu::encoderPressed()
 			DisplayTask->StringOut(92, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)strOk);
 			HW_Delay(0x7fffff);
 			DisplayTask->StringOut(67, 1, Font::fntSystem, Font::fnsHighlight, (uint8_t*)strSetMmax);
-			ADC_Calibrate();
+			ADC_LoadCal();
 
 			m_menuState = CalMax;
 		break;
@@ -109,7 +109,7 @@ void ExpressionMenu::encoderPressed()
 			DisplayTask->ClearString(67, 1, Font::fntSystem, 10);
 			DisplayTask->StringOut(92, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)strOk);
 			HW_Delay(0x7fffff);
-			ADC_Calibrate();
+			ADC_LoadCal();
 			m_menuState = ParamChoice;
 		break;
 	}
@@ -140,18 +140,18 @@ void ExpressionMenu::encoderClockwise()
 								(uint8_t*)strExprType[++sys_para[System::EXPR_TYPE] & 0x7f]);
 
 						HW_AdcPinInit();
-						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
+						if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
 							SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 					}
 				break;
 				case 2:
-					if(sys_para[System::EXPR_CCN] < 128)
+					if(sys_para[System::EXPR_CC_NUM] < 128)
 					{
-						sys_para[System::EXPR_CCN] = BaseParam::encSpeedInc(sys_para[System::EXPR_CCN], 100);
-						if(!sys_para[System::EXPR_CCN])
+						sys_para[System::EXPR_CC_NUM] = BaseParam::encSpeedInc(sys_para[System::EXPR_CC_NUM], 100);
+						if(!sys_para[System::EXPR_CC_NUM])
 							DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
 						else
-							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
+							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CC_NUM]-1);
 					}
 				break;
 				case 3:
@@ -193,18 +193,18 @@ void ExpressionMenu::encoderCounterClockwise()
 						DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal,
 								(uint8_t*)&strExprType[--sys_para[System::EXPR_TYPE] & 0x7f]);
 						HW_AdcPinInit();
-						if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
+						if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
 							SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 					}
 				break;
 				case 2:
-					if(sys_para[System::EXPR_CCN]>0)
+					if(sys_para[System::EXPR_CC_NUM]>0)
 					{
-						sys_para[System::EXPR_CCN] = BaseParam::encSpeedDec(sys_para[System::EXPR_CCN], 0);
-						if(!sys_para[System::EXPR_CCN])
+						sys_para[System::EXPR_CC_NUM] = BaseParam::encSpeedDec(sys_para[System::EXPR_CC_NUM], 0);
+						if(!sys_para[System::EXPR_CC_NUM])
 							DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
 						else
-							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CCN]-1);
+							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CC_NUM]-1);
 					}
 				break;
 				case 3:

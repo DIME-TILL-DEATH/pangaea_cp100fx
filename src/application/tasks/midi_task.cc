@@ -165,7 +165,7 @@ void TMidiTask::Code()
 			case EXPRESSION:
 			{
 				uartSend(Midi::MIDI_STATUS_CC | sys_para[System::MIDI_CHANNEL]);
-				uartSend(sys_para[System::EXPR_CCN] - 1);
+				uartSend(sys_para[System::EXPR_CC_NUM] - 1);
 				uartSend(cmd.exprCmd.data);
 				break;
 			}

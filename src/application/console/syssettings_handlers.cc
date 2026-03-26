@@ -136,14 +136,14 @@ static void expr_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 
 	if(!val)
 	{
-		ADC_Init(0);
+		ADC_SetState(0);
 		sys_para[System::EXPR_TYPE] &= 0x7f;
 		SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 	}
 	else
 	{
 		sys_para[System::EXPR_TYPE] |= 0x80;
-		ADC_Init(1);
+		ADC_SetState(1);
 	}
 
 	EEPROM_WriteSys();
@@ -164,7 +164,7 @@ static void expr_type_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 
 static void expr_cc_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::EXPR_CCN], rl, args, count);
+	default_param_handler(&sys_para[System::EXPR_CC_NUM], rl, args, count);
 	EEPROM_WriteSys();
 }
 

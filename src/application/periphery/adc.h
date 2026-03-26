@@ -3,10 +3,20 @@
 
 #include "appdefs.h"
 
-extern volatile uint16_t adc_bu;
+typedef enum{
+	EXPR_TYPE_OFF = 0,
+	EXPR_TYPE_VOL_STD,
+	EXPR_TYPE_VOL_ALT,
+	EXPR_TYPE_CC_STD,
+	EXPR_TYPE_CC_ALT
+}TExprType;
 
-void ADC_Calibrate(void);
-void ADC_Init(uint8_t state);
-void ADC_Routine(void);
+extern volatile uint16_t adc_bu;
+extern volatile uint16_t adc_bu2;
+
+void ADC_SetState(uint8_t state);
+void ADC_LoadCal();
+void EXPR_Routine();
+void EXPR_StoreLevel();
 
 #endif /* ADC_H_ */
