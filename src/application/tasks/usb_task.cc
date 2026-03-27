@@ -10,7 +10,7 @@
 
 #include "display_task.h"
 #include "ui_task.h"
-#include "console.h"
+#include "console_task.h"
 
 TUsbTask *UsbTask = nullptr;
 
@@ -117,7 +117,7 @@ TUsbTask::TUsbTask(TMode val) :
 	{
 		case mCDC:
 		{
-			rx_queue = new TQueue(2048, 1);
+			rx_queue = new TQueue(1024, 1);
 			USBD_DeviceDesc[4] = 2;	/*bDeviceClass*/
 			USBD_DeviceDesc[5] = 2; /*bDeviceSubClass*/
 			USBD_DeviceDesc[8] = 0x83; /*idVendor*/

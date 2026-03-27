@@ -1,9 +1,9 @@
-#ifndef SRC_APPLICATION_CONSOLE_SYSSETTINGS_HANDLERS_H_
-#define SRC_APPLICATION_CONSOLE_SYSSETTINGS_HANDLERS_H_
+#ifndef _CONSOLE_SYSSETTINGS_HANDLERS_H_
+#define _CONSOLE_SYSSETTINGS_HANDLERS_H_
 
 
-#include "console_handlers.h"
+#include "translator.h"
 
-void set_syssettings_handlers(TReadLine *rl);
+void set_syssettings_handlers(TTranslator *rl);
 
 #endif /* SRC_APPLICATION_CONSOLE_SYSSETTINGS_HANDLERS_H_ */

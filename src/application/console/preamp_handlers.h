@@ -1,8 +1,8 @@
-#ifndef SRC_APPLICATION_CONSOLE_PREAMP_HANDLERS_H_
-#define SRC_APPLICATION_CONSOLE_PREAMP_HANDLERS_H_
+#ifndef _CONSOLE_PREAMP_HANDLERS_H_
+#define _CONSOLE_PREAMP_HANDLERS_H_
 
-#include "console_handlers.h"
+#include "translator.h"
 
-void set_preamp_handlers(TReadLine *rl);
+void set_preamp_handlers(TTranslator *rl);
 
-#endif /* SRC_APPLICATION_CONSOLE_PREAMP_HANDLERS_H_ */
+#endif /* _CONSOLE_PREAMP_HANDLERS_H_ */

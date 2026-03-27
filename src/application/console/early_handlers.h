@@ -1,10 +1,9 @@
-#ifndef SRC_APPLICATION_CONSOLE_EARLY_HANDLERS_H_
-#define SRC_APPLICATION_CONSOLE_EARLY_HANDLERS_H_
+#ifndef _CONSOLE_EARLY_HANDLERS_H_
+#define _CONSOLE_EARLY_HANDLERS_H_
+
+#include "translator.h"
+
+void set_early_handlers(TTranslator *rl);
 
 
-#include "console_handlers.h"
-
-void set_early_handlers(TReadLine *rl);
-
-
-#endif /* SRC_APPLICATION_CONSOLE_EARLY_HANDLERS_H_ */
+#endif /* _CONSOLE_EARLY_HANDLERS_H_ */

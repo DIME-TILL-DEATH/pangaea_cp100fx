@@ -1,8 +1,8 @@
-#ifndef SRC_APPLICATION_CONSOLE_RESONANCE_FILTER_HANDLERS_H_
-#define SRC_APPLICATION_CONSOLE_RESONANCE_FILTER_HANDLERS_H_
+#ifndef _CONSOLE_RESONANCE_FILTER_HANDLERS_H_
+#define _CONSOLE_RESONANCE_FILTER_HANDLERS_H_
 
-#include "console_handlers.h"
+#include "translator.h"
 
-void set_resonance_filter_handlers(TReadLine *rl);
+void set_resonance_filter_handlers(TTranslator *rl);
 
-#endif /* SRC_APPLICATION_CONSOLE_RESONANCE_FILTER_HANDLERS_H_ */
+#endif /* _CONSOLE_RESONANCE_FILTER_HANDLERS_H_ */

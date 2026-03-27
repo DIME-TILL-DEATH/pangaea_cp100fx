@@ -1,6 +1,4 @@
-#include <tuner_bitmap.h>
-#include <tuner_task.h>
-#include "console_handlers.h"
+#include "translator.h"
 
 #include "sharc.h"
 
@@ -11,6 +9,7 @@
 #include "controller.h"
 
 #include "console_helpers.h"
+#include "hardware_handlers.h"
 #include "resonance_filter_handlers.h"
 #include "gate_handlers.h"
 #include "compressor_handlers.h"
@@ -31,6 +30,7 @@
 #include "midi_task.h"
 #include "sharc_task.h"
 #include "ui_task.h"
+#include "tuner_task.h"
 
 #include "copyselectmenu.h"
 
@@ -39,7 +39,7 @@
 
 bool consoleBusy = false;
 
-uint16_t getDataPartFromStream(TReadLine *rl, char *buf, int maxSize)
+uint16_t getDataPartFromStream(TTranslator *rl, char *buf, int maxSize)
 {
 	kgp_sdk_libc::memset(buf, 0, maxSize);
 	int streamPos = 0;
@@ -57,7 +57,7 @@ uint16_t getDataPartFromStream(TReadLine *rl, char *buf, int maxSize)
 	return streamPos;
 }
 
-static void amtdev_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void amtdev_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	char hex[3] =
 	{0, 0, 0};
@@ -65,12 +65,12 @@ static void amtdev_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	msg_console("%s\r%s\n", args[0], hex);
 }
 
-static void amtver_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void amtver_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r%s\n", args[0], amt_ver);
 }
 
-static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void psave_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	currentPreset.modulesBuf[147] = currentPreset.delayTime;
 	currentPreset.modulesBuf[148] = currentPreset.delayTime >> 8;
@@ -87,7 +87,7 @@ static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	msg_console("%s\r\n", args[0]);
 }
 
-static void ls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void ls_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
@@ -100,7 +100,7 @@ static void ls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 	FileSystemTask->Resume();
 }
 
-static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void cd_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FileSystemTask->Suspend();
 
@@ -119,7 +119,7 @@ static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 }
 
 uint16_t bufPos;
-static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void ir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FileSystemTask->Suspend();
 
@@ -265,7 +265,7 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 	FileSystemTask->Resume();
 }
 
-static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void mkdir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
@@ -285,7 +285,7 @@ static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	FileSystemTask->Resume();
 }
 
-static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void remove_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
@@ -305,7 +305,7 @@ static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	FileSystemTask->Resume();
 }
 
-static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void rename_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
@@ -332,7 +332,7 @@ static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	FileSystemTask->Resume();
 }
 
-static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void copyto_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	char *end;
 	uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
@@ -355,14 +355,14 @@ static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 //	msg_console("%s\r\n", args[0]);
 }
 
-static void erase_preset_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void erase_preset_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	Preset::Erase();
 	UITask->changePreset(currentPresetNumber);
 	msg_console("%s\r\n", args[0]);
 }
 
-static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void upload_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s ", args[0]);
 	if(count < 2)
@@ -424,7 +424,7 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	}
 }
 
-static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void pchange_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	if(count > 1)
 	{
@@ -432,7 +432,7 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 		currentPresetNumber = kgp_sdk_libc::strtol(args[1], &end, 16);
 
 		sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-		UITask->changePreset(currentPresetNumber);
+		Preset::Change(currentPresetNumber);
 		MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
 
 		msg_console("%s\r\n", args[0]);
@@ -443,7 +443,7 @@ static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_
 	}
 }
 
-static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void plist_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 //	msg_console("plist");
 
@@ -493,7 +493,7 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	msg_console("\n");
 }
 
-static void pbrief_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void pbrief_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 //	msg_console("plist");
 	if(count > 1)
@@ -547,7 +547,7 @@ static void pbrief_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	}
 }
 
-static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void state_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	currentPreset.paramData.delay_time = currentPreset.delayTime;
 
@@ -562,7 +562,7 @@ static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	msg_console("\n");
 }
 
-static void cntrls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void cntrls_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 	for(size_t i = 0; i < Controller::controllersCount; i++)
@@ -582,7 +582,7 @@ static void cntrls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	msg_console("\n");
 }
 
-static void pnum_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void pnum_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 
@@ -593,7 +593,7 @@ static void pnum_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr
 	msg_console("\n");
 }
 
-static void pname_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void pname_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 	if(count > 1)
@@ -610,7 +610,7 @@ static void pname_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	msg_console("%s\n", currentPreset.name);
 }
 
-static void pcomment_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void pcomment_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 	if(count > 1)
@@ -627,7 +627,7 @@ static void pcomment_command_handler(TReadLine *rl, TReadLine::const_symbol_type
 	msg_console("%s\n", currentPreset.comment);
 }
 
-static void controller_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void controller_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 	if (count > 3)
@@ -673,12 +673,12 @@ ending:
 	msg_console("\n");
 }
 
-static void controller_pc_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void controller_pc_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.pcOut, rl, args, count);
 }
 
-static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void controller_set_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t answer;
 
@@ -704,7 +704,7 @@ static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbo
 	}
 }
 
-static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void tuner_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s ", args[0]);
 	if(count == 2)
@@ -759,20 +759,20 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	msg_console("\n");
 }
 
-static void preset_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void preset_volume_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.paramData.preset_volume, rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.paramData.preset_volume, 0);
 }
 
-static void preset_volume_control_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void preset_volume_control_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.paramData.volume_control, rl, args, count);
 }
 //------------------------------------------------------------------------------
-void ConsoleSetCmdHandlers(TReadLine *rl)
+void ConsoleSetCmdHandlers(TTranslator *rl)
 {
-	SetConsoleCmdDefaultHandlers(rl);
+	set_hardware_handlers(rl);
 	/*
 	 rl->AddCommandHandler("cc", current_cabinet_command_handler);
 	 rl->AddCommandHandler("ce", cabinet_enable_command_handler);

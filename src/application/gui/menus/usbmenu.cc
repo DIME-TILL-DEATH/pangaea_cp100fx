@@ -5,7 +5,7 @@
 #include "display_task.h"
 #include "usb_task.h"
 #include "sharc_task.h"
-#include "console.h"
+#include "console_task.h"
 
 const uint8_t UsbMenu::strUsbMenu[][19];
 const uint8_t UsbMenu::strPositions[3];
@@ -152,7 +152,7 @@ void UsbMenu::startUsb()
 		UsbTask = new TUsbTask(TUsbTask::mMSC);
 	}
 
-	UsbTask->Create("USB", 20*configMINIMAL_STACK_SIZE, 0);
+	UsbTask->Create("USB", 10*configMINIMAL_STACK_SIZE, 0);
 }
 
 void UsbMenu::stopUsb()

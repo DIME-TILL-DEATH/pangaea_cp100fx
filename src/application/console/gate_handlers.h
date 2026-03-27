@@ -1,8 +1,8 @@
-#ifndef SRC_APPLICATION_CONSOLE_GATE_HANDLERS_H_
-#define SRC_APPLICATION_CONSOLE_GATE_HANDLERS_H_
+#ifndef _CONSOLE_GATE_HANDLERS_H_
+#define _CONSOLE_GATE_HANDLERS_H_
 
-#include "console_handlers.h"
+#include "translator.h"
 
-void set_gate_handlers(TReadLine *rl);
+void set_gate_handlers(TTranslator *rl);
 
 #endif /* SRC_APPLICATION_CONSOLE_GATE_HANDLERS_H_ */

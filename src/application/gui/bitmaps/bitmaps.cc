@@ -14,22 +14,25 @@
 
 void display_start(uint8_t num)
 {
-	uint16_t a = 0;
+//	uint16_t a = 0;
 	if(!num)
 	{
 		for(uint8_t j = 0; j < 4; j++)
 		{
+//			LCD_SetColumnAddress(27);
+			LCD_SetColumnAddress(0);
 			LCD_SetPageAddress(j);
-			LCD_SetColumnAddress(27);
 			GPIO_ResetBits(GPIOB, CS);
 			GPIO_ResetBits(GPIOB, GPIO_Pin_12);
 			GPIO_SetBits(GPIOB, RS);
-			for(uint8_t i = 0; i < 75; i++)
-			{
-				LCD_WriteData(amt_logo[a++]);
-				if(a > 299)
-					break;
-			}
+//			for(uint8_t i = 0; i < 75; i++)
+//			for(uint8_t i = 0; i < 128; i++)
+//			{
+//				LCD_WriteData(amt_logo[i]);
+////				if(a > 299)
+//					break;
+//			}
+			LCD_WriteData(&amt_logo[j * LCD_SCREEN_WIDTH], LCD_SCREEN_WIDTH);
 			GPIO_SetBits(GPIOB, CS);
 		}
 	}

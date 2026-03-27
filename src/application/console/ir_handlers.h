@@ -1,10 +1,9 @@
-#ifndef SRC_APPLICATION_CONSOLE_IR_HANDLERS_H_
-#define SRC_APPLICATION_CONSOLE_IR_HANDLERS_H_
+#ifndef _CONSOLE_IR_HANDLERS_H_
+#define _CONSOLE_IR_HANDLERS_H_
+
+#include "translator.h"
+
+void set_ir_handlers(TTranslator *rl);
 
 
-#include "console_handlers.h"
-
-void set_ir_handlers(TReadLine *rl);
-
-
-#endif /* SRC_APPLICATION_CONSOLE_IR_HANDLERS_H_ */
+#endif /* _CONSOLE_IR_HANDLERS_H_ */

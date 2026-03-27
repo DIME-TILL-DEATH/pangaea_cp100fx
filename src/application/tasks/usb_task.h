@@ -2,7 +2,7 @@
 #define __USB_TASK_H__
 
 #include "appdefs.h"
-#include "console.h"
+#include "console_task.h"
 
 class TUsbTask: public TTask
 {

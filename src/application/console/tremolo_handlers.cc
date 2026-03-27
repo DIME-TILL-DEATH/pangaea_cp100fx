@@ -5,48 +5,48 @@
 
 #include "sharc_task.h"
 
-static void tremolo_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tremolo_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[ENABLE_TREMOLO], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_TREMOLO, currentPreset.modulesBuf[ENABLE_TREMOLO]);
 }
 
-static void tremolo_intensity_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tremolo_intensity_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[TREMOLO_INTENSITY], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_INTENSITY_POS, currentPreset.modulesBuf[TREMOLO_INTENSITY]);
 }
 
-static void tremolo_rate_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tremolo_rate_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[TREMOLO_RATE], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_RATE_POS, currentPreset.modulesBuf[TREMOLO_RATE]);
 }
 
-static void tremolo_from_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tremolo_from_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[TREMOLO_LFO_TYPE], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_TYPE_POS, currentPreset.modulesBuf[TREMOLO_LFO_TYPE]);
 }
 
-static void tremolo_lfomod_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tremolo_lfomod_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[TREMOLO_LFO_MOD], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_MOD_POS, currentPreset.modulesBuf[TREMOLO_LFO_MOD]);
 }
 
-static void tremolo_ms_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tremolo_ms_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[TREMOLO_MS], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_MS_POS, currentPreset.modulesBuf[TREMOLO_MS]);
 }
 
-static void tremolo_tap_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tremolo_tap_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[TREMOLO_TAP], rl, args, count);
 }
 
-void set_tremolo_handlers(TReadLine *rl)
+void set_tremolo_handlers(TTranslator *rl)
 {
 	rl->AddCommandHandler("tr_on",  tremolo_on_command_handler);
 	rl->AddCommandHandler("tr_dp",  tremolo_intensity_command_handler);

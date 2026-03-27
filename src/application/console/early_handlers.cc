@@ -5,25 +5,25 @@
 
 #include "sharc_task.h"
 
-static void early_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void early_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[ENABLE_EARLY_REFLECTIONS], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EARLY_REFLECTIONS, currentPreset.modulesBuf[ENABLE_EARLY_REFLECTIONS]);
 }
 
-static void early_mix_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void early_mix_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[EARLY_MIX], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_MIX_POS, currentPreset.modulesBuf[EARLY_MIX]);
 }
 
-static void early_size_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void early_size_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[EARLY_SIZE], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_EARLY_REFLECTIONS, EARLY_SIZE_POS, currentPreset.modulesBuf[EARLY_SIZE]);
 }
 
-void set_early_handlers(TReadLine *rl)
+void set_early_handlers(TTranslator *rl)
 {
 	rl->AddCommandHandler("er_on",  early_on_command_handler);
 	rl->AddCommandHandler("er_mx",  early_mix_command_handler);

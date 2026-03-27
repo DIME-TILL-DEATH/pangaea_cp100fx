@@ -5,61 +5,61 @@
 
 #include "sharc_task.h"
 
-static void phaser_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[phas], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PHASER, currentPreset.modulesBuf[ENABLE_PHASER]);
 }
 
-static void phaser_mix_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_mix_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[PHASER_MIX], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_MIX_POS, currentPreset.modulesBuf[PHASER_MIX]);
 }
 
-static void phaser_rate_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_rate_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[PHASER_RATE], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_RATE_POS, currentPreset.modulesBuf[PHASER_RATE]);
 }
 
-static void phaser_width_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_width_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[PHASER_WIDTH], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modulesBuf[PHASER_WIDTH]);
 }
 
-static void phaser_center_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_center_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[PHASER_CENTER], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modulesBuf[PHASER_CENTER]);
 }
 
-static void phaser_feedback_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_feedback_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[PHASER_FEEDBACK], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_FEEDBACK_POS, currentPreset.modulesBuf[PHASER_FEEDBACK]);
 }
 
-static void phaser_stages_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_stages_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[PHASER_TYPE], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_TYPE_POS, currentPreset.modulesBuf[PHASER_TYPE]);
 }
 
-static void phaser_hpf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_hpf_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[PHASER_HPF], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_HPF_POS, currentPreset.modulesBuf[PHASER_HPF]);
 }
 
-static void phaser_position_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phaser_position_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[PHASER_PREPOST], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_PREPOST_POS, currentPreset.modulesBuf[PHASER_PREPOST]);
 }
 
-void set_phaser_handlers(TReadLine *rl)
+void set_phaser_handlers(TTranslator *rl)
 {
 	rl->AddCommandHandler("ph_on",  phaser_on_command_handler);
 	rl->AddCommandHandler("ph_mx",  phaser_mix_command_handler);

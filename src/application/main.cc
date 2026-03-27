@@ -69,32 +69,32 @@ int main(void)
 	startEventGroup = xEventGroupCreate();
 
 	FileSystemTask = new TFileSystemTask();
-	FileSystemTask->Create("FS", 40*configMINIMAL_STACK_SIZE, 0);
+	FileSystemTask->Create("FileSystem", 30*configMINIMAL_STACK_SIZE, 0);
 
 	DisplayTask = new TDisplayTask();
-	DisplayTask->Create("DISP", 60*configMINIMAL_STACK_SIZE, 2);
+	DisplayTask->Create("Display", 40*configMINIMAL_STACK_SIZE, 0);
 
 	IOTask = new TIOTask();
-	IOTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 3);
+	IOTask->Create("InOut", 20*configMINIMAL_STACK_SIZE, 0);
 
 	UITask = new TUITask();
-	UITask->Create("CS", 30*configMINIMAL_STACK_SIZE, 3);
+	UITask->Create("UserInterface", 20*configMINIMAL_STACK_SIZE, 0);
 
 	TunerTask = new TTunerTask();
-	TunerTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 3);
+	TunerTask->Create("Tuner", 20*configMINIMAL_STACK_SIZE, 0);
 
 	//ControllerTask lower priority than UITask, becourse in UITask preset switching. No one can interrupt it
 	ControllersTask = new TControllersTask();
-	ControllersTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
+	ControllersTask->Create("Controllers", 10*configMINIMAL_STACK_SIZE, 0);
 
 	SDTestTask = new TSDTestTask();
 	SDTestTask->Create("SD_TEST", configMINIMAL_STACK_SIZE, 0);
 
 	MidiTask = new TMidiTask();
-	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 5);
+	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
 
 	SharcTask = new TSharcTask();
-	SharcTask->Create("ShaarcSendData", 10*configMINIMAL_STACK_SIZE, 0);
+	SharcTask->Create("SharcSendData", configMINIMAL_STACK_SIZE, 0);
 
 	TScheduler::StartScheduler();
 }

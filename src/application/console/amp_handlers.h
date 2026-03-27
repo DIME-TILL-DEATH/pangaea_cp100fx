@@ -1,8 +1,8 @@
-#ifndef SRC_APPLICATION_CONSOLE_AMP_HANDLERS_H_
-#define SRC_APPLICATION_CONSOLE_AMP_HANDLERS_H_
+#ifndef _AMP_HANDLERS_H_
+#define _AMP_HANDLERS_H_
 
-#include "console_handlers.h"
+#include "translator.h"
 
-void set_amp_handlers(TReadLine *rl);
+void set_amp_handlers(TTranslator *rl);
 
-#endif /* SRC_APPLICATION_CONSOLE_AMP_HANDLERS_H_ */
+#endif /* _AMP_HANDLERS_H_ */

@@ -15,7 +15,7 @@
 
 #include "display_task.h"
 #include "sharc_task.h"
-#include "console.h"
+#include "console_task.h"
 
 static const char *note_name_table[] ={
 	" C ", "C# ", " D ", "D# ", " E ", " F ", "F# ", " G ", "G# ", " A ", "A# ", " B ",  // octave X0

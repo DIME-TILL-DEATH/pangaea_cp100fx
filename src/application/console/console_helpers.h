@@ -1,8 +1,10 @@
-#ifndef SRC_APPLICATION_CONSOLE_CONSOLE_HELPERS_H_
-#define SRC_APPLICATION_CONSOLE_CONSOLE_HELPERS_H_
+#ifndef _CONSOLE_CONSOLE_HELPERS_H_
+#define _CONSOLE_CONSOLE_HELPERS_H_
 
 #include "appdefs.h"
 #include "preset.h"
+
+#include "console_task.h"
 
 static const char hexes[] = "0123456789abcdef";
 
@@ -13,7 +15,7 @@ inline void i2hex(uint8_t val, char* dest)
 	dest[2] = 0;
 }
 
-inline void default_param_handler(uint8_t *param_ptr, TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+inline void default_param_handler(uint8_t *param_ptr, TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	char hex[3] = {0, 0, 0};
 	if (count > 0)

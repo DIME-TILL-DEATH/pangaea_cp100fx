@@ -1,8 +1,8 @@
-#ifndef SRC_APPLICATION_CONSOLE_DELAY_HANDLERS_H_
-#define SRC_APPLICATION_CONSOLE_DELAY_HANDLERS_H_
+#ifndef _CONSOLE_DELAY_HANDLERS_H_
+#define _CONSOLE_DELAY_HANDLERS_H_
 
-#include "console_handlers.h"
+#include "translator.h"
 
-void set_delay_handlers(TReadLine *rl);
+void set_delay_handlers(TTranslator *rl);
 
-#endif /* SRC_APPLICATION_CONSOLE_DELAY_HANDLERS_H_ */
+#endif /* _CONSOLE_DELAY_HANDLERS_H_ */

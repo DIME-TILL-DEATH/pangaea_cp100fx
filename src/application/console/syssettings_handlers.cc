@@ -11,7 +11,7 @@
 #include "ui_task.h"
 #include "sharc_task.h"
 
-static void sys_settings_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void sys_settings_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 
@@ -28,7 +28,7 @@ static void sys_settings_command_handler(TReadLine *rl, TReadLine::const_symbol_
 	msg_console("\n");
 }
 
-static void attenuator_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void attenuator_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t* value_ptr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator
 															: &sys_para[System::ATTENUATOR];
@@ -38,56 +38,56 @@ static void attenuator_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 	EEPROM_WriteSys();
 }
 
-static void attenuator_mode_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void attenuator_mode_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::ATTENUATOR_MODE], rl, args, count);
 	IOTask->potWrite();
 	EEPROM_WriteSys();
 }
 
-static void master_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void master_volume_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_VOLUME], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
 	EEPROM_WriteSys();
 }
 
-static void phones_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void phones_volume_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::PHONES_VOLUME], rl, args, count);
 	IOTask->potWrite();
 	EEPROM_WriteSys();
 }
 
-static void meq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void meq_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_ON], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
 	EEPROM_WriteSys();
 }
 
-static void meq_low_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void meq_low_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_LOW], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_LOW]);
 	EEPROM_WriteSys();
 }
 
-static void meq_mid_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void meq_mid_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_MID], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_MID]);
 	EEPROM_WriteSys();
 }
 
-static void meq_high_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void meq_high_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MASTER_EQ_HIGH], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_HIGH]);
 	EEPROM_WriteSys();
 }
 
-static void meq_mid_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void meq_mid_freq_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	if(count > 0)
 	{
@@ -108,14 +108,14 @@ static void meq_mid_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_
 	EEPROM_WriteSys();
 }
 
-static void cab_mode_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void cab_mode_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::CAB_SIM_DISABLED], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
 	EEPROM_WriteSys();
 }
 
-static void cab_num_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void cab_num_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::CAB_SIM_CONFIG], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0);
@@ -123,13 +123,13 @@ static void cab_num_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 	//Reset?????
 }
 
-static void midi_ch_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void midi_ch_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::MIDI_CHANNEL], rl, args, count);
 	EEPROM_WriteSys();
 }
 
-static void expr_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void expr_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
 	default_param_handler(&val, rl, args, count);
@@ -149,7 +149,7 @@ static void expr_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 	EEPROM_WriteSys();
 }
 
-static void expr_type_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void expr_type_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
 	default_param_handler(&val, rl, args, count);
@@ -162,52 +162,52 @@ static void expr_type_command_handler(TReadLine* rl, TReadLine::const_symbol_typ
 	EEPROM_WriteSys();
 }
 
-static void expr_cc_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void expr_cc_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::EXPR_CC_NUM], rl, args, count);
 	EEPROM_WriteSys();
 }
 
-static void expr_slev_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void expr_slev_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::EXPR_STORE_LEVEL], rl, args, count);
 	EEPROM_WriteSys();
 }
 
-static void spdif_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void spdif_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::SPDIF_OUT_TYPE], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
 	EEPROM_WriteSys();
 }
 
-static void tempo_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tempo_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TAP_TYPE], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
 	EEPROM_WriteSys();
 }
 
-static void time_format_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void time_format_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TIME_FORMAT], rl, args, count);
 	EEPROM_WriteSys();
 }
 
-static void swap_conf_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void swap_conf_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::SWAP_SWITCH], rl, args, count);
 	EEPROM_WriteSys();
 }
 
-static void tuner_speed_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tuner_speed_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TUNER_SPEED], rl, args, count);
 	System::tun_del_val = (127-sys_para[System::TUNER_SPEED])*(90.0f/127.0f)+10.0f;
 	EEPROM_WriteSys();
 }
 
-static void tuner_ctrl_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tuner_ctrl_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
 	default_param_handler(&val, rl, args, count);
@@ -223,7 +223,7 @@ static void tuner_ctrl_command_handler(TReadLine* rl, TReadLine::const_symbol_ty
 	EEPROM_WriteSys();
 }
 
-static void tuner_cc_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void tuner_cc_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
 	default_param_handler(&val, rl, args, count);
@@ -232,13 +232,13 @@ static void tuner_cc_command_handler(TReadLine* rl, TReadLine::const_symbol_type
 	EEPROM_WriteSys();
 }
 
-static void fsw_speed_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void fsw_speed_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::FSW_SPEED], rl, args, count);
 	EEPROM_WriteSys();
 }
 
-static void midi_map_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void midi_map_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	if(count>2)
 	{
@@ -253,7 +253,7 @@ static void midi_map_command_handler(TReadLine* rl, TReadLine::const_symbol_type
 	}
 }
 
-static void fsw_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 	if (count > 3)
@@ -338,7 +338,7 @@ ending:
 	msg_console("\n");
 }
 
-void set_syssettings_handlers(TReadLine *rl)
+void set_syssettings_handlers(TTranslator *rl)
 {
 	rl->AddCommandHandler("sys_settings", sys_settings_command_handler);
 

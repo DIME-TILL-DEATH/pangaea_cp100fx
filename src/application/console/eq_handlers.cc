@@ -5,7 +5,7 @@
 
 #include "sharc_task.h"
 
-static void eq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void eq_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[eq], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_EQ, currentPreset.modulesBuf[ENABLE_EQ]);
@@ -13,7 +13,7 @@ static void eq_on_command_handler(TReadLine* rl, TReadLine::const_symbol_type_pt
 
 // LEGACY mode
 
-static void eq_gain_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void eq_gain_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 	uint8_t bandNum = args[1][0] - 48;
@@ -40,7 +40,7 @@ static void eq_gain_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 	}
 }
 
-static void eq_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void eq_freq_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 	uint8_t bandNum = args[1][0] - 48;
@@ -70,7 +70,7 @@ static void eq_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_
 	}
 }
 
-static void eq_q_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void eq_q_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
 	uint8_t bandNum = args[1][0] - 48;
@@ -98,25 +98,25 @@ static void eq_q_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr
 	}
 }
 
-static void eq_position_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void eq_position_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[EQ_PREPOST], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, currentPreset.modulesBuf[EQ_PREPOST]);
 }
 
-static void lpf_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void lpf_freq_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[EQ_LPF], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, currentPreset.modulesBuf[EQ_LPF]);
 }
 
-static void hpf_freq_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void hpf_freq_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.modulesBuf[EQ_HPF], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, currentPreset.modulesBuf[EQ_HPF]);
 }
 
-void set_eq_handlers(TReadLine *rl)
+void set_eq_handlers(TTranslator *rl)
 {
 	rl->AddCommandHandler("eq_on",  eq_on_command_handler);
 	rl->AddCommandHandler("eq_g",  eq_gain_command_handler);

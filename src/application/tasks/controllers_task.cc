@@ -11,7 +11,7 @@
 #include "io_task.h"
 #include "midi_task.h"
 #include "sharc_task.h"
-#include "console.h"
+#include "console_task.h"
 
 #include "tapmenu.h"
 #include "modulesmenu.h"
