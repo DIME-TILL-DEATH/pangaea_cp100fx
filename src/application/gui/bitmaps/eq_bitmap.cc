@@ -135,7 +135,7 @@ void eq_init(void)
           }
       }
    uint8_t curs = 27;
-   for(uint8_t i = 0 ; i < 5 ; i++)curs = eq_ind(curs , 0 , currentPreset.modulesBuf[eq1 + i],0);
+   for(uint8_t i = 0 ; i < 5 ; i++)curs = eq_ind(curs , 0 , currentPreset.modulesBuf[EQ_G0 + i],0);
    Arsys_sym_up(96,1,100,0);
    Arsys_sym_down(96,2,100,0);
    Arsys_sym_up(102,1,66,0);

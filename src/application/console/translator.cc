@@ -85,6 +85,8 @@ void TTranslator::enter_handler(TTranslator *rl)
 		size_t argc = StrWordCount(command_line);
 		const_symbol_type_ptr_t argv[argc];
 		MakeArgv(command_line, argv);
+
+		// stage 1: common handlers
 		command_handler_map_t::iterator it = rl->command_handler_map.find(argv[0]);
 
 		if(it != rl->command_handler_map.end())
@@ -97,7 +99,6 @@ void TTranslator::enter_handler(TTranslator *rl)
 		}
 
 	}
-
 	(*rl->current)[0] = 0;
 	rl->pos = 0;
 }

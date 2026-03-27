@@ -25,19 +25,19 @@ static void preamp_volume_command_handler(TTranslator* rl, TTranslator::const_sy
 
 static void preamp_low_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modulesBuf[pre_low], rl, args, count);
+	default_param_handler(&currentPreset.modulesBuf[PREAMP_LOW], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_LOW_POS, currentPreset.modulesBuf[PREAMP_LOW]);
 }
 
 static void preamp_mid_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modulesBuf[pre_mid], rl, args, count);
+	default_param_handler(&currentPreset.modulesBuf[PREAMP_MID], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_MID_POS, currentPreset.modulesBuf[PREAMP_MID]);
 }
 
 static void preamp_high_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modulesBuf[pre_high], rl, args, count);
+	default_param_handler(&currentPreset.modulesBuf[PREAMP_HIGH], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_HIGH_POS, currentPreset.modulesBuf[PREAMP_HIGH]);
 }
 

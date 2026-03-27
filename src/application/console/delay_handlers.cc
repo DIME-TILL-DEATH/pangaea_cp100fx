@@ -7,7 +7,7 @@
 
 static void delay_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modulesBuf[delay], rl, args, count);
+	default_param_handler(&currentPreset.modulesBuf[ENABLE_DELAY], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_DELAY, currentPreset.modulesBuf[ENABLE_DELAY]);
 }
 
@@ -45,8 +45,8 @@ static void delay_time_command_handler(TTranslator* rl, TTranslator::const_symbo
 		{
 			char *end;
 			currentPreset.delayTime = kgp_sdk_libc::strtol(args[1], &end, 16);
-			currentPreset.modulesBuf[delay_tim_lo] = currentPreset.delayTime >> 8;
-			currentPreset.modulesBuf[delay_tim_hi] = currentPreset.delayTime & 0xFF;
+			currentPreset.modulesBuf[DELAY_TIME_LO] = currentPreset.delayTime >> 8;
+			currentPreset.modulesBuf[DELAY_TIME_HI] = currentPreset.delayTime & 0xFF;
 		}
 
 		hex[0] = currentPreset.delayTime >> 12;
@@ -105,7 +105,7 @@ static void delay_direction_command_handler(TTranslator* rl, TTranslator::const_
 
 static void delay_tap_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modulesBuf[d_tap_t], rl, args, count);
+	default_param_handler(&currentPreset.modulesBuf[DELAY_TAP], rl, args, count);
 }
 
 static void delay_tail_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)

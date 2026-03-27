@@ -7,7 +7,7 @@
 
 static void chorus_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modulesBuf[chor], rl, args, count);
+	default_param_handler(&currentPreset.modulesBuf[ENABLE_CHORUS], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CHORUS, currentPreset.modulesBuf[ENABLE_CHORUS]);
 }
 

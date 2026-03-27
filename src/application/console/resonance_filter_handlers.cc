@@ -7,7 +7,7 @@
 
 static void rf_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modulesBuf[moog], rl, args, count);
+	default_param_handler(&currentPreset.modulesBuf[ENABLE_RESONANCE_FILTER], rl, args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_RESONANCE_FILTER, currentPreset.modulesBuf[ENABLE_RESONANCE_FILTER]);
 }
 

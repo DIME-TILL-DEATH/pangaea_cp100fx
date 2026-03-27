@@ -176,7 +176,7 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 		break;
 //---------------------------------------------------------------------------------------------------
 		case Controller::Dst::PresetLevel:
-			if(!currentPreset.modulesBuf[vol_contr]) SharcTask->setParameter(DSP_ADDRESS_PRESET_VOLUME, val, 0);
+			if(!currentPreset.modulesBuf[PRESET_VOLUME]) SharcTask->setParameter(DSP_ADDRESS_PRESET_VOLUME, val, 0);
 		break;
 //-------------------------------------------------Compressor--------------------------------------------
 		case Controller::Dst::CompressorOnOff:
@@ -195,7 +195,7 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 		break;
 //-------------------------------------------------Moog filter-------------------------------------------
 		case Controller::Dst::RfOnOff:
-			currentPreset.modulesBuf[moog] = (val < 64.0f) ? 0 : 1;
+			currentPreset.modulesBuf[ENABLE_CAB] = (val < 64.0f) ? 0 : 1;
 			SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_RESONANCE_FILTER, currentPreset.modulesBuf[ENABLE_RESONANCE_FILTER]);
 		break;
 

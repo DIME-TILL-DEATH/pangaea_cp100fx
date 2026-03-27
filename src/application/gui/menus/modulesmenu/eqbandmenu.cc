@@ -27,10 +27,10 @@ void EqBandMenu::show(TShowMode showMode)
 
 	DisplayTask->Clear();
 	DisplayTask->StringOut(6, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)eq_p_l);
-	int8_t a = currentPreset.modulesBuf[f1+m_bandNum];
+	int8_t a = currentPreset.modulesBuf[EQ_F0+m_bandNum];
 	DisplayTask->EqFreq(40, 0, a, m_bandNum);
 	DisplayTask->StringOut(6, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)eq_p_l+2);
-	a = currentPreset.modulesBuf[q1+m_bandNum];
+	a = currentPreset.modulesBuf[EQ_Q0+m_bandNum];
 	DisplayTask->EqQ(40, 1, a, m_bandNum);
 //	DisplayTask->StringOut(80, 0, Font::fntSystem, 0, (uint8_t*)gerz);
 	DisplayTask->StringOut(0, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Press EQ for Default");
@@ -111,7 +111,7 @@ void EqBandMenu::encoderCounterClockwise()
 	}
 	else
 	{
-		int8_t a = currentPreset.modulesBuf[f1+m_bandNum+m_paramNum*5];
+		int8_t a = currentPreset.modulesBuf[EQ_F0+m_bandNum+m_paramNum*5];
 		if(m_paramNum)
 		{
 			if(a>-60)
