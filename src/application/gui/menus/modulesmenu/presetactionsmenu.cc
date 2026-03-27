@@ -134,7 +134,7 @@ void PresetActionsMenu::savePreset()
 
 	currentPreset.modulesBuf[147] = currentPreset.delayTime;
 	currentPreset.modulesBuf[148] = currentPreset.delayTime>>8;
-	EEPROM_WritePreset(targetPresetNum);
+	EEPROM_SavePreset(targetPresetNum, &currentPreset);
 
 	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
 	if(System::cab_type == CAB_CONFIG_STEREO)

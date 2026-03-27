@@ -49,6 +49,7 @@ static void dev_inf_command_handler(TTranslator *rl, TTranslator::const_symbol_t
 	rl->PrintF("\theap block size_max ...      %u bytes\n", heap_block_size_max());
 	rl->PrintF("\theap pool overhead  ...      %u bytes\n", heap_pool_overhead());
 	rl->PrintF("\theap alloc overhead ...      %u bytes\n", heap_alloc_overhead());
+//	rl->PrintF("\theap free heap size ...      %u bytes\n", xPortGetFreeHeapSize());
 
 	RCC_ClocksTypeDef rrc;
 	RCC_GetClocksFreq(&rrc);

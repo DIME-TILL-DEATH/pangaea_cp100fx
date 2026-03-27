@@ -142,14 +142,12 @@ void CopySelectMenu::printElement(const SelectionElement& element, uint8_t numOn
 		{
 			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, FONT_BLINKING, (uint8_t*)element.name);
 			DisplayTask->CheckBox(numOnPage%2 * 6 * 10 + 6 * 6, numOnPage / 2, *element.checked_ptr);
-//			DisplayTask->StringOut((numOnPage%2 + 1) * 6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)"ch");
-			break;
+		break;
 		}
 		case StringLong:
 		{
 			DisplayTask->StringOut(0, numOnPage / 2, Font::fntSystem, FONT_BLINKING, (uint8_t*)element.name);
 			DisplayTask->CheckBox(12 * 8, numOnPage / 2, *element.checked_ptr);
-//			DisplayTask->StringOut(6 * 10, numOnPage / 2, Font::fntSystem, 2 * highlight, (uint8_t*)"ch");
 			break;
 		}
 

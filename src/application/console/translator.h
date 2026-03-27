@@ -45,7 +45,7 @@ protected:
 
 	typedef list<symbol_type_ptr_t, KgpAllocator<symbol_type_ptr_t> > history_t;
 
-	static void enter(TTranslator *rl);
+	static void enter_handler(TTranslator *rl);
 	static void tab(TTranslator *rl);
 	static void backspace(TTranslator *rl);
 	static void escape(TTranslator *rl);
@@ -88,8 +88,6 @@ private:
 
 	command_handler_t command_not_found;
 
-	const_symbol_type_ptr_t promt;
-
 	sem_fnc take;
 	sem_fnc give;
 
@@ -97,10 +95,14 @@ private:
 
 public:
 	inline TTranslator()
-	{	echo = true; }
+	{
+		echo = true;
+	}
 
 	inline ~TTranslator()
-	{	symbol_handler_map.clear(); }
+	{
+		symbol_handler_map.clear();
+	}
 
 
 	int Init(size_t history_depth, size_t line_len);
@@ -269,11 +271,6 @@ public:
 		this->command_not_found = command_not_found;
 	}
 
-	inline void SetPromt(const_symbol_type_ptr_t promt)
-	{
-		this->promt = promt;
-	}
-
 	inline void SetTakeSem(sem_fnc take)
 	{
 		this->take = take;
@@ -307,21 +304,20 @@ public:
 		send_string(str.c_str());
 		give();
 	}
-	;
+
 	inline void Print(const_symbol_type_ptr_t str)
 	{
 		take();
 		send_string(str);
 		give();
 	}
-	;
+
 	inline void Print(const_symbol_type_t c)
 	{
 		take();
 		send_char(c);
 		give();
 	}
-	;
 
 	void __attribute__ ((noinline)) UnsafePrintF(const_symbol_type_ptr_t *format);
 	void __attribute__ ((noinline)) UnsafePrintF(const_symbol_type_ptr_t format, ...);
@@ -329,44 +325,15 @@ public:
 	{
 		send_string(str.c_str());
 	}
-	;
 	inline void UnsafePrint(const_symbol_type_ptr_t str)
 	{
 		send_string(str);
 	}
-	;
+
 	inline void UnsafePrint(const_symbol_type_t c)
 	{
 		send_char(c);
 	}
-	;
-
-	inline void Clear()
-	{
-		Print("\x1b[2J");
-	}
-	;
-	inline void CursorUp()
-	{
-		Print("\033[1A");
-	}
-	;
-	inline void CursorLeft()
-	{
-		Print("\033[200D");
-	}
-	;
-
-	inline void UnsafeSetColorRed()
-	{
-		UnsafePrint("\033[31m");
-	}
-	;
-	inline void UnsafeSetColorGreen()
-	{
-		UnsafePrint("\033[32m");
-	}
-	;
 
 	inline void Echo(bool state)
 	{

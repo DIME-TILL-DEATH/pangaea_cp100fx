@@ -75,7 +75,7 @@ static void psave_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 	currentPreset.modulesBuf[147] = currentPreset.delayTime;
 	currentPreset.modulesBuf[148] = currentPreset.delayTime >> 8;
 
-	EEPROM_WritePreset(currentPresetNumber);
+	EEPROM_SavePreset(currentPresetNumber, &currentPreset);
 
 	// update DSP config? Really need?
 	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
@@ -114,7 +114,6 @@ static void cd_command_handler(TTranslator *rl, TTranslator::const_symbol_type_p
 	fileBrowser->SelectDir(fsObject);
 
 	msg_console("%s\r%s\n", args[0], fileBrowser->CurrDir(false).c_str());
-//	msg_console("%s\r%s\n", args[0], fileBrowser->CurrentObject()->full_dir.c_str());
 	FileSystemTask->Resume();
 }
 
@@ -350,9 +349,9 @@ static void copyto_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	}
 	Preset::TSelectionMask selectionMask;
 	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(Preset::TSelectionMask));
-	CopySelectMenu::copyPreset(selectionMask, presetNum);
 
-//	msg_console("%s\r\n", args[0]);
+	EEPROM_CopyPreset(presetNum, selectionMask);
+	SharcTask->sendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &tempDataBuffer[0], presetNum+1);
 }
 
 static void erase_preset_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)

@@ -173,10 +173,6 @@ public:
 	void UnsafePrintF(const char *format, ...) __attribute__ ((noinline));
 	void __attribute__ ((noinline)) UnsafePrintF(const char **format);
 
-	inline void Clear()
-	{
-		read_line->Clear();
-	}
 	inline void Take()
 	{
 		tx_sem->Take(portMAX_DELAY);
@@ -239,32 +235,5 @@ void ConsoleSetCmdHandlers(TTranslator *rl);
 
 // handlers execute in UITask
 #define msg_console(...) rl->UnsafePrintF( __VA_ARGS__ )
-
-//#define rmsg(...) \
-//		if (TTaskUtilities::GetCurrentTaskHandle()!=ConsoleTask->GetHandle()) ConsoleTask->PrintF( __VA_ARGS__ ); \
-//		else  ConsoleTask->UnsafePrintF( __VA_ARGS__ );
-//
-//#define msg(...) \
-//		ConsoleTask->PrintF( "%u: " , TTaskUtilities::GetTickCount() ); \
-//		ConsoleTask->PrintF( __VA_ARGS__ );
-//
-//#define err(...) \
-//		ConsoleTask->PrintF( "%u ERROR :" , TTaskUtilities::GetTickCount() ); \
-//		ConsoleTask->PrintF( __VA_ARGS__ );
-//
-//#define rmsg_unsafe(...) \
-//		ConsoleTask->UnsafePrintF( __VA_ARGS__ );
-//
-//#define msg_unsafe(...) \
-//		ConsoleTask->UnsafePrintF( "%u: " , TTaskUtilities::GetTickCount() ); \
-//		ConsoleTask->UnsafePrintF( __VA_ARGS__ );
-//
-//#define err_unsafe(...) \
-//		ConsoleTask->UnsafePrintF( "%u ERROR :" , TTaskUtilities::GetTickCount() ); \
-//		ConsoleTask->UnsafePrintF( __VA_ARGS__ );
-//
-//#define rmsg_buf(msg,size) { ConsoleTask->SendBuf(msg,size); }
-//
-//extern "C" int condole_printf(const char *format, ...) __attribute__ ((noinline,used));
 
 #endif /*__USB_CONSOLE_H__*/

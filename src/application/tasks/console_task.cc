@@ -70,8 +70,6 @@ TConsoleTask::TConsoleTask(/*readline_io_t* readline_io,*/const size_t rx_queue_
 	// call user defined handler setter
 	ConsoleSetCmdHandlers(read_line);
 
-	read_line->SetPromt("");
-
 	rx_sem = new TSemaphore(TSemaphore::fstBinary);
 	tx_sem = new TSemaphore(TSemaphore::fstBinary);
 

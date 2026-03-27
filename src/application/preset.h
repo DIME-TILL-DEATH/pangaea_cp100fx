@@ -326,6 +326,7 @@ extern uint16_t trem_time;
 
 
 void Change(uint8_t presetNumber);
+void SetDefaultValues(TPresetData* preset);
 void Erase();
 }
 

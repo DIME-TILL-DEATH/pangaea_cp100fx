@@ -1,59 +1,11 @@
 #include "eepr.h"
 
-#include "sharc.h"
-
 #include "system.h"
 #include "controller.h"
 #include "preset.h"
 #include "modules.h"
 
-#include "filesystem_task.h"
-
-//volatile uint32_t flash_adr;
-
-
-const uint8_t prog_data_init[512] =
-{/*switch*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-/*empty*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-/*cab1*/82, 63, 0,
-/*cab2*/0, 63, 0,
-/*eq*/15, 15, 15, 15, 15,
-/*hpf_lpf_pres*/0, 0, 0,
-/*phas*/63, 49, 0, 55, 0, 0,
-/*chor*/63, 31, 74, 4, 0,
-/*del*/40, 63, 0, 0, 63, 0, 63, 63, 0, 0, 0,
-/*flanger*/63, 0, 31, 74, 0, 0,
-/*rev*/30, 63, 41, 25, 0, 0, 0,
-/*trem*/63, 63, 0, 0,
-/*pres_vol*/127,
-/*amp_sim*/0, 0, 127,
-/*early reflec*/63, 5,
-/*eq_par*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-/*preamp_par*/0, 127, 0, 64, 64, 64,
-/*gate*/0, 0, 0,
-/*compressor*/50, 127, 84, 0, 10,
-/*HPF_mod*/0, 0, 0,
-/*del tap*/0,/*trem tap*/0,
-/*moog*/127, 0, 0, 47, 55, 52, 85, 80, 11, 66, 127,
-/*rever type*/0,/*rever diffusion*/0,
-/*moog gen type*/0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0,
-		/*bpm del*/120};
-
-const uint32_t del_tim_init = 500;
-const uint8_t nameInit[] = {"Preset        "};
-const uint8_t commentInit[] = {"Comment       "};
-
-
+#include "ff.h"
 
 void EEPROM_Start()
 {
@@ -111,8 +63,6 @@ void EEPROM_WriteSys(void)
 {
 	// Значения поумолчанию чтобы не решать квадратное уравнение
 	// mstEqMidFreq = (mas_eq_fr * (20.0f/20000.0f) + 1) * mas_eq_fr;
-	//	mas_eq_fr = sys_para[508] << 8;
-	//	mas_eq_fr |= sys_para[509];
 	sys_para[System::MASTER_EQ_FREQ_VAL_LO] = 2;
 	sys_para[System::MASTER_EQ_FREQ_VAL_HI] = 0x6a;
 
@@ -129,40 +79,40 @@ void EEPROM_WriteSys(void)
 	f_mount(0, "1:", 0);
 }
 
-void EEPROM_WritePreset(uint8_t numPreset)
+void EEPROM_SavePreset(uint8_t numPreset, Preset::TPresetData* savePreset)
 {
-	numPreset++;
-
 	char fna[_MAX_LFN];
 	FATFS fs;
 	FIL file;
 	UINT f_size;
+
+	numPreset++;
 	if(numPreset<10)
 		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)numPreset);
 	else
 		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)numPreset);
+
 	f_mount(&fs, "1:", 1);
 	f_open(&file, fna, FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
 
-	currentPreset.paramData.delay_time = currentPreset.delayTime; // actual data
-	f_write(&file, &currentPreset, sizeof(Preset::TPresetData), &f_size);
+	savePreset->paramData.delay_time = savePreset->delayTime; // actual data
+	f_write(&file, savePreset, sizeof(Preset::TPresetData), &f_size);
 
 	f_close(&file);
 	f_mount(0, "1:", 0);
 }
 
-bool EEPROM_LoadPreset(uint8_t numPreset)
+bool EEPROM_LoadPreset(uint8_t numPreset, Preset::TPresetData* loadPreset)
 {
-	numPreset++;
-
 	char fna[_MAX_LFN];
 	FRESULT fs_res;
 	FATFS fs;
 	FIL file;
 	UINT f_size;
 
-	kgp_sdk_libc::memset(&currentPreset, 0, sizeof(Preset::TPresetData));
+	kgp_sdk_libc::memset(loadPreset, 0, sizeof(Preset::TPresetData));
 
+	numPreset++;
 	if(numPreset<10)
 		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)numPreset);
 	else
@@ -172,42 +122,11 @@ bool EEPROM_LoadPreset(uint8_t numPreset)
 	fs_res = f_open(&file, fna, FA_READ);
 	if(fs_res==FR_OK)
 	{
-		f_read(&file, &currentPreset, sizeof(Preset::TPresetData), &f_size);
+		f_read(&file, loadPreset, sizeof(Preset::TPresetData), &f_size);
 		f_close(&file);
 		return true;
 	}
-	else
-	{
-		for(uint16_t i = 0; i<512; i++)
-			currentPreset.modulesBuf[i] = prog_data_init[i];
-
-		for(uint8_t i = 0; i<15; i++)
-			currentPreset.name[i] = nameInit[i];
-		for(uint8_t i = 0; i<15; i++)
-			currentPreset.comment[i] = commentInit[i];
-
-		for(uint8_t i=0; i<Controller::controllersCount; i++)
-		{
-			currentPreset.controller[i].src = 0;
-			currentPreset.controller[i].dst = Controller::PresetLevel;
-			currentPreset.controller[i].minVal = 0;
-			currentPreset.controller[i].maxVal = 127;
-		}
-
-		currentPreset.delayTime = del_tim_init;
-
-		currentPreset.cab1Data[0] = 0xff;
-		currentPreset.cab1Data[1] = 0xff;
-		currentPreset.cab1Data[2] = 0x7f;
-
-		if(System::cab_type == CAB_CONFIG_STEREO)
-		{
-			currentPreset.cab2Data[0] = 0xff;
-			currentPreset.cab2Data[1] = 0xff;
-			currentPreset.cab2Data[2] = 0x7f;
-		}
-		return false;
-	}
+	else return false;
 }
 
 void EEPROM_LoadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
@@ -240,8 +159,8 @@ void EEPROM_LoadBriefPreset(uint8_t presetNum, Preset::TPresetBrief* presetData)
 	}
 	else
 	{
-		kgp_sdk_libc::memcpy(presetData->name, nameInit, 15);
-		kgp_sdk_libc::memcpy(presetData->comment, nameInit, 15);
+		kgp_sdk_libc::memcpy(presetData->name, "Preset", 6);
+		kgp_sdk_libc::memcpy(presetData->comment, "Comment", 7);
 	}
 	f_close(&file);
 }
@@ -257,190 +176,165 @@ void EEPROM_PresetErase(uint8_t presetNum)
 		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)presetNum);
 	else
 		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)presetNum);
+
 	f_unlink(fna);
 	f_mount(0, "1:", 0);
 }
 
 void EEPROM_CopyPreset(uint8_t targetPresetNum, const Preset::TSelectionMask& selectionMask)
 {
-	//	EEPROM_LoadPresetToBuffer(targetPresetNum, presetBuffer);
-	//
-	//	if(selectionMask.name)
-	//	{
-	//		kgp_sdk_libc::memcpy(presetBuffer, currentPreset.name, 15);
-	//	}
-	//
-	//	if(selectionMask.comment)
-	//	{
-	//		kgp_sdk_libc::memcpy(presetBuffer + 15, currentPreset.comment, 15);
-	//	}
-	//
-	//	if(selectionMask.rf)
-	//	{
-	//			kgp_sdk_libc::memcpy(&presetBuffer[PRESET_DATA_OFFSET + RFILTER_MIX], &currentPreset.modulesBuf[RFILTER_MIX], sizeof(Preset::TRfData));
-	//			presetBuffer[PRESET_DATA_OFFSET + ENABLE_RESONANCE_FILTER] = currentPreset.modulesBuf[ENABLE_RESONANCE_FILTER];
-	//			presetBuffer[PRESET_DATA_OFFSET + RFILTER_LFO_TYPE] = currentPreset.modulesBuf[RFILTER_LFO_TYPE];
-	//	}
-	//
-	//	if(selectionMask.gt)
-	//	{
-	//		for(uint8_t i = 0; i<3; i++)
-	//			presetBuffer[30+gate_thr+i] = currentPreset.modulesBuf[gate_thr+i];
-	//
-	//		presetBuffer[PRESET_DATA_OFFSET + ENABLE_GATE] = currentPreset.modulesBuf[ENABLE_GATE];
-	//	}
-	//
-	//	if(selectionMask.cm)
-	//	{
-	//		for(uint8_t i = 0; i<5; i++)
-	//			presetBuffer[30+comp_thr+i] = currentPreset.modulesBuf[comp_thr+i];
-	//		presetBuffer[30+compr] = currentPreset.modulesBuf[compr];
-	//	}
-	//
-	//	if(selectionMask.pr)
-	//	{
-	//		for(uint8_t i = 0; i<6; i++)
-	//			presetBuffer[30+pre_gain+i] = currentPreset.modulesBuf[pre_gain+i];
-	//		presetBuffer[30+pream] = currentPreset.modulesBuf[pream];
-	//	}
-	//
-	//	if(selectionMask.pa)
-	//	{
-	//		for(uint8_t i = 0; i<3; i++)
-	//			presetBuffer[30+am_v+i] = currentPreset.modulesBuf[am_v+i];
-	//		presetBuffer[30+pre_v] = currentPreset.modulesBuf[pre_v];
-	//		presetBuffer[30+amp] = currentPreset.modulesBuf[amp];
-	//	}
-	//
-	//	if(selectionMask.ir)
-	//	{
-	//		for(uint8_t i = 0; i<6; i++)
-	//			presetBuffer[30+vol+i] = currentPreset.modulesBuf[vol+i];
-	//
-	//		kgp_sdk_libc::memcpy(&presetBuffer[13344], cab1.name.string, 64);
-	//		kgp_sdk_libc::memcpy(&presetBuffer[25696], cab2.name.string, 64);
-	//
-	//		for(uint16_t i = 0; i<12288; i++)
-	//			presetBuffer[1056+i] = cab1.data[i];
-	//
-	//		if(cab_type==CAB_CONFIG_STEREO)
-	//			for(uint16_t i = 0; i<4096*3; i++)
-	//				presetBuffer[13408+i] = cab2.data[i];
-	//		else
-	//			for(uint16_t i = 0; i<4096*3; i++)
-	//				presetBuffer[25760+i] = cab1.data[i + 4096 * 3];
-	//
-	////		for(uint16_t i = 0; i<512; i++)
-	////			presetBuffer[38048+i] = Preset::impulsePath[i];
-	//
-	//		Preset::cab_data_ready = true; // Kostyl
-	//		send_cab_data(0, targetPresetNum+1, 0);
-	//
-	//		if(cab_type==CAB_CONFIG_STEREO)
-	//			send_cab_data1(0, targetPresetNum+1, cab2.data);
-	//
-	//		Preset::cab_data_ready = false;
-	//
-	//		presetBuffer[30+cab] = currentPreset.modulesBuf[cab];
-	//	}
-	//
-	//	if(selectionMask.eq)
-	//	{
-	//		for(uint8_t i = 0; i<8; i++)
-	//			presetBuffer[30+eq1+i] = currentPreset.modulesBuf[eq1+i];
-	//		for(uint8_t i = 0; i<10; i++)
-	//			presetBuffer[30+f1+i] = currentPreset.modulesBuf[f1+i];
-	//		presetBuffer[30+eq] = currentPreset.modulesBuf[eq];
-	//		presetBuffer[30+eq_pr_po] = currentPreset.modulesBuf[eq_pr_po];
-	//	}
-	//
-	//	if(selectionMask.ph)
-	//	{
-	//		for(uint8_t i = 0; i<6; i++)
-	//			presetBuffer[30+phaser_vol+i] = currentPreset.modulesBuf[phaser_vol+i];
-	//		presetBuffer[30+phas] = currentPreset.modulesBuf[phas];
-	//		presetBuffer[30+hpf_ph] = currentPreset.modulesBuf[hpf_ph];
-	//		presetBuffer[30+phas_pos] = currentPreset.modulesBuf[phas_pos];
-	//	}
-	//
-	//	if(selectionMask.fl)
-	//	{
-	//		for(uint8_t i = 0; i<6; i++)
-	//			presetBuffer[30+fl_v+i] = currentPreset.modulesBuf[fl_v+i];
-	//		presetBuffer[30+fl] = currentPreset.modulesBuf[fl];
-	//		presetBuffer[30+hpf_fl] = currentPreset.modulesBuf[hpf_fl];
-	//		presetBuffer[30+flan_pos] = currentPreset.modulesBuf[flan_pos];
-	//	}
-	//
-	//	if(selectionMask.ch)
-	//	{
-	//		for(uint8_t i = 0; i<5; i++)
-	//			presetBuffer[30+chor_volum+i] = currentPreset.modulesBuf[chor_volum+i];
-	//		presetBuffer[30+chor] = currentPreset.modulesBuf[chor];
-	//		presetBuffer[30+hpf_ch] = currentPreset.modulesBuf[hpf_ch];
-	//	}
-	//
-	//	if(selectionMask.dl)
-	//	{
-	//		for(uint8_t i = 0; i<11; i++)
-	//			presetBuffer[30+d_vol+i] = currentPreset.modulesBuf[d_vol+i];
-	//
-	//		presetBuffer[1054] = Preset::delay_time;
-	//		presetBuffer[1055] = Preset::delay_time>>8;
-	//
-	//		presetBuffer[30+delay] = currentPreset.modulesBuf[delay];
-	//		presetBuffer[30+d_tap_t] = currentPreset.modulesBuf[d_tap_t];
-	//		presetBuffer[30+d_tail] = currentPreset.modulesBuf[d_tail];
-	//	}
-	//
-	//	if(selectionMask.er)
-	//	{
-	//		for(uint8_t i = 0; i<2; i++)
-	//			presetBuffer[30+early_vol+i] = currentPreset.modulesBuf[early_vol+i];
-	//		presetBuffer[30+early] = currentPreset.modulesBuf[early];
-	//	}
-	//
-	//	if(selectionMask.rv)
-	//	{
-	//		for(uint8_t i = 0; i<7; i++)
-	//			presetBuffer[30+r_vol+i] = currentPreset.modulesBuf[r_vol+i];
-	//		presetBuffer[30+reve] = currentPreset.modulesBuf[reve];
-	//		presetBuffer[30+rev_t] = currentPreset.modulesBuf[rev_t];
-	//		presetBuffer[30+rev_di] = currentPreset.modulesBuf[rev_di];
-	//		presetBuffer[30+r_pre] = currentPreset.modulesBuf[r_pre];
-	//		presetBuffer[30+r_tail] = currentPreset.modulesBuf[r_tail];
-	//	}
-	//
-	//	if(selectionMask.tr)
-	//	{
-	//		for(uint8_t i = 0; i<4; i++)
-	//			presetBuffer[30+tr_vol+i] = currentPreset.modulesBuf[tr_vol+i];
-	//
-	//		presetBuffer[30+trem] = currentPreset.modulesBuf[trem];
-	//		presetBuffer[30+t_tap_t] = currentPreset.modulesBuf[t_tap_t];
-	//		presetBuffer[30+tr_lfo_t] = currentPreset.modulesBuf[tr_lfo_t];
-	//	}
-	//
-	//	if(selectionMask.pv)
-	//	{
-	//		presetBuffer[30 + pres_lev] = currentPreset.paramData.preset_volume;
-	//	}
-	//
-	//	if(selectionMask.att)
-	//	{
-	//		presetBuffer[PRESET_DATA_OFFSET + preset_att] = currentPreset.paramData.attenuator;
-	//	}
-	//
-	//	if(selectionMask.controllers)
-	//	{
-	//		for(uint16_t i = 0 ; i < Controller::controllersCount ; i++)
-	//		{
-	//			presetBuffer[542 + i*sizeof(Controller::TController)] = currentPreset.controller[i].src;
-	//			presetBuffer[542 + i*sizeof(Controller::TController) + 1] = currentPreset.controller[i].dst;
-	//			presetBuffer[542 + i*sizeof(Controller::TController) + 2] = currentPreset.controller[i].minVal;
-	//			presetBuffer[542 + i*sizeof(Controller::TController) + 3] = currentPreset.controller[i].maxVal;
-	//		}
-	//	}
-	//
-	//	EEPROM_WriteTempPreset(targetPresetNum);
+	if(!EEPROM_LoadPreset(targetPresetNum, (Preset::TPresetData*)&tempDataBuffer))
+		Preset::SetDefaultValues((Preset::TPresetData*)&tempDataBuffer);
+
+	Preset::TPresetData* copyPreset = (Preset::TPresetData*)&tempDataBuffer;
+
+	if(selectionMask.name)
+		kgp_sdk_libc::memcpy(copyPreset->name, currentPreset.name, PRESET_NAME_STRING_SIZE);
+
+	if(selectionMask.comment)
+		kgp_sdk_libc::memcpy(copyPreset->comment, currentPreset.comment, PRESET_COMMENT_STRING_SIZE);
+
+	if(selectionMask.rf)
+	{
+		copyPreset->paramData.resonance_filter = currentPreset.paramData.resonance_filter;
+		copyPreset->paramData.switches.resonance_filter = currentPreset.paramData.switches.resonance_filter;
+		copyPreset->paramData.resonance_filter_gen_type = currentPreset.paramData.resonance_filter_gen_type;
+	}
+
+	if(selectionMask.gt)
+	{
+		copyPreset->paramData.gate = currentPreset.paramData.gate;
+		copyPreset->paramData.switches.gate = currentPreset.paramData.switches.gate;
+	}
+
+	if(selectionMask.cm)
+	{
+		copyPreset->paramData.compressor = currentPreset.paramData.compressor;
+		copyPreset->paramData.switches.compressor = currentPreset.paramData.switches.compressor;
+	}
+
+	if(selectionMask.pr)
+	{
+		copyPreset->paramData.preamp = currentPreset.paramData.preamp;
+		copyPreset->paramData.switches.preamp = currentPreset.paramData.switches.preamp;
+	}
+
+	if(selectionMask.pa)
+	{
+		copyPreset->paramData.pa = currentPreset.paramData.pa;
+		copyPreset->paramData.switches.amp = currentPreset.paramData.switches.amp;
+		copyPreset->paramData.presence = currentPreset.paramData.presence;
+	}
+
+	if(selectionMask.ir)
+	{
+		copyPreset->paramData.cab1 = currentPreset.paramData.cab1;
+		copyPreset->paramData.cab2 = currentPreset.paramData.cab2;
+		copyPreset->paramData.switches.cab = currentPreset.paramData.switches.cab;
+
+		copyPreset->cab1NameSize = currentPreset.cab1NameSize;
+		kgp_sdk_libc::memcpy(copyPreset->cab1Name, currentPreset.cab1Name, CAB_NAME_STRING_SIZE - 1);
+		kgp_sdk_libc::memcpy(copyPreset->cab1Data, currentPreset.cab1Data, CAB_DATA_SIZE);
+
+		if(System::cab_type == CAB_CONFIG_STEREO)
+		{
+			copyPreset->cab2NameSize = currentPreset.cab2NameSize;
+			kgp_sdk_libc::memcpy(copyPreset->cab2Name, currentPreset.cab2Name, CAB_NAME_STRING_SIZE - 1);
+			kgp_sdk_libc::memcpy(copyPreset->cab2Data, currentPreset.cab2Data, CAB_DATA_SIZE);
+		}
+		else
+			kgp_sdk_libc::memcpy(copyPreset->cabAuxData, currentPreset.cabAuxData, CAB_DATA_SIZE);
+
+		kgp_sdk_libc::memcpy(copyPreset->currentImpulseName, currentPreset.currentImpulseName, 256);
+		kgp_sdk_libc::memcpy(copyPreset->currentImpulsePath, currentPreset.currentImpulsePath, 256);
+	}
+
+	if(selectionMask.eq)
+	{
+		for(uint8_t i = 0; i<5; i++)
+		{
+			copyPreset->paramData.eq_freq[i] = currentPreset.paramData.eq_freq[i];
+			copyPreset->paramData.eq_gain[i] = currentPreset.paramData.eq_gain[i];
+			copyPreset->paramData.eq_q[i] = currentPreset.paramData.eq_q[i];
+		}
+		copyPreset->paramData.switches.eq = currentPreset.paramData.switches.eq;
+		copyPreset->paramData.eq_pre_post = currentPreset.paramData.eq_pre_post;
+		copyPreset->paramData.lpf = currentPreset.paramData.lpf;
+		copyPreset->paramData.hpf = currentPreset.paramData.hpf;
+	}
+
+	if(selectionMask.ph)
+	{
+		copyPreset->paramData.phaser = currentPreset.paramData.phaser;
+		copyPreset->paramData.switches.phaser = currentPreset.paramData.switches.phaser;
+		copyPreset->paramData.hpf_phaser = currentPreset.paramData.hpf_phaser;
+		copyPreset->paramData.phaser_pre_post = currentPreset.paramData.phaser_pre_post;
+	}
+
+	if(selectionMask.fl)
+	{
+		copyPreset->paramData.flanger = currentPreset.paramData.flanger;
+		copyPreset->paramData.switches.flanger = currentPreset.paramData.switches.flanger;
+		copyPreset->paramData.hpf_flanger = currentPreset.paramData.hpf_flanger;
+		copyPreset->paramData.flanger_pre_post = currentPreset.paramData.flanger_pre_post;
+	}
+
+	if(selectionMask.ch)
+	{
+		copyPreset->paramData.chorus = currentPreset.paramData.chorus;
+		copyPreset->paramData.switches.chorus = currentPreset.paramData.switches.chorus;
+		copyPreset->paramData.hpf_chorus = currentPreset.paramData.hpf_chorus;
+	}
+
+	if(selectionMask.dl)
+	{
+		copyPreset->paramData.delay = currentPreset.paramData.delay;
+		copyPreset->paramData.switches.delay = currentPreset.paramData.switches.delay;
+		copyPreset->paramData.delay_tail = currentPreset.paramData.delay_tail;
+		copyPreset->paramData.delay_tap = currentPreset.paramData.delay_tap;
+		copyPreset->paramData.delay_time = currentPreset.paramData.delay_time;
+	}
+
+	if(selectionMask.er)
+	{
+		copyPreset->paramData.early_reflections = currentPreset.paramData.early_reflections;
+		copyPreset->paramData.switches.early_reflections = currentPreset.paramData.switches.early_reflections;
+	}
+
+	if(selectionMask.rv)
+	{
+		copyPreset->paramData.reverb = currentPreset.paramData.reverb;
+		copyPreset->paramData.switches.reverb = currentPreset.paramData.switches.reverb;
+		copyPreset->paramData.reverb_diffusion = currentPreset.paramData.reverb_diffusion;
+		copyPreset->paramData.reverb_predelay = currentPreset.paramData.reverb_predelay;
+		copyPreset->paramData.reverb_tail = currentPreset.paramData.reverb_tail;
+		copyPreset->paramData.reverb_type = currentPreset.paramData.reverb_type;
+	}
+
+	if(selectionMask.tr)
+	{
+		copyPreset->paramData.tremolo = currentPreset.paramData.tremolo;
+		copyPreset->paramData.switches.tremolo = currentPreset.paramData.switches.tremolo;
+		copyPreset->paramData.tremolo_tap = currentPreset.paramData.tremolo_tap;
+		copyPreset->paramData.tremolo_lfo_type = currentPreset.paramData.tremolo_lfo_type;
+	}
+
+	if(selectionMask.pv)
+		copyPreset->paramData.preset_volume = currentPreset.paramData.preset_volume;
+
+	if(selectionMask.att)
+		copyPreset->paramData.attenuator = currentPreset.paramData.attenuator;
+
+	if(selectionMask.controllers)
+	{
+		for(uint16_t i = 0 ; i < Controller::controllersCount ; i++)
+		{
+			copyPreset->controller[i].src = currentPreset.controller[i].src;
+			copyPreset->controller[i].dst = currentPreset.controller[i].dst;
+			copyPreset->controller[i].minVal = currentPreset.controller[i].minVal;
+			copyPreset->controller[i].maxVal = currentPreset.controller[i].maxVal;
+		}
+	}
+
+	EEPROM_SavePreset(targetPresetNum, (Preset::TPresetData*)&tempDataBuffer);
 }

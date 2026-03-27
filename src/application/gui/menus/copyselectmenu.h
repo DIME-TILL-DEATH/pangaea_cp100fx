@@ -17,7 +17,7 @@ public:
 	void encoderCounterClockwise() override;
 
 	void setTargetPreset(uint8_t targetPresetNum) {m_targetPresetNum = targetPresetNum;}
-	static void copyPreset(const Preset::TSelectionMask& selectionMask, uint8_t targetPresetNum);
+	void copyPreset(const Preset::TSelectionMask& selectionMask, uint8_t targetPresetNum);
 
 private:
 	typedef enum
