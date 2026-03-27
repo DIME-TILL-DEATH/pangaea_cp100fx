@@ -135,18 +135,18 @@ void CopySelectMenu::printElement(const SelectionElement& element, uint8_t numOn
 		case ActionSelectAll:
 		case ActionDeselectAll:
 		{
-			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, FONT_BLINKING, (uint8_t*)element.name);
+			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, (Font::TFontState)(highlight * Font::fnsHighlight), (uint8_t*)element.name);
 			break;
 		}
 		case StringShort:
 		{
-			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, FONT_BLINKING, (uint8_t*)element.name);
+			DisplayTask->StringOut(numOnPage%2 * 6 * 10, numOnPage / 2, Font::fntSystem, (Font::TFontState)(highlight * Font::fnsHighlight), (uint8_t*)element.name);
 			DisplayTask->CheckBox(numOnPage%2 * 6 * 10 + 6 * 6, numOnPage / 2, *element.checked_ptr);
 		break;
 		}
 		case StringLong:
 		{
-			DisplayTask->StringOut(0, numOnPage / 2, Font::fntSystem, FONT_BLINKING, (uint8_t*)element.name);
+			DisplayTask->StringOut(0, numOnPage / 2, Font::fntSystem, (Font::TFontState)(highlight * Font::fnsHighlight), (uint8_t*)element.name);
 			DisplayTask->CheckBox(12 * 8, numOnPage / 2, *element.checked_ptr);
 			break;
 		}

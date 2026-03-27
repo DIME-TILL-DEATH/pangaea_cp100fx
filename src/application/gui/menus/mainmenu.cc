@@ -111,9 +111,14 @@ void MainMenu::key1()
 
 	if(shownChildMenu) delete shownChildMenu;
 
+#ifdef __MONO_MOD__
 	shownChildMenu = new AttenuatorMenu(this);
 	shownChildMenu->show();
+#endif
 
+#ifdef __STEREO_MOD__
+
+#endif
 	restartBlinking(0);
 }
 

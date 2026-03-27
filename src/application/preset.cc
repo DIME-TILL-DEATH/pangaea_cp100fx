@@ -74,8 +74,8 @@ void Preset::Erase()
 
 void Preset::SetDefaultValues(Preset::TPresetData* preset)
 {
-	for(uint16_t i = 0; i<512; i++)
-		preset->modulesBuf[i] = prog_data_init[i];
+	kgp_sdk_libc::memcpy(preset->name, "Preset", 6);
+	kgp_sdk_libc::memcpy(preset->comment, "Comment", 7);
 
 	preset->paramData.cab1.volume = 82;
 	preset->paramData.cab1.pan = 63;
@@ -138,9 +138,6 @@ void Preset::SetDefaultValues(Preset::TPresetData* preset)
 	preset->paramData.tremolo.rate = 63;
 
 	preset->paramData.preset_volume = 127;
-
-	kgp_sdk_libc::memcpy(preset->name, "Preset", 6);
-	kgp_sdk_libc::memcpy(preset->comment, "Comment", 7);
 
 	for(uint8_t i=0; i<Controller::controllersCount; i++)
 	{

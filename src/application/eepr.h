@@ -5,8 +5,6 @@
 
 #include "preset.h"
 
-extern const uint8_t prog_data_init[];
-
 void EEPROM_Start();
 
 bool EEPROM_LoadPreset(uint8_t presetNum, Preset::TPresetData* loadPreset);

@@ -103,6 +103,7 @@ void SystemMenu::key5()
 
 bool SystemMenu::editingFinished()
 {
+#ifdef __MONO_MOD__
 	if(m_previousCabConfig == 2)
 	{
 		if(m_previousCabConfig != sys_para[System::CAB_SIM_CONFIG])
@@ -130,6 +131,7 @@ bool SystemMenu::editingFinished()
 			return false;
 		}
 	}
+#endif
 	EEPROM_WriteSys();
 
 	return true;
@@ -148,9 +150,16 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[1]->setDisplayPosition(60);
 	params[1]->setBounds(0, 15);
 	params[1]->setScaling(1, 1);
-
+#ifdef __MONO_MOD__
 	params[2] = new StringListParam("Cab num", &sys_para[System::CAB_SIM_CONFIG],
 				{"1 L+R", "1R AP", "2 L+R", "1R A ", "1R P ", " 1 R "}, 6);
+#endif
+
+#ifdef __STEREO_MOD__
+	params[2] = new StringListParam("Cab num", &sys_para[System::CAB_SIM_CONFIG],
+				{"2 L+R","1R AP","1R A ","1R P "," 1 R "}, 6);
+#endif
+
 	params[2]->setDspAddress(DSP_ADDRESS_CAB_CONFIG, PARAM_EQUAL_POS);
 	params[2]->setDisplayPosition(60);
 

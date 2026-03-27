@@ -135,10 +135,21 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 	params[2]->setDspAddress(DSP_ADDRESS_AMP, AMP_LEVEL_POS);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", &currentPreset.modulesBuf[PREAMP_0]);
 	params[3]->setDspAddress(DSP_ADDRESS_AMP, NOT_SEND_POS);
+#ifdef __MONO_MOD__
 	params[4] = new StringListParam("Type", &currentPreset.modulesBuf[AMP_TYPE],
 		 {"  PP 6L6  ", "  PP EL34 ", "  SE 6L6  ", "  SE EL34 ", " AMT TC-3 ",
 		  "California",	"British M ", "British L ", "    Flat   ","Calif mod ",
 		  "Calif vint", "PVH PR0RS0", "PVH PR5RS5", "PVH PR8RS7"}, 11);
+#endif
+#ifdef __STEREO_MOD__
+	params[4] = new StringListParam("Type", &currentPreset.modulesBuf[AMP_TYPE],
+		 {"  PP 6L6  ", "  PP EL34 ", "  SE 6L6  ", "  SE EL34 ", " AMT TC-3 ",
+		  "California",	"British M ", "British L ", "    Flat   ","Calif mod ",
+		  "Calif vint", "PVH PR0RS0", "PVH PR5RS5", "PVH PR8RS7", "PVH PR9RS8",
+		 "PA Modern ", "PP Amp 6L6", "PP AmpEL34", "SE Amp 6L6", "PVH IC V1 ",
+		 "PVH IC V2 ", "PVH PR00  ", "PVH PR98  "}, 11);
+#endif
+
 	params[4]->setDspAddress(DSP_ADDRESS_AMP_TYPE, AMP_TYPE_POS);
 	params[4]->setDisplayPosition(36);
 
