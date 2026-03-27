@@ -1,8 +1,8 @@
-#include <bitmaps.h>
-#include "../bitmaps/eq_bitmap.h"
+#include "eq_bitmap.h"
 
-#include "../bitmaps/icons_bitmap.h"
-#include "appdefs.h"
+#include "bitmaps.h"
+#include "icons_bitmap.h"
+
 #include "filter.h"
 #include "eepr.h"
 #include "modules.h"
@@ -47,9 +47,9 @@ const uint8_t _15[]="15";
 const uint8_t __15[]="-15";
 const uint8_t db[]="db";
 
-volatile uint8_t ewq = 35;
 void lo_hi_par(float num , uint8_t type)
 {
+	uint8_t ewq = 35;
 	char q_sym[20];
 	ksprintf( q_sym ,"%d", (uint16_t)num );
 	Arsys_clean_(23 + ewq, type , 5);
@@ -86,6 +86,7 @@ uint8_t eq_ind(uint8_t col , uint8_t pag , uint32_t val , uint8_t cur )
     }
   return col + 14;
 }
+
 void eq_init(void)
 {
 	LCD_Clear();

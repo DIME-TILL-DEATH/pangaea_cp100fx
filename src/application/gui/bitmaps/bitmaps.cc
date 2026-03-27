@@ -121,6 +121,7 @@ void tap_ind(uint8_t cur)
 		LCD_WriteData(0);
 	}
 }
+
 void mode_ind(uint8_t val)
 {
 	uint8_t a1, a2;

@@ -11,8 +11,8 @@
 
 #include "tunermenu.h"
 
-volatile uint8_t num_key_prog;
-volatile uint8_t contr_pr[3];
+volatile uint8_t __CCM_BSS__ num_key_prog;
+volatile uint8_t __CCM_BSS__ contr_pr[3];
 
 bool confirmPressDisabled()
 {

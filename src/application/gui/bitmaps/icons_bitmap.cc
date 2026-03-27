@@ -1,6 +1,5 @@
-#include <bitmaps.h>
-#include <bitmaps.h>
-#include "../bitmaps/icons_bitmap.h"
+#include "bitmaps.h"
+#include "icons_bitmap.h"
 
 
 const uint8_t icon_bit[] =

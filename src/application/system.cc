@@ -8,15 +8,15 @@
 #include "display_task.h"
 #include "sharc_task.h"
 
-volatile uint32_t tap_temp;
-uint8_t System::cab_type = 0;
-uint8_t System::tun_del_val;
-int16_t mstEqMidFreq;
+volatile uint32_t __CCM_BSS__ tap_temp;
+uint8_t __CCM_BSS__ System::cab_type = 0;
+uint8_t __CCM_BSS__ System::tun_del_val;
+int16_t __CCM_BSS__ mstEqMidFreq;
 uint8_t __CCM_BSS__ sys_para[512] =
 {/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
 /*foot3*/0,/*calibrate*/0, 0, 0xff, 0xf};
 
-float tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
+float __CCM_BSS__ tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
 const uint16_t bpm_time[] =
 		{2727, 2609, 2500, 2400, 2308, 2222, 2143, 2069, 2000, 1935, 1875, 1818, 1765, 1714, 1667, 1622, 1579, 1538, 1500, 1463,
