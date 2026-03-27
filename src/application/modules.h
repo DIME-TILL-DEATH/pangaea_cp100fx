@@ -1,45 +1,6 @@
 #ifndef MODULES_H_
 #define MODULES_H_
 
-enum {
-	amp = 0, cab, eq, delay, phas, fl, chor, early, reve, trem, pream, gate, compr, moog,
-	cab_m = 41,
-	vol, cab1_pan, cab1_del, cab2_vol, cab2_pan, cab2_del,
-	eq1,eq2,eq3,eq4,eq5,
-	hpf_v,lpf_v,pre_v,
-	phaser_vol,phaser_rate,phaser_wdt,phaser_cnt,phaser_feedback,phaser_type,
-	chor_volum,chor_rat,chor_width,chor_del,chor_typ,
-	d_vol,d_fed,d_lp,d_hp,d_pan,dp_vol,dp_pan,dp_d,d_mod,d_ra,d_dir,
-	fl_v,fl_lfo,fl_r,fl_w,fl_d,fl_f,
-	r_vol,r_time,r_size,r_dump,r_lp,r_hp,r_det,
-	/*tremolo*/tr_vol,tr_rate,tr_lfo,tr_m_s,
-	pres_lev,
-	/*amp_sim*/am_v,am_mode,am_out,
-	/*early refl*/early_vol,early_type,
-	/*eq_b_f*/f1,f2,f3,f4,f5,
-	/*eq_b_q*/q1,q2,q3,q4,q5,
-	/*preamp*/pre_gain,pre_volume,pre_0,pre_low,pre_mid,pre_high,
-	/*gate*/gate_thr,gate_att,gate_dec,
-	/*compressor*/comp_thr,comp_ra,comp_v,comp_at,comp_kn,
-	/*HPF_mod*/hpf_ph,hpf_fl,hpf_ch,
-	/*del_tap*/d_tap_t,
-	/*tremolo_tap*/t_tap_t,
-	/*moog*/mog_mix,mog_ftype,mog_fmod,mog_rate,mog_lo,mog_hi,mog_res,mog_th,mog_at,mog_re,mog_vo,mog_ext,
-	/*rever type*/rev_t, rev_di,
-	/*moog gen type*/mog_gen_t,
-	vol_contr,
-	eq_pr_po,
-	delay_tim_lo, delay_tim_hi,
-	phas_pos,
-	flan_pos,
-	r_pre,
-	/*+++foot ind*/fo1,fo2,fo3,fo11,fo12,fo13,
-	/*+++trem lfo type*/tr_lfo_t,
-	d_tail,
-	r_tail,
-	preset_att = 510,
-	bpm_del = 511
-};
 
 extern const char* preamp_on_string;
 
@@ -49,17 +10,18 @@ enum dsp_enable_pos_t
 	ENABLE_REVERB, ENABLE_TREMOLO, ENABLE_PREAMP, ENABLE_GATE, ENABLE_COMPRESSOR, ENABLE_RESONANCE_FILTER, ENABLE_MASTER_EQ
 };
 
+#ifdef __MONO_MOD__
 enum
 {
 	CAB_CONFIG_STEREO = 2
 };
+#endif
 
 enum
 {
 	CAB_MONO = 41,
 	PRESET_VOLUME = 95,
 	PRESET_VOLUME_CONTROL = 145,
-	FO_01 = 125, FO_02, FO_03, FO_11, FO_12, FO_13,
 	BPM_DELAY = 511
 };
 
@@ -112,7 +74,7 @@ enum compressor_parameters_t
 	COMPRESSOR_RATIO,
 	COMPRESSOR_VOLUME,
 	COMPRESSOR_ATTACK,
-	COMPRESSOR_RELEASE
+	COMPRESSOR_KNEE
 };
 
 enum

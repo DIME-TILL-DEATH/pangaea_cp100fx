@@ -3,6 +3,7 @@
 #include "eepr.h"
 #include "system.h"
 #include "preset.h"
+#include "modules.h"
 
 #include "sharc_task.h"
 
@@ -82,7 +83,7 @@ AbstractMenu* GuiModules::createCompressorMenu(AbstractMenu* parentMenu)
 	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Ratio", &currentPreset.modulesBuf[COMPRESSOR_RATIO]);
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &currentPreset.modulesBuf[COMPRESSOR_VOLUME]);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &currentPreset.modulesBuf[COMPRESSOR_ATTACK]);
-	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Release", &currentPreset.modulesBuf[COMPRESSOR_RELEASE]);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Knee", &currentPreset.modulesBuf[COMPRESSOR_KNEE]);
 
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_COMPRESSOR, i);
 
@@ -145,9 +146,9 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 	params[4] = new StringListParam("Type", &currentPreset.modulesBuf[AMP_TYPE],
 		 {"  PP 6L6  ", "  PP EL34 ", "  SE 6L6  ", "  SE EL34 ", " AMT TC-3 ",
 		  "California",	"British M ", "British L ", "    Flat   ","Calif mod ",
-		  "Calif vint", "PVH PR0RS0", "PVH PR5RS5", "PVH PR8RS7", "PVH PR9RS8",
+		  "Calif vint", "PVH PR0RS0", "PVH PR5RS5", "PVH PR8RS7", "PVH PR9RS8",/*
 		 "PA Modern ", "PP Amp 6L6", "PP AmpEL34", "SE Amp 6L6", "PVH IC V1 ",
-		 "PVH IC V2 ", "PVH PR00  ", "PVH PR98  "}, 11);
+		 "PVH IC V2 ", "PVH PR00  ", "PVH PR98  "*/}, 11);
 #endif
 
 	params[4]->setDspAddress(DSP_ADDRESS_AMP_TYPE, AMP_TYPE_POS);
@@ -171,8 +172,15 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 		const uint8_t paramNum = 2;
 		BaseParam* params[paramNum];
 
+#ifdef __MONO_MOD__
 		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 1", &GuiModules::createCab1Menu, nullptr);
 		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 2", &GuiModules::createCab2Menu, nullptr);
+#endif
+
+#ifdef __STEREO_MOD__
+		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, nullptr);
+		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, nullptr);
+#endif
 
 		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
 		paramsMenu->setParams(params, paramNum);
@@ -198,13 +206,19 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab1BrowserMenu);
 
+#ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN1]);
 		params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN1_POS);
 	}
 	else params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", nullptr);
+#endif
 
+#ifdef __STEREO_MOD__
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN1]);
+	params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN1_POS);
+#endif
 
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, "Volume", &currentPreset.modulesBuf[IR_VOLUME1]);
 	params[3]->setDisplayPosition(42);
@@ -234,13 +248,19 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab2BrowserMenu);
 
+#ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN2]);
 		params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN2_POS);
 	}
 	else params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", nullptr);
+#endif
 
+#ifdef __STEREO_MOD__
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN2]);
+	params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN2_POS);
+#endif
 
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, "Volume", &currentPreset.modulesBuf[IR_VOLUME2]);
 	params[3]->setDspAddress(DSP_ADDRESS_CAB, IR_VOLUME2_POS);

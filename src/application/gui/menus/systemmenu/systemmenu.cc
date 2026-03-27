@@ -132,7 +132,7 @@ bool SystemMenu::editingFinished()
 		}
 	}
 #endif
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 
 	return true;
 }

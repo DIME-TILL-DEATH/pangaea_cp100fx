@@ -136,6 +136,6 @@ void AttenuatorMenu::exitMenu()
 	if(sys_para[System::ATTENUATOR_MODE])
 		EEPROM_SavePreset(currentPresetNumber, &currentPreset);
 
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 }

@@ -123,7 +123,7 @@ void Dialog::keyUp()
 		}
 		case TDialogType::RestartDevice:
 		{
-			EEPROM_WriteSys();
+			EEPROM_SaveSystemData();
 			topLevelMenu->returnFromChildMenu();
 			break;
 		}
@@ -157,7 +157,7 @@ void Dialog::encoderPressed()
 				}
 				case TDialogType::RestartDevice:
 				{
-					EEPROM_WriteSys();
+					EEPROM_SaveSystemData();
 					topLevelMenu->returnFromChildMenu();
 					break;
 				}
@@ -176,7 +176,7 @@ void Dialog::encoderPressed()
 				}
 				case TDialogType::RestartDevice:
 				{
-					EEPROM_WriteSys();
+					EEPROM_SaveSystemData();
 					NVIC_SystemReset();
 					topLevelMenu->returnFromChildMenu(); //dummy
 					break;

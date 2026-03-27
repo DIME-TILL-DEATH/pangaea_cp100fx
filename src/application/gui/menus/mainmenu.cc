@@ -36,7 +36,7 @@ void MainMenu::show(TShowMode swhoMode)
 	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	m_preselectedPresetNum = currentPresetNumber;
-	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 
 	DisplayTask->Clear();
 	refresh();
@@ -56,9 +56,9 @@ void MainMenu::task()
 		{
 			DisplayTask->ClearString(87 , 0 , Font::fnt33x30 , 39);
 		}
-		DisplayTask->FswInd(0, m_selectedPresetBrief.modules.foot_ind_press[0], m_selectedPresetBrief.modules.foot_ind_hold[0]);
-		DisplayTask->FswInd(1, m_selectedPresetBrief.modules.foot_ind_press[1], m_selectedPresetBrief.modules.foot_ind_hold[1]);
-		DisplayTask->FswInd(2, m_selectedPresetBrief.modules.foot_ind_press[2], m_selectedPresetBrief.modules.foot_ind_hold[2]);
+		DisplayTask->FswInd(0, m_selectedPresetBrief.paramData.foot_ind_press[0], m_selectedPresetBrief.paramData.foot_ind_hold[0]);
+		DisplayTask->FswInd(1, m_selectedPresetBrief.paramData.foot_ind_press[1], m_selectedPresetBrief.paramData.foot_ind_hold[1]);
+		DisplayTask->FswInd(2, m_selectedPresetBrief.paramData.foot_ind_press[2], m_selectedPresetBrief.paramData.foot_ind_hold[2]);
 	}
 }
 
@@ -202,7 +202,7 @@ void MainMenu::presetUp()
 	if(m_preselectedPresetNum == 98) m_preselectedPresetNum = 0;
 	else m_preselectedPresetNum++;
 
-	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 	refresh();
 
 	restartBlinking(1);
@@ -213,7 +213,7 @@ void MainMenu::presetDown()
 	if(m_preselectedPresetNum == 0) m_preselectedPresetNum = 98;
 	else m_preselectedPresetNum -= 1;
 
-	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 	refresh();
 
 	restartBlinking(1);
@@ -222,7 +222,7 @@ void MainMenu::presetDown()
 void MainMenu::presetChoose(uint8_t presetNum)
 {
 	m_preselectedPresetNum = presetNum;
-	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 	refresh();
 }
 
@@ -230,7 +230,7 @@ void MainMenu::presetConfirm()
 {
 	currentPresetNumber = m_preselectedPresetNum;
 
-	EEPROM_LoadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 
 	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
 	Preset::Change(currentPresetNumber);

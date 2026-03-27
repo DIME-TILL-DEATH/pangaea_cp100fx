@@ -161,7 +161,7 @@ void MasterEqMenu::encoderCounterClockwise()
 
 void MasterEqMenu::keyUp()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->returnFromChildMenu();
 }
 
@@ -179,38 +179,38 @@ void MasterEqMenu::keyDown()
 		show();
 	}
 
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
 }
 
 void MasterEqMenu::key1()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key1();
 }
 
 void MasterEqMenu::key2()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key2();
 }
 
 void MasterEqMenu::key3()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void MasterEqMenu::key4()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key4();
 }
 
 void MasterEqMenu::key5()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key5();
 }
 

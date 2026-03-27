@@ -24,7 +24,7 @@
 #include "display_task.h"
 #include "io_task.h"
 #include "ui_task.h"
-#include <tuner_task.h>
+#include "tuner_task.h"
 #include "controllers_task.h"
 #include "sdtest_task.h"
 #include "midi_task.h"

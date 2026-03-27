@@ -236,28 +236,46 @@ typedef struct
 
     uint8_t tremolo_lfo_type;
 
+#ifdef __STEREO_MOD__
+    uint8_t in_left_en;
+	uint8_t in_right_en;
+	uint8_t left_pan;
+	uint8_t right_pan;
+#endif
+
     uint8_t delay_tail;
     uint8_t reverb_tail;
 
+#ifdef __MONO_MOD__
     uint8_t dummy2[349];
-
     uint8_t attenuator;
+#endif
+
+#ifdef __STEREO_MOD__
+    uint8_t dummy2[346];
+#endif
 
     uint8_t bpm_delay;
 }TModulesData;
 #pragma pack(pop)
 
-#pragma pack(push, 1)
+typedef struct
+{
+	uint8_t name[15];
+	uint8_t comment[15];
+
+	TModulesData paramData;
+
+	char cab1Name[64];
+	char cab2Name[64];
+}TPresetBrief;
+
 typedef struct
 {
 	uint8_t name[PRESET_NAME_STRING_SIZE];
 	uint8_t comment[PRESET_COMMENT_STRING_SIZE];
 
-	union
-	{
-		TModulesData paramData;
-		uint8_t modulesBuf[512];
-	};
+	TModulesData paramData;
 
 	Controller::TController controller[Controller::controllersCount];
 
@@ -267,6 +285,35 @@ typedef struct
 	uint8_t set;
 
 	uint16_t delayTime;
+}TPresetHeader;
+
+#pragma pack(push, 1)
+typedef struct
+{
+
+	union{
+		TPresetHeader presetHeader;
+		struct{
+			uint8_t name[PRESET_NAME_STRING_SIZE];
+			uint8_t comment[PRESET_COMMENT_STRING_SIZE];
+
+			union
+			{
+				TModulesData paramData;
+				uint8_t modulesBuf[512];
+			};
+
+			Controller::TController controller[Controller::controllersCount];
+
+			uint8_t dummyFill[512 - sizeof(Controller::TController) * Controller::controllersCount - 2];
+
+			uint8_t pcOut;
+			uint8_t set;
+
+			uint16_t delayTime;
+		};
+	};
+
 
 	union{
 		uint8_t cabBuf[CAB_DATA_SIZE * 3 + CAB_NAME_STRING_SIZE * 2];
@@ -277,7 +324,9 @@ typedef struct
 			uint8_t cab2Data[CAB_DATA_SIZE];
 			uint8_t cab2NameSize;
 			uint8_t cab2Name[CAB_NAME_STRING_SIZE - 1];
+#ifdef __MONO_MOD__
 			uint8_t cabAuxData[CAB_DATA_SIZE];
+#endif
 		};
 	};
 
@@ -285,17 +334,6 @@ typedef struct
 	uint8_t currentImpulseName[256];
 }TPresetData;
 #pragma pack(pop)
-
-typedef struct
-{
-	uint8_t name[15];
-	uint8_t comment[15];
-
-	TModulesData modules;
-
-	char cab1Name[64];
-	char cab2Name[64];
-}TPresetBrief;
 
 typedef struct
 {
@@ -327,6 +365,8 @@ extern uint16_t trem_time;
 
 void Change(uint8_t presetNumber);
 void SetDefaultValues(TPresetData* preset);
+void SetDefaultValues(TPresetHeader* preset);
+void Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selectionMask);
 void Erase();
 }
 

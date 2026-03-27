@@ -62,15 +62,6 @@ void CopySelectMenu::task()
 	}
 }
 
-void CopySelectMenu::copyPreset(const Preset::TSelectionMask& selectionMask, uint8_t targetPresetNum)
-{
-	EEPROM_CopyPreset(targetPresetNum, selectionMask);
-	SharcTask->sendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &tempDataBuffer[0], targetPresetNum+1);
-
-//	Preset::Change(); // what for? Load initial? => send current whithout drawbacks
-
-}
-
 void CopySelectMenu::encoderPressed()
 {
 	switch(element[m_elementNum].type)
@@ -79,7 +70,7 @@ void CopySelectMenu::encoderPressed()
 		{
 			DisplayTask->Clear();
 			DisplayTask->StringOut(38, 2, Font::fnt12x13, Font::fnsNormal, (uint8_t*)"Copy OK!");
-			copyPreset(m_selectionMask, m_targetPresetNum);
+			Preset::Copy(m_targetPresetNum, m_selectionMask);
 			m_copied = 1;
 			restartBlinking(0);
 			break;

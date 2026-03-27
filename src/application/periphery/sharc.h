@@ -43,6 +43,9 @@ enum dsp_module_address_t
 	DSP_ADDRESS_RESONANCE_FILTER,
 	DSP_ADDRESS_MUTE,
 	DSP_ADDRESS_GLOBAL_TEMPO
+#ifdef __STEREO_MOD__
+	DSP_ADDRESS_INPUT_CONFIG
+#endif
 };
 
 enum dsp_indicator_source_t

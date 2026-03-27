@@ -104,7 +104,7 @@ void PresetActionsMenu::keyDown()
 
 void PresetActionsMenu::updatePresetData()
 {
-	EEPROM_LoadBriefPreset(targetPresetNum, &m_selectedPresetBrief);
+	EEPROM_LoadPresetBrief(targetPresetNum, &m_selectedPresetBrief);
 
 	DisplayTask->ClearString(2, 0, Font::fntSystem, 14);
 	DisplayTask->ClearString(2, 1, Font::fntSystem, 14);

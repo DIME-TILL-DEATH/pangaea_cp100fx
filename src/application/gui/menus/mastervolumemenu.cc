@@ -68,36 +68,36 @@ void MasterVolumeMenu::encoderCounterClockwise()
 
 void MasterVolumeMenu::keyUp()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void MasterVolumeMenu::key1()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key1();
 }
 
 void MasterVolumeMenu::key2()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void MasterVolumeMenu::key3()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key3();
 }
 
 void MasterVolumeMenu::key4()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key4();
 }
 
 void MasterVolumeMenu::key5()
 {
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key5();
 }

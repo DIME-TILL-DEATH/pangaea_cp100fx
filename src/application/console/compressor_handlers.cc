@@ -37,8 +37,8 @@ static void compressor_attack_command_handler(TTranslator* rl, TTranslator::cons
 
 static void compressor_release_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modulesBuf[COMPRESSOR_RELEASE], rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_RELEASE_POS, currentPreset.modulesBuf[COMPRESSOR_RELEASE]);
+	default_param_handler(&currentPreset.modulesBuf[COMPRESSOR_KNEE], rl, args, count);
+	SharcTask->setParameter(DSP_ADDRESS_COMPRESSOR, COMPRESSOR_RELEASE_POS, currentPreset.modulesBuf[COMPRESSOR_KNEE]);
 }
 
 

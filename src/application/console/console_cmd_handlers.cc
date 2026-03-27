@@ -350,8 +350,7 @@ static void copyto_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	Preset::TSelectionMask selectionMask;
 	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(Preset::TSelectionMask));
 
-	EEPROM_CopyPreset(presetNum, selectionMask);
-	SharcTask->sendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &tempDataBuffer[0], presetNum+1);
+	Preset::Copy(presetNum, selectionMask);
 }
 
 static void erase_preset_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
@@ -450,7 +449,7 @@ static void plist_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 	for (int p = 0; p < 99; p++)
 	{
 		Preset::TPresetBrief presetData;
-		EEPROM_LoadBriefPreset(p, &presetData);
+		EEPROM_LoadPresetBrief(p, &presetData);
 
 		char *cab1NameSrc = presetData.cab1Name + 1;
 		char *cab2NameSrc = presetData.cab2Name + 1;
@@ -486,7 +485,7 @@ static void plist_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
 
 		uint8_t enabled[14];
-		kgp_sdk_libc::memcpy(enabled, &presetData.modules.switches, 14);
+		kgp_sdk_libc::memcpy(enabled, &presetData.paramData.switches, 14);
 		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
 	}
 	msg_console("\n");
@@ -503,7 +502,7 @@ static void pbrief_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 		msg_console("%s", args[0]);
 
 		Preset::TPresetBrief presetData;
-		EEPROM_LoadBriefPreset(presetNum, &presetData);
+		EEPROM_LoadPresetBrief(presetNum, &presetData);
 
 		char *cab1NameSrc = presetData.cab1Name + 1;
 		char *cab2NameSrc = presetData.cab2Name + 1;
@@ -539,7 +538,7 @@ static void pbrief_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 		msg_console("\r%d|%s|%s|%s|%s|", presetNum, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
 
 		uint8_t enabled[14];
-		kgp_sdk_libc::memcpy(enabled, &presetData.modules.switches, 14);
+		kgp_sdk_libc::memcpy(enabled, &presetData.paramData.switches, 14);
 		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
 
 		msg_console("\n");
@@ -668,7 +667,7 @@ static void controller_command_handler(TTranslator* rl, TTranslator::const_symbo
 	}
 
 ending:
-	EEPROM_WriteSys();
+	EEPROM_SaveSystemData();
 	msg_console("\n");
 }
 

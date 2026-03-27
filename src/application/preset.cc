@@ -18,7 +18,7 @@ uint16_t __CCM_BSS__ Preset::moog_time;
 uint16_t __CCM_BSS__ Preset::trem_time;
 
 uint8_t __CCM_BSS__ tempCabBuffer[CAB_DATA_SIZE * 2];
-uint8_t __CCM_BSS__ tempDataBuffer[512]; // sizeof(TModulesData)
+uint8_t __CCM_BSS__ tempDataBuffer[sizeof(Preset::TPresetHeader)]; // sizeof(TModulesData)
 
 volatile uint8_t __CCM_BSS__ currentPresetNumber;
 
@@ -38,7 +38,7 @@ void Preset::Change(uint8_t presetNumber)
 	if(sys_para[System::ATTENUATOR_MODE])
 		IOTask->potWrite();
 
-	EEPROM_WriteSys(); // save current preset number
+	EEPROM_SaveSystemData(); // save current preset number
 //-----------------------------------------------------------
 	FileSystemTask->Object().name = emb_string((char*)&currentPreset.currentImpulsePath[0]);
 	FileSystemTask->Object().startup = emb_string((char*)&currentPreset.currentImpulseName[0]);
@@ -62,17 +62,34 @@ void Preset::Change(uint8_t presetNumber)
 	EXPR_StoreLevel();
 }
 
-void Preset::Erase()
+void Preset::SetDefaultValues(Preset::TPresetData* preset)
 {
-	EEPROM_PresetErase(currentPresetNumber);
-	Preset::SetDefaultValues(&currentPreset);
+	SetDefaultValues(&preset->presetHeader);
 
-	SharcTask->eraseCab1(currentPresetNumber+1);
+	for(uint8_t i=0; i<Controller::controllersCount; i++)
+	{
+		preset->controller[i].src = 0;
+		preset->controller[i].dst = Controller::PresetLevel;
+		preset->controller[i].minVal = 0;
+		preset->controller[i].maxVal = 127;
+	}
+
+	preset->cab1Data[0] = 0xff;
+	preset->cab1Data[1] = 0xff;
+	preset->cab1Data[2] = 0x7f;
+
 	if(System::cab_type == CAB_CONFIG_STEREO)
-		SharcTask->eraseCab2(currentPresetNumber+1);
+	{
+		preset->cab2Data[0] = 0xff;
+		preset->cab2Data[1] = 0xff;
+		preset->cab2Data[2] = 0x7f;
+	}
+
+	preset->delayTime = 500;
+	preset->paramData.bpm_delay = 120;
 }
 
-void Preset::SetDefaultValues(Preset::TPresetData* preset)
+void Preset::SetDefaultValues(Preset::TPresetHeader* preset)
 {
 	kgp_sdk_libc::memcpy(preset->name, "Preset", 6);
 	kgp_sdk_libc::memcpy(preset->comment, "Comment", 7);
@@ -138,27 +155,195 @@ void Preset::SetDefaultValues(Preset::TPresetData* preset)
 	preset->paramData.tremolo.rate = 63;
 
 	preset->paramData.preset_volume = 127;
+}
 
-	for(uint8_t i=0; i<Controller::controllersCount; i++)
+void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selectionMask)
+{
+	if(!EEPROM_LoadPresetHeader(targetPresetNum, (Preset::TPresetHeader*)tempDataBuffer))
+		Preset::SetDefaultValues((Preset::TPresetHeader*)tempDataBuffer);
+
+	Preset::TPresetHeader* copyPreset = (Preset::TPresetHeader*)tempDataBuffer;
+
+	if(selectionMask.name)
+		kgp_sdk_libc::memcpy(copyPreset->name, currentPreset.name, PRESET_NAME_STRING_SIZE);
+
+	if(selectionMask.comment)
+		kgp_sdk_libc::memcpy(copyPreset->comment, currentPreset.comment, PRESET_COMMENT_STRING_SIZE);
+
+	if(selectionMask.rf)
 	{
-		preset->controller[i].src = 0;
-		preset->controller[i].dst = Controller::PresetLevel;
-		preset->controller[i].minVal = 0;
-		preset->controller[i].maxVal = 127;
+		copyPreset->paramData.resonance_filter = currentPreset.paramData.resonance_filter;
+		copyPreset->paramData.switches.resonance_filter = currentPreset.paramData.switches.resonance_filter;
+		copyPreset->paramData.resonance_filter_gen_type = currentPreset.paramData.resonance_filter_gen_type;
 	}
 
-	preset->delayTime = 500;
+	if(selectionMask.gt)
+	{
+		copyPreset->paramData.gate = currentPreset.paramData.gate;
+		copyPreset->paramData.switches.gate = currentPreset.paramData.switches.gate;
+	}
 
-	preset->paramData.bpm_delay = 120;
+	if(selectionMask.cm)
+	{
+		copyPreset->paramData.compressor = currentPreset.paramData.compressor;
+		copyPreset->paramData.switches.compressor = currentPreset.paramData.switches.compressor;
+	}
 
-	preset->cab1Data[0] = 0xff;
-	preset->cab1Data[1] = 0xff;
-	preset->cab1Data[2] = 0x7f;
+	if(selectionMask.pr)
+	{
+		copyPreset->paramData.preamp = currentPreset.paramData.preamp;
+		copyPreset->paramData.switches.preamp = currentPreset.paramData.switches.preamp;
+	}
 
+	if(selectionMask.pa)
+	{
+		copyPreset->paramData.pa = currentPreset.paramData.pa;
+		copyPreset->paramData.switches.amp = currentPreset.paramData.switches.amp;
+		copyPreset->paramData.presence = currentPreset.paramData.presence;
+	}
+
+	if(selectionMask.ir)
+	{
+		copyPreset->paramData.cab1 = currentPreset.paramData.cab1;
+		copyPreset->paramData.cab2 = currentPreset.paramData.cab2;
+		copyPreset->paramData.switches.cab = currentPreset.paramData.switches.cab;
+
+		if(EEPROM_LoadCabData(targetPresetNum, tempCabBuffer))
+		{
+
+		}
+		else
+		{
+
+		}
+//		copyPreset->cab1NameSize = currentPreset.cab1NameSize;
+//		kgp_sdk_libc::memcpy(copyPreset->cab1Name, currentPreset.cab1Name, CAB_NAME_STRING_SIZE - 1);
+//		kgp_sdk_libc::memcpy(copyPreset->cab1Data, currentPreset.cab1Data, CAB_DATA_SIZE);
+//
+//		if(System::cab_type == CAB_CONFIG_STEREO)
+//		{
+//			copyPreset->cab2NameSize = currentPreset.cab2NameSize;
+//			kgp_sdk_libc::memcpy(copyPreset->cab2Name, currentPreset.cab2Name, CAB_NAME_STRING_SIZE - 1);
+//			kgp_sdk_libc::memcpy(copyPreset->cab2Data, currentPreset.cab2Data, CAB_DATA_SIZE);
+//		}
+//		else
+//			kgp_sdk_libc::memcpy(copyPreset->cabAuxData, currentPreset.cabAuxData, CAB_DATA_SIZE);
+//
+//		kgp_sdk_libc::memcpy(copyPreset->currentImpulseName, currentPreset.currentImpulseName, 256);
+//		kgp_sdk_libc::memcpy(copyPreset->currentImpulsePath, currentPreset.currentImpulsePath, 256);
+	}
+
+	if(selectionMask.eq)
+	{
+		for(uint8_t i = 0; i<5; i++)
+		{
+			copyPreset->paramData.eq_freq[i] = currentPreset.paramData.eq_freq[i];
+			copyPreset->paramData.eq_gain[i] = currentPreset.paramData.eq_gain[i];
+			copyPreset->paramData.eq_q[i] = currentPreset.paramData.eq_q[i];
+		}
+		copyPreset->paramData.switches.eq = currentPreset.paramData.switches.eq;
+		copyPreset->paramData.eq_pre_post = currentPreset.paramData.eq_pre_post;
+		copyPreset->paramData.lpf = currentPreset.paramData.lpf;
+		copyPreset->paramData.hpf = currentPreset.paramData.hpf;
+	}
+
+	if(selectionMask.ph)
+	{
+		copyPreset->paramData.phaser = currentPreset.paramData.phaser;
+		copyPreset->paramData.switches.phaser = currentPreset.paramData.switches.phaser;
+		copyPreset->paramData.hpf_phaser = currentPreset.paramData.hpf_phaser;
+		copyPreset->paramData.phaser_pre_post = currentPreset.paramData.phaser_pre_post;
+	}
+
+	if(selectionMask.fl)
+	{
+		copyPreset->paramData.flanger = currentPreset.paramData.flanger;
+		copyPreset->paramData.switches.flanger = currentPreset.paramData.switches.flanger;
+		copyPreset->paramData.hpf_flanger = currentPreset.paramData.hpf_flanger;
+		copyPreset->paramData.flanger_pre_post = currentPreset.paramData.flanger_pre_post;
+	}
+
+	if(selectionMask.ch)
+	{
+		copyPreset->paramData.chorus = currentPreset.paramData.chorus;
+		copyPreset->paramData.switches.chorus = currentPreset.paramData.switches.chorus;
+		copyPreset->paramData.hpf_chorus = currentPreset.paramData.hpf_chorus;
+	}
+
+	if(selectionMask.dl)
+	{
+		copyPreset->paramData.delay = currentPreset.paramData.delay;
+		copyPreset->paramData.switches.delay = currentPreset.paramData.switches.delay;
+		copyPreset->paramData.delay_tail = currentPreset.paramData.delay_tail;
+		copyPreset->paramData.delay_tap = currentPreset.paramData.delay_tap;
+		copyPreset->paramData.delay_time = currentPreset.paramData.delay_time;
+
+		copyPreset->delayTime = currentPreset.delayTime;
+		copyPreset->paramData.bpm_delay = currentPreset.paramData.bpm_delay;
+	}
+
+	if(selectionMask.er)
+	{
+		copyPreset->paramData.early_reflections = currentPreset.paramData.early_reflections;
+		copyPreset->paramData.switches.early_reflections = currentPreset.paramData.switches.early_reflections;
+	}
+
+	if(selectionMask.rv)
+	{
+		copyPreset->paramData.reverb = currentPreset.paramData.reverb;
+		copyPreset->paramData.switches.reverb = currentPreset.paramData.switches.reverb;
+		copyPreset->paramData.reverb_diffusion = currentPreset.paramData.reverb_diffusion;
+		copyPreset->paramData.reverb_predelay = currentPreset.paramData.reverb_predelay;
+		copyPreset->paramData.reverb_tail = currentPreset.paramData.reverb_tail;
+		copyPreset->paramData.reverb_type = currentPreset.paramData.reverb_type;
+	}
+
+	if(selectionMask.tr)
+	{
+		copyPreset->paramData.tremolo = currentPreset.paramData.tremolo;
+		copyPreset->paramData.switches.tremolo = currentPreset.paramData.switches.tremolo;
+		copyPreset->paramData.tremolo_tap = currentPreset.paramData.tremolo_tap;
+		copyPreset->paramData.tremolo_lfo_type = currentPreset.paramData.tremolo_lfo_type;
+	}
+
+	if(selectionMask.pv)
+		copyPreset->paramData.preset_volume = currentPreset.paramData.preset_volume;
+
+	if(selectionMask.att)
+		copyPreset->paramData.attenuator = currentPreset.paramData.attenuator;
+
+	if(selectionMask.controllers)
+	{
+		for(uint16_t i = 0 ; i < Controller::controllersCount ; i++)
+		{
+			copyPreset->controller[i].src = currentPreset.controller[i].src;
+			copyPreset->controller[i].dst = currentPreset.controller[i].dst;
+			copyPreset->controller[i].minVal = currentPreset.controller[i].minVal;
+			copyPreset->controller[i].maxVal = currentPreset.controller[i].maxVal;
+		}
+	}
+
+#ifdef __STEREO_MOD__
+    copyPreset->in_left_en = currentPreset.in_left_en;
+	copyPreset->in_right_en = currentPreset.in_right_en;
+	copyPreset->left_pan = currentPreset.left_pan;
+	copyPreset->right_pan = currentPreset.right_pan;
+#endif
+
+	copyPreset->pcOut = currentPreset.pcOut;
+	copyPreset->set = currentPreset.set;
+
+	EEPROM_SavePreset(targetPresetNum, (Preset::TPresetData*)tempDataBuffer);
+	SharcTask->sendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &tempDataBuffer[0], targetPresetNum+1);
+
+}
+
+void Preset::Erase()
+{
+	EEPROM_ErasePreset(currentPresetNumber);
+	Preset::SetDefaultValues(&currentPreset);
+
+	SharcTask->eraseCab1(currentPresetNumber+1);
 	if(System::cab_type == CAB_CONFIG_STEREO)
-	{
-		preset->cab2Data[0] = 0xff;
-		preset->cab2Data[1] = 0xff;
-		preset->cab2Data[2] = 0x7f;
-	}
+		SharcTask->eraseCab2(currentPresetNumber+1);
 }

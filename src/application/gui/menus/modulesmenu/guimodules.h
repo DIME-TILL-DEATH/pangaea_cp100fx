@@ -1,10 +1,7 @@
 #ifndef GUIMODULE_H_
 #define GUIMODULE_H_
 
-#include "../abstractmenu.h"
-//#include "modulesmenu.h"
-
-#include "modules.h"
+#include "abstractmenu.h"
 
 namespace GuiModules
 {

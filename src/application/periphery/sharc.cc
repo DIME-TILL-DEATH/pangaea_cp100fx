@@ -124,6 +124,7 @@ void SHARC_LoadAllData()
 
 			for(uint32_t ii = 0; ii<4096; ii++) //CAB_DATA_SIZE / 3
 			{
+#ifdef __MONO_MOD__
 				if(System::cab_type == CAB_CONFIG_STEREO)
 				{
 					buf = currentPreset.cab2Data[ii*3]<<8;
@@ -136,6 +137,13 @@ void SHARC_LoadAllData()
 					buf |= currentPreset.cabAuxData[ii*3+1]<<16;
 					buf |= currentPreset.cabAuxData[ii*3+2]<<24;
 				}
+#endif
+
+#ifdef _STEREO_MOD__
+				buf = currentPreset.cab2Data[ii*3]<<8;
+				buf |= currentPreset.cab2Data[ii*3+1]<<16;
+				buf |= currentPreset.cab2Data[ii*3+2]<<24;
+#endif
 
 				SHARC_WaitForReady();
 				SHARC_SendData(buf>>16);
@@ -209,6 +217,7 @@ void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t* mod
 		SHARC_SendData(sendBuf);
 	}
 
+#ifdef __MONO_MOD__
 	if(System::cab_type != CAB_CONFIG_STEREO)
 	{
 		for(uint32_t i = 0; i < 4096; i++)
@@ -229,6 +238,7 @@ void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t* mod
 			SHARC_SendData(sendBuf);
 		}
 	}
+#endif
 
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
