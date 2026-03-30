@@ -4,6 +4,14 @@
 #include "appdefs.h"
 #include "console_task.h"
 
+#include "class/msc/usbd_msc_core.h"
+#include "class/cdc/usbd_cdc_core.h"
+#include "class/cdc/usbd_cdc_if.h"
+
+#include "usbd_usr.h"
+#include "usbd_desc.h"
+#include "usb_dcd_int.h"
+
 class TUsbTask: public TTask
 {
 public:
@@ -27,7 +35,7 @@ public:
 	void* UsbOtgDevHandle();
 private:
 	void Code() override;
-	void *USB_OTG_dev;
+	USB_OTG_CORE_HANDLE* USB_OTG_dev;
 
 	TQueue *rx_queue{nullptr};
 	TConsoleTask::readline_io_t* cdc_io{nullptr};

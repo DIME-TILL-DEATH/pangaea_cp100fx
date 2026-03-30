@@ -6,6 +6,8 @@
 #include "preset.h"
 #include "modules.h"
 
+#include "preamp_handlers.h"
+
 #include "ui_task.h"
 #include "display_task.h"
 #include "io_task.h"
@@ -25,10 +27,9 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 	switch(currentPreset.controller[adr].dst)
 	{
 		case Controller::Dst::PreampOnOff:
-			currentPreset.modulesBuf[ENABLE_PREAMP] = (val < 64.0f) ? 0 : 1;
-			SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PREAMP, currentPreset.modulesBuf[ENABLE_PREAMP]);
-
-			if(ConsoleTask) ConsoleTask->PrintF("%s %d\r\n", preamp_on_string, currentPreset.modulesBuf[ENABLE_PREAMP]);
+//			currentPreset.modulesBuf[ENABLE_PREAMP] = (val < 64.0f) ? 0 : 1;
+//			SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PREAMP, currentPreset.modulesBuf[ENABLE_PREAMP]);
+			UITask->setParam(preamp_on_command_handler, (val < 64.0f) ? 0 : 1);
 		break;
 //-------------------------------------------------PA-------------------------------------------------
 		case Controller::Dst::AmpOnOff:

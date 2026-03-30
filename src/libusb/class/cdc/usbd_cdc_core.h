@@ -32,16 +32,6 @@
 
 #include  "usbd_ioreq.h"
 
-/** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
-  * @{
-  */
-  
-/** @defgroup usbd_cdc
-  * @brief This file is the Header file for USBD_cdc.c
-  * @{
-  */ 
-
-
 /** @defgroup usbd_cdc_Exported_Defines
   * @{
   */ 
@@ -106,38 +96,8 @@ CDC_IF_Prop_TypeDef;
   */ 
 
 
-
-/** @defgroup USBD_CORE_Exported_Macros
-  * @{
-  */ 
-  
-/**
-  * @}
-  */ 
-
-/** @defgroup USBD_CORE_Exported_Variables
-  * @{
-  */ 
-
 extern USBD_Class_cb_TypeDef  USBD_CDC_cb;
-/**
-  * @}
-  */ 
 
-/** @defgroup USB_CORE_Exported_Functions
-  * @{
-  */
-/**
-  * @}
-  */ 
 
 #endif  // __USB_CDC_CORE_H_
-/**
-  * @}
-  */ 
 
-/**
-  * @}
-  */ 
-  
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

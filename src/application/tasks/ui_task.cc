@@ -145,6 +145,11 @@ void TUITask::Code()
 				mainMenu->presetConfirm();
 				break;
 			}
+
+			case UI_SET_PARAMETER:
+			{
+				cmd.setParamParams.funcHandler(cmd.setParamParams.value);
+			}
 		}
 	}
 }

@@ -3,6 +3,7 @@
 
 #include "appdefs.h"
 
+#include "translator.h"
 #include "fs_browser.h"
 
 #include "mainmenu.h"
@@ -62,7 +63,8 @@ public:
 		UI_FSW_SINGLE_MODE_PRESS,
 		UI_FSW_DUAL_MODE_PRESS,
 		UI_FSW_DUAL_MODE_HOLD,
-		UI_CHANGE_PRESET
+		UI_CHANGE_PRESET,
+		UI_SET_PARAMETER
 	}TCSCmdType;
 
 	typedef struct{
@@ -74,6 +76,11 @@ public:
 	}TChangePresetParams;
 
 	typedef struct{
+		TTranslator::setter_handler_t funcHandler;
+		uint32_t value;
+	}TSetParamParams;
+
+	typedef struct{
 		TCSCmdType type;
 
 		union{
@@ -82,6 +89,7 @@ public:
 			TFswEvents fswEvents;
 			TShowMenuParams showMenuParams;
 			TChangePresetParams changePresetParams;
+			TSetParamParams setParamParams;
 		};
 	}TUICmd;
 
@@ -155,6 +163,14 @@ public:
 		TUICmd cmd;
 		cmd.type = UI_CHANGE_PRESET;
 		cmd.changePresetParams.presetNumber = presetNumber;
+		Command(&cmd);
+	}
+
+	void setParam(TTranslator::setter_handler_t funcHandler, uint32_t value){
+		TUICmd cmd;
+		cmd.type = UI_SET_PARAMETER;
+		cmd.setParamParams.funcHandler = funcHandler;
+		cmd.setParamParams.value = value;
 		Command(&cmd);
 	}
 

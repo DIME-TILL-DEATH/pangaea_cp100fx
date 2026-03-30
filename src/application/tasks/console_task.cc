@@ -1,4 +1,5 @@
-#include <console_task.h>
+#include "console_task.h"
+
 #include "int2str.h"
 #include <math.h>
 
@@ -22,40 +23,9 @@ extern "C" void NoSync()
 	ConsoleTask->NoSync();
 }
 
-void TConsoleTask::Code()
-{
-	while(1)
-	{
-		read_line->Process();
-	}
-}
 
 TConsoleTask *ConsoleTask;
 
-TConsoleTask::~TConsoleTask()
-{
-	if(read_line)
-		delete read_line;
-	if(rx_sem)
-		delete rx_sem;
-	if(tx_sem)
-		delete tx_sem;
-	if(rx_queue)
-		delete rx_queue;
-}
-
-//-----------------------------------------------------------------------
-void TConsoleTask::SetSyncMode()
-{
-	read_line->SetGiveSem(console_give);
-	read_line->SetTakeSem(console_take);
-}
-//-----------------------------------------------------------------------
-void TConsoleTask::SetNoSyncMode()
-{
-	read_line->SetGiveSem(NoSync);
-	read_line->SetTakeSem(NoSync);
-}
 //-----------------------------------------------------------------------
 
 TConsoleTask::TConsoleTask(/*readline_io_t* readline_io,*/const size_t rx_queue_size)
@@ -72,75 +42,83 @@ TConsoleTask::TConsoleTask(/*readline_io_t* readline_io,*/const size_t rx_queue_
 
 	rx_sem = new TSemaphore(TSemaphore::fstBinary);
 	tx_sem = new TSemaphore(TSemaphore::fstBinary);
+}
 
-	rx_queue = new TQueue(rx_queue_size, sizeof(char));
-	rx_queue->AddToRegistry("ConsoleTask rx_queue");
+TConsoleTask::~TConsoleTask()
+{
+	if(read_line)
+		delete read_line;
+	if(rx_sem)
+		delete rx_sem;
+	if(tx_sem)
+		delete tx_sem;
+}
+
+void TConsoleTask::Code()
+{
+	while(1)
+	{
+		read_line->Process();
+	}
+}
+
+//-----------------------------------------------------------------------
+void TConsoleTask::SetSyncMode()
+{
+	read_line->SetGiveSem(console_give);
+	read_line->SetTakeSem(console_take);
+}
+
+void TConsoleTask::SetNoSyncMode()
+{
+	read_line->SetGiveSem(NoSync);
+	read_line->SetTakeSem(NoSync);
 }
 
 void TConsoleTask::SetIo(readline_io_t *readline_io)
 {
-	int ret;
-
+	// выключение перефении текущего канала связи
 	if(read_line->Disable())
-	{
-		// выключение перефении текущего канала связи
-		Disable(ret);
-	}
+		read_line->Disable();
 
-	//Suspend(Handle);
 	// установка обработчиков нового канала связи
-	SendChar(readline_io->send_char);
-	RecvChar(readline_io->recv_char);
-	SendString(readline_io->send_string);
-	RecvString(readline_io->recv_string);
-	RecvLine(readline_io->recv_line);
-	SendBuf(readline_io->send_buf);
-	RecvBuf(readline_io->recv_buf);
-	Enable(readline_io->enable);
-	Disable(readline_io->disable);
-
-	char c;
-	// очистка очереди от данных старого канала
-	while(rx_queue->Receive(&c, 0) == TQueue::TQueueReceiveResult::qrrPass)
-	{
-	}
+	read_line->SendChar(readline_io->send_char);
+	read_line->RecvChar(readline_io->recv_char);
+	read_line->SendString(readline_io->send_string);
+	read_line->RecvString(readline_io->recv_string);
+	read_line->RecvLine(readline_io->recv_line);
+	read_line->SendBuf(readline_io->send_buf);
+	read_line->RecvBuf(readline_io->recv_buf);
+	read_line->Enable(readline_io->enable);
+	read_line->Disable(readline_io->disable);
 
 	// инициализация HW нового канала связи
 	if(readline_io->console_task_hw_init)
 		readline_io->console_task_hw_init();
 
-	//Resume(Handle);
-
 	// включение перефении нового канала связи
-	Enable(ret);
-
+	if(read_line->Enable())
+		read_line->Enable();
 }
 
+//----------------------------------------------------------------------------------
 void TConsoleTask::PrintF(const char *format, ...)
 {
 	read_line->PrintF(&format);
 }
-//----------------------------------------------------------------------------------
+
 void TConsoleTask::PrintF(const char **format)
 {
 	read_line->PrintF(format);
 }
-//----------------------------------------------------------------------------------
+
 void __attribute__ ((noinline)) TConsoleTask::UnsafePrintF(const char *format, ...)
 {
 	read_line->UnsafePrintF(&format);
 }
-//----------------------------------------------------------------------------------
+
 void __attribute__ ((noinline)) TConsoleTask::UnsafePrintF(const char **format)
 {
 	read_line->UnsafePrintF(format);
 }
-//----------------------------------------------------------------------------------
-int console_printf(const char *format, ...)
-{
-	if(TTaskUtilities::GetCurrentTaskHandle() != ConsoleTask->GetHandle())
-		ConsoleTask->PrintF(&format);
-	else
-		ConsoleTask->UnsafePrintF(&format);
-	return 0;
-}
+

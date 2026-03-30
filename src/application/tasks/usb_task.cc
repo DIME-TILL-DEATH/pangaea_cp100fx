@@ -1,13 +1,5 @@
 #include "usb_task.h"
 
-#include "class/msc/usbd_msc_core.h"
-#include "class/cdc/usbd_cdc_core.h"
-#include "class/cdc/usbd_cdc_if.h"
-
-#include "usbd_usr.h"
-#include "usbd_desc.h"
-#include "usb_dcd_int.h"
-
 #include "display_task.h"
 #include "ui_task.h"
 #include "console_task.h"
@@ -25,7 +17,7 @@ extern "C" uint16_t CDC_Recv(uint8_t *buf, uint32_t len)
 int cdc_send_char(const int c)
 {
 	char tmp = c;
-	VCP_fops.pIf_DataTx((uint8_t*)&tmp, 1);
+	VCP_fops.pIf_DataTx((uint8_t*)&tmp, 1);	// CDC_Send
 	return c;
 }
 
@@ -141,10 +133,7 @@ TUsbTask::TUsbTask(TMode val) :
 				.recv_buf = cdc_recv_buf,
 			};
 
-			ConsoleTask = new TConsoleTask(256);
 			ConsoleTask->SetIo(cdc_io);
-			ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
-			ConsoleTask->Echo(false);
 			break;
 		}
 
@@ -155,8 +144,9 @@ TUsbTask::TUsbTask(TMode val) :
 		}
 	}
 
+//	kgp_sdk_libc::memset(USB_OTG_dev, 0, sizeof(USB_OTG_CORE_HANDLE));
 	USB_OTG_dev = new USB_OTG_CORE_HANDLE;
-	USBD_Init((USB_OTG_CORE_HANDLE*)USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, val==mMSC ? &USBD_MSC_cb : &USBD_CDC_cb,
+	USBD_Init(USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, val==mMSC ? &USBD_MSC_cb : &USBD_CDC_cb,
 			&USR_cb, false);
 }
 

@@ -5,10 +5,12 @@
 
 #include "sharc_task.h"
 
-static void preamp_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+
+TParamDescriptor preampOn;
+
+void preamp_on_command_handler(uint32_t value)
 {
-	default_param_handler(&currentPreset.modulesBuf[ENABLE_PREAMP], rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PREAMP, currentPreset.modulesBuf[ENABLE_PREAMP]);
+	default_param_setter(preampOn, value);
 }
 
 static void preamp_gain_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
@@ -44,7 +46,14 @@ static void preamp_high_command_handler(TTranslator* rl, TTranslator::const_symb
 
 void set_preamp_handlers(TTranslator *rl)
 {
-	rl->AddCommandHandler(preamp_on_string,  preamp_on_command_handler);
+
+	preampOn.ptr = &currentPreset.paramData.switches.preamp;
+	preampOn.handlerStr = "pr_on";
+	preampOn.dspAddress = DSP_ADDRESS_MODULES_ENABLE;
+	preampOn.dspPosition = ENABLE_PREAMP;
+
+
+	rl->AddSetterHandler(preampOn.handlerStr,  preamp_on_command_handler);
 	rl->AddCommandHandler("pr_gn",  preamp_gain_command_handler);
 	rl->AddCommandHandler("pr_vl",  preamp_volume_command_handler);
 	rl->AddCommandHandler("pr_lo",  preamp_low_command_handler);

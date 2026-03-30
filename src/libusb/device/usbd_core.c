@@ -152,7 +152,8 @@ void USBD_Init(USB_OTG_CORE_HANDLE *pdev,
   DCD_Init(pdev , coreID);
   
   /* Upon Init call usr callback */
-  pdev->dev.usr_cb->Init();
+
+//  pdev->dev.usr_cb->Init();
   
   /* Enable Interrupts */
   if (intr_enable)

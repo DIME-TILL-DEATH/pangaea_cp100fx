@@ -222,7 +222,7 @@ typedef struct _Device_cb
   /* Class Specific Endpoints*/
   uint8_t  (*DataIn)       (void *pdev , uint8_t epnum);   
   uint8_t  (*DataOut)      (void *pdev , uint8_t epnum); 
-  uint8_t  (*SOF)          (void *pdev); 
+  uint8_t  (*SOF)          (void *pdev);
   uint8_t  (*IsoINIncomplete)  (void *pdev); 
   uint8_t  (*IsoOUTIncomplete)  (void *pdev);   
 

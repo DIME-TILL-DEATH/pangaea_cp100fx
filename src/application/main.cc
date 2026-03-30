@@ -83,7 +83,6 @@ int main(void)
 	TunerTask = new TTunerTask();
 	TunerTask->Create("Tuner", 20*configMINIMAL_STACK_SIZE, 0);
 
-	//ControllerTask lower priority than UITask, becourse in UITask preset switching. No one can interrupt it
 	ControllersTask = new TControllersTask();
 	ControllersTask->Create("Controllers", 10*configMINIMAL_STACK_SIZE, 0);
 
@@ -94,7 +93,10 @@ int main(void)
 	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
 
 	SharcTask = new TSharcTask();
-	SharcTask->Create("SharcSendData", configMINIMAL_STACK_SIZE, 0);
+	SharcTask->Create("SharcSendData", 5*configMINIMAL_STACK_SIZE, 0);
+
+	ConsoleTask = new TConsoleTask(256);
+	ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
 
 	TScheduler::StartScheduler();
 }

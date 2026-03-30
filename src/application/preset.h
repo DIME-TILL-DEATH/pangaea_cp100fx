@@ -257,7 +257,6 @@ typedef struct
 
     uint8_t bpm_delay;
 }TModulesData;
-#pragma pack(pop)
 
 typedef struct
 {
@@ -287,7 +286,6 @@ typedef struct
 	uint16_t delayTime;
 }TPresetHeader;
 
-#pragma pack(push, 1)
 typedef struct
 {
 

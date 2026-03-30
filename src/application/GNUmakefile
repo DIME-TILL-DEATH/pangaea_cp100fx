@@ -18,6 +18,7 @@ LIB_FLAGS=	-I$(READLINE_SRC_DIR) \
 			-I$(SRC_DIR)/libusb/otg \
 			-I$(SRC_DIR)/application/console\
 			-I$(SRC_DIR)/application/dsp\
+			-I$(SRC_DIR)/application/modules\
 			-I$(SRC_DIR)/application/tasks\
 			-I$(SRC_DIR)/application/periphery\
 			-I$(SRC_DIR)/application/hardware\

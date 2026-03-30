@@ -4,6 +4,7 @@
 #include "supc++.h"
 #include "supstl.h"
 #include "string.h"
+#include "stdint.h"
 
 #include <map>
 #include <list>
@@ -20,8 +21,15 @@ public:
 	typedef const_symbol_type_t *const_symbol_type_ptr_t;
 
 	typedef void (*command_handler_t)(TTranslator *rl, const_symbol_type_ptr_t *argv, const size_t argc);
+	typedef void (*setter_handler_t)(uint32_t value);
+
 	typedef pair<const char*, command_handler_t> command_map_pair_t;
-	typedef map<const char*, command_handler_t, KgpCompare /*, KgpAllocator<command_map_pair_t> */> command_handler_map_t;
+	typedef pair<const char*, setter_handler_t> setter_map_pair_t;
+
+	typedef map<const char*, command_handler_t, KgpCompare> command_handler_map_t;
+	typedef map<const char*, setter_handler_t, KgpCompare> setter_handler_map_t;
+
+
 	typedef command_handler_map_t::iterator command_handler_map_iterator_t;
 
 	typedef void (*state_fnc)(int &ret);
@@ -34,14 +42,11 @@ public:
 	typedef size_t (*send_buf_fnc)(const_symbol_type_ptr_t buf, size_t len);
 	typedef size_t (*recv_buf_fnc)(symbol_type_ptr_t buf, size_t len);
 
-protected:
-
 	typedef void (*sem_fnc)();
 
 	typedef void (*symbol_handler)(TTranslator *rl);
 	typedef pair<const_symbol_type_t, symbol_handler> sym_proces_pair_t;
 	typedef map<const_symbol_type_t, symbol_handler, KgpCompare, KgpAllocator<sym_proces_pair_t> > symbol_handler_map_t;
-	//typedef unordered_map<const char, symbol_process, std::hash<const char> , compareT , KgpAllocator<sym_proces_pair_t> > symbol_process_map_t ;
 
 	typedef list<symbol_type_ptr_t, KgpAllocator<symbol_type_ptr_t> > history_t;
 
@@ -58,33 +63,25 @@ private:
 
 	symbol_handler_map_t symbol_handler_map; // ���� ������������ �������� ��������
 	command_handler_map_t command_handler_map; // ���� ������������ ���������������� ������
+	setter_handler_map_t setter_handler_map;
 
 	history_t history;   // ��������� �������
 	history_t::iterator current; // �������� ���������� �������
 	size_t pos;
 	size_t length;
 
-	state_fnc enable
-	{nullptr};
-	state_fnc disable
-	{nullptr};
+	state_fnc enable{nullptr};
+	state_fnc disable{nullptr};
 
-	send_char_fnc send_char
-	{nullptr};
-	recv_char_fnc recv_char
-	{nullptr};
+	send_char_fnc send_char{nullptr};
+	recv_char_fnc recv_char{nullptr};
 
-	send_string_fnc send_string
-	{nullptr};
-	recv_string_fnc recv_string
-	{nullptr};
-	recv_string_fnc recv_line
-	{nullptr};
+	send_string_fnc send_string{nullptr};
+	recv_string_fnc recv_string{nullptr};
+	recv_string_fnc recv_line{nullptr};
 
-	send_buf_fnc send_buf
-	{nullptr};
-	recv_buf_fnc recv_buf
-	{nullptr};
+	send_buf_fnc send_buf{nullptr};
+	recv_buf_fnc recv_buf{nullptr};
 
 	command_handler_t command_not_found;
 
@@ -107,13 +104,15 @@ public:
 
 	int Init(size_t history_depth, size_t line_len);
 	void Process();
+
 	void inline AddCommandHandler(const_symbol_type_ptr_t command, command_handler_t handler)
 	{
 		command_handler_map.insert(command_map_pair_t(command, handler));
 	}
-	void inline RemoveCommandHandler(const_symbol_type_ptr_t command)
+
+	void inline AddSetterHandler(const_symbol_type_ptr_t command, setter_handler_t handler)
 	{
-		command_handler_map.erase(command_handler_map.find(command));
+		setter_handler_map.insert(setter_map_pair_t(command, handler));
 	}
 
 	void inline GetCommandHandlerMapIterator(command_handler_map_iterator_t &begin, command_handler_map_iterator_t &end)

@@ -85,7 +85,7 @@ extern  USBD_Usr_cb_TypeDef USR_HS_cb;
   * @{
   */ 
 
-void     USBD_USR_Init(void);
+void     USBD_USR_Init(void) __attribute__((used));
 void     USBD_USR_DeviceReset (uint8_t speed);
 void     USBD_USR_DeviceConfigured (void);
 void     USBD_USR_DeviceSuspended(void);
