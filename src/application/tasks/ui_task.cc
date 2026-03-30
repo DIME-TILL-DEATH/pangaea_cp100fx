@@ -149,6 +149,7 @@ void TUITask::Code()
 			case UI_SET_PARAMETER:
 			{
 				cmd.setParamParams.funcHandler(cmd.setParamParams.value);
+				currentMenu->refresh();
 			}
 		}
 	}

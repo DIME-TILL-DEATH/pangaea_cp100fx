@@ -14,6 +14,16 @@ BaseParam::BaseParam(gui_param_type paramType, const char* name, void* paramValu
 	m_valuePtr = (uint8_t*)paramValuePtr;
 }
 
+BaseParam::BaseParam(gui_param_type paramType, const TParamDescriptor& paramDescriptor)
+{
+	m_type = paramType;
+	m_name = paramDescriptor.name;
+	m_valuePtr = paramDescriptor.ptr;
+	m_setterHandler = paramDescriptor.setterHandler;
+	m_moduleAddress = paramDescriptor.dspAddress;
+	m_bytePosition = paramDescriptor.dspPosition;
+}
+
 void BaseParam::setDspAddress(dsp_module_address_t moduleAddress, uint8_t bytePosition)
 {
 	m_moduleAddress = moduleAddress;
@@ -105,6 +115,12 @@ void BaseParam::decreaseParam()
 
 void BaseParam::setToDsp()
 {
+	if(m_setterHandler)
+	{
+		m_setterHandler(*m_valuePtr + m_offset);
+		return;
+	}
+
 	if(m_bytePosition == NOT_SEND_POS) return;
 
 	for(uint8_t i=0; i<m_byteSize; i++)

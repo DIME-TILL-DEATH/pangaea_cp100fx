@@ -4,6 +4,8 @@
 #include "appdefs.h"
 #include "controller.h"
 
+#include "modules.h"
+
 #define PRESET_NAME_STRING_SIZE 15
 #define PRESET_COMMENT_STRING_SIZE 15
 
@@ -129,15 +131,7 @@ typedef struct
     uint8_t type;
 }TErData;
 
-typedef struct
-{
-    uint8_t gain;
-    uint8_t volume;
-    uint8_t pre_0;
-    uint8_t low;
-    uint8_t mid;
-    uint8_t high;
-}TPreampData;
+
 
 typedef struct
 {

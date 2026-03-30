@@ -98,20 +98,16 @@ AbstractMenu* GuiModules::createPreampMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 7;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Gain", &currentPreset.modulesBuf[PREAMP_GAIN]);
-	params[0]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_GAIN_POS);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &currentPreset.modulesBuf[PREAMP_VOLUME]);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PreampDesc.gain);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PreampDesc.volume);
 	params[1]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_VOLUME_POS);
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", &currentPreset.modulesBuf[PREAMP_0]);
 	params[2]->setDspAddress(DSP_ADDRESS_PREAMP, NOT_SEND_POS);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", &currentPreset.modulesBuf[PREAMP_0]);
 	params[3]->setDspAddress(DSP_ADDRESS_PREAMP, NOT_SEND_POS);
-	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Low", &currentPreset.modulesBuf[PREAMP_LOW]);
-	params[4]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_LOW_POS);
-	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Mid", &currentPreset.modulesBuf[PREAMP_MID]);
-	params[5]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_MID_POS);
-	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "High", &currentPreset.modulesBuf[PREAMP_HIGH]);
-	params[6]->setDspAddress(DSP_ADDRESS_PREAMP, PREAMP_HIGH_POS);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PreampDesc.low);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PreampDesc.mid);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PreampDesc.high);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_PREAMP);
 	if(menu)

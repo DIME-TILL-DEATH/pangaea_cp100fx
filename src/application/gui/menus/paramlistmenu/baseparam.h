@@ -3,6 +3,7 @@
 
 #include "appdefs.h"
 #include "modules.h"
+#include "module_parameter.h"
 #include "sharc.h"
 
 class BaseParam
@@ -35,6 +36,7 @@ public:
 	};
 
 	BaseParam(gui_param_type paramType, const char* name, void* paramValuePtr);
+	BaseParam(gui_param_type paramType, const TParamDescriptor& paramDescriptor);
 	virtual ~BaseParam() {};
 
 	gui_param_type type() const {return m_type;};
@@ -103,6 +105,8 @@ protected:
 
 	int32_t m_minValue{0};
 	int32_t m_maxValue{127};
+
+	setter_handler_t m_setterHandler{nullptr};
 
 	void encoderSpeedIncrease();
 	void encoderSpeedDecrease();

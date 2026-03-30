@@ -3,60 +3,106 @@
 
 #include "modules.h"
 
-#include "sharc_task.h"
 
+TParamDescriptor onParamDesc = {
+	.ptr = &currentPreset.paramData.switches.preamp,
+	.handlerStr = "pr_on",
+	.dspAddress = DSP_ADDRESS_MODULES_ENABLE,
+	.dspPosition = ENABLE_PREAMP,
+	.name = "",
+	.setterHandler = preamp_on_command_handler
+};
 
-TParamDescriptor preampOn;
+TParamDescriptor gainParamDesc = {
+	.ptr = &currentPreset.paramData.preamp.gain,
+	.handlerStr = "pr_gn",
+	.dspAddress = DSP_ADDRESS_PREAMP,
+	.dspPosition = PREAMP_GAIN_POS,
+	.name = "Gain",
+	.setterHandler = preamp_gain_command_handler
+};
+
+TParamDescriptor volumeParamDesc = {
+	.ptr = &currentPreset.paramData.preamp.volume,
+	.handlerStr = "pr_vl",
+	.dspAddress = DSP_ADDRESS_PREAMP,
+	.dspPosition = PREAMP_VOLUME_POS,
+	.name = "Volume",
+	.setterHandler = preamp_volume_command_handler
+};
+
+TParamDescriptor lowParamDesc = {
+	.ptr = &currentPreset.paramData.preamp.low,
+	.handlerStr = "pr_lo",
+	.dspAddress = DSP_ADDRESS_PREAMP,
+	.dspPosition = PREAMP_LOW_POS,
+	.name = "Low",
+	.setterHandler = preamp_low_command_handler
+};
+
+TParamDescriptor midParamDesc = {
+	.ptr = &currentPreset.paramData.preamp.mid,
+	.handlerStr = "pr_mi",
+	.dspAddress = DSP_ADDRESS_PREAMP,
+	.dspPosition = PREAMP_MID_POS,
+	.name = "Mid",
+	.setterHandler = preamp_mid_command_handler
+};
+
+TParamDescriptor highParamDesc = {
+	.ptr = &currentPreset.paramData.preamp.high,
+	.handlerStr = "pr_hi",
+	.dspAddress = DSP_ADDRESS_PREAMP,
+	.dspPosition = PREAMP_HIGH_POS,
+	.name = "High",
+	.setterHandler = preamp_high_command_handler
+};
+
+TPreampDesc PreampDesc = {
+	.on = onParamDesc,
+	.gain = gainParamDesc,
+	.volume = volumeParamDesc,
+	.low = lowParamDesc,
+	.mid = midParamDesc,
+	.high = highParamDesc
+};
 
 void preamp_on_command_handler(uint32_t value)
 {
-	default_param_setter(preampOn, value);
+	default_param_setter(onParamDesc, value);
 }
 
-static void preamp_gain_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+void preamp_gain_command_handler(uint32_t value)
 {
-	default_param_handler(&currentPreset.modulesBuf[PREAMP_GAIN], rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_GAIN_POS, currentPreset.modulesBuf[PREAMP_GAIN]);
+	default_param_setter(gainParamDesc, value);
 }
 
-static void preamp_volume_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+void preamp_volume_command_handler(uint32_t value)
 {
-	default_param_handler(&currentPreset.modulesBuf[PREAMP_VOLUME], rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_VOLUME_POS, currentPreset.modulesBuf[PREAMP_VOLUME]);
+	default_param_setter(volumeParamDesc, value);
 }
 
-static void preamp_low_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+void preamp_low_command_handler(uint32_t value)
 {
-	default_param_handler(&currentPreset.modulesBuf[PREAMP_LOW], rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_LOW_POS, currentPreset.modulesBuf[PREAMP_LOW]);
+	default_param_setter(lowParamDesc, value);
 }
 
-static void preamp_mid_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+void preamp_mid_command_handler(uint32_t value)
 {
-	default_param_handler(&currentPreset.modulesBuf[PREAMP_MID], rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_MID_POS, currentPreset.modulesBuf[PREAMP_MID]);
+	default_param_setter(midParamDesc, value);
 }
 
-static void preamp_high_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+void preamp_high_command_handler(uint32_t value)
 {
-	default_param_handler(&currentPreset.modulesBuf[PREAMP_HIGH], rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_HIGH_POS, currentPreset.modulesBuf[PREAMP_HIGH]);
+	default_param_setter(highParamDesc, value);
 }
-
 
 void set_preamp_handlers(TTranslator *rl)
 {
-
-	preampOn.ptr = &currentPreset.paramData.switches.preamp;
-	preampOn.handlerStr = "pr_on";
-	preampOn.dspAddress = DSP_ADDRESS_MODULES_ENABLE;
-	preampOn.dspPosition = ENABLE_PREAMP;
-
-
-	rl->AddSetterHandler(preampOn.handlerStr,  preamp_on_command_handler);
-	rl->AddCommandHandler("pr_gn",  preamp_gain_command_handler);
-	rl->AddCommandHandler("pr_vl",  preamp_volume_command_handler);
-	rl->AddCommandHandler("pr_lo",  preamp_low_command_handler);
-	rl->AddCommandHandler("pr_mi",  preamp_mid_command_handler);
-	rl->AddCommandHandler("pr_hi",  preamp_high_command_handler);
+	rl->AddSetterHandler(onParamDesc.handlerStr,  preamp_on_command_handler);
+	rl->AddSetterHandler(gainParamDesc.handlerStr,  preamp_gain_command_handler);
+	rl->AddSetterHandler(volumeParamDesc.handlerStr,  preamp_volume_command_handler);
+	rl->AddSetterHandler(lowParamDesc.handlerStr,  preamp_low_command_handler);
+	rl->AddSetterHandler(midParamDesc.handlerStr,  preamp_mid_command_handler);
+	rl->AddSetterHandler(highParamDesc.handlerStr,  preamp_high_command_handler);
 }

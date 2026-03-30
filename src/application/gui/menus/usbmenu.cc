@@ -2,6 +2,7 @@
 
 #include "codec.h"
 
+#include "ui_task.h"
 #include "display_task.h"
 #include "usb_task.h"
 #include "sharc_task.h"
@@ -108,8 +109,8 @@ void UsbMenu::encoderPressed()
 			DisplayTask->StringOut(34, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"serial port");
 
 			// Memory leak
-//			currentMenu = mainMenu;
-//			mainMenu->show();
+			currentMenu = mainMenu;
+			mainMenu->show();
 			break;
 		}
 	}

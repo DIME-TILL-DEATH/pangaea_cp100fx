@@ -3,8 +3,8 @@
 
 #include "appdefs.h"
 
-#include "translator.h"
 #include "fs_browser.h"
+#include "module_parameter.h"
 
 #include "mainmenu.h"
 #include "usbmenu.h"
@@ -76,7 +76,7 @@ public:
 	}TChangePresetParams;
 
 	typedef struct{
-		TTranslator::setter_handler_t funcHandler;
+		setter_handler_t funcHandler;
 		uint32_t value;
 	}TSetParamParams;
 
@@ -166,7 +166,7 @@ public:
 		Command(&cmd);
 	}
 
-	void setParam(TTranslator::setter_handler_t funcHandler, uint32_t value){
+	void setParam(setter_handler_t funcHandler, uint32_t value){
 		TUICmd cmd;
 		cmd.type = UI_SET_PARAMETER;
 		cmd.setParamParams.funcHandler = funcHandler;

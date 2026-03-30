@@ -26,11 +26,7 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 
 	switch(currentPreset.controller[adr].dst)
 	{
-		case Controller::Dst::PreampOnOff:
-//			currentPreset.modulesBuf[ENABLE_PREAMP] = (val < 64.0f) ? 0 : 1;
-//			SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_PREAMP, currentPreset.modulesBuf[ENABLE_PREAMP]);
-			UITask->setParam(preamp_on_command_handler, (val < 64.0f) ? 0 : 1);
-		break;
+		case Controller::Dst::PreampOnOff: UITask->setParam(preamp_on_command_handler, (val < 64.0f) ? 0 : 1); break;
 //-------------------------------------------------PA-------------------------------------------------
 		case Controller::Dst::AmpOnOff:
 			currentPreset.modulesBuf[ENABLE_AMP] = (val < 64.0f) ? 0 : 1;
@@ -276,30 +272,12 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 			SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PRESENCE_POS, currentPreset.modulesBuf[EQ_PRESENCE]);
 		break;
 //------------------------------------------------------Preamp parameter--------------------------
-		case Controller::Dst::PreampGain:
-			currentPreset.modulesBuf[PREAMP_GAIN] = val;
-			SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_GAIN_POS, currentPreset.modulesBuf[PREAMP_GAIN]);
-		break;
+		case Controller::Dst::PreampGain: 	UITask->setParam(preamp_gain_command_handler, val); break;
+		case Controller::Dst::PreampVolume: UITask->setParam(preamp_volume_command_handler, val); break;
+		case Controller::Dst::PreampLow: 	UITask->setParam(preamp_low_command_handler, val); break;
+		case Controller::Dst::PreampMid: 	UITask->setParam(preamp_mid_command_handler, val); break;
+		case Controller::Dst::PreampHigh: 	UITask->setParam(preamp_high_command_handler, val); break;
 
-		case Controller::Dst::PreampVolume:
-			currentPreset.modulesBuf[PREAMP_VOLUME] = val;
-			SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_VOLUME_POS, currentPreset.modulesBuf[PREAMP_VOLUME]);
-		break;
-
-		case Controller::Dst::PreampLow:
-			currentPreset.modulesBuf[PREAMP_LOW] = val;
-			SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_LOW_POS, currentPreset.modulesBuf[PREAMP_LOW]);
-		break;
-
-		case Controller::Dst::PreampMid:
-			currentPreset.modulesBuf[PREAMP_MID] = val;
-			SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_MID_POS, currentPreset.modulesBuf[PREAMP_MID]);
-		break;
-
-		case Controller::Dst::PreampHigh:
-			currentPreset.modulesBuf[PREAMP_HIGH] = val;
-			SharcTask->setParameter(DSP_ADDRESS_PREAMP, PREAMP_HIGH_POS, currentPreset.modulesBuf[PREAMP_HIGH]);
-		break;
 //-------------------------------------------------------------Eq band-------------------------------
 		case Controller::Dst::EqBand1Lev:
 			currentPreset.modulesBuf[EQ_G0] = val * 0.25f;
@@ -430,8 +408,7 @@ void TControllersTask::Code()
 			}
 		}
 
-		if(currentMenu->menuType() != MENU_MAIN) // block blinking on EXPR pedal
-			UITask->refreshMenu();
+
 	}
 }
 

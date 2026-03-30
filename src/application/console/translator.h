@@ -9,6 +9,8 @@
 #include <map>
 #include <list>
 
+#include "module_parameter.h"
+
 using namespace std;
 
 class TTranslator
@@ -21,7 +23,7 @@ public:
 	typedef const_symbol_type_t *const_symbol_type_ptr_t;
 
 	typedef void (*command_handler_t)(TTranslator *rl, const_symbol_type_ptr_t *argv, const size_t argc);
-	typedef void (*setter_handler_t)(uint32_t value);
+//	typedef void (*setter_handler_t)(uint32_t value);
 
 	typedef pair<const char*, command_handler_t> command_map_pair_t;
 	typedef pair<const char*, setter_handler_t> setter_map_pair_t;
