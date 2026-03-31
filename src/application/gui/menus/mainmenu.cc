@@ -5,6 +5,8 @@
 #include "modules.h"
 #include "footswitch.h"
 
+#include "console_cmd_handlers.h"
+
 #include "controllers_task.h"
 #include "display_task.h"
 #include "filesystem_task.h"
@@ -64,17 +66,23 @@ void MainMenu::task()
 
 void MainMenu::encoderPressed()
 {
-	presetConfirm();
+	preset_change_handler(m_preselectedPresetNum);
+	refresh();
+	restartBlinking(1);
 }
 
 void MainMenu::encoderClockwise()
 {
 	presetUp();
+	refresh();
+	restartBlinking(1);
 }
 
 void MainMenu::encoderCounterClockwise()
 {
 	presetDown();
+	refresh();
+	restartBlinking(1);
 }
 
 void MainMenu::keyUp()
@@ -203,9 +211,6 @@ void MainMenu::presetUp()
 	else m_preselectedPresetNum++;
 
 	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
-	refresh();
-
-	restartBlinking(1);
 }
 
 void MainMenu::presetDown()
@@ -214,28 +219,16 @@ void MainMenu::presetDown()
 	else m_preselectedPresetNum -= 1;
 
 	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
-	refresh();
-
-	restartBlinking(1);
 }
 
 void MainMenu::presetChoose(uint8_t presetNum)
 {
 	m_preselectedPresetNum = presetNum;
 	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
-	refresh();
 }
 
 void MainMenu::presetConfirm()
 {
-	currentPresetNumber = m_preselectedPresetNum;
-
+	m_preselectedPresetNum = currentPresetNumber;
 	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
-
-	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-	Preset::Change(currentPresetNumber);
-	MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
-
-	show();
-	restartBlinking(1);
 }

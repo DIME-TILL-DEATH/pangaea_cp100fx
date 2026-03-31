@@ -40,12 +40,12 @@ extern TPreampDesc PreampDesc;
 
 void set_preamp_handlers(TTranslator *rl);
 
-void preamp_on_command_handler(uint32_t value);
-void preamp_gain_command_handler(uint32_t value);
-void preamp_volume_command_handler(uint32_t value);
-void preamp_low_command_handler(uint32_t value);
-void preamp_mid_command_handler(uint32_t value);
-void preamp_high_command_handler(uint32_t value);
+void preamp_on_handler(uint32_t value);
+void preamp_gain_handler(uint32_t value);
+void preamp_volume_handler(uint32_t value);
+void preamp_low_handler(uint32_t value);
+void preamp_mid_handler(uint32_t value);
+void preamp_high_handler(uint32_t value);
 
 
 #endif /* _CONSOLE_PREAMP_HANDLERS_H_ */

@@ -1,3 +1,5 @@
+#include "console_cmd_handlers.h"
+
 #include "translator.h"
 
 #include "sharc.h"
@@ -7,13 +9,13 @@
 #include "codec.h"
 #include "system.h"
 #include "controller.h"
+#include "modules.h"
 
 #include "console_helpers.h"
 #include "hardware_handlers.h"
 #include "resonance_filter_handlers.h"
 #include "gate_handlers.h"
 #include "compressor_handlers.h"
-#include "preamp_handlers.h"
 #include "amp_handlers.h"
 #include "ir_handlers.h"
 #include "eq_handlers.h"
@@ -70,7 +72,7 @@ static void amtver_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	msg_console("%s\r%s\n", args[0], amt_ver);
 }
 
-static void psave_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
+void psave_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	currentPreset.modulesBuf[147] = currentPreset.delayTime;
 	currentPreset.modulesBuf[148] = currentPreset.delayTime >> 8;
@@ -82,7 +84,7 @@ static void psave_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 	if(System::cab_type==CAB_CONFIG_STEREO)
 		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
-	UITask->changePreset(currentPresetNumber);
+	UITask->setParam(preset_change_handler, currentPresetNumber);
 
 	msg_console("%s\r\n", args[0]);
 }
@@ -353,10 +355,10 @@ static void copyto_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	Preset::Copy(presetNum, selectionMask);
 }
 
-static void erase_preset_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
+void erase_preset_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	Preset::Erase();
-	UITask->changePreset(currentPresetNumber);
+	UITask->setParam(preset_change_handler, currentPresetNumber);
 	msg_console("%s\r\n", args[0]);
 }
 
@@ -422,23 +424,17 @@ static void upload_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	}
 }
 
-static void pchange_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
+void preset_change_handler(uint32_t value)
 {
-	if(count > 1)
-	{
-		char *end;
-		currentPresetNumber = kgp_sdk_libc::strtol(args[1], &end, 16);
+	currentPresetNumber = value % 99;
 
-		sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-		Preset::Change(currentPresetNumber);
-		MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
+	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
+	Preset::Change(currentPresetNumber);
+	MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
 
-		msg_console("%s\r\n", args[0]);
-	}
-	else
-	{
-		msg_console("%s\rINCORRECT_ARGUMENT\n", args[0]);
-	}
+	mainMenu->presetConfirm(); //update data in main menu
+
+	console_printf("pchange\r\n");
 }
 
 static void plist_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
@@ -768,68 +764,64 @@ static void preset_volume_control_command_handler(TTranslator* rl, TTranslator::
 	default_param_handler(&currentPreset.paramData.volume_control, rl, args, count);
 }
 //------------------------------------------------------------------------------
-void ConsoleSetCmdHandlers(TTranslator *rl)
+void ConsoleSetCmdHandlers(TTranslator *translator)
 {
-	set_hardware_handlers(rl);
-	/*
-	 rl->AddCommandHandler("cc", current_cabinet_command_handler);
-	 rl->AddCommandHandler("ce", cabinet_enable_command_handler);
-	 */
+	set_hardware_handlers(translator);
 
-	rl->AddCommandHandler("amtdev", amtdev_command_handler);
-	rl->AddCommandHandler("amtver", amtver_command_handler);
+	translator->AddCommandHandler("amtdev", amtdev_command_handler);
+	translator->AddCommandHandler("amtver", amtver_command_handler);
 
-	rl->AddCommandHandler("cd", cd_command_handler);
-	rl->AddCommandHandler("ls", ls_command_handler);
-	rl->AddCommandHandler("ir", ir_command_handler);
+	translator->AddCommandHandler("cd", cd_command_handler);
+	translator->AddCommandHandler("ls", ls_command_handler);
+	translator->AddCommandHandler("ir", ir_command_handler);
 
-	rl->AddCommandHandler("upload", upload_command_handler);
+	translator->AddCommandHandler("upload", upload_command_handler);
 
-	rl->AddCommandHandler("mkdir", mkdir_command_handler);
-	rl->AddCommandHandler("rename", rename_command_handler);
-	rl->AddCommandHandler("remove", remove_command_handler);
+	translator->AddCommandHandler("mkdir", mkdir_command_handler);
+	translator->AddCommandHandler("rename", rename_command_handler);
+	translator->AddCommandHandler("remove", remove_command_handler);
 
-	rl->AddCommandHandler("copy_to", copyto_command_handler);
-	rl->AddCommandHandler("erase_preset", erase_preset_command_handler);
+	translator->AddCommandHandler("copy_to", copyto_command_handler);
+	translator->AddCommandHandler("erase_preset", erase_preset_command_handler);
 
-	rl->AddCommandHandler("pchange", pchange_command_handler);
-	rl->AddCommandHandler("psave", psave_command_handler);
+	translator->AddSetterHandler("pchange", preset_change_handler);
+	translator->AddCommandHandler("psave", psave_command_handler);
 
-	rl->AddCommandHandler("state", state_command_handler);
-	rl->AddCommandHandler("cntrls", cntrls_command_handler);
+	translator->AddCommandHandler("state", state_command_handler);
+	translator->AddCommandHandler("cntrls", cntrls_command_handler);
 
-	rl->AddCommandHandler("plist", plist_command_handler);
-	rl->AddCommandHandler("pbrief", pbrief_command_handler);
+	translator->AddCommandHandler("plist", plist_command_handler);
+	translator->AddCommandHandler("pbrief", pbrief_command_handler);
 
-	rl->AddCommandHandler("pnum", pnum_command_handler);
-	rl->AddCommandHandler("pname", pname_command_handler);
-	rl->AddCommandHandler("pcomment", pcomment_command_handler);
+	translator->AddCommandHandler("pnum", pnum_command_handler);
+	translator->AddCommandHandler("pname", pname_command_handler);
+	translator->AddCommandHandler("pcomment", pcomment_command_handler);
 
-	rl->AddCommandHandler("cntrl", controller_command_handler);
-	rl->AddCommandHandler("cntrl_pc", controller_pc_command_handler);
-	rl->AddCommandHandler("cntrl_set", controller_set_command_handler);
+	translator->AddCommandHandler("cntrl", controller_command_handler);
+	translator->AddCommandHandler("cntrl_pc", controller_pc_command_handler);
+	translator->AddCommandHandler("cntrl_set", controller_set_command_handler);
 
-	rl->AddCommandHandler("tn", tuner_command_handler);
+	translator->AddCommandHandler("tn", tuner_command_handler);
 
-	rl->AddCommandHandler("vl_pr", preset_volume_command_handler);
-	rl->AddCommandHandler("vl_pr_cntrl", preset_volume_control_command_handler);
+	translator->AddCommandHandler("vl_pr", preset_volume_command_handler);
+	translator->AddCommandHandler("vl_pr_cntrl", preset_volume_control_command_handler);
 
-	set_syssettings_handlers(rl);
+	set_syssettings_handlers(translator);
 
-	set_resonance_filter_handlers(rl);
-	set_gate_handlers(rl);
-	set_compressor_handlers(rl);
-	set_preamp_handlers(rl);
-	set_amp_handlers(rl);
-	set_ir_handlers(rl);
-	set_eq_handlers(rl);
-	set_phaser_handlers(rl);
-	set_flanger_handlers(rl);
-	set_chorus_handlers(rl);
-	set_delay_handlers(rl);
-	set_early_handlers(rl);
-	set_reverb_handlers(rl);
-	set_tremolo_handlers(rl);
+	set_resonance_filter_handlers(translator);
+	set_gate_handlers(translator);
+	set_compressor_handlers(translator);
+	set_preamp_handlers(translator);
+	set_amp_handlers(translator);
+	set_ir_handlers(translator);
+	set_eq_handlers(translator);
+	set_phaser_handlers(translator);
+	set_flanger_handlers(translator);
+	set_chorus_handlers(translator);
+	set_delay_handlers(translator);
+	set_early_handlers(translator);
+	set_reverb_handlers(translator);
+	set_tremolo_handlers(translator);
 }
 
 //------------------------------------------------------------------------------

@@ -139,13 +139,6 @@ void TUITask::Code()
 				break;
 			}
 
-			case UI_CHANGE_PRESET:
-			{
-				mainMenu->presetChoose(cmd.changePresetParams.presetNumber);
-				mainMenu->presetConfirm();
-				break;
-			}
-
 			case UI_SET_PARAMETER:
 			{
 				cmd.setParamParams.funcHandler(cmd.setParamParams.value);

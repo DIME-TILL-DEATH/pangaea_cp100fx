@@ -5,6 +5,8 @@
 #include "preset.h"
 #include "footswitch.h"
 
+#include "console_cmd_handlers.h"
+
 #include "controllers_task.h"
 #include "ui_task.h"
 #include "midi_task.h"
@@ -47,20 +49,20 @@ void Footswitch::press_execute(uint8_t num)
 						{
 							mainMenu->presetDown();
 							if(confirmPressDisabled())
-								mainMenu->presetConfirm();
+								preset_change_handler(mainMenu->preselectedPresetNum());
 							break;
 						}
 						case 1:
 						{
 							if(sys_para[System::SWAP_SWITCH] == 0)
 							{
-								mainMenu->presetConfirm();
+								preset_change_handler(mainMenu->preselectedPresetNum());
 							}
 							else
 							{
 								mainMenu->presetUp();
 								if(confirmPressDisabled())
-									mainMenu->presetConfirm();
+									preset_change_handler(mainMenu->preselectedPresetNum());
 							}
 							break;
 						}
@@ -71,15 +73,17 @@ void Footswitch::press_execute(uint8_t num)
 							{
 								mainMenu->presetUp();
 								if(confirmPressDisabled())
-									mainMenu->presetConfirm();
+									preset_change_handler(mainMenu->preselectedPresetNum());
 							}
 							else
 							{
-								mainMenu->presetConfirm();
+								preset_change_handler(mainMenu->preselectedPresetNum());
 							}
 							break;
 						}
 					}
+
+					currentMenu->refresh();
 				}
 			break;
 			case Footswitch::Controller:
@@ -93,9 +97,6 @@ void Footswitch::press_execute(uint8_t num)
 					currentPreset.paramData.foot_ind_press[num] = 0;
 					ControllersTask->extCommand(num + 2, 0);
 				}
-
-				if(currentMenu->menuType() == MENU_MAIN)
-					currentMenu->refresh();
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_PRESS_CC + num, currentPreset.paramData.foot_ind_press[num]);
@@ -124,17 +125,12 @@ void Footswitch::press_execute(uint8_t num)
 					if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default)
 					{
 						if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
-						{
-							mainMenu->presetConfirm();
-						}
-						else
-						{
-							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
-							{
-								mainMenu->presetConfirm();
-							}
-						}
+							preset_change_handler(mainMenu->preselectedPresetNum());
+						else if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
+							preset_change_handler(mainMenu->preselectedPresetNum());
+
 					}
+					currentMenu->refresh();
 				}
 			break;
 		}
@@ -163,20 +159,20 @@ void Footswitch::hold_execute(uint8_t num)
 						{
 							mainMenu->presetDown();
 							if(confirmHoldDisabled())
-								mainMenu->presetConfirm();
+								preset_change_handler(mainMenu->preselectedPresetNum());
 							break;
 						}
 						case 1:
 						{
 							if(sys_para[System::SWAP_SWITCH] == 0)
 							{
-								mainMenu->presetConfirm();
+								preset_change_handler(mainMenu->preselectedPresetNum());
 							}
 							else
 							{
 								mainMenu->presetUp();
 								if(confirmHoldDisabled())
-									mainMenu->presetConfirm();
+									preset_change_handler(mainMenu->preselectedPresetNum());
 							}
 							break;
 						}
@@ -186,15 +182,16 @@ void Footswitch::hold_execute(uint8_t num)
 							{
 								mainMenu->presetUp();
 								if(confirmHoldDisabled())
-									mainMenu->presetConfirm();
+									preset_change_handler(mainMenu->preselectedPresetNum());
 							}
 							else
 							{
-								mainMenu->presetConfirm();
+								preset_change_handler(mainMenu->preselectedPresetNum());
 							}
 							break;
 						}
 					}
+					currentMenu->refresh();
 				}
 				break;
 			}
@@ -211,9 +208,6 @@ void Footswitch::hold_execute(uint8_t num)
 					currentPreset.paramData.foot_ind_hold[num] = 0;
 					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 0);
 				}
-
-				if(currentMenu->menuType() == MENU_MAIN)
-					currentMenu->refresh();
 
 				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])
 					MidiTask->fswPressed(System::FSW1_CTRL_HOLD_CC + num, currentPreset.paramData.foot_ind_hold[num]);
@@ -239,17 +233,12 @@ void Footswitch::hold_execute(uint8_t num)
 					if(sys_para[System::FSW2_PRESS_TYPE] != Footswitch::FswType::Default)
 					{
 						if(sys_para[System::FSW2_MODE] == Footswitch::FswMode::Single)
-						{
-							mainMenu->presetConfirm();
-						}
-						else
-						{
-							if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
-							{
-								mainMenu->presetConfirm();
-							}
-						}
+							preset_change_handler(mainMenu->preselectedPresetNum());
+						else if(sys_para[System::FSW2_HOLD_TYPE] != Footswitch::FswType::Default)
+							preset_change_handler(mainMenu->preselectedPresetNum());
+
 					}
+					currentMenu->refresh();
 				}
 			break;
 		}

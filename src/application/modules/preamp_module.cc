@@ -1,4 +1,4 @@
-#include "preamp_handlers.h"
+#include <modules/preamp_module.h>
 #include "console_helpers.h"
 
 #include "modules.h"
@@ -10,7 +10,7 @@ TParamDescriptor onParamDesc = {
 	.dspAddress = DSP_ADDRESS_MODULES_ENABLE,
 	.dspPosition = ENABLE_PREAMP,
 	.name = "",
-	.setterHandler = preamp_on_command_handler
+	.setterHandler = preamp_on_handler
 };
 
 TParamDescriptor gainParamDesc = {
@@ -19,7 +19,7 @@ TParamDescriptor gainParamDesc = {
 	.dspAddress = DSP_ADDRESS_PREAMP,
 	.dspPosition = PREAMP_GAIN_POS,
 	.name = "Gain",
-	.setterHandler = preamp_gain_command_handler
+	.setterHandler = preamp_gain_handler
 };
 
 TParamDescriptor volumeParamDesc = {
@@ -28,7 +28,7 @@ TParamDescriptor volumeParamDesc = {
 	.dspAddress = DSP_ADDRESS_PREAMP,
 	.dspPosition = PREAMP_VOLUME_POS,
 	.name = "Volume",
-	.setterHandler = preamp_volume_command_handler
+	.setterHandler = preamp_volume_handler
 };
 
 TParamDescriptor lowParamDesc = {
@@ -37,7 +37,7 @@ TParamDescriptor lowParamDesc = {
 	.dspAddress = DSP_ADDRESS_PREAMP,
 	.dspPosition = PREAMP_LOW_POS,
 	.name = "Low",
-	.setterHandler = preamp_low_command_handler
+	.setterHandler = preamp_low_handler
 };
 
 TParamDescriptor midParamDesc = {
@@ -46,7 +46,7 @@ TParamDescriptor midParamDesc = {
 	.dspAddress = DSP_ADDRESS_PREAMP,
 	.dspPosition = PREAMP_MID_POS,
 	.name = "Mid",
-	.setterHandler = preamp_mid_command_handler
+	.setterHandler = preamp_mid_handler
 };
 
 TParamDescriptor highParamDesc = {
@@ -55,7 +55,7 @@ TParamDescriptor highParamDesc = {
 	.dspAddress = DSP_ADDRESS_PREAMP,
 	.dspPosition = PREAMP_HIGH_POS,
 	.name = "High",
-	.setterHandler = preamp_high_command_handler
+	.setterHandler = preamp_high_handler
 };
 
 TPreampDesc PreampDesc = {
@@ -67,42 +67,42 @@ TPreampDesc PreampDesc = {
 	.high = highParamDesc
 };
 
-void preamp_on_command_handler(uint32_t value)
+void preamp_on_handler(uint32_t value)
 {
 	default_param_setter(onParamDesc, value);
 }
 
-void preamp_gain_command_handler(uint32_t value)
+void preamp_gain_handler(uint32_t value)
 {
 	default_param_setter(gainParamDesc, value);
 }
 
-void preamp_volume_command_handler(uint32_t value)
+void preamp_volume_handler(uint32_t value)
 {
 	default_param_setter(volumeParamDesc, value);
 }
 
-void preamp_low_command_handler(uint32_t value)
+void preamp_low_handler(uint32_t value)
 {
 	default_param_setter(lowParamDesc, value);
 }
 
-void preamp_mid_command_handler(uint32_t value)
+void preamp_mid_handler(uint32_t value)
 {
 	default_param_setter(midParamDesc, value);
 }
 
-void preamp_high_command_handler(uint32_t value)
+void preamp_high_handler(uint32_t value)
 {
 	default_param_setter(highParamDesc, value);
 }
 
 void set_preamp_handlers(TTranslator *rl)
 {
-	rl->AddSetterHandler(onParamDesc.handlerStr,  preamp_on_command_handler);
-	rl->AddSetterHandler(gainParamDesc.handlerStr,  preamp_gain_command_handler);
-	rl->AddSetterHandler(volumeParamDesc.handlerStr,  preamp_volume_command_handler);
-	rl->AddSetterHandler(lowParamDesc.handlerStr,  preamp_low_command_handler);
-	rl->AddSetterHandler(midParamDesc.handlerStr,  preamp_mid_command_handler);
-	rl->AddSetterHandler(highParamDesc.handlerStr,  preamp_high_command_handler);
+	rl->AddSetterHandler(onParamDesc.handlerStr,  preamp_on_handler);
+	rl->AddSetterHandler(gainParamDesc.handlerStr,  preamp_gain_handler);
+	rl->AddSetterHandler(volumeParamDesc.handlerStr,  preamp_volume_handler);
+	rl->AddSetterHandler(lowParamDesc.handlerStr,  preamp_low_handler);
+	rl->AddSetterHandler(midParamDesc.handlerStr,  preamp_mid_handler);
+	rl->AddSetterHandler(highParamDesc.handlerStr,  preamp_high_handler);
 }

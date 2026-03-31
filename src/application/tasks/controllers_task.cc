@@ -1,3 +1,4 @@
+#include <preamp_module.h>
 #include "controllers_task.h"
 
 #include "eepr.h"
@@ -5,8 +6,6 @@
 #include "controller.h"
 #include "preset.h"
 #include "modules.h"
-
-#include "preamp_handlers.h"
 
 #include "ui_task.h"
 #include "display_task.h"
@@ -26,7 +25,7 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 
 	switch(currentPreset.controller[adr].dst)
 	{
-		case Controller::Dst::PreampOnOff: UITask->setParam(preamp_on_command_handler, (val < 64.0f) ? 0 : 1); break;
+		case Controller::Dst::PreampOnOff: UITask->setParam(preamp_on_handler, (val < 64.0f) ? 0 : 1); break;
 //-------------------------------------------------PA-------------------------------------------------
 		case Controller::Dst::AmpOnOff:
 			currentPreset.modulesBuf[ENABLE_AMP] = (val < 64.0f) ? 0 : 1;
@@ -272,11 +271,11 @@ void TControllersTask::controllerSetData(uint8_t adr, uint8_t data)
 			SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PRESENCE_POS, currentPreset.modulesBuf[EQ_PRESENCE]);
 		break;
 //------------------------------------------------------Preamp parameter--------------------------
-		case Controller::Dst::PreampGain: 	UITask->setParam(preamp_gain_command_handler, val); break;
-		case Controller::Dst::PreampVolume: UITask->setParam(preamp_volume_command_handler, val); break;
-		case Controller::Dst::PreampLow: 	UITask->setParam(preamp_low_command_handler, val); break;
-		case Controller::Dst::PreampMid: 	UITask->setParam(preamp_mid_command_handler, val); break;
-		case Controller::Dst::PreampHigh: 	UITask->setParam(preamp_high_command_handler, val); break;
+		case Controller::Dst::PreampGain: 	UITask->setParam(preamp_gain_handler, val); break;
+		case Controller::Dst::PreampVolume: UITask->setParam(preamp_volume_handler, val); break;
+		case Controller::Dst::PreampLow: 	UITask->setParam(preamp_low_handler, val); break;
+		case Controller::Dst::PreampMid: 	UITask->setParam(preamp_mid_handler, val); break;
+		case Controller::Dst::PreampHigh: 	UITask->setParam(preamp_high_handler, val); break;
 
 //-------------------------------------------------------------Eq band-------------------------------
 		case Controller::Dst::EqBand1Lev:

@@ -1,9 +1,9 @@
 #ifndef MODULES_H_
 #define MODULES_H_
 
+#include <modules/preamp_module.h>
 #include "appdefs.h"
 
-#include "preamp_handlers.h"
 
 
 

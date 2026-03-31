@@ -10,6 +10,8 @@
 #include "ui_task.h"
 #include "controllers_task.h"
 
+#include "console_cmd_handlers.h"
+
 #include "tunermenu.h"
 #include "tunerextmenu.h"
 #include "controllersmenu.h"
@@ -85,7 +87,7 @@ void TMidiTask::Code()
 							currentPresetNumber = sys_para[System::MIDI_MAP_START + dataByte[0]] % 100;
 							sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
 
-							UITask->changePreset(currentPresetNumber);
+							UITask->setParam(preset_change_handler, currentPresetNumber);
 							break;
 						}
 

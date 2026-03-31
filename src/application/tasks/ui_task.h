@@ -63,17 +63,12 @@ public:
 		UI_FSW_SINGLE_MODE_PRESS,
 		UI_FSW_DUAL_MODE_PRESS,
 		UI_FSW_DUAL_MODE_HOLD,
-		UI_CHANGE_PRESET,
 		UI_SET_PARAMETER
 	}TCSCmdType;
 
 	typedef struct{
 		AbstractMenu* menu;
 	}TShowMenuParams;
-
-	typedef struct{
-		uint8_t presetNumber;
-	}TChangePresetParams;
 
 	typedef struct{
 		setter_handler_t funcHandler;
@@ -88,7 +83,6 @@ public:
 			TEncoderEvents encoderEvents;
 			TFswEvents fswEvents;
 			TShowMenuParams showMenuParams;
-			TChangePresetParams changePresetParams;
 			TSetParamParams setParamParams;
 		};
 	}TUICmd;
@@ -158,13 +152,6 @@ public:
 		cmd.fswEvents = fswEvents;
 		Command(&cmd);
 	};
-
-	void changePreset(uint8_t presetNumber){
-		TUICmd cmd;
-		cmd.type = UI_CHANGE_PRESET;
-		cmd.changePresetParams.presetNumber = presetNumber;
-		Command(&cmd);
-	}
 
 	void setParam(setter_handler_t funcHandler, uint32_t value){
 		TUICmd cmd;
