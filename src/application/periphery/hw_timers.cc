@@ -29,7 +29,7 @@ void HW_TimersInit()
 
 	// Running string timer
 	TIM_TimeBaseStructure.TIM_Period = 0x4fff;
-	TIM_TimeBaseStructure.TIM_Prescaler = 0x750;
+	TIM_TimeBaseStructure.TIM_Prescaler = 0x700;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM5, &TIM_TimeBaseStructure);

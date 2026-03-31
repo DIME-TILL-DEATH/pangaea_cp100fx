@@ -47,7 +47,7 @@ void StringOutParam::task()
 	uint8_t strLength = kgp_sdk_libc::strlen(m_stringPtr);
 
 	if(m_symbolOffset == 0) TIM_SetAutoreload(TIM5, 0xffff);
-	else TIM_SetAutoreload(TIM5, 0x4fff);
+	else TIM_SetAutoreload(TIM5, 0x1fff);
 
 	m_symbolOffset++;
 
