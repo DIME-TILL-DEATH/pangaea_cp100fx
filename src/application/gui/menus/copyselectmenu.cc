@@ -71,6 +71,7 @@ void CopySelectMenu::encoderPressed()
 			DisplayTask->Clear();
 			DisplayTask->StringOut(38, 2, Font::fnt12x13, Font::fnsNormal, (uint8_t*)"Copy OK!");
 			Preset::Copy(m_targetPresetNum, m_selectionMask);
+			Preset::Change(currentPresetNumber);
 			m_copied = 1;
 			restartBlinking(0);
 			break;

@@ -159,10 +159,13 @@ void Preset::SetDefaultValues(Preset::TPresetHeader* preset)
 
 void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selectionMask)
 {
-	if(!EEPROM_LoadPresetHeader(targetPresetNum, (Preset::TPresetHeader*)tempDataBuffer))
-		Preset::SetDefaultValues((Preset::TPresetHeader*)tempDataBuffer);
+	uint8_t cab1Name[CAB_NAME_STRING_SIZE];
+	uint8_t cab2Name[CAB_NAME_STRING_SIZE];
 
 	Preset::TPresetHeader* copyPreset = (Preset::TPresetHeader*)tempDataBuffer;
+
+	if(!EEPROM_LoadPresetHeader(targetPresetNum, copyPreset))
+		Preset::SetDefaultValues(copyPreset);
 
 	if(selectionMask.name)
 		kgp_sdk_libc::memcpy(copyPreset->name, currentPreset.name, PRESET_NAME_STRING_SIZE);
@@ -208,30 +211,43 @@ void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selecti
 		copyPreset->paramData.cab2 = currentPreset.paramData.cab2;
 		copyPreset->paramData.switches.cab = currentPreset.paramData.switches.cab;
 
-		if(EEPROM_LoadCabData(targetPresetNum, tempCabBuffer))
+		kgp_sdk_libc::memcpy(&tempCabBuffer[0], currentPreset.cab1Data, CAB_DATA_SIZE);
+		kgp_sdk_libc::memcpy(cab1Name, &currentPreset.cab1NameSize, CAB_NAME_STRING_SIZE);
+#ifdef __MONO_MOD__
+		if(System::cab_type == CAB_CONFIG_STEREO)
 		{
-
+			kgp_sdk_libc::memcpy(&tempCabBuffer[CAB_DATA_SIZE], currentPreset.cab2Data, CAB_DATA_SIZE);
+			kgp_sdk_libc::memcpy(cab2Name, &currentPreset.cab2NameSize, CAB_NAME_STRING_SIZE);
 		}
 		else
-		{
+			kgp_sdk_libc::memcpy(&tempCabBuffer[CAB_DATA_SIZE], currentPreset.cabAuxData, CAB_DATA_SIZE);
+#endif
 
-		}
-//		copyPreset->cab1NameSize = currentPreset.cab1NameSize;
-//		kgp_sdk_libc::memcpy(copyPreset->cab1Name, currentPreset.cab1Name, CAB_NAME_STRING_SIZE - 1);
-//		kgp_sdk_libc::memcpy(copyPreset->cab1Data, currentPreset.cab1Data, CAB_DATA_SIZE);
-//
-//		if(System::cab_type == CAB_CONFIG_STEREO)
-//		{
-//			copyPreset->cab2NameSize = currentPreset.cab2NameSize;
-//			kgp_sdk_libc::memcpy(copyPreset->cab2Name, currentPreset.cab2Name, CAB_NAME_STRING_SIZE - 1);
-//			kgp_sdk_libc::memcpy(copyPreset->cab2Data, currentPreset.cab2Data, CAB_DATA_SIZE);
-//		}
-//		else
-//			kgp_sdk_libc::memcpy(copyPreset->cabAuxData, currentPreset.cabAuxData, CAB_DATA_SIZE);
-//
-//		kgp_sdk_libc::memcpy(copyPreset->currentImpulseName, currentPreset.currentImpulseName, 256);
-//		kgp_sdk_libc::memcpy(copyPreset->currentImpulsePath, currentPreset.currentImpulsePath, 256);
+#ifdef __STEREO_MOD__
+		kgp_sdk_libc::memcpy(&tempCabBuffer[CAB_DATA_SIZE], currentPreset.cab2Data, CAB_DATA_SIZE);
+#endif
 	}
+	else
+	{
+		if(!EEPROM_LoadCabData(targetPresetNum, tempCabBuffer, cab1Name, cab2Name))
+		{
+			kgp_sdk_libc::memset(tempCabBuffer, 0, CAB_DATA_SIZE * 2);
+			tempCabBuffer[0] = 0x7f;
+			tempCabBuffer[1] = 0xff;
+			tempCabBuffer[2] = 0xff;
+
+			if(System::cab_type == CAB_CONFIG_STEREO)
+			{
+				tempCabBuffer[CAB_DATA_SIZE + 0] = 0x7f;
+				tempCabBuffer[CAB_DATA_SIZE + 1] = 0xff;
+				tempCabBuffer[CAB_DATA_SIZE + 2] = 0xff;
+			}
+			kgp_sdk_libc::memset(cab1Name, 0, CAB_NAME_STRING_SIZE);
+			kgp_sdk_libc::memset(cab2Name, 0, CAB_NAME_STRING_SIZE);
+		}
+	}
+	EEPROM_SaveCabData(targetPresetNum, tempCabBuffer, cab1Name, cab2Name);
+
 
 	if(selectionMask.eq)
 	{
@@ -333,9 +349,11 @@ void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selecti
 	copyPreset->pcOut = currentPreset.pcOut;
 	copyPreset->set = currentPreset.set;
 
-	EEPROM_SavePreset(targetPresetNum, (Preset::TPresetData*)tempDataBuffer);
-	SharcTask->sendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &tempDataBuffer[0], targetPresetNum+1);
+	EEPROM_SavePresetHeader(targetPresetNum, (Preset::TPresetHeader*)tempDataBuffer);
 
+	SharcTask->sendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &copyPreset->paramData, targetPresetNum+1);
+	if(System::cab_type==CAB_CONFIG_STEREO)
+			SharcTask->sendCab2Data(&tempCabBuffer[CAB_DATA_SIZE], currentPresetNumber+1);
 }
 
 void Preset::Erase()

@@ -72,21 +72,23 @@ static void amtver_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	msg_console("%s\r%s\n", args[0], amt_ver);
 }
 
-void psave_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
+void psave_command_handler(uint32_t value)
 {
 	currentPreset.modulesBuf[147] = currentPreset.delayTime;
 	currentPreset.modulesBuf[148] = currentPreset.delayTime >> 8;
 
 	EEPROM_SavePreset(currentPresetNumber, &currentPreset);
 
-	// update DSP config? Really need?
-	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
+	// need to do it in the same thread
+	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, &currentPreset.paramData, currentPresetNumber+1);
 	if(System::cab_type==CAB_CONFIG_STEREO)
-		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
+		DSP_SendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
+//
+//	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, &currentPreset.paramData, currentPresetNumber+1);
+//	if(System::cab_type==CAB_CONFIG_STEREO)
+//		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
-	UITask->setParam(preset_change_handler, currentPresetNumber);
-
-	msg_console("%s\r\n", args[0]);
+	console_printf("psave\r\n");
 }
 
 static void ls_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
@@ -355,11 +357,11 @@ static void copyto_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	Preset::Copy(presetNum, selectionMask);
 }
 
-void erase_preset_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
+void erase_preset_command_handler(uint32_t value)
 {
 	Preset::Erase();
 	UITask->setParam(preset_change_handler, currentPresetNumber);
-	msg_console("%s\r\n", args[0]);
+	console_printf("erase_preset\r\n");
 }
 
 static void upload_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
@@ -487,58 +489,53 @@ static void plist_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 	msg_console("\n");
 }
 
-static void pbrief_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
+void pbrief_command_handler(uint32_t value)
 {
-//	msg_console("plist");
-	if(count > 1)
+	uint8_t presetNum = value % 99;
+
+	console_printf("pbrief");
+
+	Preset::TPresetBrief presetData;
+	EEPROM_LoadPresetBrief(presetNum, &presetData);
+
+	char *cab1NameSrc = presetData.cab1Name + 1;
+	char *cab2NameSrc = presetData.cab2Name + 1;
+	char cab1NameDst[64];
+	char cab2NameDst[64];
+
+	kgp_sdk_libc::memset(cab1NameDst, 0, 64);
+	kgp_sdk_libc::memset(cab2NameDst, 0, 64);
+
+	uint8_t pos=0;
+
+	while(*cab1NameSrc)
 	{
-		char *end;
-		uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
-
-		msg_console("%s", args[0]);
-
-		Preset::TPresetBrief presetData;
-		EEPROM_LoadPresetBrief(presetNum, &presetData);
-
-		char *cab1NameSrc = presetData.cab1Name + 1;
-		char *cab2NameSrc = presetData.cab2Name + 1;
-		char cab1NameDst[64];
-		char cab2NameDst[64];
-
-		kgp_sdk_libc::memset(cab1NameDst, 0, 64);
-		kgp_sdk_libc::memset(cab2NameDst, 0, 64);
-
-		uint8_t pos=0;
-
-		while(*cab1NameSrc)
+		if(*cab1NameSrc != '|' && *cab1NameSrc != '\r' && *cab1NameSrc != '\n')
 		{
-			if(*cab1NameSrc != '|' && *cab1NameSrc != '\r' && *cab1NameSrc != '\n')
-			{
-				cab1NameDst[pos] = *cab1NameSrc;
-				pos++;
-			}
-			cab1NameSrc++;
+			cab1NameDst[pos] = *cab1NameSrc;
+			pos++;
 		}
-
-		pos=0;
-		while(*cab2NameSrc)
-		{
-			if(*cab2NameSrc != '|' && *cab2NameSrc != '\r' && *cab2NameSrc != '\n')
-			{
-				cab2NameDst[pos] = *cab1NameSrc;
-				pos++;
-			}
-			cab2NameSrc++;
-		}
-
-		msg_console("\r%d|%s|%s|%s|%s|", presetNum, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
-
-		uint8_t enabled[14];
-		kgp_sdk_libc::memcpy(enabled, &presetData.paramData.switches, 14);
-		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
-
-		msg_console("\n");
+		cab1NameSrc++;
 	}
+
+	pos=0;
+	while(*cab2NameSrc)
+	{
+		if(*cab2NameSrc != '|' && *cab2NameSrc != '\r' && *cab2NameSrc != '\n')
+		{
+			cab2NameDst[pos] = *cab1NameSrc;
+			pos++;
+		}
+		cab2NameSrc++;
+	}
+
+	console_printf("\r%d|%s|%s|%s|%s|", presetNum, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
+
+	uint8_t enabled[14];
+	kgp_sdk_libc::memcpy(enabled, &presetData.paramData.switches, 14);
+	for(uint8_t i=0; i<14; i++) console_printf("%d", enabled[i]);
+
+	console_printf("\n");
 }
 
 static void state_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
@@ -782,16 +779,16 @@ void ConsoleSetCmdHandlers(TTranslator *translator)
 	translator->AddCommandHandler("remove", remove_command_handler);
 
 	translator->AddCommandHandler("copy_to", copyto_command_handler);
-	translator->AddCommandHandler("erase_preset", erase_preset_command_handler);
+	translator->AddSetterHandler("erase_preset", erase_preset_command_handler);
 
 	translator->AddSetterHandler("pchange", preset_change_handler);
-	translator->AddCommandHandler("psave", psave_command_handler);
+	translator->AddSetterHandler("psave", psave_command_handler);
 
 	translator->AddCommandHandler("state", state_command_handler);
 	translator->AddCommandHandler("cntrls", cntrls_command_handler);
 
 	translator->AddCommandHandler("plist", plist_command_handler);
-	translator->AddCommandHandler("pbrief", pbrief_command_handler);
+	translator->AddSetterHandler("pbrief", pbrief_command_handler);
 
 	translator->AddCommandHandler("pnum", pnum_command_handler);
 	translator->AddCommandHandler("pname", pname_command_handler);

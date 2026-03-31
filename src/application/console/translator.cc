@@ -105,6 +105,10 @@ void TTranslator::enter_handler(TTranslator *rl)
 				uint16_t val = kgp_sdk_libc::strtol(argv[1], &end, 16);
 				UITask->setParam((*set_it).second, val);
 			}
+			else
+			{
+				UITask->setParam((*set_it).second, 0);
+			}
 		}
 
 		if(cmd_it == rl->command_handler_map.end() && set_it == rl->setter_handler_map.end())

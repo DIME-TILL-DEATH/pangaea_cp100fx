@@ -40,7 +40,7 @@ void TSharcTask::Code()
 			case SHARC_SEND_CAB1_DATA:
 			{
 				DSP_SendPrimaryData(cmd.dataCmd.cabMainData, cmd.dataCmd.cabAuxData,
-						currentPreset.modulesBuf, cmd.dataCmd.presetNum);
+						&currentPreset.paramData, cmd.dataCmd.presetNum);
 				break;
 			}
 			case SHARC_SEND_CAB2_DATA:
@@ -50,7 +50,7 @@ void TSharcTask::Code()
 			}
 			case SHARC_ERASE_CAB1:
 			{
-				DSP_SendPrimaryData(nullptr, nullptr, currentPreset.modulesBuf, cmd.dataCmd.presetNum);
+				DSP_SendPrimaryData(nullptr, nullptr, &currentPreset.paramData, cmd.dataCmd.presetNum);
 				break;
 			}
 			case SHARC_ERASE_CAB2:
@@ -73,7 +73,7 @@ void TSharcTask::setParameter(dsp_module_address_t moduleAddress, uint8_t parame
 }
 
 void TSharcTask::sendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData,
-			uint8_t* modulesData, uint8_t presetNum)
+			Preset::TModulesData* modulesData, uint8_t presetNum)
 {
 	TSharcCmd cmd;
 	cmd.type = SHARC_SEND_PRIMARY_DATA;

@@ -7,6 +7,9 @@
 #include "display_task.h"
 #include "filesystem_task.h"
 #include "sharc_task.h"
+#include "ui_task.h"
+
+#include "console_cmd_handlers.h"
 
 #include "modulesmenu.h"
 #include "copyselectmenu.h"
@@ -132,14 +135,7 @@ void PresetActionsMenu::savePreset()
 	DisplayTask->Clear();
 	DisplayTask->StringOut(38, 2, Font::fnt12x13, Font::fnsNormal, (uint8_t*)" Save");
 
-	currentPreset.modulesBuf[147] = currentPreset.delayTime;
-	currentPreset.modulesBuf[148] = currentPreset.delayTime>>8;
-	EEPROM_SavePreset(targetPresetNum, &currentPreset);
-
-	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, currentPreset.modulesBuf, currentPresetNumber+1);
-	if(System::cab_type == CAB_CONFIG_STEREO)
-		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
-
 	currentPresetNumber = targetPresetNum;
+	psave_command_handler();
 	Preset::Change(currentPresetNumber);
 }

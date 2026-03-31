@@ -4,6 +4,8 @@
 #include "appdefs.h"
 #include "sharc.h"
 
+#include "preset.h"
+
 class TSharcTask: public TTask
 {
 public:
@@ -11,7 +13,7 @@ public:
 
 	void setParameter(dsp_module_address_t moduleAddress, uint8_t parameterAddress_data, uint8_t data = 0);
 	void sendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData,
-			uint8_t* modulesData, uint8_t presetNum = 0);
+			Preset::TModulesData* modulesData, uint8_t presetNum = 0);
 
 	void sendCab1Data(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t presetNum = 0);
 	void sendCab2Data(uint8_t* data, uint8_t presetNum = 0); // 0 - currentPreset
@@ -39,7 +41,7 @@ private:
 	typedef struct{
 		uint8_t* cabMainData;
 		uint8_t* cabAuxData;
-		uint8_t* modulesData;
+		Preset::TModulesData* modulesData;
 		uint8_t presetNum;
 	}TDataCmd;
 

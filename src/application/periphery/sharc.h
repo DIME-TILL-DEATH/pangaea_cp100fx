@@ -4,6 +4,7 @@
 #include "appdefs.h"
 
 #include "modules.h"
+#include "preset.h"
 
 typedef enum{
 	SPI_MASTER = 0,
@@ -33,7 +34,7 @@ void SHARC_LoadAllData();
 void DSP_SendParameter(dsp_module_address_t module_address, uint8_t parameter_address, uint8_t value = 0);
 
 void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData,
-		uint8_t* modulesData, uint8_t presetNum = 0);
+		Preset::TModulesData* modulesData, uint8_t presetNum = 0);
 
 void DSP_SendCab2Data(uint8_t* data, uint8_t presetNum = 0); // 0 - currentPreset
 

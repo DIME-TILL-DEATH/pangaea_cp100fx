@@ -188,7 +188,7 @@ void DSP_SendParameter(dsp_module_address_t module_address, uint8_t parameter_ad
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }
 
-void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t* modulesData, uint8_t presetNum) // (0, presetNum, 0
+void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, Preset::TModulesData* modulesData, uint8_t presetNum) // (0, presetNum, 0
 {
 	if(!modulesData) return;
 	SHARC_WaitForReady();
@@ -242,13 +242,16 @@ void DSP_SendPrimaryData(uint8_t* cabMainData, uint8_t* cabAuxData, uint8_t* mod
 
 	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 
+	uint8_t* modulesDataBuf_ptr = (uint8_t*)modulesData;
+
 	for(uint32_t i = 0; i < 512; i++)
 	{
 		SHARC_WaitForReady();
 		SHARC_SendData(0);
-		SHARC_SendData(modulesData[i]);
+		SHARC_SendData(modulesDataBuf_ptr[i]);
 	}
 
+	while(!SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE));
 	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY));
 	GPIO_SetBits(GPIOA, GPIO_Pin_1);
 }

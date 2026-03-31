@@ -171,7 +171,7 @@ bool EEPROM_LoadPresetHeader(uint8_t presetNum, Preset::TPresetHeader* presetDat
 	else return false;
 }
 
-bool EEPROM_LoadCabData(uint8_t presetNum, uint8_t* buf)
+bool EEPROM_LoadCabData(uint8_t presetNum, uint8_t* buf, uint8_t* cab1Name, uint8_t* cab2Name)
 {
 	char fna[_MAX_LFN];
 	FRESULT fs_res;
@@ -192,18 +192,31 @@ bool EEPROM_LoadCabData(uint8_t presetNum, uint8_t* buf)
 	if(fs_res==FR_OK)
 	{
 		f_lseek(&file, CAB1_DATA_OFFSET);
-		f_read(&file, &buf[0], sizeof(Preset::TPresetData), &f_size);
+		f_read(&file, &buf[0], CAB_DATA_SIZE, &f_size);
 
+		f_lseek(&file, CAB1_NAME_OFFSET);
+		f_read(&file, cab1Name, CAB_NAME_STRING_SIZE, &f_size);
+
+#ifdef __MONO_MOD__
 		if(System::cab_type == CAB_CONFIG_STEREO)
 		{
 			f_lseek(&file, CAB2_DATA_OFFSET);
-			f_read(&file, &buf[CAB_DATA_SIZE], sizeof(Preset::TPresetData), &f_size);
+			f_read(&file, &buf[CAB_DATA_SIZE], CAB_DATA_SIZE, &f_size);
+
+			f_lseek(&file, CAB2_NAME_OFFSET);
+			f_read(&file, cab2Name, CAB_NAME_STRING_SIZE, &f_size);
 		}
 		else
 		{
 			f_lseek(&file, CAB1_AUX_DATA_OFFSET);
-			f_read(&file, &buf[CAB_DATA_SIZE], sizeof(Preset::TPresetData), &f_size);
+			f_read(&file, &buf[CAB_DATA_SIZE], CAB_DATA_SIZE, &f_size);
 		}
+#endif
+
+#ifdef __STEREO_MOD__
+		f_lseek(&file, CAB2_DATA_OFFSET);
+		f_read(&file, &buf[CAB_DATA_SIZE], CAB_DATA_SIZE, &f_size);
+#endif
 		f_close(&file);
 		return true;
 	}
@@ -231,6 +244,89 @@ void EEPROM_SavePreset(uint8_t numPreset, Preset::TPresetData* savePreset)
 
 	f_close(&file);
 	f_mount(0, "1:", 0);
+}
+
+void EEPROM_SavePresetHeader(uint8_t numPreset, Preset::TPresetHeader* presetData)
+{
+	char fna[_MAX_LFN];
+	FATFS fs;
+	FIL file;
+	UINT f_size;
+
+	numPreset++;
+	if(numPreset<10)
+		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)numPreset);
+	else
+		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)numPreset);
+
+	f_mount(&fs, "1:", 1);
+	f_open(&file, fna, FA_READ|FA_WRITE|FA_OPEN_ALWAYS);
+
+	presetData->paramData.delay_time = presetData->delayTime; // actual data
+	f_write(&file, presetData, sizeof(Preset::TPresetHeader), &f_size);
+
+	f_close(&file);
+	f_mount(0, "1:", 0);
+}
+
+void EEPROM_SaveCabData(uint8_t presetNum, uint8_t* cabData, uint8_t* cab1Name, uint8_t* cab2Name)
+{
+	if(!cabData) return;
+
+	char fna[_MAX_LFN];
+	FRESULT fs_res;
+	FATFS fs;
+	FIL file;
+	UINT f_size;
+
+	presetNum++;
+	if(presetNum<10)
+		ksprintf(fna, "1:PRESETS/0%d_preset.pan", (uint32_t)presetNum);
+	else
+		ksprintf(fna, "1:PRESETS/%d_preset.pan", (uint32_t)presetNum);
+
+	f_mount(&fs, "1:", 1);
+	fs_res = f_open(&file, fna, FA_OPEN_ALWAYS | FA_WRITE);
+	if(fs_res==FR_OK)
+	{
+#ifdef __MONO_MOD__
+		f_lseek(&file, CAB1_DATA_OFFSET);
+		f_write(&file, &cabData[0], CAB_DATA_SIZE, &f_size);
+
+		f_lseek(&file, CAB1_NAME_OFFSET);
+		f_write(&file, cab1Name, CAB_NAME_STRING_SIZE, &f_size);
+
+		if(System::cab_type == CAB_CONFIG_STEREO)
+		{
+			f_lseek(&file, CAB2_DATA_OFFSET);
+			f_write(&file, &cabData[CAB_DATA_SIZE], CAB_DATA_SIZE, &f_size);
+
+			f_lseek(&file, CAB2_NAME_OFFSET);
+			f_write(&file, cab1Name, CAB_NAME_STRING_SIZE, &f_size);
+		}
+		else
+		{
+			f_lseek(&file, CAB1_AUX_DATA_OFFSET);
+			f_write(&file, &cabData[CAB_DATA_SIZE], CAB_DATA_SIZE, &f_size);
+		}
+#endif
+
+#ifdef __STEREO_MOD__
+		f_lseek(&file, CAB1_DATA_OFFSET);
+		f_write(&file, &cabData[0], CAB_DATA_SIZE, &f_size);
+
+		f_lseek(&file, CAB1_NAME_OFFSET);
+		f_write(&file, cab1Name, CAB_NAME_STRING_SIZE, &f_size);
+
+		f_lseek(&file, CAB2_DATA_OFFSET);
+		f_write(&file, &cabData[CAB_DATA_SIZE], CAB_DATA_SIZE, &f_size);
+
+		f_lseek(&file, CAB2_NAME_OFFSET);
+		f_write(&file, cab1Name, CAB_NAME_STRING_SIZE, &f_size);
+#endif
+
+		f_close(&file);
+	}
 }
 
 void EEPROM_ErasePreset(uint8_t presetNum)
