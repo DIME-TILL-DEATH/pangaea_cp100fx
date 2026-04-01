@@ -29,14 +29,13 @@ public:
 
 	void SendDataCDC(uint8_t *data, size_t len);
 
-	size_t RxQueueWaiting();
-	char RxQueueRecv();
-	TQueue::TQueueSendResult RxSend(uint8_t *buf, uint32_t len);
+//	size_t RxQueueWaiting();
+//	char RxQueueRecv();
+//	TQueue::TQueueSendResult RxSend(uint8_t *buf, uint32_t len);
 	void* UsbOtgDevHandle();
 private:
 	void Code() override;
 	USB_OTG_CORE_HANDLE* USB_OTG_dev;
-	TQueue *rx_queue{nullptr};
 
 	TMode m_mode;
 };

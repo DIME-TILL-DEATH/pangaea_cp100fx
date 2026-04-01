@@ -10,7 +10,7 @@ extern "C" uint16_t CDC_Recv(uint8_t *buf, uint32_t len)
 {
 	if(!UsbTask) return USBD_FAIL;
 
-	UsbTask->RxSend(buf, len);
+	ConsoleTask->RxSend(buf, len);
 	return USBD_OK;
 }
 
@@ -36,21 +36,17 @@ size_t cdc_send_buf(const char *buf, size_t size)
 //---------------------------------------------------------------------------
 int cdc_recv_char(int &c)
 {
-	if(!UsbTask) return 0;
-
-	c = UsbTask->RxQueueRecv();
+	c = ConsoleTask->RxQueueRecv();
 	return c;
 }
 
 size_t cdc_recv_string(emb_string &dest)
 {
-	if(!UsbTask) return 0;
-
 	dest.clear();
 	int c;
 	do
 	{
-		c = UsbTask->RxQueueRecv();
+		c = ConsoleTask->RxQueueRecv();
 		if(!c)
 			return dest.length();
 		else
@@ -60,13 +56,11 @@ size_t cdc_recv_string(emb_string &dest)
 
 size_t cdc_recv_line(emb_string &dest)
 {
-	if(!UsbTask) return 0;
-
 	dest.clear();
 	int c;
 	do
 	{
-		c = UsbTask->RxQueueRecv();
+		c = ConsoleTask->RxQueueRecv();
 		if(c=='\n')
 			return dest.length();
 		else
@@ -76,12 +70,10 @@ size_t cdc_recv_line(emb_string &dest)
 
 size_t cdc_recv_buf(char *buf, size_t size)
 {
-	if(!UsbTask) return 0;
-
 	size_t c = 0;
 	while(c<size)
 	{
-		*(buf++) = UsbTask->RxQueueRecv();
+		*(buf++) = ConsoleTask->RxQueueRecv();
 		c++;
 	}
 	return c;
@@ -113,10 +105,6 @@ TUsbTask::TUsbTask(TMode val) :
 		case mCDC:
 		{
 			usbClassCb = &USBD_CDC_cb;
-
-			rx_queue = new TQueue(1024, 1);
-			vQueueAddToRegistry(rx_queue, "USB tx queue");
-
 
 			USBD_DeviceDesc[4] = 2;	/*bDeviceClass*/
 			USBD_DeviceDesc[5] = 2; /*bDeviceSubClass*/
@@ -152,48 +140,30 @@ TUsbTask::TUsbTask(TMode val) :
 		}
 	}
 
-//	kgp_sdk_libc::memset(USB_OTG_dev, 0, sizeof(USB_OTG_CORE_HANDLE));
 	USB_OTG_dev = new USB_OTG_CORE_HANDLE;
 	USBD_Init(USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, usbClassCb, &USR_cb, false);
 }
 
 TUsbTask::~TUsbTask()
 {
-	if(rx_queue) delete rx_queue;
+	USBD_DeInit(USB_OTG_dev);
+
 	if(USB_OTG_dev) delete USB_OTG_dev;
-
-	TConsoleTask::readline_io_t cdc_io = {
-		.console_task_hw_init = nullptr,
-
-		.enable = nullptr,
-		.disable = nullptr,
-
-		.send_char = nullptr,
-		.recv_char = nullptr,
-
-		.send_string = nullptr,
-		.recv_string = nullptr,
-
-		.send_buf = nullptr,
-		.recv_buf = nullptr,
-	};
-
-	ConsoleTask->SetIo(&cdc_io);
-
-//	ConsoleTask->Give();
+	USB_OTG_dev = nullptr;
 
 	vTaskDelete(0);
+	ConsoleTask->Suspend();
 }
 
 
 void TUsbTask::Code()
 {
 	bool configured = false;
-//	ConsoleTask->Resume();
+	ConsoleTask->Resume();
 	while(1)
 	{
 
-		if(rx_queue) USBD_OTG_ISR_Handler((USB_OTG_CORE_HANDLE*)USB_OTG_dev);
+		USBD_OTG_ISR_Handler((USB_OTG_CORE_HANDLE*)USB_OTG_dev);
 
 		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status==USB_OTG_CONFIGURED && configured==false)
 		{
@@ -216,28 +186,7 @@ void TUsbTask::Code()
 	}
 }
 //------------------------------------------------------------------------------
-TQueue::TQueueSendResult TUsbTask::RxSend(uint8_t *buf, uint32_t len)
-{
-	for(uint32_t i = 0; i<len; i++)
-	{
-		if(rx_queue->SendToBack(buf+i, 0)==TQueue::qsrQueueFull)
-			return TQueue::qsrQueueFull;
-	}
-	return TQueue::qsrPass;
-}
 
-
-size_t TUsbTask::RxQueueWaiting()
-{
-	return rx_queue->MessagesWaiting();
-}
-
-char TUsbTask::RxQueueRecv()
-{
-	char c;
-	rx_queue->Receive(&c, portMAX_DELAY);
-	return c;
-}
 
 void* TUsbTask::UsbOtgDevHandle()
 {

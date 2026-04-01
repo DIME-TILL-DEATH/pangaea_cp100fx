@@ -51,6 +51,10 @@ public:
 		tx_sem->Give();
 	}
 
+	TQueue::TQueueSendResult RxSend(uint8_t *buf, uint32_t len);
+	size_t RxQueueWaiting();
+	char RxQueueRecv();
+
 	static inline void NoSync()
 	{
 		NOP();
@@ -60,6 +64,8 @@ public:
 	void SetNoSyncMode();
 
 	void SetIo(readline_io_t *io);
+
+	TQueue *rx_queue{nullptr};
 
 private:
 	void Code();

@@ -33,6 +33,8 @@ TConsoleTask::TConsoleTask(/*readline_io_t* readline_io,*/const size_t rx_queue_
 	read_line = new TTranslator();
 	read_line->Init(1, 256);
 
+	rx_queue = new TQueue(1024, 1);
+
 	SetSyncMode();
 
 	read_line->SetCommandNotFound(undefind_command_handler);
@@ -56,11 +58,34 @@ TConsoleTask::~TConsoleTask()
 
 void TConsoleTask::Code()
 {
-//	Suspend();
+	Suspend();
 	while(1)
 	{
 		read_line->Process();
 	}
+}
+//----------------------------------------------------------------------
+TQueue::TQueueSendResult TConsoleTask::RxSend(uint8_t *buf, uint32_t len)
+{
+	for(uint32_t i = 0; i<len; i++)
+	{
+		if(rx_queue->SendToBack(buf+i, 0)==TQueue::qsrQueueFull)
+			return TQueue::qsrQueueFull;
+	}
+	return TQueue::qsrPass;
+}
+
+
+size_t TConsoleTask::RxQueueWaiting()
+{
+	return rx_queue->MessagesWaiting();
+}
+
+char TConsoleTask::RxQueueRecv()
+{
+	char c;
+	rx_queue->Receive(&c, portMAX_DELAY);
+	return c;
 }
 
 //-----------------------------------------------------------------------

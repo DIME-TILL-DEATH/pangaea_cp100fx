@@ -9,7 +9,7 @@ TParamDescriptor onParamDesc = {
 	.handlerStr = "pr_on",
 	.dspAddress = DSP_ADDRESS_MODULES_ENABLE,
 	.dspPosition = ENABLE_PREAMP,
-	.name = "",
+	.name = "On",
 	.setterHandler = preamp_on_handler
 };
 

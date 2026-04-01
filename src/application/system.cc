@@ -12,7 +12,7 @@ volatile uint32_t  tap_temp;
 uint8_t  System::cab_type = 0;
 uint8_t  System::tun_del_val;
 int16_t  mstEqMidFreq;
-uint8_t sys_para[512];
+uint8_t __CCM_BSS__ sys_para[512];
 
 float tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
