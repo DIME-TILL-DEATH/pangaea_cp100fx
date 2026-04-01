@@ -83,7 +83,7 @@ void TTunerTask::Enable(TTunerMode tunerMode, int16_t samplesToSend)
 	samplesCount = samplesToSend;
 	tunerEnabled = true;
 
-	CODEC_Send(0xa102);
+	CODEC_Mute();
 	SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 0);	// blinking TAP off
 	SharcTask->setParameter(DSP_ADDRESS_IND_SRC, DSP_INDICATOR_IN, 0);
 }
@@ -92,7 +92,7 @@ void TTunerTask::Disable()
 {
 	tunerEnabled = false;
 	SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 1);
-	CODEC_Send(0xa103);
+	CODEC_Unmute();
 }
 
 void TTunerTask::ToneMeter()

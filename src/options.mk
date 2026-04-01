@@ -56,5 +56,5 @@ APP_DEFS=-DFIRMWARE_VER="\"$(FIRMWARE_VER)"\"
 #OPT_LTO=8
 COMPILE_EXT_FLAGS= -Wno-sequence-point -Wno-lto-type-mismatch -Os
 #-mlong-calls
-OPT_EXT_FLAGS=-O2 -fno-lto
-#Ofast
+OPT_EXT_FLAGS=Ofast
+#-O2 -fno-lto

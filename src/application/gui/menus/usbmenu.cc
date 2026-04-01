@@ -93,7 +93,7 @@ void UsbMenu::encoderPressed()
 	{
 		case TUsbTask::mMSC:
 		{
-			CODEC_Send(0xa102);
+			CODEC_Mute();
 			SharcTask->setParameter(DSP_ADDRESS_TUNER_PROCESS, 0, 0);
 
 			DisplayTask->Clear();

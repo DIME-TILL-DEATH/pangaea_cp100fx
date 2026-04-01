@@ -24,3 +24,13 @@ void CODEC_Send(uint16_t data)
 
 	HW_Delay(0xff);
 }
+
+void CODEC_Mute()
+{
+	CODEC_Send(0xa102);
+}
+
+void CODEC_Unmute()
+{
+
+}

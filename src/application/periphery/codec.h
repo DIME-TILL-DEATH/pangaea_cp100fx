@@ -45,5 +45,7 @@ typedef union
 
 void CODEC_Start();
 void CODEC_Send(uint16_t data);
+void CODEC_Mute();
+void CODEC_Unmute();
 
 #endif /* CODEC_H_ */
