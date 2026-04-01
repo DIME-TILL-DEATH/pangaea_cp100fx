@@ -94,13 +94,14 @@ void psave_command_handler(uint32_t value)
 static void ls_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	FileSystemTask->Suspend();
-	msg_console("%s\r", args[0]);
+	console_printf("%s\r", args[0]);
 
 	for(auto it = fileBrowser->List().begin(); it != fileBrowser->List().end(); ++it)
 	{
-		msg_console("%d:%s|", (*it).type, (*it).name.c_str());
+		console_printf("%d:%s|", (*it).type, (*it).name.c_str());
+		vTaskDelay(pdMS_TO_TICKS(1)); // protect console overflow
 	}
-	msg_console("\n");
+	console_printf("\n");
 	FileSystemTask->Resume();
 }
 

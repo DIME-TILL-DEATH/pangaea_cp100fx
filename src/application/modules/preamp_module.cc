@@ -97,12 +97,12 @@ void preamp_high_handler(uint32_t value)
 	default_param_setter(highParamDesc, value);
 }
 
-void set_preamp_handlers(TTranslator *rl)
+void set_preamp_handlers(TTranslator *translator)
 {
-	rl->AddSetterHandler(onParamDesc.handlerStr,  preamp_on_handler);
-	rl->AddSetterHandler(gainParamDesc.handlerStr,  preamp_gain_handler);
-	rl->AddSetterHandler(volumeParamDesc.handlerStr,  preamp_volume_handler);
-	rl->AddSetterHandler(lowParamDesc.handlerStr,  preamp_low_handler);
-	rl->AddSetterHandler(midParamDesc.handlerStr,  preamp_mid_handler);
-	rl->AddSetterHandler(highParamDesc.handlerStr,  preamp_high_handler);
+	translator->AddSetterHandler(onParamDesc.handlerStr,  preamp_on_handler);
+	translator->AddSetterHandler(gainParamDesc.handlerStr,  preamp_gain_handler);
+	translator->AddSetterHandler(volumeParamDesc.handlerStr,  preamp_volume_handler);
+	translator->AddSetterHandler(lowParamDesc.handlerStr,  preamp_low_handler);
+	translator->AddSetterHandler(midParamDesc.handlerStr,  preamp_mid_handler);
+	translator->AddSetterHandler(highParamDesc.handlerStr,  preamp_high_handler);
 }
