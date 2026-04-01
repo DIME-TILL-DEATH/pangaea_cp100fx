@@ -1,12 +1,14 @@
 #include "hw_timers.h"
 
+#include "eepr.h"
+
 #include "ui_task.h"
 #include "io_task.h"
 
 void HW_TimersInit()
 {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3|RCC_APB1Periph_TIM4|RCC_APB1Periph_TIM5|
-				RCC_APB1Periph_TIM6|RCC_APB1Periph_TIM14, ENABLE);
+				RCC_APB1Periph_TIM6|RCC_APB1Periph_TIM7|RCC_APB1Periph_TIM14, ENABLE);
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE);
 
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -43,6 +45,15 @@ void HW_TimersInit()
 	TIM_SelectOnePulseMode(TIM6, TIM_OPMode_Single);
 	TIM_SetCounter(TIM6, 0);
 
+	// Save system afetr TAP delay
+	TIM_TimeBaseStructure.TIM_Period = 0xffff;
+	TIM_TimeBaseStructure.TIM_Prescaler = 0x1fff;
+	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);
+	TIM_SelectOnePulseMode(TIM7, TIM_OPMode_Single);
+
+
 	// Anti-drebezg timer
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;
 	TIM_TimeBaseStructure.TIM_Prescaler = 5;
@@ -77,6 +88,10 @@ void HW_TimersInit()
 	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
 	NVIC_Init(&NVIC_InitStructure);
+
+	NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 7;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 //==============================ISR Timers=============================
@@ -101,4 +116,14 @@ extern "C" void TIM5_IRQHandler()
 	TIM_ClearITPendingBit(TIM5, TIM_IT_Update);
 
 	UITask->runningString();
+}
+
+extern "C" void TIM7_IRQHandler()
+{
+	TIM_ClearFlag(TIM7, TIM_FLAG_Update);
+	TIM_SetCounter(TIM7, 0);
+	TIM_Cmd(TIM7, DISABLE);
+	TIM_ITConfig(TIM7, TIM_IT_Update, DISABLE);
+
+	EEPROM_SaveSystemData();
 }

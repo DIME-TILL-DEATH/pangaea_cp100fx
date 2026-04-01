@@ -1,9 +1,11 @@
-#include <bitmaps.h>
 #include "tapmenu.h"
 
-#include "../../tasks/display_task.h"
 #include "system.h"
 #include "preset.h"
+
+#include "display_task.h"
+
+#include "bitmaps.h"
 
 TapMenu::TapMenu(AbstractMenu* parent, System::TapDestination tapDst)
 {
@@ -16,7 +18,7 @@ TapMenu::TapMenu(AbstractMenu* parent, System::TapDestination tapDst)
 void TapMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
-	System::TapTempo(System::TAP_RFILTER);
+	System::TapTempo(m_tapDst);
 	m_delay = 4;
 	restartBlinking(0);
 }

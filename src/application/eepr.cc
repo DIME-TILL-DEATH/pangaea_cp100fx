@@ -83,6 +83,14 @@ void EEPROM_SaveSystemData(void)
 	f_mount(0, "1:", 0);
 }
 
+void EEPROM_DelayedSaveSystemData()
+{
+	TIM_ClearFlag(TIM7, TIM_FLAG_Update);
+	TIM_SetCounter(TIM7, 0);
+	TIM_ITConfig(TIM7, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM7, ENABLE);
+}
+
 bool EEPROM_LoadPreset(uint8_t numPreset, Preset::TPresetData* loadPreset)
 {
 	char fna[_MAX_LFN];

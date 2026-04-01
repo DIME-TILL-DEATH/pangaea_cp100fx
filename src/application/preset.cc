@@ -35,6 +35,11 @@ void Preset::Change(uint8_t presetNumber)
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modulesBuf[PHASER_CENTER]);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modulesBuf[PHASER_WIDTH]);
 
+	if(sys_para[TAP_TYPE] != System::TAP_TYPE_PRESET) // global temp On
+	{
+		System::setDelayTime(sys_para[GLOBAL_TAP_TIME] * 8); // set values in interface
+	}
+
 	if(sys_para[System::ATTENUATOR_MODE])
 		IOTask->potWrite();
 

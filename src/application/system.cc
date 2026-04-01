@@ -33,7 +33,6 @@ void System::setStartupValues()
 {
 	DSP_SendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
 	DSP_SendParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
-	DSP_SendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
 	DSP_SendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0); // left cab bypass
 
 	DSP_SendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
@@ -54,6 +53,14 @@ void System::setStartupValues()
 	DSP_SendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
 	DSP_SendParameter(DSP_ADDRESS_EQ, EQ_MASTER_HIGH_GAIN_POS, sys_para[System::MASTER_EQ_HIGH] + 24);
 	DSP_SendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
+
+	DSP_SendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
+	if(sys_para[TAP_TYPE] != System::TAP_TYPE_PRESET) // global temp On
+	{
+		System::setMoogTime(sys_para[GLOBAL_TAP_TIME] * 8);
+		System::setDelayTime(sys_para[GLOBAL_TAP_TIME] * 8);
+		System::setTremoloTime(sys_para[GLOBAL_TAP_TIME] * 8);
+	}
 
 	tun_del_val = (127 - sys_para[System::TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
 	currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
@@ -157,6 +164,8 @@ void System::TapTempo(TapDestination tapDst)
 			System::setMoogTime(tap_global);
 			System::setDelayTime(tap_global);
 			System::setTremoloTime(tap_global);
+
+			EEPROM_DelayedSaveSystemData();
 		}
 		else
 		{

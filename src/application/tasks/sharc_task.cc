@@ -1,6 +1,7 @@
 #include "sharc_task.h"
 
 #include "preset.h"
+#include "system.h"
 
 TSharcTask *SharcTask = nullptr;
 
@@ -18,6 +19,8 @@ void TSharcTask::Code()
 
 //	extern EventGroupHandle_t startEventGroup;
 //	xEventGroupSync(startEventGroup, EVENT_BIT_CCTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
+	System::setStartupValues();
+
 	TSharcCmd cmd;
 	while(1)
 	{
