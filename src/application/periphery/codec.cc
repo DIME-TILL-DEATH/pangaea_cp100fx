@@ -32,5 +32,5 @@ void CODEC_Mute()
 
 void CODEC_Unmute()
 {
-
+	CODEC_Send(0xa103);
 }

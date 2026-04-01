@@ -36,9 +36,9 @@ public:
 private:
 	void Code() override;
 	USB_OTG_CORE_HANDLE* USB_OTG_dev;
-
 	TQueue *rx_queue{nullptr};
-	TConsoleTask::readline_io_t* cdc_io{nullptr};
+
+	TMode m_mode;
 };
 
 extern TUsbTask *UsbTask;

@@ -31,7 +31,7 @@ static const char *note_name_table[] ={
 
 TTunerTask *TunerTask = nullptr;
 
-vec __CCM_BSS__ Wfwd[32];
+vec Wfwd[32];
 
 TTunerTask::TTunerTask()
 {

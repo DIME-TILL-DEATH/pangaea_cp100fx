@@ -15,8 +15,12 @@ void EEPROM_Start()
 	UINT file_size;
 	FRESULT res;
 
+	sys_para[System::PHONES_VOLUME] = 127;
 	sys_para[System::MASTER_VOLUME] = 127;
 	sys_para[System::TUNER_EXTERNAL] = 0x81;
+	sys_para[System::EXPR_TYPE] = 1;
+	sys_para[System::EXPR_CAL_MAX_HI] = 0xFF;
+	sys_para[System::EXPR_CAL_MAX_LO] = 0x0F;
 
 	if(f_mount(&fs, "1:", 1)!=FR_OK)
 	{

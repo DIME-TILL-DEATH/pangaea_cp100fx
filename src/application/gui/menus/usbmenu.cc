@@ -108,7 +108,7 @@ void UsbMenu::encoderPressed()
 			DisplayTask->StringOut(6, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"cp100fx connected as");
 			DisplayTask->StringOut(34, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"serial port");
 
-			// Memory leak
+			// No memory leak, UsbMenu create once on startup
 			currentMenu = mainMenu;
 			mainMenu->show();
 			break;
@@ -158,11 +158,11 @@ void UsbMenu::startUsb()
 
 void UsbMenu::stopUsb()
 {
-	delete ConsoleTask;
-	delete UsbTask;
-
 	usbConnected = false;
+	delete UsbTask;
+	UsbTask = nullptr;
 
-	currentMenu = topLevelMenu;
-	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
+
+//	currentMenu = topLevelMenu;
+//	topLevelMenu->returnFromChildMenu(TReturnMode::KeepChild);
 }

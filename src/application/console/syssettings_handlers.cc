@@ -184,7 +184,7 @@ static void spdif_command_handler(TTranslator* rl, TTranslator::const_symbol_typ
 static void tempo_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&sys_para[System::TAP_TYPE], rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
 	EEPROM_SaveSystemData();
 }
 

@@ -293,16 +293,16 @@ void SystemMenu::tunerExtKeyDown(void* parameter)
 
 void SystemMenu::tempoDecrease(void* parameter)
 {
-	sys_para[System::TAP_HIGH] = 0;
+	sys_para[System::GLOBAL_TAP_TIME] = 0;
 	if(sys_para[System::TAP_TYPE] > 0) sys_para[System::TAP_TYPE]--;
-	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
 }
 
 void SystemMenu::tempoIncrease(void* parameter)
 {
 //	sys_para[tap_hi] = 0; //???
 	if(sys_para[System::TAP_TYPE] < 2) sys_para[System::TAP_TYPE]++;
-	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
 }
 
 void SystemMenu::tunerSpeedDescrease(void* parameter)

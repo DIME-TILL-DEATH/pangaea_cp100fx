@@ -12,11 +12,9 @@ volatile uint32_t  tap_temp;
 uint8_t  System::cab_type = 0;
 uint8_t  System::tun_del_val;
 int16_t  mstEqMidFreq;
-uint8_t __CCM_BSS__ sys_para[512] =
-{/*mode*/0,/*midi_ch*/0,/*cab num*/0,/*exp_type*/1,/*foot1*/0,/*foot2*/0,
-/*foot3*/0,/*calibrate*/0, 0, 0xff, 0xf};
+uint8_t sys_para[512];
 
-float __CCM_BSS__ tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
+float tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
 const uint16_t bpm_time[] =
 		{2727, 2609, 2500, 2400, 2308, 2222, 2143, 2069, 2000, 1935, 1875, 1818, 1765, 1714, 1667, 1622, 1579, 1538, 1500, 1463,
@@ -35,10 +33,8 @@ void System::setStartupValues()
 {
 	DSP_SendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
 	DSP_SendParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
-	DSP_SendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::TAP_HIGH]);
+	DSP_SendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
 	DSP_SendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0); // left cab bypass
-
-	if(!sys_para[System::PHONES_VOLUME]) sys_para[System::PHONES_VOLUME] = 127;
 
 	DSP_SendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
 
@@ -154,9 +150,9 @@ void System::TapTempo(TapDestination tapDst)
 
 		if(sys_para[TAP_TYPE] != System::TAP_TYPE_PRESET) // global temp On
 		{
-			sys_para[TAP_HIGH] = round(tap_global/8);
+			sys_para[GLOBAL_TAP_TIME] = round(tap_global/8);
 
-			SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
+			SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[GLOBAL_TAP_TIME]);
 
 			System::setMoogTime(tap_global);
 			System::setDelayTime(tap_global);

@@ -56,6 +56,7 @@ TConsoleTask::~TConsoleTask()
 
 void TConsoleTask::Code()
 {
+//	Suspend();
 	while(1)
 	{
 		read_line->Process();

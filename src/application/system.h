@@ -48,7 +48,7 @@ namespace System
 		TUNER_EXTERNAL,
 		/*speed foot*/FSW_SPEED,
 		TIME_FORMAT,	// Sec, BPM
-		TAP_HIGH, /*global temp hi*/
+		GLOBAL_TAP_TIME, /*global temp hi*/
 		EXPR_STORE_LEVEL, /*save expression level*/
 		SWAP_SWITCH,
 		TUNER_SPEED,

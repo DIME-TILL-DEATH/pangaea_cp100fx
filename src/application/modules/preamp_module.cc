@@ -1,6 +1,6 @@
-#include <modules/preamp_module.h>
-#include "console_helpers.h"
+#include "preamp_module.h"
 
+#include "console_helpers.h"
 #include "modules.h"
 
 

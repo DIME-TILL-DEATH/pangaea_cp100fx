@@ -105,11 +105,19 @@ void cdc_disable(int &ret)
 TUsbTask::TUsbTask(TMode val) :
 		TTask()
 {
-	switch(val)
+	m_mode = val;
+	USBD_Class_cb_TypeDef* usbClassCb;
+
+	switch(m_mode)
 	{
 		case mCDC:
 		{
+			usbClassCb = &USBD_CDC_cb;
+
 			rx_queue = new TQueue(1024, 1);
+			vQueueAddToRegistry(rx_queue, "USB tx queue");
+
+
 			USBD_DeviceDesc[4] = 2;	/*bDeviceClass*/
 			USBD_DeviceDesc[5] = 2; /*bDeviceSubClass*/
 			USBD_DeviceDesc[8] = 0x83; /*idVendor*/
@@ -117,7 +125,7 @@ TUsbTask::TUsbTask(TMode val) :
 			USBD_DeviceDesc[10] = 0x40; /*idVendor*/
 			USBD_DeviceDesc[11] = 0x57; /*idVendor*/
 
-			cdc_io = new TConsoleTask::readline_io_t{
+			TConsoleTask::readline_io_t cdc_io = {
 				.console_task_hw_init = console_task_hw_init,
 
 				.enable = cdc_enable,
@@ -133,39 +141,59 @@ TUsbTask::TUsbTask(TMode val) :
 				.recv_buf = cdc_recv_buf,
 			};
 
-			ConsoleTask->SetIo(cdc_io);
+			ConsoleTask->SetIo(&cdc_io);
 			break;
 		}
 
 		case mMSC:
 		{
-
+			usbClassCb = &USBD_MSC_cb;
 			break;
 		}
 	}
 
 //	kgp_sdk_libc::memset(USB_OTG_dev, 0, sizeof(USB_OTG_CORE_HANDLE));
 	USB_OTG_dev = new USB_OTG_CORE_HANDLE;
-	USBD_Init(USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, val==mMSC ? &USBD_MSC_cb : &USBD_CDC_cb,
-			&USR_cb, false);
+	USBD_Init(USB_OTG_dev, USB_OTG_FS_CORE_ID, &USR_desc, usbClassCb, &USR_cb, false);
 }
 
 TUsbTask::~TUsbTask()
 {
 	if(rx_queue) delete rx_queue;
-	if(cdc_io) delete cdc_io;
+	if(USB_OTG_dev) delete USB_OTG_dev;
 
-	delete ConsoleTask;
+	TConsoleTask::readline_io_t cdc_io = {
+		.console_task_hw_init = nullptr,
+
+		.enable = nullptr,
+		.disable = nullptr,
+
+		.send_char = nullptr,
+		.recv_char = nullptr,
+
+		.send_string = nullptr,
+		.recv_string = nullptr,
+
+		.send_buf = nullptr,
+		.recv_buf = nullptr,
+	};
+
+	ConsoleTask->SetIo(&cdc_io);
+
+//	ConsoleTask->Give();
+
+	vTaskDelete(0);
 }
 
 
 void TUsbTask::Code()
 {
 	bool configured = false;
+//	ConsoleTask->Resume();
 	while(1)
 	{
 
-		USBD_OTG_ISR_Handler((USB_OTG_CORE_HANDLE*)USB_OTG_dev);
+		if(rx_queue) USBD_OTG_ISR_Handler((USB_OTG_CORE_HANDLE*)USB_OTG_dev);
 
 		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status==USB_OTG_CONFIGURED && configured==false)
 		{
@@ -174,8 +202,15 @@ void TUsbTask::Code()
 
 		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status!=USB_OTG_CONFIGURED && configured==true)
 		{
-		   NVIC_SystemReset();
-		   configured = false ;
+			if(m_mode == mMSC)
+			{
+			   NVIC_SystemReset();
+			   configured = false;
+			}
+			else
+			{
+				usbMenu->stopUsb();
+			}
 		}
 
 	}
