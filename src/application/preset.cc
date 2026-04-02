@@ -1,8 +1,8 @@
+#include <eeprom.h>
 #include "preset.h"
 
 #include "adc.h"
 
-#include "eepr.h"
 #include "system.h"
 #include "modules.h"
 
@@ -35,9 +35,9 @@ void Preset::Change(uint8_t presetNumber)
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_CENTER_POS, currentPreset.modulesBuf[PHASER_CENTER]);
 	SharcTask->setParameter(DSP_ADDRESS_PHASER, PHASER_WIDTH_POS, currentPreset.modulesBuf[PHASER_WIDTH]);
 
-	if(sys_para[TAP_TYPE] != System::TAP_TYPE_PRESET) // global temp On
+	if(sys_para[System::TAP_TYPE] != System::TAP_TYPE_PRESET) // global temp On
 	{
-		System::setDelayTime(sys_para[GLOBAL_TAP_TIME] * 8); // set values in interface
+		System::setDelayTime(sys_para[System::GLOBAL_TAP_TIME] * 8); // set values in interface
 	}
 
 	if(sys_para[System::ATTENUATOR_MODE])

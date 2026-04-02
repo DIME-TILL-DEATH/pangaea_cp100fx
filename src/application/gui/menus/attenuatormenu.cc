@@ -1,8 +1,7 @@
+#include <eeprom.h>
 #include "attenuatormenu.h"
 
 #include "system.h"
-#include "eepr.h"
-
 #include "bitmaps.h"
 
 #include "stringlistparam.h"

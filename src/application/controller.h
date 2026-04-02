@@ -54,6 +54,8 @@ typedef struct
 }TController;
 
 const uint8_t controllersCount = 32; // Массив был 512 байт, те 128 контроллеров
+
+void SetData(const TController& controller, uint8_t data);
 }
 
 

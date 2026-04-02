@@ -1,11 +1,10 @@
 #include <bitmaps.h>
+#include <eeprom.h>
 #include "midimapmenu.h"
 
 #include "../../../tasks/display_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "eepr.h"
-
 #include "system.h"
 
 MidiMapMenu::MidiMapMenu(AbstractMenu* parent)

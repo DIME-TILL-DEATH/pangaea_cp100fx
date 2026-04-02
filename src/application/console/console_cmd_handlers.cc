@@ -1,10 +1,10 @@
+#include <eeprom.h>
 #include "console_cmd_handlers.h"
 
 #include "translator.h"
 
 #include "sharc.h"
 
-#include "eepr.h"
 #include "ff.h"
 #include "codec.h"
 #include "system.h"
@@ -14,7 +14,6 @@
 #include "console_helpers.h"
 #include "hardware_handlers.h"
 #include "resonance_filter_handlers.h"
-#include "gate_handlers.h"
 #include "compressor_handlers.h"
 #include "amp_handlers.h"
 #include "ir_handlers.h"
@@ -25,7 +24,6 @@
 #include "delay_handlers.h"
 #include "early_handlers.h"
 #include "reverb_handlers.h"
-#include "tremolo_handlers.h"
 #include "syssettings_handlers.h"
 
 #include "filesystem_task.h"
@@ -83,10 +81,6 @@ void psave_command_handler(uint32_t value)
 	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, &currentPreset.paramData, currentPresetNumber+1);
 	if(System::cab_type==CAB_CONFIG_STEREO)
 		DSP_SendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
-//
-//	SharcTask->sendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, &currentPreset.paramData, currentPresetNumber+1);
-//	if(System::cab_type==CAB_CONFIG_STEREO)
-//		SharcTask->sendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
 
 	console_printf("psave\r\n");
 }

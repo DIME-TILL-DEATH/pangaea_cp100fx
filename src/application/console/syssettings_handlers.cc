@@ -1,9 +1,9 @@
+#include <eeprom.h>
 #include "syssettings_handlers.h"
 #include "console_helpers.h"
 
 #include "adc.h"
 
-#include "eepr.h"
 #include "system.h"
 #include "modules.h"
 

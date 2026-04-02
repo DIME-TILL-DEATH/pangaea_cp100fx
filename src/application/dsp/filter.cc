@@ -1,8 +1,7 @@
+#include <eeprom.h>
 #include "filter.h"
 
 #include "appdefs.h"
-#include "eepr.h"
-
 #include "modules.h"
 
 #include <complex>

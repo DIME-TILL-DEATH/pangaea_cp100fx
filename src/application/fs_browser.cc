@@ -1,8 +1,7 @@
+#include <eeprom.h>
 #include "fs_browser.h"
 
 #include "storage.h"
-#include "eepr.h"
-
 #include "system.h"
 
 #include "filesystem_task.h"

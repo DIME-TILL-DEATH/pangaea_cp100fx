@@ -1,11 +1,11 @@
 #ifndef MODULES_H_
 #define MODULES_H_
 
-#include <modules/preamp_module.h>
 #include "appdefs.h"
 
-
-
+#include "preamp_module.h"
+#include "tremolo_module.h"
+#include "gate_module.h"
 
 enum dsp_enable_pos_t
 {
@@ -26,12 +26,6 @@ enum
 	PRESET_VOLUME = 95,
 	PRESET_VOLUME_CONTROL = 145,
 	BPM_DELAY = 511
-};
-
-enum
-{
-	PARAM_EQUAL_POS = 128,
-	NOT_SEND_POS = 255
 };
 
 enum resonance_filter_parameters_t
@@ -59,17 +53,7 @@ enum
 	RFILTER_TIME_LO_POS, RFILTER_TIME_HI_POS
 };
 
-enum gate_parameters_t
-{
-	GATE_THRESHOLD = 117,
-	GATE_ATTACK,
-	GATE_DECAY
-};
 
-enum
-{
-	GATE_THRESHOLD_POS, GATE_ATTACK_POS, GATE_DECAY_POS
-};
 
 enum compressor_parameters_t
 {
@@ -83,13 +67,6 @@ enum compressor_parameters_t
 enum
 {
 	COMPRESSOR_THRESHOLD_POS, COMPRESSOR_RATIO_POS, COMPRESSOR_VOLUME_POS, COMPRESSOR_ATTACK_POS, COMPRESSOR_RELEASE_POS
-};
-
-
-
-enum
-{
-	PREAMP_GAIN_POS = 0, PREAMP_VOLUME_POS, PREAMP_0_POS, PREAMP_LOW_POS, PREAMP_MID_POS, PREAMP_HIGH_POS
 };
 
 
@@ -208,8 +185,6 @@ enum
 	EARLY_MIX_POS = 0, EARLY_SIZE_POS
 };
 
-//d_vol,d_fed,d_lp,d_hp,d_pan,dp_vol,dp_pan,dp_d,d_mod,d_ra,d_dir
-
 enum delay_parameters_t
 {
 	DELAY_MIX = 67,
@@ -255,26 +230,6 @@ enum
 {
 	REVERB_MIX_POS = 0, REVERB_TYPE_POS, REVERB_TIME_POS, REVERB_SIZE_POS, REVERB_DAMPING_POS,
 	REVERB_LPF_POS, REVERB_HPF_POS, REVERB_DETUNE_POS, REVERB_DIFFUSION_POS, REVERB_PREDELAY_POS, REVERB_TAIL_POS
-};
-
-enum tremolo_parameters_t
-{
-	TREMOLO_INTENSITY = 91,
-	TREMOLO_RATE,
-	TREMOLO_LFO_MOD,
-	TREMOLO_MS,
-	TREMOLO_TAP = 129,
-	TREMOLO_LFO_TYPE = 158
-};
-
-// Порядок отсылки не как в меню
-enum
-{
-	TREMOLO_INTENSITY_POS, TREMOLO_RATE_POS, TREMOLO_LFO_MOD_POS,
-	TREMOLO_MS_POS,
-	TREMOLO_TIME_LO_POS,
-	TREMOLO_TIME_HI_POS,
-	TREMOLO_LFO_TYPE_POS = 6
 };
 
 #endif /* MODULES_H_ */

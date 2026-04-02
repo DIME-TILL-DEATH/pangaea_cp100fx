@@ -1,6 +1,5 @@
+#include <eeprom.h>
 #include "hw_timers.h"
-
-#include "eepr.h"
 
 #include "ui_task.h"
 #include "io_task.h"

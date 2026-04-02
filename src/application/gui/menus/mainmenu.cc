@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "mainmenu.h"
 
-#include "eepr.h"
 #include "system.h"
 #include "modules.h"
 #include "footswitch.h"

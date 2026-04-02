@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "submenuparam.h"
 
-#include "eepr.h"
 #include "system.h"
 
 #include "display_task.h"

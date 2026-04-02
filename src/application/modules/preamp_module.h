@@ -1,5 +1,5 @@
-#ifndef _CONSOLE_PREAMP_HANDLERS_H_
-#define _CONSOLE_PREAMP_HANDLERS_H_
+#ifndef _PREAMP_MODULE_H_
+#define _PREAMP_MODULE_H_
 
 #include "translator.h"
 #include "module_parameter.h"
@@ -13,6 +13,12 @@ enum preamp_parameters_t
 	PREAMP_MID,
 	PREAMP_HIGH
 };
+
+enum
+{
+	PREAMP_GAIN_POS = 0, PREAMP_VOLUME_POS, PREAMP_0_POS, PREAMP_LOW_POS, PREAMP_MID_POS, PREAMP_HIGH_POS
+};
+
 
 #pragma pack(push, 1)
 typedef struct

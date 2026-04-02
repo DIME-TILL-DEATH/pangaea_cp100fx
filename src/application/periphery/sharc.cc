@@ -1,9 +1,9 @@
+#include <eeprom.h>
 #include "sharc.h"
 
 #include "periphery.h"
 #include "serial.h"
 
-#include "eepr.h"
 #include "system.h"
 #include "preset.h"
 #include "modules.h"

@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "footswitch.h"
 
-#include "eepr.h"
 #include "system.h"
 #include "preset.h"
 #include "footswitch.h"

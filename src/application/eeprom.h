@@ -1,5 +1,5 @@
-#ifndef EEPR_H_
-#define EEPR_H_
+#ifndef EEPROM_H_
+#define EEPROM_H_
 
 #include "appdefs.h"
 

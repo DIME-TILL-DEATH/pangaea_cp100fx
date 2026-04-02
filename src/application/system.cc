@@ -1,8 +1,8 @@
+#include <eeprom.h>
 #include "system.h"
 
 #include "sharc.h"
 
-#include "eepr.h"
 #include "preset.h"
 
 #include "display_task.h"

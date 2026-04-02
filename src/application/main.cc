@@ -4,7 +4,7 @@
 #include "appdefs.h"
 #include "sdk_port.h"
 
-#include "eepr.h"
+#include <eeprom.h>
 
 #include "periphery.h"
 #include "AT45DB321.h"

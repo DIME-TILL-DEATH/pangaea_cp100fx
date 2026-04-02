@@ -42,6 +42,12 @@ typedef enum
 #endif
 }dsp_module_address_t;
 
+enum
+{
+	PARAM_EQUAL_POS = 128,
+	NOT_SEND_POS = 255
+};
+
 
 typedef void (*setter_handler_t)(uint32_t value);
 

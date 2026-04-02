@@ -1,10 +1,10 @@
+#include <eeprom.h>
 #include "eq_bitmap.h"
 
 #include "bitmaps.h"
 #include "icons_bitmap.h"
 
 #include "filter.h"
-#include "eepr.h"
 #include "modules.h"
 #include "preset.h"
 

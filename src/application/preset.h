@@ -1,5 +1,5 @@
-#ifndef SRC_APPLICATION_PRESET_H_
-#define SRC_APPLICATION_PRESET_H_
+#ifndef _PRESET_H_
+#define _PRESET_H_
 
 #include "appdefs.h"
 #include "controller.h"
@@ -112,14 +112,6 @@ typedef struct
 
 typedef struct
 {
-    uint8_t depth;  // volume
-    uint8_t rate;
-    uint8_t lfo;
-    uint8_t ms;
-}TTremoloData;
-
-typedef struct
-{
     uint8_t master;
     uint8_t type;
     uint8_t level;
@@ -130,15 +122,6 @@ typedef struct
     uint8_t volume;
     uint8_t type;
 }TErData;
-
-
-
-typedef struct
-{
-    uint8_t threshold;
-    uint8_t attack;
-    uint8_t decay;
-}TGateData;
 
 typedef struct
 {

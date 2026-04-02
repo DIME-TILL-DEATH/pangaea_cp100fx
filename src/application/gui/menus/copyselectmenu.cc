@@ -1,9 +1,8 @@
+#include <eeprom.h>
 #include "copyselectmenu.h"
 
 #include "preset.h"
 #include "system.h"
-#include "eepr.h"
-
 #include "display_task.h"
 #include "sharc_task.h"
 

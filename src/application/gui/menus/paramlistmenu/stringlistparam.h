@@ -8,6 +8,8 @@ class StringListParam : public BaseParam
 public:
 	StringListParam(const char* name, uint8_t* paramValuePtr,
 			std::initializer_list<const char*> stringList, uint8_t maxStringLength);
+	StringListParam(const TParamDescriptor& paramDesc,
+			std::initializer_list<const char*> stringList, uint8_t maxStringLength);
 	~StringListParam();
 
 	uint8_t* getString(uint8_t stringNum);

@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "eqbandmenu.h"
 
-#include "eepr.h"
 #include "preset.h"
 
 #include "controllers_task.h"

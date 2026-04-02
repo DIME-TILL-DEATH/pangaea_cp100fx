@@ -1,6 +1,5 @@
+#include <eeprom.h>
 #include "baseparam.h"
-
-#include "eepr.h"
 
 #include "display_task.h"
 #include "io_task.h"

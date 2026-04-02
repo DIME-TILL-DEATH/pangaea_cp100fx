@@ -1,6 +1,5 @@
+#include <eeprom.h>
 #include "midi_task.h"
-
-#include "eepr.h"
 
 #include "system.h"
 #include "preset.h"

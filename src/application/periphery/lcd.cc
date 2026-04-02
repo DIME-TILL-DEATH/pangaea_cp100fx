@@ -1,4 +1,5 @@
 #include <bitmaps.h>
+#include <eeprom.h>
 #include "lcd.h"
 
 #include "periphery.h"
@@ -6,7 +7,6 @@
 
 #include "preset.h"
 #include "system.h"
-#include "eepr.h"
 
 
 uint8_t oled_ini[30] =

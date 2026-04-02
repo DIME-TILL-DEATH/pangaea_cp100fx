@@ -1,4 +1,5 @@
 #include <bitmaps.h>
+#include <eeprom.h>
 #include "nameeditmenu.h"
 
 #include "../../../tasks/controllers_task.h"
@@ -7,7 +8,6 @@
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
 #include "appdefs.h"
-#include "eepr.h"
 #include "preset.h"
 
 const uint8_t NameEditMenu::ascii_low[];

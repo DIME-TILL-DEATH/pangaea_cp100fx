@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "dialog.h"
 
-#include "eepr.h"
 #include "preset.h"
 
 #include "display_task.h"

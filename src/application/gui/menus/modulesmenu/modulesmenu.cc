@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "modulesmenu.h"
 
-#include "eepr.h"
 #include "fs_browser.h"
 #include "preset.h"
 

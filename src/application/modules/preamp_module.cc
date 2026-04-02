@@ -4,7 +4,7 @@
 #include "modules.h"
 
 
-TParamDescriptor onParamDesc = {
+static TParamDescriptor onParamDesc = {
 	.ptr = &currentPreset.paramData.switches.preamp,
 	.handlerStr = "pr_on",
 	.dspAddress = DSP_ADDRESS_MODULES_ENABLE,
@@ -13,7 +13,7 @@ TParamDescriptor onParamDesc = {
 	.setterHandler = preamp_on_handler
 };
 
-TParamDescriptor gainParamDesc = {
+static TParamDescriptor gainParamDesc = {
 	.ptr = &currentPreset.paramData.preamp.gain,
 	.handlerStr = "pr_gn",
 	.dspAddress = DSP_ADDRESS_PREAMP,
@@ -22,7 +22,7 @@ TParamDescriptor gainParamDesc = {
 	.setterHandler = preamp_gain_handler
 };
 
-TParamDescriptor volumeParamDesc = {
+static TParamDescriptor volumeParamDesc = {
 	.ptr = &currentPreset.paramData.preamp.volume,
 	.handlerStr = "pr_vl",
 	.dspAddress = DSP_ADDRESS_PREAMP,
@@ -31,7 +31,7 @@ TParamDescriptor volumeParamDesc = {
 	.setterHandler = preamp_volume_handler
 };
 
-TParamDescriptor lowParamDesc = {
+static TParamDescriptor lowParamDesc = {
 	.ptr = &currentPreset.paramData.preamp.low,
 	.handlerStr = "pr_lo",
 	.dspAddress = DSP_ADDRESS_PREAMP,
@@ -40,7 +40,7 @@ TParamDescriptor lowParamDesc = {
 	.setterHandler = preamp_low_handler
 };
 
-TParamDescriptor midParamDesc = {
+static TParamDescriptor midParamDesc = {
 	.ptr = &currentPreset.paramData.preamp.mid,
 	.handlerStr = "pr_mi",
 	.dspAddress = DSP_ADDRESS_PREAMP,
@@ -49,7 +49,7 @@ TParamDescriptor midParamDesc = {
 	.setterHandler = preamp_mid_handler
 };
 
-TParamDescriptor highParamDesc = {
+static TParamDescriptor highParamDesc = {
 	.ptr = &currentPreset.paramData.preamp.high,
 	.handlerStr = "pr_hi",
 	.dspAddress = DSP_ADDRESS_PREAMP,

@@ -1,3 +1,4 @@
+#include <eeprom.h>
 #include "ui_task.h"
 
 #include "adc.h"
@@ -5,7 +6,6 @@
 #include "pot.h"
 #include "codec.h"
 
-#include "eepr.h"
 #include "footswitch.h"
 #include "preset.h"
 #include "system.h"

@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "tunerextmenu.h"
 
-#include "eepr.h"
 
 TunerExtMenu::TunerExtMenu(AbstractMenu* parent)
 	:ParamListMenu(parent, MENU_TUNER_EXT)

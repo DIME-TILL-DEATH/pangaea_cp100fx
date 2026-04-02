@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "abstractmenu.h"
 
-#include "eepr.h"
 #include "preset.h"
 
 #include "bitmaps.h"

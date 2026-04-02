@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "guimodules.h"
 
-#include "eepr.h"
 #include "system.h"
 #include "preset.h"
 #include "modules.h"
@@ -62,11 +62,9 @@ AbstractMenu* GuiModules::createGateMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCount = 3;
 	BaseParam* params[paramCount];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &currentPreset.modulesBuf[GATE_THRESHOLD]);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &currentPreset.modulesBuf[GATE_ATTACK]);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Decay", &currentPreset.modulesBuf[GATE_DECAY]);
-
-	for(int i=0; i<paramCount; i++) params[i]->setDspAddress(DSP_ADDRESS_GATE, i);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, GateDesc.threshold);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, GateDesc.attack);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, GateDesc.decay);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_GATE);
 	if(menu) menu->setParams(params, paramCount);
@@ -567,24 +565,12 @@ AbstractMenu* GuiModules::createTremoloMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 6;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Intens", &currentPreset.modulesBuf[TREMOLO_INTENSITY]);
-	params[0]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_INTENSITY_POS);
-
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &currentPreset.modulesBuf[TREMOLO_RATE]);
-	params[1]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_RATE_POS);
-
-	params[2] = new StringListParam("LFOType", &currentPreset.modulesBuf[TREMOLO_LFO_TYPE], {"Sin     ", "Square  ", "Sawtooth"}, 8);
-	params[2]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_TYPE_POS);
-
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "LFO mod", &currentPreset.modulesBuf[TREMOLO_LFO_MOD]);
-	params[3]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_LFO_MOD_POS);
-
-	params[4] = new StringListParam("Type", &currentPreset.modulesBuf[TREMOLO_MS], {"Mono  ", "Stereo"}, 6);
-	params[4]->setDspAddress(DSP_ADDRESS_TREMOLO, TREMOLO_MS_POS);
-
-	params[5] = new StringListParam("TAP", &currentPreset.modulesBuf[TREMOLO_TAP],
-			{"1/4 ", "1/8." ,"1/8 " ,"1/8t" ,"1/16"}, 5);
-	params[5]->setDspAddress(DSP_ADDRESS_TREMOLO, NOT_SEND_POS);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, TremoloDesc.depth);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, TremoloDesc.rate);
+	params[2] = new StringListParam(TremoloDesc.lfo_type, {"Sin     ", "Square  ", "Sawtooth"}, 8);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, TremoloDesc.lfo_mod);
+	params[4] = new StringListParam(TremoloDesc.ms, {"Mono  ", "Stereo"}, 6);
+	params[5] = new StringListParam(TremoloDesc.tap, {"1/4 ", "1/8." ,"1/8 " ,"1/8t" ,"1/16"}, 5);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_TREMOLO);
 	if(menu)

@@ -1,6 +1,6 @@
+#include <eeprom.h>
 #include "eqgraphmenu.h"
 
-#include "eepr.h"
 #include "filter.h"
 #include "preset.h"
 

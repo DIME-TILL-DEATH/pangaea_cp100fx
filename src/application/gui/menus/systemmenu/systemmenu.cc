@@ -1,10 +1,9 @@
+#include <eeprom.h>
 #include "systemmenu.h"
 
 #include "adc.h"
 
 #include "system.h"
-#include "eepr.h"
-
 #include "sharc_task.h"
 
 #include "baseparam.h"

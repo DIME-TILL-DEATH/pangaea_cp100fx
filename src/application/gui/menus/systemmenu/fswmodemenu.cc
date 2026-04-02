@@ -1,10 +1,10 @@
 #include <bitmaps.h>
+#include <eeprom.h>
 #include "fswmodemenu.h"
 
 #include "../../../tasks/display_task.h"
 #include "../../../tasks/io_task.h"
 #include "../../../tasks/ui_task.h"
-#include "eepr.h"
 #include "fswcontrolmenu.h"
 #include "footswitch.h"
 

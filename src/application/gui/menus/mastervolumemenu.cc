@@ -1,6 +1,5 @@
+#include <eeprom.h>
 #include "mastervolumemenu.h"
-
-#include "eepr.h"
 
 #include "system.h"
 

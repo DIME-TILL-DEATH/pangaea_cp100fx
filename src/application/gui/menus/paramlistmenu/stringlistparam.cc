@@ -4,12 +4,10 @@
 
 StringListParam::StringListParam(const char* name, uint8_t* paramValuePtr,
 		std::initializer_list<const char*>stringList, uint8_t maxStringLength)
-			:BaseParam(BaseParam::GUI_PARAMETER_LIST, name, paramValuePtr)
+			: BaseParam(BaseParam::GUI_PARAMETER_LIST, name, paramValuePtr)
 {
 	m_stringCount = stringList.size();
 	m_maxStringLength = maxStringLength;
-
-
 
 	m_strings = new char*[m_stringCount];
 	for(int i = 0; i<m_stringCount; i++)
@@ -22,11 +20,26 @@ StringListParam::StringListParam(const char* name, uint8_t* paramValuePtr,
 		strCounter++;
 	}
 
-//	m_disableMask = new uint8_t*[m_stringCount];
-//	for(int i = 0; i<m_stringCount; i++)
-//		m_disableMask[i] = new uint8_t[16]; // max affected params count
-//
-//	kgp_sdk_libc::memset(m_disableMask, 0, m_stringCount * 16);
+	m_maxValue = m_stringCount - 1;
+}
+
+StringListParam::StringListParam(const TParamDescriptor& paramDesc,
+		std::initializer_list<const char*> stringList, uint8_t maxStringLength)
+			: BaseParam(BaseParam::GUI_PARAMETER_LIST, paramDesc)
+{
+	m_stringCount = stringList.size();
+	m_maxStringLength = maxStringLength;
+
+	m_strings = new char*[m_stringCount];
+	for(int i = 0; i<m_stringCount; i++)
+		m_strings[i] = new char[m_maxStringLength];
+
+	uint8_t strCounter = 0;
+	for(auto strIter = stringList.begin(); strIter != stringList.end(); ++strIter)
+	{
+		kgp_sdk_libc::strcpy(m_strings[strCounter], *strIter);
+		strCounter++;
+	}
 
 	m_maxValue = m_stringCount - 1;
 }
