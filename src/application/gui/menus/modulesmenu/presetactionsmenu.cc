@@ -9,10 +9,9 @@
 #include "sharc_task.h"
 #include "ui_task.h"
 
-#include "console_cmd_handlers.h"
-
 #include "modulesmenu.h"
 #include "copyselectmenu.h"
+#include "preset_accessors.h"
 
 PresetActionsMenu::PresetActionsMenu(AbstractMenu *parent, TActionType actionType)
 {
@@ -136,6 +135,6 @@ void PresetActionsMenu::savePreset()
 	DisplayTask->StringOut(38, 2, Font::fnt12x13, Font::fnsNormal, (uint8_t*)" Save");
 
 	currentPresetNumber = targetPresetNum;
-	psave_command_handler();
+	psave_handler();
 	Preset::Change(currentPresetNumber);
 }

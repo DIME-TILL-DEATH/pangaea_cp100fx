@@ -17,7 +17,7 @@ BaseParam::BaseParam(gui_param_type paramType, const TParamDescriptor& paramDesc
 {
 	m_type = paramType;
 	m_name = paramDescriptor.name;
-	m_valuePtr = paramDescriptor.ptr;
+	m_valuePtr = (uint8_t*)paramDescriptor.ptr;
 	m_setterHandler = paramDescriptor.setterHandler;
 	m_moduleAddress = paramDescriptor.dspAddress;
 	m_bytePosition = paramDescriptor.dspPosition;
@@ -116,7 +116,11 @@ void BaseParam::setToDsp()
 {
 	if(m_setterHandler)
 	{
-		m_setterHandler(*m_valuePtr + m_offset);
+		int32_t data = 0;
+		if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
+		else data = (int8_t)(*m_valuePtr);
+
+		m_setterHandler(data + m_offset);
 		return;
 	}
 

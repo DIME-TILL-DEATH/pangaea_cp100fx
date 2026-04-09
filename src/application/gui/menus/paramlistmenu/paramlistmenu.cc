@@ -1,11 +1,12 @@
-#include <bitmaps.h>
-#include <eeprom.h>
 #include "paramlistmenu.h"
 
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/filesystem_task.h"
-#include "../../../tasks/io_task.h"
-#include "../../../tasks/ui_task.h"
+#include "bitmaps.h"
+#include "eeprom.h"
+
+#include "display_task.h"
+#include "filesystem_task.h"
+#include "io_task.h"
+#include "tasks/ui_task.h"
 #include "controllers_task.h"
 
 #include "tapmenu.h"

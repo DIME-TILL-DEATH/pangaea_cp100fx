@@ -17,8 +17,8 @@ const uint8_t ControllersMenu::strOutPcList[][8];
 const uint8_t ControllersMenu::strControllerExt[][12];
 const uint8_t ControllersMenu::strMidiDstList[][14];
 
-const uint8_t ControllersMenu::dest_tabl[55];
-const uint8_t ControllersMenu::dest_tabl_start[55];
+const uint8_t ControllersMenu::dst_visual_to_model[55];
+const uint8_t ControllersMenu::dst_model_to_visual[55];
 
 
 ControllersMenu::ControllersMenu(AbstractMenu *parent)
@@ -31,7 +31,7 @@ void ControllersMenu::show(TShowMode swhoMode)
 {
 	currentMenu = this;
 
-	m_controllerDst = dest_tabl_start[currentPreset.controller[0].src];
+	m_controllerDstVisual = dst_model_to_visual[currentPreset.controller[m_controllerNum].dst];	//src
 
 	DisplayTask->Clear();
 	for(uint8_t i = 0; i < 3; i++)
@@ -135,7 +135,7 @@ void ControllersMenu::encoderClockwise()
 
 					printSources();
 
-					m_controllerDst = dest_tabl_start[currentPreset.controller[m_controllerNum].dst];
+					m_controllerDstVisual = dst_model_to_visual[currentPreset.controller[m_controllerNum].dst];
 					DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
 				}
 			break;
@@ -190,9 +190,9 @@ void ControllersMenu::encoderClockwise()
 			break;
 
 			case ControllerMenuParams::Destination:
-				if(m_controllerDst < 54)
+				if(m_controllerDstVisual < 54)
 				{
-					currentPreset.controller[m_controllerNum].dst = dest_tabl[++m_controllerDst];
+					currentPreset.controller[m_controllerNum].dst = dst_visual_to_model[++m_controllerDstVisual];
 					DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
 				}
 			break;
@@ -272,7 +272,7 @@ void ControllersMenu::encoderCounterClockwise()
 
 					printSources();
 
-					m_controllerDst = dest_tabl_start[currentPreset.controller[m_controllerNum].dst];
+					m_controllerDstVisual = dst_model_to_visual[currentPreset.controller[m_controllerNum].dst];
 					DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
 				}
 			break;
@@ -309,9 +309,9 @@ void ControllersMenu::encoderCounterClockwise()
 			break;
 
 			case ControllerMenuParams::Destination:
-				if(m_controllerDst)
+				if(m_controllerDstVisual)
 				{
-					currentPreset.controller[m_controllerNum].dst = dest_tabl[--m_controllerDst];
+					currentPreset.controller[m_controllerNum].dst = dst_visual_to_model[--m_controllerDstVisual];
 					DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
 				}
 			break;

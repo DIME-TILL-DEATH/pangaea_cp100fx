@@ -67,22 +67,7 @@ void CabBrowserMenu::show(TShowMode showMode)
 
 void CabBrowserMenu::keyUp()
 {
-	if(m_cabNumber == 0)
-	{
-		SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
-		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
-
-		if(currentPreset.cab1NameSize == 0)
-		{
-			currentPreset.paramData.switches.cab = 0;
-			SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CAB, currentPreset.paramData.switches.cab);
-		}
-	}
-	else
-	{
-		SharcTask->sendCab2Data(currentPreset.cab2Data);
-		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
-	}
+	ir_cab_restore(m_cabNumber);
 	topLevelMenu->returnFromChildMenu();
 }
 
@@ -90,37 +75,12 @@ void CabBrowserMenu::encoderPressed()
 {
 	FileSystemTask->SendCommand(TFsBrowser::bcAction);
 
-	TUITask::TResponse browserResponse;
-	browserResponse = UITask->GetResponseBlocking();
+	TFileSystemTask::TResponse browserResponse;
+	browserResponse = FileSystemTask->GetResponseBlocking();
 
-	if(browserResponse.responseType == TUITask::TResponseType::rpFileSelected)
+	if(browserResponse.responseType == TFileSystemTask::TResponseType::rpFileSelected)
 	{
-		DisplayTask->Clear();
-
-		if(m_cabNumber==0)
-		{
-			kgp_sdk_libc::memcpy(currentPreset.cab1Data, tempCabBuffer, CAB_DATA_SIZE);
-			if(System::cab_type != CAB_CONFIG_STEREO)
-			{
-				kgp_sdk_libc::memcpy(currentPreset.cabAuxData, tempCabBuffer + CAB_DATA_SIZE, CAB_DATA_SIZE);
-			}
-
-			kgp_sdk_libc::memcpy(&currentPreset.cab1Name, selectedCabName, CAB_NAME_STRING_SIZE - 1);
-			currentPreset.cab1NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab1Name);
-
-			SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
-			SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
-		}
-		else
-		{
-			kgp_sdk_libc::memcpy(currentPreset.cab2Data, tempCabBuffer, CAB_DATA_SIZE);
-			kgp_sdk_libc::memcpy(&currentPreset.cab2Name, selectedCabName, CAB_NAME_STRING_SIZE - 1);
-			currentPreset.cab2NameSize = kgp_sdk_libc::strlen((const char*)currentPreset.cab2Name);
-
-			SharcTask->sendCab2Data(currentPreset.cab2Data);
-			SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
-		}
-
+		ir_cab_setter(m_cabNumber);
 		topLevelMenu->returnFromChildMenu();
 	}
 	else
@@ -147,15 +107,13 @@ void CabBrowserMenu::encoderClockwise()
 
 void CabBrowserMenu::processBrowserResponse()
 {
-	TUITask::TResponse browserResponse;
-	browserResponse = UITask->GetResponseBlocking();
+	TFileSystemTask::TResponse browserResponse;
+	browserResponse = FileSystemTask->GetResponseBlocking();
 
 	switch(browserResponse.responseType)
 	{
-		case TUITask::rpFileLoaded:
+		case TFileSystemTask::rpFileLoaded:
 		{
-			kgp_sdk_libc::memcpy(selectedCabName, browserResponse.file.name, 64);
-
 			if(m_cabNumber == 0)
 				SharcTask->sendCab1Data(&browserResponse.file.buffer[0], &browserResponse.file.buffer[CAB_DATA_SIZE]); //gui_send(16, 1);
 			else
@@ -167,7 +125,7 @@ void CabBrowserMenu::processBrowserResponse()
 			break;
 		}
 
-		case TUITask::rpFileInvalid:
+		case TFileSystemTask::rpFileInvalid:
 		{
 			if(m_cabNumber == 0) SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]/2);
 			else SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]/2);
@@ -181,18 +139,18 @@ void CabBrowserMenu::processBrowserResponse()
 
 void CabBrowserMenu::refresh()
 {
-		DisplayTask->Clear();
-		char dirNameBuf[32];
-		kgp_sdk_libc::memset(dirNameBuf, 0, 32);
-		kgp_sdk_libc::memcpy(dirNameBuf, FileSystemTask->Object().dir.c_str(), symbolsOnLine(Font::fntSystem));
+	DisplayTask->Clear();
+	char dirNameBuf[32];
+	kgp_sdk_libc::memset(dirNameBuf, 0, 32);
+	kgp_sdk_libc::memcpy(dirNameBuf, FileSystemTask->Object().dir.c_str(), symbolsOnLine(Font::fntSystem));
 
-		if(FileSystemTask->Object().dir.length() > symbolsOnLine(Font::fntSystem))
-		{
-			dirNameBuf[symbolsOnLine(Font::fntSystem) - 2] = '.';
-			dirNameBuf[symbolsOnLine(Font::fntSystem) - 3] = '.';
-			dirNameBuf[symbolsOnLine(Font::fntSystem) - 4] = '.';
-		}
+	if(FileSystemTask->Object().dir.length() > symbolsOnLine(Font::fntSystem))
+	{
+		dirNameBuf[symbolsOnLine(Font::fntSystem) - 2] = '.';
+		dirNameBuf[symbolsOnLine(Font::fntSystem) - 3] = '.';
+		dirNameBuf[symbolsOnLine(Font::fntSystem) - 4] = '.';
+	}
 
-		DisplayTask->StringOut(4, 0, Font::fntSystem, Font::fnsNormal, dirNameBuf);
-		DisplayTask->StringOut(4, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)FileSystemTask->Object().name.c_str());
+	DisplayTask->StringOut(4, 0, Font::fntSystem, Font::fnsNormal, dirNameBuf);
+	DisplayTask->StringOut(4, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)FileSystemTask->Object().name.c_str());
 }

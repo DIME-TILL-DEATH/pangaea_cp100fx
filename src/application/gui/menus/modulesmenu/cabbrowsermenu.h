@@ -1,5 +1,5 @@
-#ifndef SRC_APPLICATION_GUI_MENUS_CABBROWSERMENU_H_
-#define SRC_APPLICATION_GUI_MENUS_CABBROWSERMENU_H_
+#ifndef _CABBROWSERMENU_H_
+#define _CABBROWSERMENU_H_
 
 #include "abstractmenu.h"
 
@@ -20,8 +20,6 @@ public:
 
 private:
 	uint8_t m_cabNumber{0};
-
-	char selectedCabName[64];
 
 	void processBrowserResponse();
 };

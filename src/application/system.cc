@@ -1,12 +1,13 @@
-#include <eeprom.h>
 #include "system.h"
 
 #include "sharc.h"
-
+#include "eeprom.h"
 #include "preset.h"
 
 #include "display_task.h"
 #include "sharc_task.h"
+
+#include "console_helpers.h"
 
 volatile uint32_t  tap_temp;
 uint8_t  System::cab_type = 0;
@@ -119,6 +120,9 @@ void System::setDelayTime(float quarterInterval)
 			}
 		}
 	}
+
+	currentPreset.paramData.delay_time_lo = currentPreset.delayTime >> 8;
+	currentPreset.paramData.delay_time_hi = currentPreset.delayTime & 0xFF;
 }
 
 void System::setTremoloTime(float quarterInterval)
@@ -193,4 +197,6 @@ void System::TapTempo(TapDestination tapDst)
 		}
 	}
 	tap_temp = 0;
+
+	console_printf("%s\r%04x\n", DelayDesc.time.handlerStr, currentPreset.delayTime);
 }

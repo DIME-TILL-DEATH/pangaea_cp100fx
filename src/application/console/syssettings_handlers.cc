@@ -1,9 +1,9 @@
-#include <eeprom.h>
 #include "syssettings_handlers.h"
 #include "console_helpers.h"
 
 #include "adc.h"
 
+#include "eeprom.h"
 #include "system.h"
 #include "modules.h"
 
@@ -20,10 +20,7 @@ static void sys_settings_command_handler(TTranslator *rl, TTranslator::const_sym
 
 	for(size_t i = 0; i < 512; i++)
 	{
-		char hex[3] =
-		{0, 0, 0};
-		i2hex(sys_para[i], hex);
-		msg_console("%s" , hex );
+		msg_console("%02x" , sys_para[i]);
 	}
 	msg_console("\n");
 }
@@ -33,58 +30,58 @@ static void attenuator_command_handler(TTranslator* rl, TTranslator::const_symbo
 	uint8_t* value_ptr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator
 															: &sys_para[System::ATTENUATOR];
 
-	default_param_handler(value_ptr, rl, args, count);
+	default_param_handler(value_ptr, args, count);
 	IOTask->potWrite();
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void attenuator_mode_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::ATTENUATOR_MODE], rl, args, count);
+	default_param_handler(&sys_para[System::ATTENUATOR_MODE], args, count);
 	IOTask->potWrite();
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void master_volume_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::MASTER_VOLUME], rl, args, count);
+	default_param_handler(&sys_para[System::MASTER_VOLUME], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void phones_volume_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::PHONES_VOLUME], rl, args, count);
+	default_param_handler(&sys_para[System::PHONES_VOLUME], args, count);
 	IOTask->potWrite();
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void meq_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::MASTER_EQ_ON], rl, args, count);
+	default_param_handler(&sys_para[System::MASTER_EQ_ON], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void meq_low_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::MASTER_EQ_LOW], rl, args, count);
+	default_param_handler(&sys_para[System::MASTER_EQ_LOW], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_LOW]);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void meq_mid_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::MASTER_EQ_MID], rl, args, count);
+	default_param_handler(&sys_para[System::MASTER_EQ_MID], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_MID]);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void meq_high_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::MASTER_EQ_HIGH], rl, args, count);
+	default_param_handler(&sys_para[System::MASTER_EQ_HIGH], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_HIGH]);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void meq_mid_freq_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
@@ -105,34 +102,34 @@ static void meq_mid_freq_command_handler(TTranslator* rl, TTranslator::const_sym
 
 	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
 	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void cab_mode_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::CAB_SIM_DISABLED], rl, args, count);
+	default_param_handler(&sys_para[System::CAB_SIM_DISABLED], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
 	EEPROM_SaveSystemData();
 }
 
 static void cab_num_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::CAB_SIM_CONFIG], rl, args, count);
+	default_param_handler(&sys_para[System::CAB_SIM_CONFIG], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 	//Reset?????
 }
 
 static void midi_ch_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::MIDI_CHANNEL], rl, args, count);
-	EEPROM_SaveSystemData();
+	default_param_handler(&sys_para[System::MIDI_CHANNEL], args, count);
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void expr_on_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
-	default_param_handler(&val, rl, args, count);
+	default_param_handler(&val, args, count);
 
 	if(!val)
 	{
@@ -146,71 +143,71 @@ static void expr_on_command_handler(TTranslator* rl, TTranslator::const_symbol_t
 		ADC_SetState(1);
 	}
 
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void expr_type_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
-	default_param_handler(&val, rl, args, count);
+	default_param_handler(&val, args, count);
 
 	sys_para[System::EXPR_TYPE] = (val & 0x7F) | (sys_para[System::EXPR_TYPE] & 0x80);
 
 	if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
 		SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void expr_cc_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::EXPR_CC_NUM], rl, args, count);
-	EEPROM_SaveSystemData();
+	default_param_handler(&sys_para[System::EXPR_CC_NUM], args, count);
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void expr_slev_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::EXPR_STORE_LEVEL], rl, args, count);
-	EEPROM_SaveSystemData();
+	default_param_handler(&sys_para[System::EXPR_STORE_LEVEL], args, count);
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void spdif_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::SPDIF_OUT_TYPE], rl, args, count);
+	default_param_handler(&sys_para[System::SPDIF_OUT_TYPE], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void tempo_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::TAP_TYPE], rl, args, count);
+	default_param_handler(&sys_para[System::TAP_TYPE], args, count);
 	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void time_format_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::TIME_FORMAT], rl, args, count);
-	EEPROM_SaveSystemData();
+	default_param_handler(&sys_para[System::TIME_FORMAT], args, count);
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void swap_conf_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::SWAP_SWITCH], rl, args, count);
-	EEPROM_SaveSystemData();
+	default_param_handler(&sys_para[System::SWAP_SWITCH], args, count);
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void tuner_speed_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::TUNER_SPEED], rl, args, count);
+	default_param_handler(&sys_para[System::TUNER_SPEED], args, count);
 	System::tun_del_val = (127-sys_para[System::TUNER_SPEED])*(90.0f/127.0f)+10.0f;
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void tuner_ctrl_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
-	default_param_handler(&val, rl, args, count);
+	default_param_handler(&val, args, count);
 
 	if(!val)
 	{
@@ -220,22 +217,22 @@ static void tuner_ctrl_command_handler(TTranslator* rl, TTranslator::const_symbo
 	{
 		if(!(sys_para[System::TUNER_EXTERNAL] & 0x80)) sys_para[System::TUNER_EXTERNAL] |= 0x80;
 	}
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void tuner_cc_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t val = 0;
-	default_param_handler(&val, rl, args, count);
+	default_param_handler(&val, args, count);
 
 	sys_para[System::TUNER_EXTERNAL] = (val & 0x7F) | (sys_para[System::TUNER_EXTERNAL] & 0x80);
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void fsw_speed_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&sys_para[System::FSW_SPEED], rl, args, count);
-	EEPROM_SaveSystemData();
+	default_param_handler(&sys_para[System::FSW_SPEED], args, count);
+	EEPROM_DelayedSaveSystemData();
 }
 
 static void midi_map_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
@@ -247,7 +244,7 @@ static void midi_map_command_handler(TTranslator* rl, TTranslator::const_symbol_
 		uint8_t mapVal = kgp_sdk_libc::strtol(args[2], &end, 16);
 
 		sys_para[System::MIDI_MAP_START + mapPos] = mapVal;
-		EEPROM_SaveSystemData();
+		EEPROM_DelayedSaveSystemData();
 
 		msg_console("%s\r%d\r%d\n", args[0], mapPos, mapVal);
 	}
@@ -334,7 +331,7 @@ static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_
 	}
 
 ending:
-	EEPROM_SaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 	msg_console("\n");
 }
 

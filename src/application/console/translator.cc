@@ -99,11 +99,18 @@ void TTranslator::enter_handler(TTranslator *rl)
 
 		if(set_it != rl->setter_handler_map.end())
 		{
-			if (argc == 2)
+			if(argc == 2)
 			{
 				char *end;
 				uint16_t val = kgp_sdk_libc::strtol(argv[1], &end, 16);
 				UITask->setParam((*set_it).second, val);
+			}
+			else if(argc == 3) // hack for eq and controllers
+			{
+				char *end;
+				uint16_t num = kgp_sdk_libc::strtol(argv[1], &end, 16);
+				uint16_t val = kgp_sdk_libc::strtol(argv[2], &end, 16);
+				UITask->setParam((*set_it).second, (num & 0xFFFF) << 16 | val & 0xFFFF);
 			}
 			else
 			{

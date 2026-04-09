@@ -50,106 +50,6 @@ typedef struct
 
 typedef struct
 {
-    uint8_t volume;
-    uint8_t pan;
-    uint8_t delay;
-}TCabData;
-
-typedef struct
-{
-    uint8_t mix;
-    uint8_t rate;
-    uint8_t width;
-    uint8_t center;
-    uint8_t feedback;
-    uint8_t type;
-}TPhaserData;
-
-typedef struct
-{
-    uint8_t mix;    // volume
-    uint8_t rate;
-    uint8_t width;
-    uint8_t delay;
-    uint8_t type;
-}TChorusData;
-
-typedef struct
-{
-    uint8_t volumeFirst;
-    uint8_t feedback;
-    uint8_t lpf;
-    uint8_t hpf;
-    uint8_t panFirst;
-    uint8_t volumeSecond;
-    uint8_t panSecond;
-    uint8_t offset; // d - offset?
-    uint8_t modulation;
-    uint8_t rate;
-    uint8_t direction;
-}TDelayData;
-
-typedef struct
-{
-    uint8_t mix;
-    uint8_t lfo;
-    uint8_t rate;
-    uint8_t width;
-    uint8_t delay;
-    uint8_t feedback;
-}TFlangerData;
-
-typedef struct
-{
-    uint8_t mix;
-    uint8_t time;
-    uint8_t size;
-    uint8_t damping;
-    uint8_t lpf;
-    uint8_t hpf;
-    uint8_t detune;
-}TReverbData;
-
-typedef struct
-{
-    uint8_t master;
-    uint8_t type;
-    uint8_t level;
-}TPaData;
-
-typedef struct
-{
-    uint8_t volume;
-    uint8_t type;
-}TErData;
-
-typedef struct
-{
-    uint8_t threshold;
-    uint8_t ratio;
-    uint8_t volume;
-    uint8_t attack;
-    uint8_t knee;
-}TCompressorData;
-
-typedef struct
-{
-    uint8_t mix;
-    uint8_t f_type;
-    uint8_t f_mod;
-    uint8_t lfo_rate;
-    uint8_t lpf;
-    uint8_t hpf;
-    uint8_t resonance;
-    uint8_t dyn_threshold;
-    uint8_t dyn_attack;
-    uint8_t dyn_release;
-    uint8_t volume;
-    uint8_t ext;
-}TRfData;
-
-typedef struct
-{
     TEnableData switches;
 
     uint8_t dummy1[27];
@@ -201,7 +101,13 @@ typedef struct
 
     uint8_t eq_pre_post;
 
-    uint16_t delay_time;
+    union{
+    	uint16_t delay_time;
+    	struct{
+    		uint8_t delay_time_lo;
+    		uint8_t delay_time_hi;
+    	};
+    };
 
     uint8_t phaser_pre_post;
     uint8_t flanger_pre_post;
@@ -289,7 +195,6 @@ typedef struct
 		};
 	};
 
-
 	union{
 		uint8_t cabBuf[CAB_DATA_SIZE * 3 + CAB_NAME_STRING_SIZE * 2];
 		struct{
@@ -333,10 +238,8 @@ typedef struct
 	uint8_t att;
 }TSelectionMask;
 
-
 extern uint16_t moog_time;
 extern uint16_t trem_time;
-
 
 void Change(uint8_t presetNumber);
 void SetDefaultValues(TPresetData* preset);
@@ -345,13 +248,9 @@ void Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selectionMask);
 void Erase();
 }
 
-extern volatile uint8_t pc_mute_fl;
-
+extern volatile uint8_t currentPresetNumber;
 extern Preset::TPresetData currentPreset;
 extern uint8_t __CCM_BSS__ tempCabBuffer[];
 extern uint8_t __CCM_BSS__ tempDataBuffer[];
-
-
-extern volatile uint8_t currentPresetNumber;
 
 #endif /* SRC_APPLICATION_PRESET_H_ */

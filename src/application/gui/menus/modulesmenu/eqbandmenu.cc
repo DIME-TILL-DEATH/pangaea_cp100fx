@@ -1,17 +1,12 @@
-#include <eeprom.h>
 #include "eqbandmenu.h"
 
 #include "preset.h"
+#include "modules.h"
 
-#include "controllers_task.h"
 #include "display_task.h"
-#include "filesystem_task.h"
-#include "io_task.h"
-#include "ui_task.h"
-#include "sharc_task.h"
 
-const uint8_t EqBandMenu::eq_p_l[][2];
-const uint8_t EqBandMenu::def_eq_band[][10];
+const uint8_t EqBandMenu::paramNameStrings[][2];
+const uint8_t EqBandMenu::eqFreqStrings[][10];
 
 EqBandMenu::EqBandMenu(AbstractMenu *parent, uint8_t bandNum)
 {
@@ -26,22 +21,18 @@ void EqBandMenu::show(TShowMode showMode)
 	currentMenu = this;
 
 	DisplayTask->Clear();
-	DisplayTask->StringOut(6, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)eq_p_l);
-	int8_t a = currentPreset.modulesBuf[EQ_F0+m_bandNum];
-	DisplayTask->EqFreq(40, 0, a, m_bandNum);
-	DisplayTask->StringOut(6, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)eq_p_l+2);
-	a = currentPreset.modulesBuf[EQ_Q0+m_bandNum];
-	DisplayTask->EqQ(40, 1, a, m_bandNum);
-//	DisplayTask->StringOut(80, 0, Font::fntSystem, 0, (uint8_t*)gerz);
+
+	refresh();
+
 	DisplayTask->StringOut(0, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Press EQ for Default");
-	DisplayTask->StringOut(0, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)&def_eq_band[m_bandNum]);
+	DisplayTask->StringOut(0, 3, Font::fntSystem, Font::fnsNormal, &eqFreqStrings[m_bandNum][0]);
 	DisplayTask->StringOut(78, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Q 0.70");
 }
 
 void EqBandMenu::task()
 {
 	if(!encoderKnobSelected)
-		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, FONT_BLINKING, (uint8_t*)&eq_p_l[m_paramNum]);
+		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, FONT_BLINKING, &paramNameStrings[m_paramNum][0]);
 }
 
 void EqBandMenu::encoderPressed()
@@ -49,11 +40,10 @@ void EqBandMenu::encoderPressed()
 	if(encoderKnobSelected==0)
 	{
 		encoderKnobSelected = 1;
-		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&eq_p_l[m_paramNum]);
+		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsHighlight, &paramNameStrings[m_paramNum][0]);
 	}
 	else
 	{
-		DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&eq_p_l[m_paramNum]);
 		encoderKnobSelected = 0;
 	}
 
@@ -64,35 +54,38 @@ void EqBandMenu::encoderClockwise()
 {
 	if(!encoderKnobSelected)
 	{
-		if(m_paramNum<1)
+		if(m_paramNum < 1)
 		{
-			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&eq_p_l[m_paramNum++]);
-			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&eq_p_l[m_paramNum]);
+			m_paramNum++;
 			restartBlinking(0);
+			refresh();
 		}
 	}
 	else
 	{
-		int8_t a = currentPreset.modulesBuf[EQ_F0+m_bandNum+m_paramNum*5];
-		if(m_paramNum)
+		if(m_paramNum == 1)
 		{
+			int8_t a = currentPreset.paramData.eq_q[m_bandNum];
 			if(a<120)
 			{
 				a = BaseParam::encSpeedInc(a, 120);
 				currentPreset.modulesBuf[EQ_Q0 + m_bandNum] = a;
 				DisplayTask->EqQ(40, 1, a, m_bandNum);
-				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
+
+				eq_q_setter(m_bandNum << 16 | (uint8_t)a);
 			}
 		}
 		else
 		{
+			int8_t a = currentPreset.paramData.eq_freq[m_bandNum];
 			if(a<100)
 			{
+				int8_t a = currentPreset.paramData.eq_freq[m_bandNum];
 				a = BaseParam::encSpeedInc(a, 100);
 				currentPreset.modulesBuf[EQ_F0 + m_bandNum] = a;
 				DisplayTask->EqFreq(40, 0, a, m_bandNum);
-//				DisplayTask->StringOut(80, m_paramNum, Font::fntSystem, 0, (uint8_t*)gerz);
-				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
+
+				eq_freq_setter(m_bandNum << 16 | (uint8_t)a);
 			}
 		}
 	}
@@ -104,32 +97,36 @@ void EqBandMenu::encoderCounterClockwise()
 	{
 		if(m_paramNum>0)
 		{
-			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&eq_p_l[m_paramNum--]);
-			DisplayTask->StringOut(6, m_paramNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&eq_p_l[m_paramNum]);
+			m_paramNum--;
 			restartBlinking(0);
+			refresh();
 		}
 	}
 	else
 	{
 		int8_t a = currentPreset.modulesBuf[EQ_F0+m_bandNum+m_paramNum*5];
-		if(m_paramNum)
+		if(m_paramNum == 1)
 		{
+			int8_t a = currentPreset.paramData.eq_q[m_bandNum];
 			if(a>-60)
 			{
 				a = BaseParam::encSpeedDec(a, -60);
 				currentPreset.modulesBuf[EQ_Q0 + m_bandNum] = a;
 				DisplayTask->EqQ(40, 1, a, m_bandNum);
-				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
+
+				eq_q_setter(m_bandNum << 16 | (uint8_t)a);
 			}
 		}
 		else
 		{
+			int8_t a = currentPreset.paramData.eq_freq[m_bandNum];
 			if(a>-100)
 			{
 				a = BaseParam::encSpeedDec(a, -100);
 				currentPreset.modulesBuf[EQ_F0 + m_bandNum] = a;
 				DisplayTask->EqFreq(40, 0, a, m_bandNum);
-				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
+
+				eq_freq_setter(m_bandNum << 16 | (uint8_t)a);
 			}
 		}
 	}
@@ -142,15 +139,24 @@ void EqBandMenu::keyDown()
 
 void EqBandMenu::key3()
 {
-	currentPreset.modulesBuf[EQ_F0+m_bandNum] = 0;
-	currentPreset.modulesBuf[EQ_Q0+m_bandNum] = 0;
+	eq_freq_setter(0);
+	eq_q_setter(0);
 
-	int8_t a = currentPreset.modulesBuf[EQ_F0 + m_bandNum];
+	int8_t a = currentPreset.paramData.eq_freq[m_bandNum];
 	DisplayTask->EqFreq(40, 0, a, m_bandNum);
-//	DisplayTask->StringOut(80, 0, Font::fntSystem, 0, (uint8_t*)gerz);
-	a = currentPreset.modulesBuf[EQ_Q0 + m_bandNum];
+	a = currentPreset.paramData.eq_q[m_bandNum];
 	DisplayTask->EqQ(40, 1, a, m_bandNum);
+}
 
-	SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + m_bandNum, currentPreset.modulesBuf[EQ_Q0 + m_bandNum]);
-	SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + m_bandNum, currentPreset.modulesBuf[EQ_F0 + m_bandNum]);
+void EqBandMenu::refresh()
+{
+	DisplayTask->StringOut(6, 0, Font::fntSystem,
+			(Font::TFontState)(Font::fnsHighlight * (m_paramNum == 0) * blinkFlag), &paramNameStrings[0][0]);
+	int8_t a = currentPreset.paramData.eq_freq[m_bandNum];
+	DisplayTask->EqFreq(40, 0, a, m_bandNum);
+
+	DisplayTask->StringOut(6, 1, Font::fntSystem,
+			(Font::TFontState)(Font::fnsHighlight * (m_paramNum == 1) * blinkFlag), &paramNameStrings[1][0]);
+	a = currentPreset.paramData.eq_q[m_bandNum];
+	DisplayTask->EqQ(40, 1, a, m_bandNum);
 }

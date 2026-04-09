@@ -1,8 +1,8 @@
-#include <eeprom.h>
 #include "modulesmenu.h"
 
 #include "fs_browser.h"
 #include "preset.h"
+#include "eeprom.h"
 
 #include "controllers_task.h"
 #include "display_task.h"
@@ -12,7 +12,7 @@
 #include "ui_task.h"
 #include "sharc_task.h"
 
-#include "bitmaps.h"
+#include "preset_accessors.h"
 
 #include "stringlistparam.h"
 #include "stringoutparam.h"
@@ -180,9 +180,8 @@ void ModulesMenu::key2()
 
 	params[0] = new StringOutParam("Preset level");
 	params[0]->setDisplayPosition(ParamListMenu::leftPad + 4*6);
-	params[1] = new StringListParam("Control", &currentPreset.modulesBuf[PRESET_VOLUME_CONTROL], {"On ", "Off"}, 3);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &currentPreset.modulesBuf[PRESET_VOLUME]);
-	params[2]->setDspAddress(DSP_ADDRESS_PRESET_VOLUME, PARAM_EQUAL_POS);
+	params[1] = new StringListParam(PresetDesc.control, {"On ", "Off"}, 3);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PresetDesc.level);
 
 	ParamListMenu* menu = new ParamListMenu(this, MENU_PRESET_VOLUME);
 	if(menu)
@@ -234,6 +233,33 @@ void ModulesMenu::iconRefresh(uint8_t num)
 	DisplayTask->EffectIcon(2 + (num%7) * 18, (num/7) * 2,(uint8_t*)modules[num].name, *modules[num].enablePtr);
 }
 
+void ModulesMenu::arrangeModules()
+{
+	uint8_t i = 0;
+
+	modules[i++] = RF;
+	modules[i++] = GT;
+	modules[i++] = CM;
+	modules[i++] = PR;
+	modules[i++] = PA;
+
+	if(currentPreset.paramData.eq_pre_post) modules[i++] = EQ;
+	if(currentPreset.paramData.phaser_pre_post) modules[i++] = PH;
+	if(currentPreset.paramData.flanger_pre_post) modules[i++] = FL;
+
+	modules[i++] = IR;
+
+	if(!currentPreset.paramData.eq_pre_post) modules[i++] = EQ;
+	if(!currentPreset.paramData.phaser_pre_post) modules[i++] = PH;
+	if(!currentPreset.paramData.flanger_pre_post) modules[i++] = FL;
+
+	modules[i++] = CH;
+	modules[i++] = DL;
+	modules[i++] = ER;
+	modules[i++] = RV;
+	modules[i++] = TR;
+}
+
 void ModulesMenu::enableCab(AbstractMenu* parent)
 {
 	if(currentPreset.cab1NameSize == 0)
@@ -267,31 +293,4 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			parent->refresh();
 		}
 	}
-}
-
-void ModulesMenu::arrangeModules()
-{
-	uint8_t i = 0;
-
-	modules[i++] = RF;
-	modules[i++] = GT;
-	modules[i++] = CM;
-	modules[i++] = PR;
-	modules[i++] = PA;
-
-	if(currentPreset.paramData.eq_pre_post) modules[i++] = EQ;
-	if(currentPreset.paramData.phaser_pre_post) modules[i++] = PH;
-	if(currentPreset.paramData.flanger_pre_post) modules[i++] = FL;
-
-	modules[i++] = IR;
-
-	if(!currentPreset.paramData.eq_pre_post) modules[i++] = EQ;
-	if(!currentPreset.paramData.phaser_pre_post) modules[i++] = PH;
-	if(!currentPreset.paramData.flanger_pre_post) modules[i++] = FL;
-
-	modules[i++] = CH;
-	modules[i++] = DL;
-	modules[i++] = ER;
-	modules[i++] = RV;
-	modules[i++] = TR;
 }

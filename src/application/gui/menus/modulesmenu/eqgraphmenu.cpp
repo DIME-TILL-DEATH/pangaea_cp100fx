@@ -1,12 +1,11 @@
-#include <eeprom.h>
 #include "eqgraphmenu.h"
 
 #include "filter.h"
 #include "preset.h"
 
+#include "modules.h"
+
 #include "display_task.h"
-#include "io_task.h"
-#include "sharc_task.h"
 
 const uint8_t EqGraphMenu::paramNames[][3];
 const uint8_t EqGraphMenu::bandNames[][6];
@@ -72,14 +71,14 @@ void EqGraphMenu::encoderPressed()
 	if(encoderKnobSelected==0)
 	{
 		encoderKnobSelected = 1;
-
+		DisplayTask->StringOut(0, paramNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&paramNames[paramNum]);
 	}
 	else
 	{
 		encoderKnobSelected = 0;
 	}
 
-	restartBlinking(1);
+//	restartBlinking(1);
 }
 
 void EqGraphMenu::encoderClockwise()
@@ -89,6 +88,7 @@ void EqGraphMenu::encoderClockwise()
 		uint8_t avalaibleParams = bandNum < 5 ? 4 : 2;
 
 		if(paramNum < avalaibleParams-1) paramNum++;
+		restartBlinking(0);
 		printPage();
 	}
 	else
@@ -113,10 +113,10 @@ void EqGraphMenu::encoderClockwise()
 
 				switch(bandNum)
 				{
-					default: SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]); break;
-					case 5: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, *eqFreq_ptr[bandNum]); break;
-					case 6: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, *eqFreq_ptr[bandNum]); break;
-					case 7: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, *eqFreq_ptr[bandNum]); break;
+					default: eq_freq_setter((bandNum << 16) | (a & 0xFF)); break;
+					case 5: hpf_freq_setter(*eqFreq_ptr[bandNum]); break;
+					case 6: lpf_freq_setter(*eqFreq_ptr[bandNum]); break;
+					case 7: eq_position_setter(*eqFreq_ptr[bandNum]); break;
 				}
 				break;
 			}
@@ -124,10 +124,10 @@ void EqGraphMenu::encoderClockwise()
 			{
 				if(bandNum >= 5) break;
 
-				if(currentPreset.modulesBuf[EQ_G0+bandNum] < 30)
-					currentPreset.modulesBuf[EQ_G0+bandNum]++;
+				if(currentPreset.paramData.eq_gain[bandNum] < 30)
+					currentPreset.paramData.eq_gain[bandNum]++;
 
-				SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
+				eq_gain_setter((bandNum << 16) | currentPreset.paramData.eq_gain[bandNum]);
 
 				break;
 			}
@@ -137,9 +137,8 @@ void EqGraphMenu::encoderClockwise()
 
 				int8_t a = currentPreset.paramData.eq_q[bandNum];
 				if(a < 120) a = BaseParam::encSpeedInc(a, 60);
-				currentPreset.paramData.eq_q[bandNum] = a;
 
-				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
+				eq_q_setter((bandNum << 16) | (uint8_t)a);
 				break;
 			}
 		}
@@ -152,6 +151,7 @@ void EqGraphMenu::encoderCounterClockwise()
 	if(!encoderKnobSelected)
 	{
 		if(paramNum > 0) paramNum--;
+		restartBlinking(0);
 		printPage();
 	}
 	else
@@ -175,10 +175,10 @@ void EqGraphMenu::encoderCounterClockwise()
 				*eqFreq_ptr[bandNum] = a;
 				switch(bandNum)
 				{
-					default: SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, *eqFreq_ptr[bandNum]); break;
-					case 5: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_HPF_POS, *eqFreq_ptr[bandNum]); break;
-					case 6: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_LPF_POS, *eqFreq_ptr[bandNum]); break;
-					case 7: SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_PREPOST_POS, *eqFreq_ptr[bandNum]); break;
+					default: eq_freq_setter((bandNum << 16) | (a & 0xFF)); break;
+					case 5: hpf_freq_setter(*eqFreq_ptr[bandNum]); break;
+					case 6: lpf_freq_setter(*eqFreq_ptr[bandNum]); break;
+					case 7: eq_position_setter(*eqFreq_ptr[bandNum]); break;
 				}
 				break;
 				break;
@@ -187,10 +187,10 @@ void EqGraphMenu::encoderCounterClockwise()
 			{
 				if(bandNum >= 5) break;
 
-				if(currentPreset.modulesBuf[EQ_G0+bandNum] > 0)
-					currentPreset.modulesBuf[EQ_G0+bandNum]--;
+				if(currentPreset.paramData.eq_gain[bandNum] > 0)
+					currentPreset.paramData.eq_gain[bandNum]--;
 
-				SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
+				eq_gain_setter((bandNum << 16) | currentPreset.paramData.eq_gain[bandNum]);
 				break;
 			}
 			case 3:
@@ -199,9 +199,8 @@ void EqGraphMenu::encoderCounterClockwise()
 
 				int8_t a = currentPreset.paramData.eq_q[bandNum];
 				if(a > -60) a = BaseParam::encSpeedDec(a, -60);
-				currentPreset.paramData.eq_q[bandNum] = (uint8_t)a;
 
-				SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
+				eq_q_setter((bandNum << 16) | (uint8_t)a);
 				break;
 			}
 		}
@@ -216,24 +215,18 @@ void EqGraphMenu::keyDown()
 
 void EqGraphMenu::key3()
 {
-	*eqFreq_ptr[bandNum]= 0;
-
-	if(bandNum<5)
+	switch(bandNum)
 	{
-		currentPreset.modulesBuf[EQ_G0 + bandNum] = 15;
-		currentPreset.modulesBuf[EQ_F0 + bandNum] = 0;
-		currentPreset.modulesBuf[EQ_Q0 + bandNum] = 0;
-
-		SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, currentPreset.modulesBuf[EQ_G0 + bandNum]);
-		SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_F0_POS + bandNum, currentPreset.modulesBuf[EQ_F0 + bandNum]);
-		SharcTask->setParameter(DSP_ADDRESS_EQ_BAND, EQ_Q0_POS + bandNum, currentPreset.modulesBuf[EQ_Q0 + bandNum]);
-
+		case 5: hpf_freq_setter(0); break;
+		case 6: lpf_freq_setter(0); break;
+		case 7: break;
+		default:
+		{
+			eq_gain_setter(15);
+			eq_freq_setter(0);
+			eq_q_setter(0);
+		}
 	}
-	else
-	{
-		SharcTask->setParameter(DSP_ADDRESS_EQ, bandNum, *eqFreq_ptr[bandNum]);
-	}
-
 	printPage();
 }
 
@@ -259,7 +252,7 @@ void EqGraphMenu::printPage()
 	}
 	else
 	{
-		DisplayTask->StringOut(0, 1, Font::fntSystem, (Font::TFontState)((paramNum==3) * Font::fnsHighlight), (uint8_t*)&paramNames[1]);
+		DisplayTask->StringOut(0, 1, Font::fntSystem, (Font::TFontState)((paramNum==1) * Font::fnsHighlight), (uint8_t*)&paramNames[1]);
 		DisplayTask->EqFreq(paramXPos, 1, *eqFreq_ptr[bandNum], bandNum);
 	}
 
@@ -274,4 +267,9 @@ void EqGraphMenu::printPage()
 		DisplayTask->EqQ(paramXPos, 3, (int8_t)currentPreset.paramData.eq_q[bandNum], bandNum);
 	}
 	updateResponse = true;
+}
+
+void EqGraphMenu::refresh()
+{
+	printPage();
 }

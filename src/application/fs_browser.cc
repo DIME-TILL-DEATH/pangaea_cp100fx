@@ -57,7 +57,7 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 
 		case bcAction:
 		{
-			TUITask::TResponse response;
+			TFileSystemTask::TResponse response;
 
 			if(curr_fs_object->type == fotDir)
 			{
@@ -73,9 +73,9 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 					object = *curr_fs_object;
 				}
 
-				TUITask::TResponse response;
-				response.responseType = TUITask::rpDirSelected;
-				UITask->SendResponse(response);
+				TFileSystemTask::TResponse response;
+				response.responseType = TFileSystemTask::rpDirSelected;
+				FileSystemTask->SendResponse(response);
 				break;
 			}
 
@@ -91,7 +91,7 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 					tmp.resize(_MAX_LFN);
 					kgp_sdk_libc::memcpy(currentPreset.currentImpulseName, tmp.c_str(), _MAX_LFN);
 
-					response.responseType = TUITask::rpFileSelected;
+					response.responseType = TFileSystemTask::rpFileSelected;
 					response.file.buffer = &tempCabBuffer[0];
 
 					kgp_sdk_libc::memset(response.file.name, 0 , CAB_NAME_STRING_SIZE);
@@ -100,9 +100,9 @@ void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& obje
 				}
 				else
 				{
-					response.responseType = TUITask::rpFileInvalid;
+					response.responseType = TFileSystemTask::rpFileInvalid;
 				}
-				UITask->SendResponse(response);
+				FileSystemTask->SendResponse(response);
 				break;
 			}
 			break;
@@ -162,7 +162,7 @@ void TFsBrowser::NextObject(fs_object_t &object)
 
 	object = *curr_fs_object;
 }
-//---------------------------------------------------------------
+
 void TFsBrowser::PrevObject(fs_object_t &object)
 {
 	if(curr_fs_object!=fs_object_list.begin())
@@ -171,16 +171,24 @@ void TFsBrowser::PrevObject(fs_object_t &object)
 	object = *curr_fs_object;
 }
 
+void TFsBrowser::SelectFile(const fs_object_t &fs_object)
+{
+	emb_string fileName = fs_object.name;
+	curr_fs_object = std::find_if(fs_object_list.begin(), fs_object_list.end(),
+			[&fileName](const fs_object_t& obj)
+				{return fileName == obj.name;});
+}
+
 //----------------------------------------------------------------
 void TFsBrowser::ActionSelect(fs_object_t &object)
 {
-	TUITask::TResponse response;
+	TFileSystemTask::TResponse response;
 
 	if(object.type == fotFile)
 	{
 		if(LoadImpulse(object))
 		{
-			response.responseType = TUITask::rpFileLoaded;
+			response.responseType = TFileSystemTask::rpFileLoaded;
 			response.file.buffer = &tempCabBuffer[0];
 
 			kgp_sdk_libc::memset(response.file.name, 0 , CAB_NAME_STRING_SIZE);
@@ -189,14 +197,14 @@ void TFsBrowser::ActionSelect(fs_object_t &object)
 		}
 		else
 		{
-			response.responseType = TUITask::rpFileInvalid;
+			response.responseType = TFileSystemTask::rpFileInvalid;
 		}
 	}
 	else
 	{
-		response.responseType = TUITask::rpDirSelected;
+		response.responseType = TFileSystemTask::rpDirSelected;
 	}
-	UITask->SendResponse(response);
+	FileSystemTask->SendResponse(response);
 }
 
 bool TFsBrowser::LoadImpulse(fs_object_t &object)
@@ -297,14 +305,6 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 }
 
 //---------------------------------------------------------------
-void TFsBrowser::SelectFile(const fs_object_t &fs_object)
-{
-	emb_string fileName = fs_object.name;
-	curr_fs_object = std::find_if(fs_object_list.begin(), fs_object_list.end(),
-			[&fileName](const fs_object_t& obj)
-				{return fileName == obj.name;});
-
-}
 
 bool TFsBrowser::CreateFile(const fs_object_t &object)
 {

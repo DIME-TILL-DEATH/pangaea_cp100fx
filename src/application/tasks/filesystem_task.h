@@ -3,6 +3,7 @@
 
 #include "appdefs.h"
 #include "fs_browser.h"
+#include "preset.h"
 
 class TFileSystemTask: public TTask
 {
@@ -10,23 +11,41 @@ public:
 	TFileSystemTask();
 	virtual ~TFileSystemTask();
 
-	void SendCommand(TFsBrowser::browse_command_t browse_command)
+	typedef enum
 	{
-		TFsBrowser::browse_command_t tmp = browse_command;
-		queue->SendToBack((void*)&tmp, portMAX_DELAY);
-	}
+		rpFileLoaded,
+		rpFileInvalid,
+		rpFileSelected,
+		rpDirSelected
+	} TResponseType;
 
-	void SendCommandFromISR(TFsBrowser::browse_command_t browse_command, BaseType_t *HigherPriorityTaskWoken)
+	typedef struct
 	{
-		TFsBrowser::browse_command_t tmp = browse_command;
-		queue->SendToBackFromISR((void*)&tmp, HigherPriorityTaskWoken);
-	}
+		fs_object_type_t type;
+		char name[CAB_NAME_STRING_SIZE];
+		uint8_t *buffer;
+	} TResponseFile;
+
+	typedef struct
+	{
+		TResponseType responseType;
+		union
+		{
+			TResponseFile file;
+		};
+	} TResponse;
+
+	void SendCommand(TFsBrowser::browse_command_t browse_command);
+	void SendCommandFromISR(TFsBrowser::browse_command_t browse_command, BaseType_t *HigherPriorityTaskWoken);
+	void SendResponse(const TResponse &response);
+	TFileSystemTask::TResponse GetResponseBlocking();
 
 	fs_object_t& Object() { return object; }
 
 private:
 	void Code() override;
 	TQueue *queue;
+	TQueue *responseQueue;
 	fs_object_t object;
 
 	bool impulseDirectoryExist;

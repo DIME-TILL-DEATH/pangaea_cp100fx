@@ -19,6 +19,8 @@ public:
 	void keyDown() override;
 
 	void key3() override;
+
+	void refresh() override;
 private:
 	uint8_t paramNum{0};
 	uint8_t bandNum{0};

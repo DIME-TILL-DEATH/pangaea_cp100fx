@@ -94,3 +94,18 @@ void CabNameMenu::show(TShowMode showMode)
 		m_delay = 1;
 	}
 }
+
+void CabNameMenu::refresh()
+{
+	DisplayTask->Clear();
+
+	if(System::cab_type == CAB_CONFIG_STEREO)
+	{
+		DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"1 - ");
+		DisplayTask->StringOut(24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
+	}
+	else
+	{
+		DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
+	}
+}

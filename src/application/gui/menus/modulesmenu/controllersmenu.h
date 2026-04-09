@@ -39,7 +39,7 @@ private:
 	uint8_t m_parNum{0};
 
 	uint8_t m_controllerNum{0};
-	uint8_t m_controllerDst{0};
+	uint8_t m_controllerDstVisual{0};
 
 	static constexpr uint8_t paramsCount = 7;
 
@@ -47,40 +47,57 @@ private:
 	static constexpr uint8_t strOutPcList[][8] = {"MIDI IN", "  MAP  ", "  SET  "};
 	static constexpr uint8_t strControllerExt[][12] = {"Expression ", " FSW DOWN  ", "FSW CONFIRM", "  FSW UP   "};
 
-	static constexpr uint8_t dest_tabl[55] =
-	{25, 36, 0, 44, 45, 46, 47, 48, //7
-	1, 2, 3, 4, 37, 38, 5, 49, //15
-	50, 51, 52, 53, 6, 7, 8, 9, //23
-	10, 11, 12, 13, 14, 15, 16, 17, //31
-	18, 19, 20, 21, 54, 22, 23, 24, //39
-	26, 27, 28, 29, 30, 31, 32, 35, //47
-	33, 34, 39, 40, 41, 42, 43};   //53
+	static constexpr uint8_t dst_visual_to_model[55] =
+	{
+			Controller::Dst::PresetLevel, Controller::Dst::VolCtrlOnOff,
+			Controller::Dst::PreampOnOff, Controller::Dst::PreampGain,  Controller::Dst::PreampVolume,
+			Controller::Dst::PreampLow, Controller::Dst::PreampMid, Controller::Dst::PreampHigh,
+			Controller::Dst::AmpOnOff, Controller::Dst::AmpVolume, Controller::Dst::AmpSlave,
+			Controller::Dst::CabSimOnOff,
+			Controller::Dst::Cab1Volume, Controller::Dst::Cab2Volume,
+			Controller::Dst::EqualOnOff,
+			Controller::Dst::EqBand1Lev, Controller::Dst::EqBand2Lev, Controller::Dst::EqBand3Lev,
+			Controller::Dst::EqBand4Lev, Controller::Dst::EqBand5Lev,
+			Controller::Dst::DelayOnOff, Controller::Dst::DelayMix, Controller::Dst::DelayFeedback, Controller::Dst::DelayTap, //23
+			Controller::Dst::PhaserOnOff, Controller::Dst::PhaserMix, Controller::Dst::PhaserRate,
+			Controller::Dst::FlangerOnOff, Controller::Dst::FlangerMix, Controller::Dst::FlangerRate,
+			Controller::Dst::ChorusOnOff, Controller::Dst::ChorusMix, Controller::Dst::ChorusRate,
+			Controller::Dst::ReverbOnOff, Controller::Dst::ReverbMix, Controller::Dst::ReverbTime, Controller::Dst::ReverbType,
+			Controller::Dst::TremoloOnOff, Controller::Dst::TremoloIntensity, Controller::Dst::TremoloRate, Controller::Dst::TremoloTap,
+			Controller::Dst::CompressorOnOff, Controller::Dst::CompressorThreshold, Controller::Dst::CompressorVolume,
+			Controller::Dst::RfOnOff, Controller::Dst::RfLFOrate, Controller::Dst::RfFreq, Controller::Dst::RfLFOTAP,
+			Controller::Dst::EROnOff, Controller::Dst::ERMix,
+			Controller::Dst::GateOnOff, Controller::Dst::GateThresh,
+			Controller::Dst::HPFfrequency, Controller::Dst::LPFfrequency, Controller::Dst::PresenceVal
+	};
 
-	static constexpr uint8_t dest_tabl_start[55] =
-	{2, 8, 9, 10, 11, 14, 20, 21, //7
-	22, 23, 24, 25, 26, 27, 28, 29, //15
-	30, 31, 32, 33, 34, 35, 36, 37, //23
-	38, 0, 39, 40, 41, 42, 43, 44, //31
-	45, 47, 48, 46, 1, 12, 13, 49, //39
-	50, 51, 52, 53, 54, 3, 4, 5, //47
-	6, 7, 15, 16, 17, 18, 19};   //53
+	static constexpr uint8_t dst_model_to_visual[55] =
+	{
+		2, 8, 9, 10, 11, 14, 20, 21, //7
+		22, 23, 24, 25, 26, 27, 28, 29, //15
+		30, 31, 32, 33, 34, 35, 36, 37, //23
+		38, 0, 39, 40, 41, 42, 43, 44, //31
+		45, 47, 48, 46, 1, 12, 13, 49, //39
+		50, 51, 52, 53, 54, 3, 4, 5, //47
+		6, 7, 15, 16, 17, 18, 19
+	};   //53
 
 	static constexpr uint8_t strMidiDstList[][14] =
 	{
 			/*0*/"PR On Off    ",
 			/*1*/"PA On Off    ", "PA Master    ", "PA Level     ",
 			/*4*/"IR On Off    ", "EQ On Off    ",
-			/*6*/"DL On Off    ", "DL Volume    ", "DL Feedback  ", "DL TAP       ",
-			/*10*/"PH On Off    ", "PH Volume    ", "PH Rate      ",
-			/*13*/"FL OnOff     ", "FL  Volume   ", "FL  Rate     ",
-			/*16*/"CH On Off    ", "CH Volume    ", "CH Rate      ",
-			/*19*/"RV On Off    ", "RV Volume    ", "RV Time      ",
-			/*22*/"TR OnOff     ", "TR Intensity ", "TR Rate      ",
+			/*6*/"DL On Off    ",  "DL Mix      ", "DL Feedback  ", "DL TAP       ",
+			/*10*/"PH On Off    ", "PH Mix      ", "PH Rate      ",
+			/*13*/"FL On Off    ", "FL Mix      ", "FL Rate      ",
+			/*16*/"CH On Off    ", "CH Mix      ", "CH Rate      ",
+			/*19*/"RV On Off    ", "RV Mix      ", "RV Time      ",
+			/*22*/"TR On Off    ", "TR Intensity ", "TR Rate      ",
 			/*25*/"Preset Level ",
 			/*26*/"TR TAP       ",
 			/*27*/"CM On Off    ", "CM Threshold ", "CM Volume    ",
 			/*30*/"RF On Off    ", "RF LFO rate  ", "RF frequency ",
-			/*33*/"ER On Off    ", "ER Volume    ",
+			/*33*/"ER On Off    ", "ER Mix       ",
 			/*35*/"RF LFO TAP   ",
 			/*36*/"Vol Ct On Off",
 			/*37*/"Cab1 Volume  ", "Cab2 Volume  ",

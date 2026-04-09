@@ -19,10 +19,13 @@ public:
 	void keyDown() override;
 
 	void key3() override;
+
+	void refresh();
 private:
 	uint8_t bandNum{0};
 	bool encoderKnobSelected{false};
 
+	void printPage();
 //	void calcEqResponse();
 };
 

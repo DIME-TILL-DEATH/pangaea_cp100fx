@@ -5,8 +5,6 @@
 #include "modules.h"
 #include "footswitch.h"
 
-#include "console_cmd_handlers.h"
-
 #include "controllers_task.h"
 #include "display_task.h"
 #include "filesystem_task.h"
@@ -22,6 +20,7 @@
 #include "attenuatormenu.h"
 #include "mastervolumemenu.h"
 #include "mastereqmenu.h"
+#include "preset_accessors.h"
 #include "systemmenu.h"
 #include "tunermenu.h"
 

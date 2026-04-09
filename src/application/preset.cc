@@ -148,8 +148,8 @@ void Preset::SetDefaultValues(Preset::TPresetHeader* preset)
 	preset->paramData.delay.panSecond = 63;
 	preset->paramData.delay.offset = 63;
 
-	preset->paramData.early_reflections.volume = 63;
-	preset->paramData.early_reflections.type = 5;
+	preset->paramData.early_reflections.mix = 63;
+	preset->paramData.early_reflections.size = 5;
 
 	preset->paramData.reverb.mix = 30;
 	preset->paramData.reverb.time = 63;

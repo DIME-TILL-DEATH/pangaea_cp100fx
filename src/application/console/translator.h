@@ -112,7 +112,7 @@ public:
 		command_handler_map.insert(command_map_pair_t(command, handler));
 	}
 
-	void inline AddSetterHandler(const_symbol_type_ptr_t command, setter_handler_t handler)
+	void inline AddAccessorHandler(const_symbol_type_ptr_t command, setter_handler_t handler)
 	{
 		setter_handler_map.insert(setter_map_pair_t(command, handler));
 	}

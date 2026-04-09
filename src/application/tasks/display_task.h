@@ -229,7 +229,8 @@ private:
 		}
 		else
 		{
-			return queue->SendToBack(cmd, 0);
+			return queue->SendToBack(cmd, portMAX_DELAY);
+//			return queue->SendToBack(cmd, 0);
 		}
 	}
 };

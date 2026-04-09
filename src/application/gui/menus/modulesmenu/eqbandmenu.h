@@ -19,14 +19,16 @@ public:
 
 	void key3() override;
 
+	void refresh() override;
+
 private:
 	uint8_t m_bandNum;
 	uint8_t m_paramNum{0};
 
 	bool encoderKnobSelected{false};
 
-	static constexpr uint8_t eq_p_l[][2] = {"F", "Q"};
-	static constexpr uint8_t def_eq_band[][10] = {"F 120Hz ", "F 360Hz ", "F 800Hz ", "F 2000Hz", "F 6000Hz"};
+	static constexpr uint8_t paramNameStrings[][2] = {"F", "Q"};
+	static constexpr uint8_t eqFreqStrings[][10] = {"F 120Hz ", "F 360Hz ", "F 800Hz ", "F 2000Hz", "F 6000Hz"};
 };
 
 #endif /* EQBANDMENU_H_ */

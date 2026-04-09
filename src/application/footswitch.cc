@@ -1,15 +1,14 @@
-#include <eeprom.h>
 #include "footswitch.h"
 
 #include "system.h"
 #include "preset.h"
 #include "footswitch.h"
-
-#include "console_cmd_handlers.h"
+#include "eeprom.h"
 
 #include "controllers_task.h"
 #include "ui_task.h"
 #include "midi_task.h"
+#include "preset_accessors.h"
 
 #include "tunermenu.h"
 

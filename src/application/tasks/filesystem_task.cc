@@ -1,4 +1,3 @@
-#include <bitmaps.h>
 #include "filesystem_task.h"
 
 #include "format.h"
@@ -14,11 +13,13 @@ TFileSystemTask::TFileSystemTask() :
 		TTask()
 {
 	queue = new TQueue(4, sizeof(TFsBrowser::browse_command_t));
+	responseQueue = new TQueue(4, sizeof(TResponse));
 }
 
 TFileSystemTask::~TFileSystemTask()
 {
 	delete queue;
+	delete responseQueue;
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -38,3 +39,26 @@ void TFileSystemTask::Code()
 	}
 }
 //------------------------------------------------------------------------------
+void TFileSystemTask::SendCommand(TFsBrowser::browse_command_t browse_command)
+{
+	TFsBrowser::browse_command_t tmp = browse_command;
+	queue->SendToBack((void*)&tmp, portMAX_DELAY);
+}
+
+void TFileSystemTask::SendCommandFromISR(TFsBrowser::browse_command_t browse_command, BaseType_t *HigherPriorityTaskWoken)
+{
+	TFsBrowser::browse_command_t tmp = browse_command;
+	queue->SendToBackFromISR((void*)&tmp, HigherPriorityTaskWoken);
+}
+
+void TFileSystemTask::SendResponse(const TResponse &response)
+{
+	responseQueue->SendToBack((void*)&response, portMAX_DELAY);
+}
+
+TFileSystemTask::TResponse TFileSystemTask::GetResponseBlocking()
+{
+	TResponse response;
+	responseQueue->Receive((void*)&response, portMAX_DELAY);
+	return response;
+}

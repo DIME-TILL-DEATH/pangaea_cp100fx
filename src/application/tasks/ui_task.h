@@ -15,43 +15,6 @@ public:
 	TUITask();
 	~TUITask();
 
-	//-----------------Responses----------------------
-	typedef enum
-	{
-		rpFileLoaded,
-		rpFileInvalid,
-		rpFileSelected,
-		rpDirSelected
-	} TResponseType;
-
-	typedef struct
-	{
-		fs_object_type_t type;
-		char name[CAB_NAME_STRING_SIZE];
-		uint8_t *buffer;
-	} TResponseFile;
-
-	typedef struct
-	{
-		TResponseType responseType;
-		union
-		{
-			TResponseFile file;
-		};
-	} TResponse;
-
-	void SendResponse(const TResponse &response)
-	{
-		responseQueue->SendToBack((void*)&response, portMAX_DELAY);
-	}
-
-	TResponse GetResponseBlocking()
-	{
-		TResponse response;
-		responseQueue->Receive((void*)&response, portMAX_DELAY);
-		return response;
-	}
-
 	typedef enum{
 		UI_REFRESH_MENU,
 		UI_SHOW_MENU,
@@ -181,7 +144,6 @@ private:
 		}
 	}
 
-	TQueue *responseQueue;
 	TQueue *cmdQueue;
 };
 

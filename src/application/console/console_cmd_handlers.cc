@@ -1,29 +1,15 @@
-#include <eeprom.h>
 #include "console_cmd_handlers.h"
 
 #include "translator.h"
 
-#include "sharc.h"
-
-#include "ff.h"
-#include "codec.h"
 #include "system.h"
 #include "controller.h"
 #include "modules.h"
+#include "eeprom.h"
 
 #include "console_helpers.h"
 #include "hardware_handlers.h"
-#include "resonance_filter_handlers.h"
-#include "compressor_handlers.h"
-#include "amp_handlers.h"
-#include "ir_handlers.h"
-#include "eq_handlers.h"
-#include "phaser_handlers.h"
-#include "flanger_handlers.h"
-#include "chorus_handlers.h"
-#include "delay_handlers.h"
-#include "early_handlers.h"
-#include "reverb_handlers.h"
+#include "preset_accessors.h"
 #include "syssettings_handlers.h"
 
 #include "filesystem_task.h"
@@ -32,10 +18,11 @@
 #include "ui_task.h"
 #include "tuner_task.h"
 
-#include "copyselectmenu.h"
 
 #include "amt.h"
-
+#include "phaser_setters.h"
+#include "resonance_filter_setters.h"
+#include "reverb_setters.h"
 
 bool consoleBusy = false;
 
@@ -59,30 +46,12 @@ uint16_t getDataPartFromStream(TTranslator *rl, char *buf, int maxSize)
 
 static void amtdev_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	char hex[3] =
-	{0, 0, 0};
-	i2hex(AMT_DEV_ID, hex);
-	msg_console("%s\r%s\n", args[0], hex);
+	msg_console("%s\r%02x\n", args[0], AMT_DEV_ID);
 }
 
 static void amtver_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r%s\n", args[0], amt_ver);
-}
-
-void psave_command_handler(uint32_t value)
-{
-	currentPreset.modulesBuf[147] = currentPreset.delayTime;
-	currentPreset.modulesBuf[148] = currentPreset.delayTime >> 8;
-
-	EEPROM_SavePreset(currentPresetNumber, &currentPreset);
-
-	// need to do it in the same thread
-	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, &currentPreset.paramData, currentPresetNumber+1);
-	if(System::cab_type==CAB_CONFIG_STEREO)
-		DSP_SendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
-
-	console_printf("psave\r\n");
 }
 
 static void ls_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
@@ -119,28 +88,24 @@ static void cd_command_handler(TTranslator *rl, TTranslator::const_symbol_type_p
 uint16_t bufPos;
 static void ir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FileSystemTask->Suspend();
-
-	msg_console("%s ", args[0]);
-
 	uint8_t cabNum = 0;
 
 	if(count > 1)
 	{
 		char *end;
 		cabNum = kgp_sdk_libc::strtol(args[1], &end, 16);
-		msg_console("%d", cabNum);
+//		msg_console("%d", cabNum);
 	}
 
 	if(count == 2)
 	{
 		if(cabNum==0)
 		{
-			msg_console("\r%s\n", currentPreset.cab1Name);
+			msg_console("%s %d\r%s\n", args[0], cabNum, currentPreset.cab1Name);
 		}
 		else
 		{
-			msg_console("\r%s\n", currentPreset.cab2Name);
+			msg_console("%s %d\r%s\n", args[0], cabNum, currentPreset.cab2Name);
 		}
 	}
 
@@ -159,49 +124,23 @@ static void ir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_p
 
 			fs_object_t fsObject;
 			fsObject.name = fileName;
-			fileBrowser->SelectFile(fsObject);
+			fileBrowser->SelectFile(fsObject); //not thread safe
+			FileSystemTask->SendCommand(TFsBrowser::bcAction);
 
-			emb_string errStr;
-			if(!fileBrowser->GetDataFromFile(tempCabBuffer, errStr))
-			{
-				msg_console(" error\r%s\n", errStr.c_str());
-				FileSystemTask->Resume();
-				return;
-			}
+			TFileSystemTask::TResponse browserResponse;
+			browserResponse = FileSystemTask->GetResponseBlocking();
 
-			if(cabNum==0)
-			{
-				kgp_sdk_libc::memcpy(currentPreset.cab1Data, tempCabBuffer, CAB_DATA_SIZE);
-				if(System::cab_type != CAB_CONFIG_STEREO)
-				{
-					kgp_sdk_libc::memcpy(currentPreset.cabAuxData,
-							tempCabBuffer + CAB_DATA_SIZE, CAB_DATA_SIZE);
-				}
-
-				kgp_sdk_libc::memcpy(currentPreset.cab1Name, fileName, CAB_NAME_STRING_SIZE - 1);
-				currentPreset.cab1NameSize = kgp_sdk_libc::strlen(fileName);
-
-				SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
-				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
-			}
+			if(browserResponse.responseType == TFileSystemTask::TResponseType::rpFileSelected)
+				UITask->setParam(ir_cab_setter, cabNum);
 			else
-			{
-				kgp_sdk_libc::memcpy(currentPreset.cab2Data, tempCabBuffer, CAB_DATA_SIZE);
-				kgp_sdk_libc::memcpy(currentPreset.cab2Name, fileName, CAB_NAME_STRING_SIZE - 1);
-				currentPreset.cab1NameSize = kgp_sdk_libc::strlen(fileName);
-
-				SharcTask->sendCab2Data(currentPreset.cab2Data);
-				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
-			}
-
-			msg_console(" set\r%s\n", fileName);
+				msg_console("%s error\r\n", args[0]);
 		}
 
 		if(command == "preview_start")
 		{
 			bufPos = 0;
 			kgp_sdk_libc::memset(tempCabBuffer, 0, CAB_DATA_SIZE * 2);
-			msg_console("%d request_part\r\n", cabNum);
+			msg_console("%s %d request_part\r\n", args[0], cabNum);
 		}
 
 		if(command == "preview_part")
@@ -222,7 +161,7 @@ static void ir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_p
 
 				kgp_sdk_libc::memcpy(tempCabBuffer + bufPos, buffer, bytesToRecieve);
 				bufPos += bytesToRecieve;
-				msg_console("%d request_part\r\n", cabNum);
+				msg_console("%s %d request_part\r\n", args[0], cabNum);
 			}
 			else
 			{
@@ -242,25 +181,14 @@ static void ir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_p
 				SharcTask->sendCab2Data(tempCabBuffer);
 				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
-			msg_console("%d preview_end\r\n", cabNum);
+			msg_console("%s %d preview_end\r\n", args[0], cabNum);
 		}
 
 		if(command == "restore")
 		{
-			if(cabNum==0)
-			{
-				SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
-				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
-			}
-			else
-			{
-				SharcTask->sendCab2Data(currentPreset.cab2Data);
-				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
-			}
-			msg_console("%d restore\r\n", cabNum);
+			UITask->setParam(ir_cab_restore, cabNum);
 		}
 	}
-	FileSystemTask->Resume();
 }
 
 static void mkdir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
@@ -352,13 +280,6 @@ static void copyto_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	Preset::Copy(presetNum, selectionMask);
 }
 
-void erase_preset_command_handler(uint32_t value)
-{
-	Preset::Erase();
-	UITask->setParam(preset_change_handler, currentPresetNumber);
-	console_printf("erase_preset\r\n");
-}
-
 static void upload_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s ", args[0]);
@@ -421,23 +342,8 @@ static void upload_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	}
 }
 
-void preset_change_handler(uint32_t value)
-{
-	currentPresetNumber = value % 99;
-
-	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-	Preset::Change(currentPresetNumber);
-	MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
-
-	mainMenu->presetConfirm(); //update data in main menu
-
-	console_printf("pchange\r\n");
-}
-
 static void plist_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-//	msg_console("plist");
-
 	msg_console("%s", args[0]);
 	for (int p = 0; p < 99; p++)
 	{
@@ -484,55 +390,6 @@ static void plist_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 	msg_console("\n");
 }
 
-void pbrief_command_handler(uint32_t value)
-{
-	uint8_t presetNum = value % 99;
-
-	console_printf("pbrief");
-
-	Preset::TPresetBrief presetData;
-	EEPROM_LoadPresetBrief(presetNum, &presetData);
-
-	char *cab1NameSrc = presetData.cab1Name + 1;
-	char *cab2NameSrc = presetData.cab2Name + 1;
-	char cab1NameDst[64];
-	char cab2NameDst[64];
-
-	kgp_sdk_libc::memset(cab1NameDst, 0, 64);
-	kgp_sdk_libc::memset(cab2NameDst, 0, 64);
-
-	uint8_t pos=0;
-
-	while(*cab1NameSrc)
-	{
-		if(*cab1NameSrc != '|' && *cab1NameSrc != '\r' && *cab1NameSrc != '\n')
-		{
-			cab1NameDst[pos] = *cab1NameSrc;
-			pos++;
-		}
-		cab1NameSrc++;
-	}
-
-	pos=0;
-	while(*cab2NameSrc)
-	{
-		if(*cab2NameSrc != '|' && *cab2NameSrc != '\r' && *cab2NameSrc != '\n')
-		{
-			cab2NameDst[pos] = *cab1NameSrc;
-			pos++;
-		}
-		cab2NameSrc++;
-	}
-
-	console_printf("\r%d|%s|%s|%s|%s|", presetNum, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
-
-	uint8_t enabled[14];
-	kgp_sdk_libc::memcpy(enabled, &presetData.paramData.switches, 14);
-	for(uint8_t i=0; i<14; i++) console_printf("%d", enabled[i]);
-
-	console_printf("\n");
-}
-
 static void state_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	currentPreset.paramData.delay_time = currentPreset.delayTime;
@@ -540,10 +397,7 @@ static void state_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 	msg_console("%s\r", args[0]);
 	for(size_t i = 0; i < 512; i++)
 	{
-		char hex[3] =
-		{0, 0, 0};
-		i2hex(currentPreset.modulesBuf[i], hex);
-		msg_console("%s", hex);
+		msg_console("%02x", currentPreset.modulesBuf[i]);
 	}
 	msg_console("\n");
 }
@@ -553,29 +407,9 @@ static void cntrls_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 	msg_console("%s\r", args[0]);
 	for(size_t i = 0; i < Controller::controllersCount; i++)
 	{
-		char hex[3] =
-		{0, 0, 0};
-
-		i2hex(currentPreset.controller[i].src, hex);
-		msg_console("%s", hex);
-		i2hex(currentPreset.controller[i].dst, hex);
-		msg_console("%s", hex);
-		i2hex(currentPreset.controller[i].minVal, hex);
-		msg_console("%s", hex);
-		i2hex(currentPreset.controller[i].maxVal, hex);
-		msg_console("%s", hex);
+		msg_console("%02x%02x%02x%02x", currentPreset.controller[i].src, currentPreset.controller[i].dst,
+				currentPreset.controller[i].minVal, currentPreset.controller[i].maxVal);
 	}
-	msg_console("\n");
-}
-
-static void pnum_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
-{
-	msg_console("%s\r", args[0]);
-
-	char hex[3] = {0, 0, 0};
-	i2hex(currentPresetNumber, hex);
-	msg_console("%s", hex);
-
 	msg_console("\n");
 }
 
@@ -655,20 +489,18 @@ static void controller_command_handler(TTranslator* rl, TTranslator::const_symbo
 	}
 
 ending:
-	EEPROM_SaveSystemData();
 	msg_console("\n");
 }
 
 static void controller_pc_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.pcOut, rl, args, count);
+	default_param_handler(&currentPreset.pcOut, args, count);
 }
 
 static void controller_set_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t answer;
 
-	char hex[3] = {0, 0, 0};
 	if (count > 0)
 	{
 		if(count > 1)
@@ -684,9 +516,7 @@ static void controller_set_command_handler(TTranslator* rl, TTranslator::const_s
 			if(currentPreset.set & 0x80) answer = currentPreset.set & 0x7F;
 			else answer = currentPresetNumber;
 		}
-
-		i2hex(answer, hex);
-		msg_console("%s\r%s\n", args[0], hex);
+		msg_console("%s\r%02x\n", args[0], answer);
 	}
 }
 
@@ -745,16 +575,7 @@ static void tuner_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 	msg_console("\n");
 }
 
-static void preset_volume_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
-{
-	default_param_handler(&currentPreset.paramData.preset_volume, rl, args, count);
-	SharcTask->setParameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.paramData.preset_volume, 0);
-}
 
-static void preset_volume_control_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
-{
-	default_param_handler(&currentPreset.paramData.volume_control, rl, args, count);
-}
 //------------------------------------------------------------------------------
 void ConsoleSetCmdHandlers(TTranslator *translator)
 {
@@ -774,18 +595,13 @@ void ConsoleSetCmdHandlers(TTranslator *translator)
 	translator->AddCommandHandler("remove", remove_command_handler);
 
 	translator->AddCommandHandler("copy_to", copyto_command_handler);
-	translator->AddSetterHandler("erase_preset", erase_preset_command_handler);
 
-	translator->AddSetterHandler("pchange", preset_change_handler);
-	translator->AddSetterHandler("psave", psave_command_handler);
 
 	translator->AddCommandHandler("state", state_command_handler);
 	translator->AddCommandHandler("cntrls", cntrls_command_handler);
 
 	translator->AddCommandHandler("plist", plist_command_handler);
-	translator->AddSetterHandler("pbrief", pbrief_command_handler);
 
-	translator->AddCommandHandler("pnum", pnum_command_handler);
 	translator->AddCommandHandler("pname", pname_command_handler);
 	translator->AddCommandHandler("pcomment", pcomment_command_handler);
 
@@ -795,10 +611,9 @@ void ConsoleSetCmdHandlers(TTranslator *translator)
 
 	translator->AddCommandHandler("tn", tuner_command_handler);
 
-	translator->AddCommandHandler("vl_pr", preset_volume_command_handler);
-	translator->AddCommandHandler("vl_pr_cntrl", preset_volume_control_command_handler);
-
 	set_syssettings_handlers(translator);
+
+	set_preset_handlers(translator);
 
 	set_resonance_filter_handlers(translator);
 	set_gate_handlers(translator);

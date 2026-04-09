@@ -1,20 +1,25 @@
-#include <eeprom.h>
 #include "submenuparam.h"
 
+#include "eeprom.h"
 #include "system.h"
 
 #include "display_task.h"
-#include "io_task.h"
 
 SubmenuParam::SubmenuParam(gui_param_type paramType, const char* name, AbstractMenu* menu, void* param)
-				:BaseParam(paramType, name, param)
+				: BaseParam(paramType, name, param)
 {
 	m_menu = menu;
 }
 
 SubmenuParam::SubmenuParam(gui_param_type paramType, const char* name,
 		AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), void* param)
-				:BaseParam(paramType, name, param)
+				: BaseParam(paramType, name, param)
+{
+	m_submenuCreationFunction = submenuCreationFunction;
+}
+
+SubmenuParam::SubmenuParam(gui_param_type paramType, TParamDescriptor paramDescriptor, AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent))
+				: BaseParam(paramType,paramDescriptor)
 {
 	m_submenuCreationFunction = submenuCreationFunction;
 }

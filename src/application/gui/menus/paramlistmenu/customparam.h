@@ -1,7 +1,7 @@
 #ifndef CUSTOMPARAM_H_
 #define CUSTOMPARAM_H_
 
-#include "../paramlistmenu/baseparam.h"
+#include "baseparam.h"
 
 class CustomParam: public BaseParam
 {
@@ -19,6 +19,7 @@ public:
 	};
 
 	CustomParam(TDisplayType displayType, const char* name, void* paramValuePtr);
+	CustomParam(TDisplayType displayType, TParamDescriptor paramDesc);
 	~CustomParam();
 
 	const char* name() override;

@@ -26,13 +26,11 @@ UsbMenu *usbMenu = nullptr;
 TUITask::TUITask() :
 		TTask()
 {
-	responseQueue = new TQueue(4, sizeof(TResponse));
 	cmdQueue = new TQueue(32, sizeof(TUICmd));
 }
 
 TUITask::~TUITask()
 {
-	delete responseQueue;
 	delete cmdQueue;
 }
 

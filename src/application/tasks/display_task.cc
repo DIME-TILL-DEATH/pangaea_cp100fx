@@ -57,7 +57,7 @@ void TDisplayTask::Code()
 {
 	TDisplayCmd cmd;
 
-	queue = new TQueue(32, sizeof(TDisplayCmd));
+	queue = new TQueue(64, sizeof(TDisplayCmd));
 	if (!queue) Suspend();
 
 	if (!queue->IsCreated()) Suspend();

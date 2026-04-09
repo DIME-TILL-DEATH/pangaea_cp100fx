@@ -24,26 +24,23 @@ AbstractMenu* GuiModules::createRfMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 12;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modulesBuf[RFILTER_MIX]);
-	params[1] = new StringListParam("F Type", &currentPreset.modulesBuf[RFILTER_FTYPE], {"LPF","HPF","BPF"}, 3);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, RfDesc.mix);
+	params[1] = new StringListParam(RfDesc.filtType, {"LPF","HPF","BPF"}, 3);
 
-	StringListParam* typeSelect = new StringListParam("F Mod", &currentPreset.modulesBuf[RFILTER_FMOD], {"LFO", "Dyn", "Ext"}, 3);
+	StringListParam* typeSelect = new StringListParam(RfDesc.fmod, {"LFO", "Dyn", "Ext"}, 3);
 	typeSelect->setDisableMask(0, {0, 0, 0, 0, 0, 0, 0, 1, 1, 1});
 	typeSelect->setDisableMask(2, {0, 0, 0, 0, 0, 0, 0, 1, 1, 1});
 	params[2] = typeSelect;
 
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "LFO r", &currentPreset.modulesBuf[RFILTER_RATE]);
-	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Lo freq", &currentPreset.modulesBuf[RFILTER_LPF]);
-	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Hi freq", &currentPreset.modulesBuf[RFILTER_HPF]);
-	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Res", &currentPreset.modulesBuf[RFILTER_RESONANCE]);
-	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Dyn th", &currentPreset.modulesBuf[RFILTER_DYN_THRESHOLD]);
-	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Dyn att", &currentPreset.modulesBuf[RFILTER_DYN_ATTACK]);
-	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Dyn rel", &currentPreset.modulesBuf[RFLITER_DYN_RELEASE]);
-	params[10] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &currentPreset.modulesBuf[RFILTER_VOLUME]);
-	params[11] = new StringListParam("F Mod", &currentPreset.modulesBuf[RFILTER_LFO_TYPE],
-			{"Tri   ","Rand  ","Rand/2","Rand/3","Rand/4","Rand/6","Rand/8"}, 7);
-
-	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_RESONANCE_FILTER, i);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, RfDesc.rate);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, RfDesc.hpf);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, RfDesc.lpf);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, RfDesc.resonance);
+	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, RfDesc.dynThreshold);
+	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, RfDesc.dynAttack);
+	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, RfDesc.dynRelease);
+	params[10] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, RfDesc.volume);
+	params[11] = new StringListParam(RfDesc.lfo, {"Tri   ","Rand  ","Rand/2","Rand/3","Rand/4","Rand/6","Rand/8"}, 7);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_RESONANCE_FILTER);
 	if(menu)
@@ -77,13 +74,11 @@ AbstractMenu* GuiModules::createCompressorMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 5;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Thresh", &currentPreset.modulesBuf[COMPRESSOR_THRESHOLD]);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Ratio", &currentPreset.modulesBuf[COMPRESSOR_RATIO]);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Volume", &currentPreset.modulesBuf[COMPRESSOR_VOLUME]);
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Attack", &currentPreset.modulesBuf[COMPRESSOR_ATTACK]);
-	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Knee", &currentPreset.modulesBuf[COMPRESSOR_KNEE]);
-
-	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_COMPRESSOR, i);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, CompressorDesc.threshold);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, CompressorDesc.ratio);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, CompressorDesc.volume);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, CompressorDesc.attack);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, CompressorDesc.knee);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_COMPRESSOR);
 	if(menu) menu->setParams(params, paramNum);
@@ -122,30 +117,25 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 5;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Master", &currentPreset.modulesBuf[AMP_MASTER]);
-	params[0]->setDspAddress(DSP_ADDRESS_AMP, AMP_MASTER_POS);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Presence", &currentPreset.modulesBuf[EQ_PRESENCE]);
-	params[1]->setDspAddress(DSP_ADDRESS_EQ, EQ_PRESENCE_POS);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Level", &currentPreset.modulesBuf[AMP_LEVEL]);
-	params[2]->setDspAddress(DSP_ADDRESS_AMP, AMP_LEVEL_POS);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PaDesc.master);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PaDesc.presence);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PaDesc.level);
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", &currentPreset.modulesBuf[PREAMP_0]);
 	params[3]->setDspAddress(DSP_ADDRESS_AMP, NOT_SEND_POS);
 #ifdef __MONO_MOD__
-	params[4] = new StringListParam("Type", &currentPreset.modulesBuf[AMP_TYPE],
+	params[4] = new StringListParam(PaDesc.type,
 		 {"  PP 6L6  ", "  PP EL34 ", "  SE 6L6  ", "  SE EL34 ", " AMT TC-3 ",
 		  "California",	"British M ", "British L ", "    Flat   ","Calif mod ",
 		  "Calif vint", "PVH PR0RS0", "PVH PR5RS5", "PVH PR8RS7"}, 11);
 #endif
 #ifdef __STEREO_MOD__
-	params[4] = new StringListParam("Type", &currentPreset.modulesBuf[AMP_TYPE],
+	params[4] = new StringListParam(PaDesc.type,
 		 {"  PP 6L6  ", "  PP EL34 ", "  SE 6L6  ", "  SE EL34 ", " AMT TC-3 ",
 		  "California",	"British M ", "British L ", "    Flat   ","Calif mod ",
 		  "Calif vint", "PVH PR0RS0", "PVH PR5RS5", "PVH PR8RS7", "PVH PR9RS8",/*
 		 "PA Modern ", "PP Amp 6L6", "PP AmpEL34", "SE Amp 6L6", "PVH IC V1 ",
 		 "PVH IC V2 ", "PVH PR00  ", "PVH PR98  "*/}, 11);
 #endif
-
-	params[4]->setDspAddress(DSP_ADDRESS_AMP_TYPE, AMP_TYPE_POS);
 	params[4]->setDisplayPosition(36);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_PA);
@@ -201,22 +191,16 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab1BrowserMenu);
 
 #ifdef __MONO_MOD__
-	if(System::cab_type == CAB_CONFIG_STEREO)
-	{
-		params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN1]);
-		params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN1_POS);
-	}
+	if(System::cab_type == CAB_CONFIG_STEREO) params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, IrDesc.pan1);
 	else params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", nullptr);
 #endif
 
 #ifdef __STEREO_MOD__
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN1]);
-	params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN1_POS);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, IrDesc.pan1);
 #endif
 
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, "Volume", &currentPreset.modulesBuf[IR_VOLUME1]);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, IrDesc.vol1);
 	params[3]->setDisplayPosition(42);
-	params[3]->setDspAddress(DSP_ADDRESS_CAB, IR_VOLUME1_POS);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CABSIM);
 	if(menu)
@@ -243,21 +227,15 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab2BrowserMenu);
 
 #ifdef __MONO_MOD__
-	if(System::cab_type == CAB_CONFIG_STEREO)
-	{
-		params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN2]);
-		params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN2_POS);
-	}
+	if(System::cab_type == CAB_CONFIG_STEREO) params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, IrDesc.pan2);
 	else params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, "", nullptr);
 #endif
 
 #ifdef __STEREO_MOD__
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "Pan", &currentPreset.modulesBuf[IR_PAN2]);
-	params[2]->setDspAddress(DSP_ADDRESS_CAB, IR_PAN2_POS);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, IrDesc.pan2);
 #endif
 
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, "Volume", &currentPreset.modulesBuf[IR_VOLUME2]);
-	params[3]->setDspAddress(DSP_ADDRESS_CAB, IR_VOLUME2_POS);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, IrDesc.vol2);
 	params[3]->setDisplayPosition(42);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CABSIM);
@@ -290,25 +268,22 @@ AbstractMenu* GuiModules::createEqMenu(AbstractMenu* parentMenu)
 	else return new EqGraphMenu(parentMenu);
 }
 
-// При режиме детюн параметр Rate должен называться Detune
 AbstractMenu* GuiModules::createPhaserMenu(AbstractMenu* parentMenu)
 {
 	const uint8_t paramNum = 8;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modulesBuf[PHASER_MIX]);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &currentPreset.modulesBuf[PHASER_RATE]);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Center", &currentPreset.modulesBuf[PHASER_CENTER]);
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &currentPreset.modulesBuf[PHASER_WIDTH]);
-	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &currentPreset.modulesBuf[PHASER_FEEDBACK]);
-	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Stage", &currentPreset.modulesBuf[PHASER_TYPE]);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, PhaserDesc.mix);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PhaserDesc.rate);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PhaserDesc.center);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PhaserDesc.width);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PhaserDesc.feedback);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, PhaserDesc.stages);
 	params[5]->setScaling(2, 4);
 	params[5]->setBounds(0, 4);
 	params[5]->setDisplayPosition(62);
-	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Hpf", &currentPreset.modulesBuf[PHASER_HPF]);
-	params[7] = new StringListParam("Pos.", &currentPreset.modulesBuf[PHASER_PREPOST], {"Post", "Pre "}, 4);
-
-	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_PHASER, i);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PhaserDesc.hpf);
+	params[7] = new StringListParam(PhaserDesc.position, {"Post", "Pre "}, 4);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_PHASER);
 	if(menu) menu->setParams(params, paramNum);
@@ -321,16 +296,14 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 8;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modulesBuf[FLANGER_MIX]);
-	params[1] = new StringListParam("LFO", &currentPreset.modulesBuf[FLANGER_LFO], {"Triangle", "Sinus   "}, 8);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Rate", &currentPreset.modulesBuf[FLANGER_RATE]);
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &currentPreset.modulesBuf[FLANGER_WIDTH]);
-	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &currentPreset.modulesBuf[FLANGER_DELAY]);
-	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &currentPreset.modulesBuf[FLANGER_FEEDBACK]);
-	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &currentPreset.modulesBuf[FLANGER_HPF]);
-	params[7] = new StringListParam("Pos.", &currentPreset.modulesBuf[FLANGER_PREPOST], {"Post", "Pre "}, 4);
-
-	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_FLANGER, i);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, FlangerDesc.mix);
+	params[1] = new StringListParam(FlangerDesc.genType, {"Triangle", "Sinus   "}, 8);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, FlangerDesc.rate);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, FlangerDesc.width);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, FlangerDesc.delay);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, FlangerDesc.feedback);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, FlangerDesc.hpf);
+	params[7] = new StringListParam(FlangerDesc.position, {"Post", "Pre "}, 4);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_FLANGER);
 	if(menu) menu->setParams(params, paramNum);
@@ -349,20 +322,20 @@ AbstractMenu* GuiModules::createChorusMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 6;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modulesBuf[CHORUS_MIX]);
-	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Level, "Rate", &currentPreset.modulesBuf[CHORUS_RATE]);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, ChorusDesc.mix);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Level, ChorusDesc.rate);
 	customParam->nameCallback = rateChorusPrint;
 	params[1] = customParam;
 
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Width", &currentPreset.modulesBuf[CHORUS_WIDTH]);
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Delay", &currentPreset.modulesBuf[CHORUS_DELAY]);
-	StringListParam* typeSelect = new StringListParam("Type", &currentPreset.modulesBuf[CHORUS_TYPE],
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ChorusDesc.width);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ChorusDesc.delay);
+	StringListParam* typeSelect = new StringListParam(ChorusDesc.type,
 			{"  Chorus   ","  Chorus S "," Chorus x3 ","Chorus x3 S","  Detune   ","MidSide Dub"}, 12);
 	typeSelect->setDisplayPosition(36);
 	typeSelect->setDisableMask(4, {0, 0, 1, 1, 0, 0});
 	typeSelect->setDisableMask(5, {0, 1, 1, 0, 0, 0});
 	params[4] = typeSelect;
-	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &currentPreset.modulesBuf[CHORUS_HPF]);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ChorusDesc.hpf);
 
 	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_CHORUS, i);
 
@@ -379,10 +352,8 @@ AbstractMenu* GuiModules::createEarlyMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCout = 2;
 	BaseParam* params[paramCout];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modulesBuf[EARLY_MIX]);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Size", &currentPreset.modulesBuf[EARLY_SIZE]);
-
-	for(int i=0; i<paramCout; i++) params[i]->setDspAddress(DSP_ADDRESS_EARLY_REFLECTIONS, i);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, EarlyDesc.mix);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, EarlyDesc.size);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_EARLY_REFLECTIONS);
 	if(menu) menu->setParams(params, paramCout);
@@ -397,35 +368,23 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 
 	ParamListMenu* menu;
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modulesBuf[DELAY_MIX]);
-	params[0]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_MIX_POS);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, DelayDesc.mix);
 
-	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME, "Time", &GuiModules::createDelayTapMenu, &currentPreset.delayTime);
-	params[1]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME, DelayDesc.time, &GuiModules::createDelayTapMenu);
 	params[1]->setByteSize(2);
 	params[1]->setBounds(10, 2730);
 	params[1]->setScaling(10, 0);
 
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "F_Back", &currentPreset.modulesBuf[DELAY_FEEDBACK]);
-	params[2]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_FEEDBACK_POS);
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "LPF", &currentPreset.modulesBuf[DELAY_LPF]);
-	params[3]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_LPF_POS);
-	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &currentPreset.modulesBuf[DELAY_HPF]);
-	params[4]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_HPF_POS);
-	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "D1 Pan", &currentPreset.modulesBuf[DELAY_PAN1]);
-	params[5]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_PAN1_POS);
-	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "D2 Vol", &currentPreset.modulesBuf[DELAY_VOLUME2]);
-	params[6]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_VOLUME2_POS);
-	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, "D2 Pan", &currentPreset.modulesBuf[DELAY_PAN2]);
-	params[7]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_PAN2_POS);
-	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "D->D2", &currentPreset.modulesBuf[DELAY_OFFSET]);
-	params[8]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_OFFSET_POS);
-	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "D_Mod", &currentPreset.modulesBuf[DELAY_MODULATION]);
-	params[9]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_MODULATION_POS);
-	params[10] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "M_Rate", &currentPreset.modulesBuf[DELAY_MODULATION_RATE]);
-	params[10]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_MODULATION_RATE_POS);
-	params[11] = new StringListParam("Direct", &currentPreset.modulesBuf[DELAY_DIRECTION], {"Forward", "Reverse"}, 7);
-	params[11]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_DIRECTION_POS);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, DelayDesc.feedback);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, DelayDesc.lpf);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, DelayDesc.hpf);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, DelayDesc.pan1);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, DelayDesc.volume2);
+	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_PAN,  DelayDesc.pan2);
+	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, DelayDesc.offset);
+	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, DelayDesc.modulation);
+	params[10] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, DelayDesc.rate);
+	params[11] = new StringListParam(DelayDesc.direction, {"Forward", "Reverse"}, 7);
 
 	menu = new ParamListMenu(parentMenu, MENU_DELAY);
 	if(menu)
@@ -450,12 +409,6 @@ void delayTimeDecrease(void* parameter)
 		else tempo = System::minBpm;
 		currentPreset.delayTime = 60000 / tempo;
 	}
-
-	currentPreset.modulesBuf[DELAY_TIME_LO] = currentPreset.delayTime & 0xFF;
-	currentPreset.modulesBuf[DELAY_TIME_HI] = currentPreset.delayTime >> 8;
-
-	SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
-	SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime & 0xFF);
 }
 
 void delayTimeIncrease(void* parameter)
@@ -471,12 +424,6 @@ void delayTimeIncrease(void* parameter)
 		else tempo = System::maxBpm;
 		currentPreset.delayTime = 60000 / tempo;
 	}
-
-	currentPreset.modulesBuf[DELAY_TIME_LO] = currentPreset.delayTime & 0xFF;
-	currentPreset.modulesBuf[DELAY_TIME_HI] = currentPreset.delayTime >> 8;
-
-	SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
-	SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime & 0xFF);
 }
 
 void delayTimePrint(void* parameter)
@@ -499,18 +446,15 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 
 	ParamListMenu* menu;
 
-	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Time", &currentPreset.delayTime);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, DelayDesc.time);
 	customParam->decreaseCallback = delayTimeDecrease;
 	customParam->increaseCallback = delayTimeIncrease;
 	customParam->printCallback = delayTimePrint;
+	customParam->setByteSize(2);
 	params[0] = customParam;
 
-	params[1] = new StringListParam("TAP", &currentPreset.modulesBuf[DELAY_TAP],
-			{"1/4 ", "1/8." ,"1/8 " ,"1/8t" ,"1/16" ,"1/2 "}, 5);
-	params[1]->setDspAddress(DSP_ADDRESS_DELAY, NOT_SEND_POS);
-
-	params[2] = new StringListParam("Tail", &currentPreset.modulesBuf[DELAY_TAIL], {"On ", "Off"}, 3);
-	params[2]->setDspAddress(DSP_ADDRESS_DELAY, DELAY_TAIL_POS);
+	params[1] = new StringListParam(DelayDesc.tap, {"1/4 ", "1/8." ,"1/8 " ,"1/8t" ,"1/16" ,"1/2 "}, 5);
+	params[2] = new StringListParam(DelayDesc.tail, {"On ", "Off"}, 3);
 
 	menu = new ParamListMenu(parentMenu, MENU_TAP_DELAY);
 	if(menu)
@@ -523,16 +467,14 @@ AbstractMenu* GuiModules::createDelayTapMenu(AbstractMenu* parentMenu)
 	return menu;
 }
 
-
-
 AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 {
 	const uint8_t paramNum = 11;
 	BaseParam* params[paramNum];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, "Mix", &currentPreset.modulesBuf[REVERB_MIX]);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, ReverbDesc.mix);
 
-	StringListParam* typeSelect = new StringListParam("Type", &currentPreset.modulesBuf[REVERB_TYPE],
+	StringListParam* typeSelect = new StringListParam(ReverbDesc.type,
 			{"Default", "Hall   ", "Room   ", "Plate  ", "Spring ", "Gate   ", "Reverse"}, 8);
 	typeSelect->setDisableMask(0, {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0});
 	typeSelect->setDisableMask(4, {0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0});
@@ -540,17 +482,15 @@ AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 	typeSelect->setDisableMask(6, {0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0});
 	params[1] = typeSelect;
 
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Time", &currentPreset.modulesBuf[REVERB_TIME]);
-	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Size", &currentPreset.modulesBuf[REVERB_SIZE]);
-	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Damp", &currentPreset.modulesBuf[REVERB_DAMPING]);
-	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "LPF", &currentPreset.modulesBuf[REVERB_LPF]);
-	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "HPF", &currentPreset.modulesBuf[REVERB_HPF]);
-	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Detune", &currentPreset.modulesBuf[REVERB_DETUNE]);
-	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "Diffus", &currentPreset.modulesBuf[REVERB_DIFFUSION]);
-	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, "PreD", &currentPreset.modulesBuf[REVERB_PREDELAY]);
-	params[10] = new StringListParam("Tail", &currentPreset.modulesBuf[REVERB_TAIL], {"On ", "Off"}, 3);
-
-	for(int i=0; i<paramNum; i++) params[i]->setDspAddress(DSP_ADDRESS_REVERB, i);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ReverbDesc.time);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ReverbDesc.size);
+	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ReverbDesc.damping);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ReverbDesc.lpf);
+	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ReverbDesc.hpf);
+	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ReverbDesc.damping);
+	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ReverbDesc.diffusion);
+	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, ReverbDesc.predelay);
+	params[10] = new StringListParam(ReverbDesc.tail, {"On ", "Off"}, 3);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_REVERB);
 	if(menu) menu->setParams(params, paramNum);

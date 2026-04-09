@@ -6,7 +6,13 @@
 
 
 CustomParam::CustomParam(TDisplayType displayType, const char* name, void* paramValuePtr)
-	:BaseParam(BaseParam::GUI_PARAMETER_CUSTOM, name, paramValuePtr)
+	: BaseParam(BaseParam::GUI_PARAMETER_CUSTOM, name, paramValuePtr)
+{
+	m_displayType = displayType;
+}
+
+CustomParam::CustomParam(TDisplayType displayType, TParamDescriptor paramDesc)
+	: BaseParam(BaseParam::GUI_PARAMETER_CUSTOM, paramDesc)
 {
 	m_displayType = displayType;
 }
