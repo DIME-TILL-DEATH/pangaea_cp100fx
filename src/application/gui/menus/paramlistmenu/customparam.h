@@ -27,7 +27,7 @@ public:
 	void increaseParam() override;
 	void decreaseParam() override;
 	void printParam(uint8_t yDisplayPosition) override;
-	void setToDsp() override;
+	void setData() override;
 
 	void setStrings(std::initializer_list<const char*> stringList, uint8_t maxStringLength);
 

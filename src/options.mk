@@ -4,7 +4,7 @@ SDK_DIR=$(SRC_DIR)/../../SDK_embedded
 
 PLATFORM=PANGEA_MINI
 
-FIRMWARE_VER=2.01.00
+FIRMWARE_VER=2.01.01
 
 MODIFICATION=MONO
 
@@ -21,7 +21,7 @@ endif
 
 # set relocation offset for application code in flash aria
 # for support bootloader SunSet
-#
+##
 #FLASH_TEXT_SECTION_OFFSET=0x40000
 #FLASH_ORIGIN=0x08040000
 

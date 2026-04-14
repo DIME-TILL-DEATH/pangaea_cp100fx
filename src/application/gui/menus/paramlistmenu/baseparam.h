@@ -51,7 +51,9 @@ public:
 
 	virtual void printParam(uint8_t yPos);
 
-	virtual void setToDsp();
+	virtual void setData();
+
+	virtual void select(bool& encoderPressed);
 
 	void setDspAddress(dsp_module_address_t moduleAddress, uint8_t bytePosition);
 	dsp_module_address_t moduleAddress() const {return m_moduleAddress;};

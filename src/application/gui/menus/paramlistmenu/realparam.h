@@ -7,6 +7,7 @@ class RealParam: public BaseParam
 {
 public:
 	RealParam(const char* name, void* paramValuePtr);
+	RealParam(const TParamDescriptor& paramDescriptor);
 
 
 	void printParam(uint8_t yPos);

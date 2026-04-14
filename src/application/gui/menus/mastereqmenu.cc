@@ -1,8 +1,10 @@
-#include <eeprom.h>
 #include "mastereqmenu.h"
 
 #include "modules.h"
 #include "system.h"
+#include "eeprom.h"
+
+#include "master_setters.h"
 
 #include "display_task.h"
 #include "io_task.h"
@@ -10,8 +12,6 @@
 
 #include "realparam.h"
 #include "customparam.h"
-
-extern uint8_t k_master_eq;
 
 MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	: ParamListMenu(parentMenu, MENU_MASTER_EQ)
@@ -132,7 +132,7 @@ void MasterEqMenu::encoderClockwise()
 	else
 	{
 		m_paramsList[m_currentParamNum]->increaseParam();
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
 }
@@ -154,7 +154,7 @@ void MasterEqMenu::encoderCounterClockwise()
 	else
 	{
 		m_paramsList[m_currentParamNum]->decreaseParam();
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
 }
@@ -169,13 +169,13 @@ void MasterEqMenu::keyDown()
 {
 	if(sys_para[System::MASTER_EQ_ON])
 	{
-		sys_para[System::MASTER_EQ_ON] = 0;
+		MasterEqDesc.on.setterHandler(0);
 		m_encoderKnobSelected = false;
 		show();
 	}
 	else
 	{
-		sys_para[System::MASTER_EQ_ON] = 1;
+		MasterEqDesc.on.setterHandler(1);
 		show();
 	}
 
@@ -229,9 +229,10 @@ void MasterEqMenu::printMidFreqCallback(void* parameter)
 
 void MasterEqMenu::setMidFreqCallback(void* parameter)
 {
-	sys_para[System::MASTER_EQ_FREQ_LO] = mstEqMidFreq >> 8;
-	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xFF;
+	MasterEqDesc.midFreq.setterHandler(mstEqMidFreq);
+}
 
-	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
-	SharcTask->setParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
+void MasterEqMenu::refresh()
+{
+	show();
 }

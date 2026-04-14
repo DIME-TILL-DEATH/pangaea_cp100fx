@@ -1,8 +1,10 @@
-#include <eeprom.h>
 #include "attenuatormenu.h"
 
 #include "system.h"
 #include "bitmaps.h"
+#include "eeprom.h"
+
+#include "master_setters.h"
 
 #include "stringlistparam.h"
 
@@ -14,7 +16,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 
 	uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator : &sys_para[System::ATTENUATOR];
 
-	params[0] = new StringListParam("Attenuator", valuePtr,
+	params[0] = new StringListParam(AttenuatorDesc.volume,
 			 {" +4 dB", " +3 dB", " +2 dB", " +1 dB", "  0 dB", " -1 dB", " -2 dB", " -3 dB",
 			" -4 dB", " -5 dB", " -6 dB", " -7 dB", " -8 dB", " -9 dB", "-10 dB", "-11 dB", "-12 dB",
 			"-13 dB", "-14 dB", "-15 dB", "-16 dB", "-17 dB", "-18 dB", "-19 dB", "-20 dB", "-21 dB",
@@ -25,7 +27,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	params[0]->setDisplayPosition(70);
 	params[0]->setInverse(true);
 
-	params[1] = new StringListParam("Source", &sys_para[System::ATTENUATOR_MODE], {"Global", "Preset"}, 7);
+	params[1] = new StringListParam(AttenuatorDesc.source, {"Global", "Preset"}, 7);
 	params[1]->setDisplayPosition(76);
 
 	setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
@@ -52,8 +54,8 @@ void AttenuatorMenu::encoderClockwise()
 			refresh();
 		}
 
-		IOTask->potWrite();
-
+//		IOTask->potWrite();
+		m_paramsList[m_currentParamNum]->setData();
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
 	else
@@ -81,7 +83,8 @@ void AttenuatorMenu::encoderCounterClockwise()
 			refresh();
 		}
 
-		IOTask->potWrite();
+		m_paramsList[m_currentParamNum]->setData();
+//		IOTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}

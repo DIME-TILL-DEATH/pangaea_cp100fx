@@ -157,13 +157,13 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 		BaseParam* params[paramNum];
 
 #ifdef __MONO_MOD__
-		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 1", &GuiModules::createCab1Menu, nullptr);
-		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 2", &GuiModules::createCab2Menu, nullptr);
+		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 1", &GuiModules::createCab1Menu, menu);
+		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 2", &GuiModules::createCab2Menu, menu);
 #endif
 
 #ifdef __STEREO_MOD__
-		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, nullptr);
-		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, nullptr);
+		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, menu);
+		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, menu);
 #endif
 
 		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
@@ -182,13 +182,15 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 
 AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 {
+	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CABSIM);
+
 	const uint8_t paramNum = 4;
 	BaseParam* params[paramNum];
 
 	params[0] = new StringOutParam((const char*)currentPreset.cab1Name);
 	params[0]->setDisplayPosition(ParamListMenu::leftPad);
 
-	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab1BrowserMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab1BrowserMenu, menu);
 
 #ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO) params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, IrDesc.pan1);
@@ -202,7 +204,6 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, IrDesc.vol1);
 	params[3]->setDisplayPosition(42);
 
-	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CABSIM);
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
@@ -218,13 +219,15 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 
 AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 {
+	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CABSIM);
+
 	const uint8_t paramNum = 4;
 	BaseParam* params[paramNum];
 
 	params[0] = new StringOutParam((const char*)currentPreset.cab2Name);
 	params[0]->setDisplayPosition(ParamListMenu::leftPad);
 
-	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab2BrowserMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Browser", &GuiModules::createCab2BrowserMenu, menu);
 
 #ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO) params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, IrDesc.pan2);
@@ -238,7 +241,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, IrDesc.vol2);
 	params[3]->setDisplayPosition(42);
 
-	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CABSIM);
+
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
@@ -366,11 +369,12 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 12;
 	BaseParam* params[paramNum];
 
-	ParamListMenu* menu;
+	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_DELAY);;
 
 	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_MIX, DelayDesc.mix);
 
-	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME, DelayDesc.time, &GuiModules::createDelayTapMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME, DelayDesc.time,
+			&GuiModules::createDelayTapMenu, menu);
 	params[1]->setByteSize(2);
 	params[1]->setBounds(10, 2730);
 	params[1]->setScaling(10, 0);
@@ -386,7 +390,6 @@ AbstractMenu* GuiModules::createDelayMenu(AbstractMenu* parentMenu)
 	params[10] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, DelayDesc.rate);
 	params[11] = new StringListParam(DelayDesc.direction, {"Forward", "Reverse"}, 7);
 
-	menu = new ParamListMenu(parentMenu, MENU_DELAY);
 	if(menu)
 	{
 		menu->setParams(params, paramNum);

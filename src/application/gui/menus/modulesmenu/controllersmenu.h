@@ -21,6 +21,8 @@ public:
 	void key4() override;
 	void key5() override;
 
+	void refresh() override;
+
 	void showInputMidiCC(uint8_t midiCC);
 
 private:
@@ -130,6 +132,7 @@ private:
 //			/*54*/"Reverb Type  "};
 
 	void printSources();
+	void printPage(uint8_t pageNum);
 };
 
 #endif /* SRC_APPLICATION_GUI_MENUS_MODULESMENU_CONTROLLERSMENU_H_ */

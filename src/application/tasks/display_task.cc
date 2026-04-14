@@ -69,6 +69,7 @@ void TDisplayTask::Code()
 	{
 		queue->Receive(&cmd, portMAX_DELAY);
 
+		IOTask->Suspend();
 		switch(cmd.cmd)
 		{
 			case dcClear:
@@ -226,6 +227,7 @@ void TDisplayTask::Code()
 			default:
 			break;
       }
+		IOTask->Resume();
     }
 }
 

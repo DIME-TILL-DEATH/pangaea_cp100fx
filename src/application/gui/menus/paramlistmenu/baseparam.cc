@@ -1,5 +1,6 @@
-#include <eeprom.h>
 #include "baseparam.h"
+
+#include "paramlistmenu.h"
 
 #include "display_task.h"
 #include "io_task.h"
@@ -44,6 +45,18 @@ void BaseParam::setBounds(int32_t minBound, int32_t maxBound)
 {
 	m_minValue = minBound;
 	m_maxValue = maxBound;
+}
+
+void BaseParam::select(bool& selected)
+{
+	if(!selected)
+	{
+		selected = true;
+	}
+	else
+	{
+		selected = false;
+	}
 }
 
 const char* BaseParam::name()
@@ -112,7 +125,7 @@ void BaseParam::decreaseParam()
 	}
 }
 
-void BaseParam::setToDsp()
+void BaseParam::setData()
 {
 	if(m_setterHandler)
 	{
@@ -120,7 +133,7 @@ void BaseParam::setToDsp()
 		if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
 		else data = (int8_t)(*m_valuePtr);
 
-		m_setterHandler(data + m_offset);
+		m_setterHandler(data);
 		return;
 	}
 

@@ -1,7 +1,9 @@
-#include <eeprom.h>
 #include "mastervolumemenu.h"
 
 #include "system.h"
+#include "eeprom.h"
+
+#include "master_setters.h"
 
 MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 	: ParamListMenu(parentMenu, MENU_MASTER_VOLUME)
@@ -9,10 +11,9 @@ MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCount = 2;
 	BaseParam* params[paramCount];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Master Volume", &sys_para[System::MASTER_VOLUME]);
-	params[0]->setDspAddress(DSP_ADDRESS_MASTER, PARAM_EQUAL_POS);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, MasterVolDesc.master);
 	params[0]->setDisplayPosition(85);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Phones Volume", &sys_para[System::PHONES_VOLUME]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, MasterVolDesc.phones);
 	params[1]->setDisplayPosition(85);
 
 	setParams(params, paramCount);
@@ -34,7 +35,7 @@ void MasterVolumeMenu::encoderClockwise()
 	{
 		m_paramsList[m_currentParamNum]->increaseParam();
 
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 		IOTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
@@ -56,7 +57,7 @@ void MasterVolumeMenu::encoderCounterClockwise()
 	{
 		m_paramsList[m_currentParamNum]->decreaseParam();
 
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 		IOTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);

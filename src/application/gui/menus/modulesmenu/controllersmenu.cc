@@ -33,27 +33,7 @@ void ControllersMenu::show(TShowMode swhoMode)
 
 	m_controllerDstVisual = dst_model_to_visual[currentPreset.controller[m_controllerNum].dst];	//src
 
-	DisplayTask->Clear();
-	for(uint8_t i = 0; i < 3; i++)
-	{
-		DisplayTask->StringOut(0, i, Font::fntSystem, Font::fnsNormal, &strControllersMenu[i][0]);
-		switch(i)
-		{
-			case ControllerMenuParams::Controller:
-				DisplayTask->ParamIndNum(45, 0, m_controllerNum + 1);
-			break;
-
-			case ControllerMenuParams::Source:
-				printSources();
-			break;
-
-			case ControllerMenuParams::Destination:
-				DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
-			break;
-		}
-	}
-
-	DisplayTask->Arrow(58, 3, 0);
+	printPage(0);
 }
 
 void ControllersMenu::showInputMidiCC(uint8_t midiCC)
@@ -104,20 +84,7 @@ void ControllersMenu::encoderClockwise()
 
 			if(m_parNum == ControllerMenuParams::MinValue)
 			{
-				DisplayTask->Clear();
-				DisplayTask->IconAndArrows(ICON_CC, STRELKA_UP);
-				DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, &strControllersMenu[m_parNum + 1][0]);
-				DisplayTask->StringOut(0, 2, Font::fntSystem, Font::fnsNormal, &strControllersMenu[m_parNum + 2][0]);
-				DisplayTask->StringOut(0, 3, Font::fntSystem, Font::fnsNormal, &strControllersMenu[m_parNum + 3][0]);
-
-				DisplayTask->ParamInd(45, 0, currentPreset.controller[m_controllerNum].minVal);
-				DisplayTask->ParamInd(45, 1, currentPreset.controller[m_controllerNum].maxVal);
-				DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strOutPcList[currentPreset.pcOut][0]);
-
-				if(currentPreset.set & 0x80)
-					DisplayTask->ParamIndNum(45, 3, (currentPreset.set & 0x7f) + 1);
-				else
-					DisplayTask->ParamIndNum(45, 3, currentPresetNumber + 1);
+				printPage(1);
 			}
 			restartBlinking(0);
 		}
@@ -254,7 +221,7 @@ void ControllersMenu::encoderCounterClockwise()
 
 			if(m_parNum == ControllerMenuParams::Destination)
 			{
-				show(); // show first page
+				printPage(0);
 			}
 			restartBlinking(0);
 		}
@@ -401,4 +368,57 @@ void ControllersMenu::key4()
 void ControllersMenu::key5()
 {
 	topLevelMenu->key5();
+}
+
+void ControllersMenu::refresh()
+{
+	if(m_parNum >= ControllerMenuParams::MinValue)
+		printPage(1);
+	else
+		printPage(0);
+}
+
+void ControllersMenu::printPage(uint8_t pageNum)
+{
+	if(pageNum == 1)
+	{
+		DisplayTask->Clear();
+		DisplayTask->IconAndArrows(ICON_CC, STRELKA_UP);
+		DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, &strControllersMenu[m_parNum + 1][0]);
+		DisplayTask->StringOut(0, 2, Font::fntSystem, Font::fnsNormal, &strControllersMenu[m_parNum + 2][0]);
+		DisplayTask->StringOut(0, 3, Font::fntSystem, Font::fnsNormal, &strControllersMenu[m_parNum + 3][0]);
+
+		DisplayTask->ParamInd(45, 0, currentPreset.controller[m_controllerNum].minVal);
+		DisplayTask->ParamInd(45, 1, currentPreset.controller[m_controllerNum].maxVal);
+		DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strOutPcList[currentPreset.pcOut][0]);
+
+		if(currentPreset.set & 0x80)
+			DisplayTask->ParamIndNum(45, 3, (currentPreset.set & 0x7f) + 1);
+		else
+			DisplayTask->ParamIndNum(45, 3, currentPresetNumber + 1);
+	}
+	else
+	{
+		DisplayTask->Clear();
+		for(uint8_t i = 0; i < 3; i++)
+		{
+			DisplayTask->StringOut(0, i, Font::fntSystem, Font::fnsNormal, &strControllersMenu[i][0]);
+			switch(i)
+			{
+				case ControllerMenuParams::Controller:
+					DisplayTask->ParamIndNum(45, 0, m_controllerNum + 1);
+				break;
+
+				case ControllerMenuParams::Source:
+					printSources();
+				break;
+
+				case ControllerMenuParams::Destination:
+					DisplayTask->StringOut(45, 2, Font::fntSystem, Font::fnsNormal, &strMidiDstList[currentPreset.controller[m_controllerNum].dst][0]);
+				break;
+			}
+		}
+
+		DisplayTask->Arrow(58, 3, 0);
+	}
 }

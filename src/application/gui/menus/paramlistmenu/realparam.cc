@@ -14,6 +14,17 @@ RealParam::RealParam(const char* name, void* paramValuePtr)
 	calcDisplayValue();
 }
 
+RealParam::RealParam(const TParamDescriptor& paramDescriptor)
+	:BaseParam(BaseParam::GUI_PARAMETER_REAL, paramDescriptor)
+{
+	m_minDisplayValue = m_minValue;
+	m_maxDisplayValue = m_maxValue;
+
+	m_k2 = (m_minDisplayValue-m_maxDisplayValue)/(m_minValue-m_maxValue);
+	m_k1 = m_minDisplayValue-(m_minValue*m_k2);
+	calcDisplayValue();
+}
+
 void RealParam::setDisplayPrecision(uint8_t precision)
 {
 	m_precision = precision;

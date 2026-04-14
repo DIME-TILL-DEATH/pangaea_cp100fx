@@ -124,27 +124,11 @@ void ParamListMenu::encoderPressed()
 {
 	if(m_paramsList[m_currentParamNum]->disabled()) return;
 
-	// CustomParam
-	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME ||
-			m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
+	m_paramsList[m_currentParamNum]->select(m_encoderKnobSelected);
+	if(m_encoderKnobSelected)
 	{
-		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(m_paramsList[m_currentParamNum]);
-		submenuParam->showSubmenu(this);
-	}
-	else
-	{
-		if(!m_encoderKnobSelected)
-		{
-			m_encoderKnobSelected = true;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-					Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-		}
-		else
-		{
-			m_encoderKnobSelected = false;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-					Font::fnsNormal, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-		}
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
+							Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 
 	restartBlinking(1);
@@ -170,7 +154,7 @@ void ParamListMenu::encoderClockwise()
 		if(!m_paramsList[m_currentParamNum]->inverse()) m_paramsList[m_currentParamNum]->increaseParam();
 		else m_paramsList[m_currentParamNum]->decreaseParam();
 
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 
 		// Support CustomParam
 		if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)
@@ -201,7 +185,7 @@ void ParamListMenu::encoderCounterClockwise()
 				else m_paramsList[m_currentParamNum]->increaseParam();
 
 
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 
 		if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)
 			printPage();	// whole page to show "disabled" param changes

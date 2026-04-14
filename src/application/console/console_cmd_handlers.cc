@@ -11,6 +11,7 @@
 #include "hardware_handlers.h"
 #include "preset_accessors.h"
 #include "syssettings_handlers.h"
+#include "master_setters.h"
 
 #include "filesystem_task.h"
 #include "midi_task.h"
@@ -20,9 +21,6 @@
 
 
 #include "amt.h"
-#include "phaser_setters.h"
-#include "resonance_filter_setters.h"
-#include "reverb_setters.h"
 
 bool consoleBusy = false;
 
@@ -575,7 +573,104 @@ static void tuner_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 	msg_console("\n");
 }
 
+static void sys_settings_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
+{
+	msg_console("%s\r", args[0]);
 
+	sys_para[System::MASTER_EQ_FREQ_LO] = (mstEqMidFreq>>8) & 0xF;
+	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xF;
+
+	for(size_t i = 0; i < 512; i++)
+	{
+		msg_console("%02x" , sys_para[i]);
+	}
+	msg_console("\n");
+}
+
+static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+{
+	msg_console("%s\r", args[0]);
+	if (count > 3)
+	{
+		char *end;
+		uint8_t fswNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+		std::emb_string command = args[2];
+		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
+
+		msg_console("%d\r%s\r%d", fswNum, args[2], value);
+		if(command == "mode")
+		{
+			sys_para[System::FSW1_MODE + fswNum] = value;
+			goto ending;
+		}
+
+		if(command == "ptype")
+		{
+			sys_para[System::FSW1_PRESS_TYPE + fswNum] = value;
+			goto ending;
+		}
+
+		if(command == "htype")
+		{
+			sys_para[System::FSW1_HOLD_TYPE + fswNum] = value;
+			goto ending;
+		}
+
+		if(command == "cpressnum")
+		{
+			sys_para[System::FSW1_CTRL_PRESS_CC + fswNum] = value;
+			goto ending;
+		}
+
+		if(command == "choldnum")
+		{
+			sys_para[System::FSW1_CTRL_HOLD_CC + fswNum] = value;
+			goto ending;
+		}
+
+		if(command == "ppressnum")
+		{
+			if(count > 4)
+			{
+				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
+
+				sys_para[System::FSW1_PRESS_PR1 + fswNum*4 + value] = presetNum;
+				msg_console("\r%d", presetNum);
+			}
+			else
+			{
+				msg_console("INCORRECT_ARGS");
+			}
+			goto ending;
+		}
+
+		if(command == "pholdnum")
+		{
+			if(count > 4)
+			{
+				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
+
+				sys_para[System::FSW1_HOLD_PR1 + fswNum*4 + value] = presetNum;
+				msg_console("\r%d", presetNum);
+			}
+			else
+			{
+				msg_console("INCORRECT_ARGS");
+			}
+			goto ending;
+		}
+
+		msg_console("\rundefined type");
+	}
+	else
+	{
+		msg_console("iINCORRECT_ARGS");
+	}
+
+ending:
+	EEPROM_DelayedSaveSystemData();
+	msg_console("\n");
+}
 //------------------------------------------------------------------------------
 void ConsoleSetCmdHandlers(TTranslator *translator)
 {
@@ -611,8 +706,11 @@ void ConsoleSetCmdHandlers(TTranslator *translator)
 
 	translator->AddCommandHandler("tn", tuner_command_handler);
 
-	set_syssettings_handlers(translator);
+	translator->AddCommandHandler("sys_settings", sys_settings_command_handler);
+	translator->AddCommandHandler("fsw", fsw_command_handler);
 
+	set_syssettings_handlers(translator);
+	set_master_handlers(translator);
 	set_preset_handlers(translator);
 
 	set_resonance_filter_handlers(translator);

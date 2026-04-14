@@ -7,11 +7,10 @@
 class SubmenuParam : public BaseParam
 {
 public:
-	SubmenuParam(gui_param_type paramType, const char* name, AbstractMenu* menu, void* param = nullptr);
 	SubmenuParam(gui_param_type paramType, const char* name,
-			AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), void* param = nullptr);
+			AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), AbstractMenu* parentMenu);
 	SubmenuParam(gui_param_type paramType, TParamDescriptor paramDescriptor,
-			AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent));
+			AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), AbstractMenu* parentMenu);
 	//	~SubmenuParam();
 
 	void printParam(uint8_t yDisplayPosition) override;
@@ -20,8 +19,11 @@ public:
 	void showSubmenu();
 	void showSubmenu(AbstractMenu* parent);
 
+	void select(bool& encoderSelected) override;
+
 private:
 	AbstractMenu* m_menu;
+	AbstractMenu* m_parentMenu;
 
 	AbstractMenu* (*m_submenuCreationFunction)(AbstractMenu* parent) = nullptr;
 };

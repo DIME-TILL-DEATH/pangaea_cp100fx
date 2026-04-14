@@ -5,23 +5,20 @@
 
 #include "display_task.h"
 
-SubmenuParam::SubmenuParam(gui_param_type paramType, const char* name, AbstractMenu* menu, void* param)
-				: BaseParam(paramType, name, param)
-{
-	m_menu = menu;
-}
-
 SubmenuParam::SubmenuParam(gui_param_type paramType, const char* name,
-		AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), void* param)
-				: BaseParam(paramType, name, param)
+		AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), AbstractMenu* parentMenu)
+				: BaseParam(paramType, name, nullptr)
 {
 	m_submenuCreationFunction = submenuCreationFunction;
+	m_parentMenu = parentMenu;
 }
 
-SubmenuParam::SubmenuParam(gui_param_type paramType, TParamDescriptor paramDescriptor, AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent))
+SubmenuParam::SubmenuParam(gui_param_type paramType, TParamDescriptor paramDescriptor,
+		AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), AbstractMenu* parentMenu)
 				: BaseParam(paramType,paramDescriptor)
 {
 	m_submenuCreationFunction = submenuCreationFunction;
+	m_parentMenu = parentMenu;
 }
 
 void SubmenuParam::printParam(uint8_t yDisplayPosition)
@@ -58,6 +55,16 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 void SubmenuParam::showSubmenu()
 {
 	if(m_menu) m_menu->show();
+}
+
+void SubmenuParam::select(bool& encoderSelected)
+{
+	if(m_submenuCreationFunction)
+	{
+		AbstractMenu* newSubMenu = m_submenuCreationFunction(m_parentMenu);
+		currentMenu = newSubMenu;
+		newSubMenu->show();
+	}
 }
 
 void SubmenuParam::showSubmenu(AbstractMenu* parent)

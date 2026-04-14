@@ -44,9 +44,9 @@ void HW_TimersInit()
 	TIM_SelectOnePulseMode(TIM6, TIM_OPMode_Single);
 	TIM_SetCounter(TIM6, 0);
 
-	// Save system afetr TAP delay
+	// Delayed saving system data
 	TIM_TimeBaseStructure.TIM_Period = 0xffff;
-	TIM_TimeBaseStructure.TIM_Prescaler = 0x1fff;
+	TIM_TimeBaseStructure.TIM_Prescaler = 0x2fff;
 	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM7, &TIM_TimeBaseStructure);

@@ -1,10 +1,10 @@
-#include <eeprom.h>
 #include "systemmenu.h"
 
 #include "adc.h"
 
 #include "system.h"
 #include "sharc_task.h"
+#include "eeprom.h"
 
 #include "baseparam.h"
 #include "stringlistparam.h"
