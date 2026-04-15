@@ -1,5 +1,5 @@
-#ifndef SRC_APPLICATION_GUI_MENUS_SYSTEMMENU_TUNEREXTMENU_H_
-#define SRC_APPLICATION_GUI_MENUS_SYSTEMMENU_TUNEREXTMENU_H_
+#ifndef _TUNEREXTMENU_H_
+#define _TUNEREXTMENU_H_
 
 #include "paramlistmenu.h"
 
@@ -9,6 +9,8 @@ public:
 	TunerExtMenu(AbstractMenu* parent);
 
 	void showInputMidiCC(uint8_t midiCC);
+
+	void refresh() override;
 };
 
-#endif /* SRC_APPLICATION_GUI_MENUS_SYSTEMMENU_TUNEREXTMENU_H_ */
+#endif /* _TUNEREXTMENU_H_ */

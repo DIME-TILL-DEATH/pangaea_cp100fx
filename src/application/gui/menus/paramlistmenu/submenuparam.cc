@@ -15,7 +15,7 @@ SubmenuParam::SubmenuParam(gui_param_type paramType, const char* name,
 
 SubmenuParam::SubmenuParam(gui_param_type paramType, TParamDescriptor paramDescriptor,
 		AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), AbstractMenu* parentMenu)
-				: BaseParam(paramType,paramDescriptor)
+				: BaseParam(paramType, paramDescriptor)
 {
 	m_submenuCreationFunction = submenuCreationFunction;
 	m_parentMenu = parentMenu;

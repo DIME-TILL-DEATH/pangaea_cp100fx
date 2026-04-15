@@ -24,7 +24,7 @@ static TParamDescriptor attSourceParamDesc = {
 	.handlerStr = "vl_at_mode",
 	.dspAddress = DSP_ADDRESS_PRESET_FULL,
 	.dspPosition = NOT_SEND_POS,
-	.name = "Source",
+	.name = "Att. source",
 	.setterHandler = attenuator_source_setter
 };
 
@@ -40,8 +40,9 @@ void attenuator_vol_setter(uint32_t value)
 
 	*value_ptr = value;
 	IOTask->potWrite();
-//	EEPROM_DelayedSaveSystemData();
 	console_printf("%s\r%02x\n", attVolParamDesc.handlerStr, *value_ptr);
+
+	EEPROM_DelayedSaveSystemData();
 }
 
 void attenuator_source_setter(uint32_t value)
@@ -49,8 +50,9 @@ void attenuator_source_setter(uint32_t value)
 	uint8_t* value_ptr = (uint8_t*)attSourceParamDesc.ptr;
 	*value_ptr = value;
 	IOTask->potWrite();
-//	EEPROM_DelayedSaveSystemData();
 	console_printf("%s\r%02x\n", attSourceParamDesc.handlerStr, *value_ptr);
+
+	EEPROM_DelayedSaveSystemData();
 }
 
 //=======================================Master volume=============================================================
@@ -83,7 +85,8 @@ void master_volume_setter(uint32_t value)
 	*value_ptr = value;
 	SharcTask->setParameter(DSP_ADDRESS_MASTER, *value_ptr, 0);
 	console_printf("%s\r%02x\n", masterVolParamDesc.handlerStr, *value_ptr);
-//	EEPROM_DelayedSaveSystemData();
+
+	EEPROM_DelayedSaveSystemData();
 }
 
 void phones_volume_setter(uint32_t value)
@@ -92,7 +95,8 @@ void phones_volume_setter(uint32_t value)
 	*value_ptr = value;
 	IOTask->potWrite();
 	console_printf("%s\r%02x\n", phonesVolParamDesc.handlerStr, *value_ptr);
-//	EEPROM_DelayedSaveSystemData();
+
+	EEPROM_DelayedSaveSystemData();
 }
 
 //=====================================Master EQ===================================================================
@@ -101,7 +105,7 @@ static TParamDescriptor meqOnParamDesc = {
 	.handlerStr = "meq_on",
 	.dspAddress = DSP_ADDRESS_MODULES_ENABLE,
 	.dspPosition = ENABLE_MASTER_EQ,
-	.name = "On",
+	.name = "Master EQ",
 	.setterHandler = meq_on_setter
 };
 
@@ -155,7 +159,8 @@ void meq_on_setter(uint32_t value)
 	*value_ptr = value;
 	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, *value_ptr);
 	console_printf("%s\r%02x\n", meqOnParamDesc.handlerStr, *value_ptr);
-//	EEPROM_DelayedSaveSystemData();
+
+	EEPROM_DelayedSaveSystemData();
 }
 
 void meq_low_setter(uint32_t value)
@@ -164,7 +169,8 @@ void meq_low_setter(uint32_t value)
 	*value_ptr = value;
 	SharcTask->setParameter(meqLgParamDesc.dspAddress, meqLgParamDesc.dspPosition, *value_ptr + 24);
 	console_printf("%s\r%02x\n", meqLgParamDesc.handlerStr, *value_ptr);
-//	EEPROM_DelayedSaveSystemData();
+
+	EEPROM_DelayedSaveSystemData();
 }
 
 void meq_mid_setter(uint32_t value)
@@ -173,7 +179,8 @@ void meq_mid_setter(uint32_t value)
 	*value_ptr = value;
 	SharcTask->setParameter(meqMgParamDesc.dspAddress, meqMgParamDesc.dspPosition, *value_ptr + 24);
 	console_printf("%s\r%02x\n", meqMgParamDesc.handlerStr, *value_ptr);
-//	EEPROM_DelayedSaveSystemData();
+
+	EEPROM_DelayedSaveSystemData();
 }
 
 void meq_high_setter(uint32_t value)
@@ -182,7 +189,8 @@ void meq_high_setter(uint32_t value)
 	*value_ptr = value;
 	SharcTask->setParameter(meqHgParamDesc.dspAddress, meqHgParamDesc.dspPosition, *value_ptr + 24);
 	console_printf("%s\r%02x\n", meqHgParamDesc.handlerStr, *value_ptr);
-//	EEPROM_DelayedSaveSystemData();
+
+	EEPROM_DelayedSaveSystemData();
 }
 
 void meq_mid_freq_setter(uint32_t value)
@@ -197,7 +205,7 @@ void meq_mid_freq_setter(uint32_t value)
 
 	console_printf("%s\r%04x\n", meqMfParamDesc.handlerStr, mstEqMidFreq);
 
-//	EEPROM_DelayedSaveSystemData();
+	EEPROM_DelayedSaveSystemData();
 }
 
 

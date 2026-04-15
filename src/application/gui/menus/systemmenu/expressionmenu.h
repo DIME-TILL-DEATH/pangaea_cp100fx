@@ -1,7 +1,7 @@
-#ifndef SRC_APPLICATION_GUI_MENUS_EXPRESSIONMENU_H_
-#define SRC_APPLICATION_GUI_MENUS_EXPRESSIONMENU_H_
+#ifndef _EXPRESSIONMENU_H_
+#define _EXPRESSIONMENU_H_
 
-#include "../abstractmenu.h"
+#include "abstractmenu.h"
 
 class ExpressionMenu: public AbstractMenu
 {
@@ -35,4 +35,4 @@ private:
 
 };
 
-#endif /* SRC_APPLICATION_GUI_MENUS_EXPRESSIONMENU_H_ */
+#endif /* _EXPRESSIONMENU_H_ */

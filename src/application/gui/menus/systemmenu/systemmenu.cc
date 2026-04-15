@@ -11,6 +11,9 @@
 #include "submenuparam.h"
 #include "customparam.h"
 
+#include "syssettings_handlers.h"
+#include "master_setters.h"
+
 #include "dialog.h"
 #include "midimapmenu.h"
 #include "expressionmenu.h"
@@ -24,34 +27,34 @@ SystemMenu::SystemMenu(AbstractMenu* parent, gui_menu_type menuType)
 }
 
 
-void SystemMenu::encoderPressed()
-{
-	if(m_paramsList[m_currentParamNum]->disabled()) return;
-
-
-	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
-	{
-		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(m_paramsList[m_currentParamNum]);
-		submenuParam->showSubmenu(this);
-	}
-	else
-	{
-		if(!m_encoderKnobSelected)
-		{
-			m_encoderKnobSelected = true;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-					Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-		}
-		else
-		{
-			m_encoderKnobSelected = false;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-					Font::fnsNormal, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-		}
-	}
-
-	restartBlinking(1);
-}
+//void SystemMenu::encoderPressed()
+//{
+//	if(m_paramsList[m_currentParamNum]->disabled()) return;
+//
+//
+//	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
+//	{
+//		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(m_paramsList[m_currentParamNum]);
+//		submenuParam->showSubmenu(this);
+//	}
+//	else
+//	{
+//		if(!m_encoderKnobSelected)
+//		{
+//			m_encoderKnobSelected = true;
+//			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
+//					Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+//		}
+//		else
+//		{
+//			m_encoderKnobSelected = false;
+//			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
+//					Font::fnsNormal, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+//		}
+//	}
+//
+//	restartBlinking(1);
+//}
 
 void SystemMenu::keyUp()
 {
@@ -138,28 +141,27 @@ bool SystemMenu::editingFinished()
 
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 {
+	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
+
 	const uint8_t paramNum = 16;
 	BaseParam* params[paramNum];
 
-	params[0] = new StringListParam("Mode", &sys_para[System::CAB_SIM_DISABLED], {"CabSim On ", "CabSim Off"}, 10);
-	params[0]->setDspAddress(DSP_ADDRESS_CAB_DRY_MUTE, PARAM_EQUAL_POS);
+	params[0] = new StringListParam(SysSettingsDesc.cabMode, {"CabSim On ", "CabSim Off"}, 10);
 	params[0]->setDisplayPosition(36);
 
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "MIDI ch", &sys_para[System::MIDI_CHANNEL]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, SysSettingsDesc.midiChannel);
 	params[1]->setDisplayPosition(60);
 	params[1]->setBounds(0, 15);
 	params[1]->setScaling(1, 1);
 #ifdef __MONO_MOD__
-	params[2] = new StringListParam("Cab num", &sys_para[System::CAB_SIM_CONFIG],
+	params[2] = new StringListParam(SysSettingsDesc.cabNum,
 				{"1 L+R", "1R AP", "2 L+R", "1R A ", "1R P ", " 1 R "}, 6);
 #endif
 
 #ifdef __STEREO_MOD__
-	params[2] = new StringListParam("Cab num", &sys_para[System::CAB_SIM_CONFIG],
+	params[2] = new StringListParam(SysSettingsDesc.cabNum,
 				{"2 L+R","1R AP","1R A ","1R P "," 1 R "}, 6);
 #endif
-
-	params[2]->setDspAddress(DSP_ADDRESS_CAB_CONFIG, PARAM_EQUAL_POS);
 	params[2]->setDisplayPosition(60);
 
 	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Expression", &sys_para[System::EXPR_TYPE]);
@@ -169,9 +171,9 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	customParam->keyDownCallback = expressionKeyDown;
 	params[3] = customParam;
 
-	params[4] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Footswitch", &SystemMenu::createFootswitchMenu, nullptr);
+	params[4] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Footswitch", &SystemMenu::createFootswitchMenu, systemMenu);
 
-	params[5] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::createMidiPcMapMenu, nullptr);
+	params[5] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::createMidiPcMapMenu, systemMenu);
 
 	customParam = new CustomParam(CustomParam::TDisplayType::String, "Tempo", &sys_para[System::TAP_TYPE]);
 	customParam->setStrings({"Preset   ", "Global   ", "Glob+MIDI"}, 10);
@@ -183,8 +185,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[7] = new StringListParam("TAP Popup", &sys_para[System::TAP_SCREEN_POPUP], {"On ", "Off"}, 4);
 	params[7]->setDisplayPosition(leftPad + 6 * 10);
 
-	params[8] = new StringListParam("S/PDIF", &sys_para[System::SPDIF_OUT_TYPE], {"Main Output", " Dry Input "}, 12);
-	params[8]->setDspAddress(DSP_ADDRESS_SPDIF, PARAM_EQUAL_POS);
+	params[8] = new StringListParam(SysSettingsDesc.spdif, {"Main Output", " Dry Input "}, 12);
 	params[8]->setDisplayPosition(44);
 
 	customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Tuner contr", &sys_para[System::TUNER_EXTERNAL]);
@@ -194,10 +195,10 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	customParam->keyDownCallback = tunerExtKeyDown;
 	params[9] = customParam;
 
-	params[10] = new StringListParam("Time", &sys_para[System::TIME_FORMAT], {"Sec", "BPM"}, 3);
+	params[10] = new StringListParam(SysSettingsDesc.timeFormat, {"Sec", "BPM"}, 3);
 	params[10]->setDisplayPosition(39);
 
-	params[11] = new StringListParam("Swap UpConf", &sys_para[System::SWAP_SWITCH], {"Off", "On "}, 3);
+	params[11] = new StringListParam(SysSettingsDesc.swapConfig, {"Off", "On "}, 3);
 	params[11]->setDisplayPosition(78);
 
 	customParam = new CustomParam(CustomParam::TDisplayType::Number, "Speed tun", &sys_para[System::TUNER_SPEED]);
@@ -209,13 +210,12 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[13] = new StringListParam("EQ View", &sys_para[System::EQ_SCREEN_MODE], {"Graph ", "Bar  "}, 5);
 	params[13]->setDisplayPosition(leftPad + 6 * 12);
 
-	params[14] = new StringListParam("Master EQ", &sys_para[System::MASTER_EQ_ON], {"Off", "On "}, 4);
+	params[14] = new StringListParam(MasterEqDesc.on, {"Off", "On "}, 4);
 	params[14]->setDisplayPosition(leftPad + 6 * 12);
 
-	params[15] = new StringListParam("Att. source", &sys_para[System::ATTENUATOR_MODE], {"Global ", "Preset"}, 7);
+	params[15] = new StringListParam(AttenuatorDesc.source, {"Global ", "Preset"}, 7);
 	params[15]->setDisplayPosition(leftPad + 6 * 12);
 
-	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
 	systemMenu->setParams(params, paramNum);
 
 	return systemMenu;
@@ -240,17 +240,12 @@ void SystemMenu::expressionPrint(void* parameter)
 
 void SystemMenu::expressionDescrease(void* parameter)
 {
-	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	ADC_SetState(0);
-	*valuePtr &= 0x7f;
-	SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
+	SysSettingsDesc.exprOn.setterHandler(0);
 }
 
 void SystemMenu::expressionIncrease(void* parameter)
 {
-	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	*valuePtr |= 0x80;
-	ADC_SetState(1);
+	SysSettingsDesc.exprOn.setterHandler(1);
 }
 
 void SystemMenu::expressionKeyDown(void* parameter)
@@ -271,14 +266,12 @@ void SystemMenu::tunerExtPrint(void* parameter)
 
 void SystemMenu::tunerExtDescrease(void* parameter)
 {
-	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr&0x80) sys_para[System::TUNER_EXTERNAL] &= ~0x80;
+	SysSettingsDesc.tunerCtrl.setterHandler(0);
 }
 
 void SystemMenu::tunerExtIncrease(void* parameter)
 {
-	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(!(*valuePtr&0x80)) sys_para[System::TUNER_EXTERNAL] |= 0x80;
+	SysSettingsDesc.tunerCtrl.setterHandler(1);
 }
 
 void SystemMenu::tunerExtKeyDown(void* parameter)
@@ -294,14 +287,14 @@ void SystemMenu::tempoDecrease(void* parameter)
 {
 	sys_para[System::GLOBAL_TAP_TIME] = 0;
 	if(sys_para[System::TAP_TYPE] > 0) sys_para[System::TAP_TYPE]--;
-	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
+	SysSettingsDesc.tempo.setterHandler(sys_para[System::TAP_TYPE]);
 }
 
 void SystemMenu::tempoIncrease(void* parameter)
 {
-//	sys_para[tap_hi] = 0; //???
+	sys_para[System::GLOBAL_TAP_TIME] = 0;
 	if(sys_para[System::TAP_TYPE] < 2) sys_para[System::TAP_TYPE]++;
-	SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
+	SysSettingsDesc.tempo.setterHandler(sys_para[System::TAP_TYPE]);
 }
 
 void SystemMenu::tunerSpeedDescrease(void* parameter)
@@ -310,7 +303,7 @@ void SystemMenu::tunerSpeedDescrease(void* parameter)
 	if(*valuePtr > 0)
 	{
 		*valuePtr = BaseParam::encSpeedDec(*valuePtr, 0);
-		System::tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
+		SysSettingsDesc.tunerSpeed.setterHandler(*valuePtr);
 	}
 }
 
@@ -321,5 +314,6 @@ void SystemMenu::tunerSpeedIncrease(void* parameter)
 	{
 		*valuePtr = BaseParam::encSpeedInc(*valuePtr, 127);
 		System::tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
+		SysSettingsDesc.tunerSpeed.setterHandler(*valuePtr);
 	}
 }

@@ -8,7 +8,7 @@ class SystemMenu: public ParamListMenu
 public:
 	SystemMenu(AbstractMenu* parent, gui_menu_type menuType);
 
-	void encoderPressed() override;
+//	void encoderPressed() override;
 	void keyUp() override;
 	void keyDown() override;
 
