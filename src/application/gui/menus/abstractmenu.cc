@@ -94,7 +94,7 @@ void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 
 void AbstractMenu::keyEvent(const TKeysEvents& keysEvents)
 {
-	if(keysEvents.hold) return;
+//	if(keysEvents.hold) return;
 
 	if(keysEvents.keyUp)
 	{

@@ -1,4 +1,3 @@
-#include <eeprom.h>
 #include "guimodules.h"
 
 #include "system.h"
@@ -6,8 +5,6 @@
 #include "modules.h"
 
 #include "sharc_task.h"
-
-#include "bitmaps.h"
 
 #include "submenuparam.h"
 #include "stringoutparam.h"
@@ -150,34 +147,32 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 
 AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 {
-	AbstractMenu* menu;
 	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
+		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
+
 		const uint8_t paramNum = 2;
 		BaseParam* params[paramNum];
 
 #ifdef __MONO_MOD__
-		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 1", &GuiModules::createCab1Menu, menu);
-		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 2", &GuiModules::createCab2Menu, menu);
+		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 1", &GuiModules::createCab1Menu, paramsMenu);
+		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 2", &GuiModules::createCab2Menu, paramsMenu);
 #endif
 
 #ifdef __STEREO_MOD__
-		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, menu);
-		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, menu);
+		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, paramsMenu);
+		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, paramsMenu);
 #endif
 
-		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
 		paramsMenu->setParams(params, paramNum);
 		paramsMenu->setIcon(false, ICON_NONE);
 
-		menu = paramsMenu;
+		return paramsMenu;
 	}
 	else
 	{
-		menu = GuiModules::createCab1Menu(parentMenu);
+		return GuiModules::createCab1Menu(parentMenu);
 	}
-
-	return menu;
 }
 
 AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)

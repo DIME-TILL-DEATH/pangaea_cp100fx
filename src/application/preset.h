@@ -138,7 +138,7 @@ typedef struct
     uint8_t dummy2[346];
 #endif
 
-    uint8_t bpm_delay;
+    uint8_t bpm;
 }TModulesData;
 
 typedef struct

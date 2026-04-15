@@ -119,7 +119,7 @@ uint8_t drebezg(uint32_t line)
 
 void ISR_encoder_read()
 {
-	TEncoderEvents encEvents;
+	TEncoderEvents encEvents = {};
 	encEvents.pressed = 0;
 	encEvents.updated = 0;
 
@@ -151,9 +151,9 @@ void ISR_encoder_read()
 }
 
 volatile TFSWNum holdedFsw = TFSWNum::FSW_NONE;
-volatile bool keysHold = false;
+//volatile bool keysHold = false;
+volatile uint16_t prevKeyReg = KEY_NO_PRESS_MASK;
 
-uint16_t prevKeyReg;
 void ISR_buttons_read()
 {
 	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
@@ -162,22 +162,25 @@ void ISR_buttons_read()
 
 	uint16_t key_reg = ~((HW_KeyInValue() & 0x7fff) ^ KEY_NO_PRESS_MASK);
 
-	TKeysEvents keyEvents;
-	keyEvents.hold = keysHold;
+	if(key_reg != prevKeyReg)
+	{
+		TKeysEvents keyEvents = {};  // Инициализируем нулями
+//		keyEvents.hold = keysHold;
 
-	keyEvents.keyUp = (key_reg >> KEY_UP_POS) & 0x1;
-	keyEvents.keyDown = (key_reg >> KEY_DOWN_POS) & 0x1;
-	keyEvents.key1 = (key_reg >> KEY1_POS) & 0x1;
-	keyEvents.key2 = (key_reg >> KEY2_POS) & 0x1;
-	keyEvents.key3 = (key_reg >> KEY3_POS) & 0x1;
-	keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
-	keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
+		keyEvents.keyUp = (key_reg >> KEY_UP_POS) & 0x1;
+		keyEvents.keyDown = (key_reg >> KEY_DOWN_POS) & 0x1;
+		keyEvents.key1 = (key_reg >> KEY1_POS) & 0x1;
+		keyEvents.key2 = (key_reg >> KEY2_POS) & 0x1;
+		keyEvents.key3 = (key_reg >> KEY3_POS) & 0x1;
+		keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
+		keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
 
-	if(UITask && key_reg != prevKeyReg) UITask->keysEvents(keyEvents);
+		prevKeyReg = key_reg;
 
-	prevKeyReg = key_reg;
+		if(UITask) UITask->keysEvents(keyEvents);
+	}
 
-	TFswEvents fswEvents;
+	TFswEvents fswEvents = {};
 
 	fswEvents.fsw = TFSWNum::FSW_NONE;
 	if((key_reg >> FSW_DOWN_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_DOWN;
@@ -209,8 +212,8 @@ void ISR_buttons_read()
 
 	holdedFsw = fswEvents.fsw;
 
-	if(key_reg) keysHold = true;
-	else keysHold = false;
+//	if(key_reg) keysHold = true;
+//	else keysHold = false;
 
 	IOTask->ledTask();
 

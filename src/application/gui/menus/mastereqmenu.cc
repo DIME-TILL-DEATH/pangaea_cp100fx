@@ -20,8 +20,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	BaseParam* params[paramNum];
 
 	RealParam* realParam;
-	realParam = new RealParam("Low", &sys_para[System::MASTER_EQ_LOW]);
-	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_LOW_GAIN_POS);
+	realParam = new RealParam(MasterEqDesc.low);
 	realParam->setScaling(1, 24);
 	realParam->setBounds(-24, +24);
 	realParam->setDisplayBounds(-12, 12);
@@ -30,8 +29,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	realParam->setDisplayPosition(30);
 	params[0] = realParam;
 
-	realParam = new RealParam("Mid", &sys_para[System::MASTER_EQ_MID]);
-	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_MID_GAIN_POS);
+	realParam = new RealParam(MasterEqDesc.mid);
 	realParam->setScaling(1, 24);
 	realParam->setBounds(-24, +24);
 	realParam->setDisplayBounds(-12, 12);
@@ -47,7 +45,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	customParam->setToDspCallback = setMidFreqCallback;
 	params[2] = customParam;
 
-	realParam = new RealParam("High", &sys_para[System::MASTER_EQ_HIGH]);
+	realParam = new RealParam(MasterEqDesc.high);
 	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_HIGH_GAIN_POS);
 	realParam->setScaling(1, 24);
 	realParam->setBounds(-24, +24);

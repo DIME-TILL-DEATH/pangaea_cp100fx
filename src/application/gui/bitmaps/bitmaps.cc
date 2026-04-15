@@ -124,7 +124,8 @@ void tap_ind(uint8_t cur)
 
 void mode_ind(uint8_t val)
 {
-	uint8_t a1, a2;
+	uint8_t a1 = 0;
+	uint8_t a2 = 0;
 	LCD_SetPageAddress(0);
 	switch(val)
 	{

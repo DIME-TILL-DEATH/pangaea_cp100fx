@@ -69,11 +69,12 @@ void System::setStartupValues()
 
 void System::setMoogTime(float quarterInterval)
 {
-	if(currentPreset.modulesBuf[RFILTER_LFO_TYPE] == 0)
+	Preset::moog_time = round(quarterInterval);
+
+	if(currentPreset.paramData.resonance_filter.f_mod == 0)
 	{
 		if(Preset::moog_time < 2731)
 		{
-			Preset::moog_time = round(quarterInterval);
 			if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
 			{
 				SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time >> 8);
@@ -113,7 +114,6 @@ void System::setDelayTime(float quarterInterval)
 
 				while(currentPreset.delayTime < bpm_time[temp++]);
 				currentPreset.delayTime = bpm_time[temp];
-				currentPreset.modulesBuf[BPM_DELAY] = 60000 / currentPreset.delayTime;
 
 				SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
 				SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
@@ -158,6 +158,13 @@ void System::TapTempo(TapDestination tapDst)
 	if(tap_temp <= 2730 * 48) // 48kHz dma
 	{
 		float tap_global = tap_temp / 48;
+
+		if(tap_global > 250)
+		{
+			uint8_t temp = 0;
+			while(tap_global < bpm_time[temp++]);
+			currentPreset.paramData.bpm = 60000 / bpm_time[temp];
+		}
 
 		if(sys_para[TAP_TYPE] != System::TAP_TYPE_PRESET) // global temp On
 		{

@@ -91,7 +91,7 @@ void Preset::SetDefaultValues(Preset::TPresetData* preset)
 	}
 
 	preset->delayTime = 500;
-	preset->paramData.bpm_delay = 120;
+	preset->paramData.bpm = 120;
 }
 
 void Preset::SetDefaultValues(Preset::TPresetHeader* preset)
@@ -300,7 +300,7 @@ void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selecti
 		copyPreset->paramData.delay_time = currentPreset.paramData.delay_time;
 
 		copyPreset->delayTime = currentPreset.delayTime;
-		copyPreset->paramData.bpm_delay = currentPreset.paramData.bpm_delay;
+		copyPreset->paramData.bpm = currentPreset.paramData.bpm;
 	}
 
 	if(selectionMask.er)

@@ -27,11 +27,7 @@ typedef struct{
 	uint8_t key4; //k_sys;
 	uint8_t key5; //k_tuner;
 
-	uint8_t encPressed;
-	uint8_t	encUpdated;
-	TEncStep encState;
-
-	uint8_t hold;
+//	uint8_t hold;
 }TKeysEvents;
 
 typedef struct{
