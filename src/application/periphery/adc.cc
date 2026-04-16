@@ -1,6 +1,7 @@
 #include "adc.h"
 
 #include "gpio.h"
+#include "adc.h"
 
 #include "system.h"
 #include "preset.h"
@@ -9,6 +10,7 @@
 #include "controllers_task.h"
 #include "midi_task.h"
 #include "sharc_task.h"
+#include "ui_task.h"
 
 volatile uint16_t adc_low;
 volatile uint16_t adc_high;
@@ -100,6 +102,7 @@ void EXPR_Routine(void)
 	if((sys_para[System::EXPR_TYPE] & 0x7f) < EXPR_TYPE_CC_STD)
 	{
 		SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, adc_bu2);
+		UITask->refreshMenu();
 	}
 	else
 	{

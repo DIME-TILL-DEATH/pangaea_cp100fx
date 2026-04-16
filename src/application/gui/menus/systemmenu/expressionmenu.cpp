@@ -12,215 +12,158 @@
 #include "sharc_task.h"
 #include "display_task.h"
 
-const uint8_t ExpressionMenu::strOk[];
-const uint8_t ExpressionMenu::strSetMin[];
-const uint8_t ExpressionMenu::strSetMmax[];
-const uint8_t ExpressionMenu::strExprType[][12];
+#include "baseparam.h"
+#include "customparam.h"
+#include "stringlistparam.h"
 
+#include "syssettings_handlers.h"
 
-ExpressionMenu::ExpressionMenu(AbstractMenu *parent)
+ExpressionMenu::TCalibrationState ExpressionMenu::m_calibrationState = CalibrationIdle;
+
+ExpressionMenu::ExpressionMenu(AbstractMenu* parent)
+	:ParamListMenu(parent, MENU_EXPRESSION)
 {
-	topLevelMenu = parent;
-	m_menuType = MENU_EXPRESSION;
-}
 
-void ExpressionMenu::show(TShowMode swhoMode)
-{
-	currentMenu = this;
-	m_menuState = ParamChoice;
-
-	DisplayTask->Clear();
-	for(uint8_t i = 0; i<4; i++)
-	{
-		DisplayTask->StringOut(3, i, Font::fntSystem, Font::fnsNormal, (uint8_t*)&Footswitch::expr_menu_str[i]);
-	}
-
-	DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strExprType[sys_para[System::EXPR_TYPE] & 0x7f]);
-
-	if(!sys_para[System::EXPR_CC_NUM])
-		DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
-	else
-		DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CC_NUM]-1);
-
-	if(!sys_para[System::EXPR_STORE_LEVEL])
-		DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
-	else
-		DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"On ");
-}
-
-void ExpressionMenu::task()
-{
-	switch(m_menuState)
-	{
-		case ParamChoice:
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, FONT_BLINKING, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
-		break;
-
-		case ParamTuning: break;
-
-		case CalMin:
-			DisplayTask->StringOut(67, 1, Font::fntSystem, FONT_BLINKING, (uint8_t*)strSetMin);
-		break;
-
-		case CalMax:
-			DisplayTask->StringOut(67, 1, Font::fntSystem, FONT_BLINKING, (uint8_t*)strSetMmax);
-		break;
-	}
 }
 
 void ExpressionMenu::encoderPressed()
 {
-	switch(m_menuState)
+	if(m_currentParamNum == 1)
 	{
-		case ParamChoice:
-			if(m_parNum == 1)
+		switch(m_calibrationState)
+		{
+			case CalibrationIdle:
 			{
-				m_menuState = CalMin;
-				DisplayTask->StringOut(67, 1, Font::fntSystem, Font::fnsInvisible, (uint8_t*)strSetMin);
+				m_calibrationState = CalibrationMin;
+				DisplayTask->StringOut(66, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Set to min");
+				break;
 			}
-			else
+			
+			case CalibrationMin:
 			{
-				m_menuState = ParamTuning;
+				sys_para[System::EXPR_CAL_MIN_HI] = adc_bu;
+				sys_para[System::EXPR_CAL_MIN_LO] = adc_bu>>8;
+				ADC_LoadCal();
+				
+				DisplayTask->ClearString(66, 1, Font::fntSystem, 10);
+				DisplayTask->StringOut(92, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Ok");
+				HW_Delay(0x7fffff);
+				
+				m_calibrationState = CalibrationMax;
+				DisplayTask->StringOut(66, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Set to max");
+				break;
 			}
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
-		break;
-
-		case ParamTuning:
-			m_menuState = ParamChoice;
-		break;
-
-		case CalMin:
-			sys_para[System::EXPR_CAL_MIN_HI] = adc_bu;
-			sys_para[System::EXPR_CAL_MIN_LO] = adc_bu>>8;
-
-			DisplayTask->ClearString(67, 1, Font::fntSystem, 10);
-			DisplayTask->StringOut(92, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)strOk);
-			HW_Delay(0x7fffff);
-			DisplayTask->StringOut(67, 1, Font::fntSystem, Font::fnsHighlight, (uint8_t*)strSetMmax);
-			ADC_LoadCal();
-
-			m_menuState = CalMax;
-		break;
-
-		case CalMax:
-			sys_para[System::EXPR_CAL_MAX_HI] = adc_bu;
-			sys_para[System::EXPR_CAL_MAX_LO] = adc_bu>>8;
-
-			DisplayTask->ClearString(67, 1, Font::fntSystem, 10);
-			DisplayTask->StringOut(92, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)strOk);
-			HW_Delay(0x7fffff);
-			ADC_LoadCal();
-			m_menuState = ParamChoice;
-		break;
+			
+			case CalibrationMax:
+			{
+				sys_para[System::EXPR_CAL_MAX_HI] = adc_bu;
+				sys_para[System::EXPR_CAL_MAX_LO] = adc_bu>>8;
+				ADC_LoadCal();
+				
+				DisplayTask->ClearString(66, 1, Font::fntSystem, 10);
+				DisplayTask->StringOut(92, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Ok");
+				HW_Delay(0x7fffff);
+				
+				m_calibrationState = CalibrationIdle;
+				DisplayTask->ClearString(92, 1, Font::fntSystem, 2);
+				calibratePrintCallback((uint8_t*)&adc_bu2);
+				break;
+			}
+		}
+		
+		restartBlinking(0);
 	}
-
-	restartBlinking(0);
+	else
+	{
+		ParamListMenu::encoderPressed();
+	}
 }
 
 void ExpressionMenu::encoderClockwise()
 {
-	switch(m_menuState)
-	{
-		case ParamChoice:
-			if(m_parNum<3)
-			{
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&Footswitch::expr_menu_str[m_parNum++]);
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
-				restartBlinking(0);
-			}
-		break;
-
-		case ParamTuning:
-			switch(m_parNum)
-			{
-				case 0:
-					if((sys_para[System::EXPR_TYPE]&0x7f) < 4)
-					{
-						DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal,
-								(uint8_t*)strExprType[++sys_para[System::EXPR_TYPE] & 0x7f]);
-
-						HW_AdcPinInit();
-						if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
-							SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
-					}
-				break;
-				case 2:
-					if(sys_para[System::EXPR_CC_NUM] < 128)
-					{
-						sys_para[System::EXPR_CC_NUM] = BaseParam::encSpeedInc(sys_para[System::EXPR_CC_NUM], 100);
-						if(!sys_para[System::EXPR_CC_NUM])
-							DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
-						else
-							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CC_NUM]-1);
-					}
-				break;
-				case 3:
-					if(!sys_para[System::EXPR_STORE_LEVEL])
-					{
-						sys_para[System::EXPR_STORE_LEVEL]++;
-						DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"On ");
-					}
-				break;
-			}
-		break;
-
-		case CalMin:
-		break;
-		case CalMax:
-		break;
-	}
+	if(m_calibrationState == CalibrationIdle)
+		ParamListMenu::encoderClockwise();
 }
 
 void ExpressionMenu::encoderCounterClockwise()
 {
-	switch(m_menuState)
+	if(m_calibrationState == CalibrationIdle)
+		ParamListMenu::encoderCounterClockwise();
+}
+
+AbstractMenu* ExpressionMenu::create(AbstractMenu* parent)
+{
+	ExpressionMenu* expressionMenu = new ExpressionMenu(parent);
+
+	const uint8_t paramNum = 4;
+	BaseParam* params[paramNum];
+
+	CustomParam* exprTypeParam = new CustomParam(CustomParam::TDisplayType::Custom, SysSettingsDesc.exprType);
+	exprTypeParam->increaseCallback = exprTypeIncreaseCallback;
+	exprTypeParam->decreaseCallback = exprTypeDecreaseCallback;
+	exprTypeParam->printCallback = exprTypePrintCallback;
+	exprTypeParam->setDisplayPosition(60);
+	params[0] = exprTypeParam;
+
+	CustomParam* calibrateMinParam = new CustomParam(CustomParam::TDisplayType::Custom, "Calibrate", nullptr);
+	calibrateMinParam->printCallback = calibratePrintCallback;
+	params[1] = calibrateMinParam;
+
+	CustomParam* ccParam = new CustomParam(CustomParam::TDisplayType::Custom, SysSettingsDesc.exprCc);
+	ccParam->printCallback = ccParamPrintCallback;
+	ccParam->setDisplayPosition(84);
+	params[2] = ccParam;
+
+	StringListParam* levelParam = new StringListParam(SysSettingsDesc.exprLev, {"Off", "On "}, 4);
+	levelParam->setDisplayPosition(84);
+	params[3] = levelParam;
+
+	expressionMenu->setParams(params, paramNum);
+	expressionMenu->setIcon(false, ICON_NONE);
+	return expressionMenu;
+}
+
+
+void ExpressionMenu::exprTypePrintCallback(void* parameter)
+{
+	static constexpr uint8_t strExprType[][12] = {"   Off     ", "Std. Volume", "Alt. Volume", "Std. CC    ", "Alt. CC    "};
+	uint8_t* ptr = static_cast<uint8_t*>(parameter);
+	DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strExprType[*ptr & 0x7f]);
+}
+
+void ExpressionMenu::exprTypeIncreaseCallback(void* parameter)
+{
+	if((sys_para[System::EXPR_TYPE]&0x7f) < 4)
 	{
-		case ParamChoice:
-			if(m_parNum>0)
-			{
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&Footswitch::expr_menu_str[m_parNum--]);
-				DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&Footswitch::expr_menu_str[m_parNum]);
-				restartBlinking(0);
-			}
-		break;
-
-		case ParamTuning:
-			switch(m_parNum)
-			{
-				case 0:
-					if((sys_para[System::EXPR_TYPE]&0x7f)>1)
-					{
-						DisplayTask->StringOut(60, 0, Font::fntSystem, Font::fnsNormal,
-								(uint8_t*)&strExprType[--sys_para[System::EXPR_TYPE] & 0x7f]);
-						HW_AdcPinInit();
-						if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
-							SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
-					}
-				break;
-				case 2:
-					if(sys_para[System::EXPR_CC_NUM]>0)
-					{
-						sys_para[System::EXPR_CC_NUM] = BaseParam::encSpeedDec(sys_para[System::EXPR_CC_NUM], 0);
-						if(!sys_para[System::EXPR_CC_NUM])
-							DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
-						else
-							DisplayTask->ParamIndNum(84, 2, sys_para[System::EXPR_CC_NUM]-1);
-					}
-				break;
-				case 3:
-					if(sys_para[System::EXPR_STORE_LEVEL])
-					{
-						sys_para[System::EXPR_STORE_LEVEL]--;
-						DisplayTask->StringOut(84, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
-					}
-				break;
-			}
-		break;
-
-		case CalMin:
-		break;
-
-		case CalMax:
-		break;
+		sys_para[System::EXPR_TYPE]++;
+		HW_AdcPinInit();
+		if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
+			SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
 	}
+}
+
+void ExpressionMenu::exprTypeDecreaseCallback(void* parameter)
+{
+	if((sys_para[System::EXPR_TYPE]&0x7f)>1)
+	{
+		sys_para[System::EXPR_TYPE]--;
+		HW_AdcPinInit();
+		if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
+			SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
+	}
+}
+
+void ExpressionMenu::ccParamPrintCallback(void* parameter)
+{
+	uint8_t* ptr = static_cast<uint8_t*>(parameter);
+	if(!*ptr)
+		DisplayTask->StringOut(84, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Off");
+	else
+		DisplayTask->ParamIndNum(84, 2, *ptr-1);
+}
+
+void ExpressionMenu::calibratePrintCallback(void* parameter)
+{
+	if(m_calibrationState == CalibrationIdle)
+		DisplayTask->ParamInd(66, 1, adc_bu2);
 }

@@ -224,7 +224,7 @@ void SystemMenu::expressionKeyDown(void* parameter)
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
 	if(*valuePtr&0x80)
 	{
-		currentMenu->showChild(new ExpressionMenu(currentMenu));
+		currentMenu->showChild(ExpressionMenu::create(currentMenu));
 	}
 }
 

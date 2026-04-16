@@ -42,8 +42,8 @@ static TParamDescriptor midiChParamDesc = {
 static TParamDescriptor exprOnParamDesc = {
 	.ptr = &sys_para[System::EXPR_TYPE],
 	.handlerStr = "sys_expr_on",
-	.dspAddress = DSP_ADDRESS_MASTER_VOLUME_CONTROL,
-	.dspPosition = PARAM_EQUAL_POS,
+	.dspAddress = DSP_NOT_USED,
+	.dspPosition = NOT_SEND_POS,
 	.name = "Expression On",
 	.setterHandler = expr_on_setter
 };
@@ -51,9 +51,9 @@ static TParamDescriptor exprOnParamDesc = {
 static TParamDescriptor exprTypeParamDesc = {
 	.ptr = &sys_para[System::EXPR_TYPE],
 	.handlerStr = "sys_expr_type",
-	.dspAddress = DSP_ADDRESS_MASTER_VOLUME_CONTROL,
-	.dspPosition = PARAM_EQUAL_POS,
-	.name = "Expression Type",
+	.dspAddress = DSP_NOT_USED,
+	.dspPosition = NOT_SEND_POS,
+	.name = "Type",
 	.setterHandler = expr_type_setter
 };
 
@@ -62,7 +62,7 @@ static TParamDescriptor exprCcParamDesc = {
 	.handlerStr = "sys_expr_cc",
 	.dspAddress = DSP_NOT_USED,
 	.dspPosition = NOT_SEND_POS,
-	.name = "Expression CC",
+	.name = "CC#",
 	.setterHandler = expr_cc_setter
 };
 
@@ -71,7 +71,7 @@ static TParamDescriptor exprSlevParamDesc = {
 	.handlerStr = "sys_expr_slev",
 	.dspAddress = DSP_NOT_USED,
 	.dspPosition = NOT_SEND_POS,
-	.name = "Expression Store Level",
+	.name = "Store Lev",
 	.setterHandler = expr_slev_setter
 };
 
