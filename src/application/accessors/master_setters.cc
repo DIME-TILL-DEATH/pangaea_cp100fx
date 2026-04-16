@@ -9,6 +9,7 @@
 
 #include "sharc_task.h"
 #include "io_task.h"
+#include "display_task.h"
 
 static TParamDescriptor attVolParamDesc = {
 	.ptr = &sys_para[System::ATTENUATOR],
@@ -39,7 +40,7 @@ void attenuator_vol_setter(uint32_t value)
 															: &sys_para[System::ATTENUATOR];
 
 	*value_ptr = value;
-	IOTask->potWrite();
+	DisplayTask->potWrite();
 	console_printf("%s\r%02x\n", attVolParamDesc.handlerStr, *value_ptr);
 
 	EEPROM_DelayedSaveSystemData();
@@ -49,7 +50,7 @@ void attenuator_source_setter(uint32_t value)
 {
 	uint8_t* value_ptr = (uint8_t*)attSourceParamDesc.ptr;
 	*value_ptr = value;
-	IOTask->potWrite();
+	DisplayTask->potWrite();
 	console_printf("%s\r%02x\n", attSourceParamDesc.handlerStr, *value_ptr);
 
 	EEPROM_DelayedSaveSystemData();
@@ -93,7 +94,7 @@ void phones_volume_setter(uint32_t value)
 {
 	uint8_t* value_ptr = (uint8_t*)phonesVolParamDesc.ptr;
 	*value_ptr = value;
-	IOTask->potWrite();
+	DisplayTask->potWrite();
 	console_printf("%s\r%02x\n", phonesVolParamDesc.handlerStr, *value_ptr);
 
 	EEPROM_DelayedSaveSystemData();

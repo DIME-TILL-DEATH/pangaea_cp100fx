@@ -51,6 +51,7 @@ public:
 		dcIconAndArrows,
 		dcArrow,
 		dcCount,
+		ioWritePot
 	}TCommand;
 
 	typedef struct
@@ -207,6 +208,12 @@ public:
 
 	void Arrow(uint8_t x, uint8_t y, uint32_t dir);
 
+	// pot using same pins with display. Concurecy acces from different thread
+	void potWrite(){
+		TDisplayCmd cmd;
+		cmd.cmd = ioWritePot;
+		Command(&cmd);
+	};
 private:
 	TQueue *queue;
 
@@ -229,8 +236,9 @@ private:
 		}
 		else
 		{
-			return queue->SendToBack(cmd, portMAX_DELAY);
-//			return queue->SendToBack(cmd, 0);
+			// ИСПРАВЛЕНО: Добавлен таймаут вместо portMAX_DELAY чтобы избежать бесконечного зависания
+			// Если очередь переполнена, вернется ошибка вместо deadlock'а
+			return queue->SendToBack(cmd, 100);  // таймаут 100мс
 		}
 	}
 };

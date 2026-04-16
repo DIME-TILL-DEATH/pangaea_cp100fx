@@ -76,7 +76,7 @@ int main(void)
 	IOTask->Create("InOut", 20*configMINIMAL_STACK_SIZE, 0);
 
 	UITask = new TUITask();
-	UITask->Create("UserInterface", 20*configMINIMAL_STACK_SIZE, 0);
+	UITask->Create("UserInterface", 40*configMINIMAL_STACK_SIZE, 0);
 
 	TunerTask = new TTunerTask();
 	TunerTask->Create("Tuner", 20*configMINIMAL_STACK_SIZE, 0);

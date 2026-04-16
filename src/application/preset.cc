@@ -1,15 +1,16 @@
-#include <eeprom.h>
 #include "preset.h"
 
 #include "adc.h"
 
 #include "system.h"
 #include "modules.h"
+#include "eeprom.h"
 
 #include "io_task.h"
 #include "midi_task.h"
 #include "filesystem_task.h"
 #include "sharc_task.h"
+#include "display_task.h"
 
 
 Preset::TPresetData __CCM_BSS__ currentPreset;
@@ -41,7 +42,7 @@ void Preset::Change(uint8_t presetNumber)
 	}
 
 	if(sys_para[System::ATTENUATOR_MODE])
-		IOTask->potWrite();
+		DisplayTask->potWrite();
 
 	EEPROM_SaveSystemData(); // save current preset number
 //-----------------------------------------------------------

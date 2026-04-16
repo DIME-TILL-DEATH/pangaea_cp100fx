@@ -27,35 +27,6 @@ SystemMenu::SystemMenu(AbstractMenu* parent, gui_menu_type menuType)
 }
 
 
-//void SystemMenu::encoderPressed()
-//{
-//	if(m_paramsList[m_currentParamNum]->disabled()) return;
-//
-//
-//	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
-//	{
-//		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(m_paramsList[m_currentParamNum]);
-//		submenuParam->showSubmenu(this);
-//	}
-//	else
-//	{
-//		if(!m_encoderKnobSelected)
-//		{
-//			m_encoderKnobSelected = true;
-//			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-//					Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-//		}
-//		else
-//		{
-//			m_encoderKnobSelected = false;
-//			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-//					Font::fnsNormal, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-//		}
-//	}
-//
-//	restartBlinking(1);
-//}
-
 void SystemMenu::keyUp()
 {
 	if(editingFinished())

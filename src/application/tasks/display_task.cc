@@ -1,7 +1,7 @@
 #include "display_task.h"
 
 #include "serial.h"
-
+#include "pot.h"
 #include "sharc_task.h"
 
 #include "icons_bitmap.h"
@@ -65,11 +65,12 @@ void TDisplayTask::Code()
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_DSTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
+	HW_WritePot(); // same pins with display
+
 	while(1)
 	{
 		queue->Receive(&cmd, portMAX_DELAY);
 
-		IOTask->Suspend();
 		switch(cmd.cmd)
 		{
 			case dcClear:
@@ -224,12 +225,16 @@ void TDisplayTask::Code()
 				arrow_print(cmd.ArrowParam.pos.x, cmd.ArrowParam.pos.y, cmd.ArrowParam.dir);
 			break;
 
+			case ioWritePot:
+				HW_WritePot();
+			break;
+
 			default:
 			break;
-      }
-		IOTask->Resume();
-    }
-}
+			}
+//		IOTask->Resume();
+	    }
+	}
 
 void TDisplayTask::FswInd(uint8_t num, uint8_t pressState, uint8_t holdState)
 {

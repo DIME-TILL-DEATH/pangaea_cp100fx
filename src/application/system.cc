@@ -64,7 +64,15 @@ void System::setStartupValues()
 	}
 
 	tun_del_val = (127 - sys_para[System::TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
-	currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
+	
+	// ИСПРАВЛЕНО: Валидация currentPresetNumber из EEPROM
+	// Было: currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
+	// Проблема: EEPROM может содержать некорректное значение > 98!
+	uint8_t loaded_preset = sys_para[System::LAST_PRESET_NUM];
+	if(loaded_preset >= 99) {
+		loaded_preset = 0;  // Значение по умолчанию при ошибке
+	}
+	currentPresetNumber = loaded_preset;
 }
 
 void System::setMoogTime(float quarterInterval)
@@ -161,8 +169,13 @@ void System::TapTempo(TapDestination tapDst)
 
 		if(tap_global > 250)
 		{
+			// ИСПРАВЛЕНО: Защита от выхода за границы массива bpm_time
+			// Было: while(tap_global < bpm_time[temp++]); - может переполнить массив!
 			uint8_t temp = 0;
-			while(tap_global < bpm_time[temp++]);
+			const uint8_t bpm_count = sizeof(bpm_time) / sizeof(bpm_time[0]);
+			while(temp < bpm_count - 1 && tap_global < bpm_time[temp]) {
+				temp++;
+			}
 			currentPreset.paramData.bpm = 60000 / bpm_time[temp];
 		}
 

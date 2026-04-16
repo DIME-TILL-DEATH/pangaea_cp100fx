@@ -35,7 +35,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	setParams(params, paramCount);
 	setIcon(false, ICON_NONE);
 
-	IOTask->potWrite();
+	DisplayTask->potWrite();
 }
 
 void AttenuatorMenu::encoderClockwise()

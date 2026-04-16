@@ -43,7 +43,7 @@ public:
 		bcStartup,
 	} browse_command_t;
 
-	TFsBrowser() {};
+	TFsBrowser();
 	~TFsBrowser() {};
 
 	void Browse(browse_command_t browse_command, fs_object_t &object);

@@ -49,7 +49,6 @@ public:
 
 	typedef enum{
 		IO_LED_TASK,
-		IO_POT_WRITE
 	}TIOCmdType;
 
 	typedef struct{
@@ -66,11 +65,6 @@ public:
 		Command(&cmd);
 	};
 
-	void potWrite(){
-		TIOCmd cmd;
-		cmd.type = IO_POT_WRITE;
-		Command(&cmd);
-	};
 
 private:
 	void Code() override;

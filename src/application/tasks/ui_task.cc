@@ -91,8 +91,7 @@ void TUITask::Code()
 			{
 				if((GPIOA->IDR & GPIO_Pin_9) && !usbMenu->isConnected() && currentMenu->menuType() != MENU_USB_SELECT)
 				{
-					if(usbMenu)
-						currentMenu->showChild(usbMenu);
+					if(usbMenu) currentMenu->showChild(usbMenu);
 				}
 				currentMenu->task();
 				break;

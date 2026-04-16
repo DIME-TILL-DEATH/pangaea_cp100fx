@@ -2,7 +2,6 @@
 
 #include "adc.h"
 #include "serial.h"
-#include "pot.h"
 #include "led.h"
 
 #include "serial.h"
@@ -41,8 +40,6 @@ TIOTask::~TIOTask()
 
 void TIOTask::Code()
 {
-	HW_WritePot();
-
 	extern EventGroupHandle_t startEventGroup;
 	xEventGroupSync(startEventGroup, EVENT_BIT_IOTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
@@ -75,42 +72,40 @@ void TIOTask::Code()
 					LED_SetState(TLedType::LED_FX_RED, DISABLED);
 				break;
 			}
-
-			case IO_POT_WRITE:
-			{
-				HW_WritePot();
-				break;
-			}
 		}
 	}
 }
 
 uint8_t drebezg(uint32_t line)
 {
-	uint8_t sss;
+	uint8_t sss = 0;  // ИСПРАВЛЕНО: Инициализировать в 0
+	
+	// ИСПРАВЛЕНО: Защита от переключения EXTI без дебаунса
+	// Проблема: EXTI граница переключалась ВСЕГДА, независимо от TIM9 флага
+	// Это создавало ложные события при каждом вызове функции
 	TIM_Cmd(TIM9, DISABLE);
-	if((EXTI->FTSR&line)!=0)
+	
+	if(TIM_GetFlagStatus(TIM9, TIM_FLAG_Update) != SET)
 	{
-		if(TIM_GetFlagStatus(TIM9, TIM_FLAG_Update)==1)
-		{
-			sss = 1;
-			EXTI->FTSR &= ~line;
-			EXTI->RTSR |= line;
-		}
-		else
-			sss = 0;
+		// Таймер не отсчитал достаточное время - игнорируем событие
+		TIM_Cmd(TIM9, ENABLE);
+		return 0;
 	}
-	else
+	
+	// Таймер отсчитал - это стабильное изменение
+	if((EXTI->FTSR&line) != 0)  // Если текущая граница - FALLING
 	{
-		if(TIM_GetFlagStatus(TIM9, TIM_FLAG_Update)==1)
-		{
-			EXTI->RTSR &= ~line;
-			EXTI->FTSR |= line;
-			sss = 2;
-		}
-		else
-			sss = 0;
+		sss = 1;
+		EXTI->FTSR &= ~line;   // Отключить FALLING
+		EXTI->RTSR |= line;    // Включить RISING
 	}
+	else  // Если текущая граница - RISING
+	{
+		sss = 2;
+		EXTI->RTSR &= ~line;   // Отключить RISING
+		EXTI->FTSR |= line;    // Включить FALLING
+	}
+	
 	TIM_SetCounter(TIM9, 0);
 	TIM_ClearFlag(TIM9, TIM_FLAG_Update);
 	TIM_Cmd(TIM9, ENABLE);
@@ -119,17 +114,14 @@ uint8_t drebezg(uint32_t line)
 
 void ISR_encoder_read()
 {
-	TEncoderEvents encEvents = {};
-	encEvents.pressed = 0;
-	encEvents.updated = 0;
-
 	if(EXTI_GetITStatus (EXTI_Line14))
 	{
-		uint16_t a = GPIOC->IDR&GPIO_Pin_13;
+		uint16_t a = GPIOC->IDR & GPIO_Pin_13;
 		EXTI_ClearITPendingBit(EXTI_Line14);
 
 		if(drebezg(EXTI_Line14)==1)
 		{
+			TEncoderEvents encEvents = {};
 			if(a) encEvents.state = ENC_COUNTERCLOCKWISE_STEP;
 			else encEvents.state = ENC_CLOCKWISE_STEP;
 
@@ -144,6 +136,7 @@ void ISR_encoder_read()
 		EXTI_ClearITPendingBit(EXTI_Line15);
 		if(drebezg(EXTI_Line15)==1)
 		{
+			TEncoderEvents encEvents = {};
 			encEvents.pressed = 1;
 			if(UITask) UITask->encoderEvents(encEvents);
 		}
@@ -151,76 +144,80 @@ void ISR_encoder_read()
 }
 
 volatile TFSWNum holdedFsw = TFSWNum::FSW_NONE;
-//volatile bool keysHold = false;
 volatile uint16_t prevKeyReg = KEY_NO_PRESS_MASK;
+volatile uint8_t debounce_counter = 0;  // ДОБАВЛЕНО: Счетчик для дебаунса
 
 void ISR_buttons_read()
 {
+	uint16_t key_reg = ~((HW_KeyInValue() & 0x7fff) ^ KEY_NO_PRESS_MASK);
+	
 	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
 	DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
 	DMA_ClearITPendingBit(DMA1_Stream6, DMA_IT_TCIF6);
-
-	uint16_t key_reg = ~((HW_KeyInValue() & 0x7fff) ^ KEY_NO_PRESS_MASK);
-
-	if(key_reg != prevKeyReg)
-	{
-		TKeysEvents keyEvents = {};  // Инициализируем нулями
-//		keyEvents.hold = keysHold;
-
-		keyEvents.keyUp = (key_reg >> KEY_UP_POS) & 0x1;
-		keyEvents.keyDown = (key_reg >> KEY_DOWN_POS) & 0x1;
-		keyEvents.key1 = (key_reg >> KEY1_POS) & 0x1;
-		keyEvents.key2 = (key_reg >> KEY2_POS) & 0x1;
-		keyEvents.key3 = (key_reg >> KEY3_POS) & 0x1;
-		keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
-		keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
-
-		prevKeyReg = key_reg;
-
-		if(UITask) UITask->keysEvents(keyEvents);
-	}
-
-	TFswEvents fswEvents = {};
-
-	fswEvents.fsw = TFSWNum::FSW_NONE;
-	if((key_reg >> FSW_DOWN_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_DOWN;
-	if((key_reg >> FSW_CONFIRM_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_CONFIRM;
-	if((key_reg >> FSW_UP_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_UP;
-
-
-	if(holdedFsw != fswEvents.fsw)
-	{
-		if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
-		{
-			if(UITask) UITask->fswSinglePressed(fswEvents);
-
-			TIM_ClearFlag(TIM3, TIM_FLAG_Update);
-			TIM_SetCounter(TIM3, sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
-			TIM_Cmd(TIM3, ENABLE);
-		}
-		else	// press out
-		{
-			if(TIM3->CR1 & TIM_CR1_CEN)
-			{
-				fswEvents.fsw = holdedFsw;
-				if(UITask) UITask->fswDualPressed(fswEvents);
-
-				TIM_Cmd(TIM3, DISABLE);
-			}
-		}
-	}
-
-	holdedFsw = fswEvents.fsw;
-
-//	if(key_reg) keysHold = true;
-//	else keysHold = false;
-
-	IOTask->ledTask();
-
 	DMA_Cmd(DMA1_Stream6, DISABLE);
 	DMA1_Stream6->NDTR = 2;
 	GPIO_SetBits(GPIOC, GPIO_Pin_4);
 	DMA_Cmd(DMA1_Stream6, ENABLE);
+
+	IOTask->ledTask();
+
+	if(key_reg != prevKeyReg)
+	{
+		debounce_counter = 0;
+		prevKeyReg = key_reg;
+	}
+	else
+	{
+		if(debounce_counter < 5) debounce_counter++;
+
+		if(debounce_counter == 5)
+		{
+			debounce_counter++;  // Увеличиваем счетчик, чтобы не обрабатывать события повторно
+			
+			TKeysEvents keyEvents = {};
+
+			keyEvents.keyUp = (key_reg >> KEY_UP_POS) & 0x1;
+			keyEvents.keyDown = (key_reg >> KEY_DOWN_POS) & 0x1;
+			keyEvents.key1 = (key_reg >> KEY1_POS) & 0x1;
+			keyEvents.key2 = (key_reg >> KEY2_POS) & 0x1;
+			keyEvents.key3 = (key_reg >> KEY3_POS) & 0x1;
+			keyEvents.key4 = (key_reg >> KEY4_POS) & 0x1;
+			keyEvents.key5 = (key_reg >> KEY5_POS) & 0x1;
+
+			if(UITask) UITask->keysEvents(keyEvents);
+
+			TFswEvents fswEvents = {};
+			fswEvents.fsw = TFSWNum::FSW_NONE;
+			if((key_reg >> FSW_DOWN_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_DOWN;
+			if((key_reg >> FSW_CONFIRM_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_CONFIRM;
+			if((key_reg >> FSW_UP_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_UP;
+
+
+			if(holdedFsw != fswEvents.fsw)
+			{
+				if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
+				{
+					if(UITask) UITask->fswSinglePressed(fswEvents);
+
+					TIM_ClearFlag(TIM3, TIM_FLAG_Update);
+					TIM_SetCounter(TIM3, sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
+					TIM_Cmd(TIM3, ENABLE);
+				}
+				else	// press out
+				{
+					if(TIM3->CR1 & TIM_CR1_CEN)
+					{
+						fswEvents.fsw = holdedFsw;
+						if(UITask) UITask->fswDualPressed(fswEvents);
+
+						TIM_Cmd(TIM3, DISABLE);
+					}
+				}
+			}
+
+			holdedFsw = fswEvents.fsw;
+		}
+	}
 }
 
 void ISR_fsw_hold_timer()

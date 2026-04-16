@@ -36,7 +36,7 @@ void MasterVolumeMenu::encoderClockwise()
 		m_paramsList[m_currentParamNum]->increaseParam();
 
 		m_paramsList[m_currentParamNum]->setData();
-		IOTask->potWrite();
+		DisplayTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
@@ -58,7 +58,7 @@ void MasterVolumeMenu::encoderCounterClockwise()
 		m_paramsList[m_currentParamNum]->decreaseParam();
 
 		m_paramsList[m_currentParamNum]->setData();
-		IOTask->potWrite();
+		DisplayTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 

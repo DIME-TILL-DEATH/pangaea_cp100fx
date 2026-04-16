@@ -1,8 +1,8 @@
-#include <eeprom.h>
 #include "fs_browser.h"
 
 #include "storage.h"
 #include "system.h"
+#include "eeprom.h"
 
 #include "filesystem_task.h"
 #include "ui_task.h"
@@ -10,6 +10,11 @@
 //------------------------------------------------------------------------
 
 uint8_t TFsBrowser::impulseDirExist = 0;
+
+TFsBrowser::TFsBrowser()
+{
+	fs_object_list.reserve(maxDisaplyObjects);
+};
 
 void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& object)
 {
@@ -520,10 +525,12 @@ void TFsBrowser::UpdateDirList()
 			//if (object.name==".." && curr_dir_name=="IMPULSE") continue ; // пропуск элемента .. в директори IMPULSE
 			object.type = fno.fattrib & AM_DIR ? fotDir : fotFile;
 
+			if(fs_object_list.size() < fs_object_list.capacity())
+				fs_object_list.push_back(object);
+			else
+				break;
 
-			fs_object_list.push_back(object);
-
-			if(fs_object_list.size() > maxDisaplyObjects) break;
+//			if(fs_object_list.size() > maxDisaplyObjects) break;
 		}
 
 		sort(fs_object_list.begin(), fs_object_list.end(), sort_fs_object());
