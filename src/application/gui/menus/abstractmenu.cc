@@ -28,6 +28,7 @@ void AbstractMenu::setTopLevelMenu(AbstractMenu* parent)
 void AbstractMenu::showChild(AbstractMenu* child)
 {
 	shownChildMenu = child;
+	child->setTopLevelMenu(this);
 	currentMenu = this;
 	child->show();
 }

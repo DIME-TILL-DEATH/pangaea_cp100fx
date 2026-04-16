@@ -33,33 +33,8 @@ void UsbMenu::show(TShowMode showMode)
 
 void UsbMenu::task()
 {
-	// only if input pin not floating, else reset in USB task
-	if(!(GPIOA->IDR & GPIO_Pin_9))
-	{
-		NVIC_SystemReset();
-//		break;
-//		switch(usb_connect_type)
-//		{
-//			case TUsbTask::mMSC:
-//			{
-//				NVIC_SystemReset();
-//				break;
-//			}
-//
-//			case TUsbTask::mCDC:
-//			{
-////				usbMenu->stopUsb();
-////				return;
-//				NVIC_SystemReset();
-//				break;
-//			}
-//		}
-	}
+	if(usbConnected) return;
 
-	if(usbConnected)
-	{
-		return;
-	}
 
 	DisplayTask->StringOut(strPositions[m_parNum], m_parNum, Font::fntSystem, FONT_BLINKING, &strUsbMenu[m_parNum][0]);
 
@@ -107,10 +82,6 @@ void UsbMenu::encoderPressed()
 			DisplayTask->Clear();
 			DisplayTask->StringOut(6, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"cp100fx connected as");
 			DisplayTask->StringOut(34, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"serial port");
-
-			// Memory leak
-//			currentMenu = mainMenu;
-//			mainMenu->show();
 
 			currentMenu = topLevelMenu;
 			topLevelMenu->returnFromChildMenu(AbstractMenu::TReturnMode::KeepChild);
