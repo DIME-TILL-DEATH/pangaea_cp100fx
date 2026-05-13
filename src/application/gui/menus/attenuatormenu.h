@@ -1,5 +1,5 @@
-#ifndef SRC_APPLICATION_GUI_MENUS_ATTENUATORMENU_H_
-#define SRC_APPLICATION_GUI_MENUS_ATTENUATORMENU_H_
+#ifndef _ATTENUATORMENU_H_
+#define _ATTENUATORMENU_H_
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
@@ -8,9 +8,6 @@ class AttenuatorMenu: public ParamListMenu
 {
 public:
 	AttenuatorMenu(AbstractMenu* parentMenu);
-
-	void encoderClockwise() override;
-	void encoderCounterClockwise() override;
 
 	void keyUp() override;
 
@@ -23,5 +20,5 @@ public:
 private:
 	void exitMenu();
 };
-#endif /* SRC_APPLICATION_GUI_MENUS_ATTENUATORMENU_H_ */
+#endif /* _ATTENUATORMENU_H_ */
 

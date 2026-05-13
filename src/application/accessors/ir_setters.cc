@@ -56,12 +56,22 @@ static TParamDescriptor pan2ParamDesc = {
 	.setterHandler = ir_pan2_setter
 };
 
+static TParamDescriptor dummyDesc = {
+	.ptr = nullptr,
+	.handlerStr = "",
+	.dspAddress = DSP_ADDRESS_CAB,
+	.dspPosition = NOT_SEND_POS,
+	.name = "",
+	.setterHandler = nullptr
+};
+
 TIrDesc IrDesc = {
 	.on = onParamDesc,
 	.vol1 = vol1ParamDesc,
 	.pan1 = pan1ParamDesc,
 	.vol2 = vol2ParamDesc,
-	.pan2 = pan2ParamDesc
+	.pan2 = pan2ParamDesc,
+	.dummy = dummyDesc
 };
 
 void ir_on_setter(uint32_t value)

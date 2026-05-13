@@ -5,7 +5,7 @@
 TunerExtMenu::TunerExtMenu(AbstractMenu* parent)
 	:ParamListMenu(parent, MENU_TUNER_EXT)
 {
-	BaseParam* ccParam = new BaseParam(BaseParam::GUI_PARAMETER_NUM, SysSettingsDesc.tunerCc);
+	BaseParam* ccParam = new BaseParam(BaseParam::GUI_PARAMETER_NUM, &SysSettingsDesc.tunerCc);
 	ccParam->setScaling(1, -128);
 	ccParam->setBounds(-128, -1);
 

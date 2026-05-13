@@ -53,7 +53,7 @@ static TParamDescriptor exprTypeParamDesc = {
 	.handlerStr = "sys_expr_type",
 	.dspAddress = DSP_NOT_USED,
 	.dspPosition = NOT_SEND_POS,
-	.name = "Type",
+	.name = "Expression",
 	.setterHandler = expr_type_setter
 };
 
@@ -73,6 +73,15 @@ static TParamDescriptor exprSlevParamDesc = {
 	.dspPosition = NOT_SEND_POS,
 	.name = "Store Lev",
 	.setterHandler = expr_slev_setter
+};
+
+static TParamDescriptor exprCalibrateParamDesc = {
+	.ptr = nullptr,
+	.handlerStr = "",
+	.dspAddress = DSP_NOT_USED,
+	.dspPosition = NOT_SEND_POS,
+	.name = "Calibrate",
+	.setterHandler = nullptr
 };
 
 static TParamDescriptor spdifParamDesc = {
@@ -125,7 +134,7 @@ static TParamDescriptor tunerCtrlParamDesc = {
 	.handlerStr = "sys_tuner_ctrl",
 	.dspAddress = DSP_NOT_USED,
 	.dspPosition = NOT_SEND_POS,
-	.name = "Tuner Control",
+	.name = "Tuner Contr",
 	.setterHandler = tuner_ctrl_setter
 };
 
@@ -155,6 +164,7 @@ TSysSettingsDesc SysSettingsDesc = {
 	.exprType = exprTypeParamDesc,
 	.exprCc = exprCcParamDesc,
 	.exprLev = exprSlevParamDesc,
+	.exprCalibrate = exprCalibrateParamDesc,
 	.spdif = spdifParamDesc,
 	.tempo = tempoTypeParamDesc,
 	.timeFormat = timeFormatParamDesc,

@@ -40,6 +40,7 @@ typedef struct
 	TParamDescriptor low;
 	TParamDescriptor mid;
 	TParamDescriptor high;
+	TParamDescriptor dummy;
 }TPreampDesc;
 
 extern TPreampDesc PreampDesc;

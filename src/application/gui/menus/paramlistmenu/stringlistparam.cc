@@ -2,28 +2,8 @@
 
 #include "display_task.h"
 
-StringListParam::StringListParam(const char* name, uint8_t* paramValuePtr,
-		std::initializer_list<const char*>stringList, uint8_t maxStringLength)
-			: BaseParam(BaseParam::GUI_PARAMETER_LIST, name, paramValuePtr)
-{
-	m_stringCount = stringList.size();
-	m_maxStringLength = maxStringLength;
 
-	m_strings = new char*[m_stringCount];
-	for(int i = 0; i<m_stringCount; i++)
-		m_strings[i] = new char[m_maxStringLength];
-
-	uint8_t strCounter = 0;
-	for(auto strIter = stringList.begin(); strIter != stringList.end(); ++strIter)
-	{
-		kgp_sdk_libc::strcpy(m_strings[strCounter], *strIter);
-		strCounter++;
-	}
-
-	m_maxValue = m_stringCount - 1;
-}
-
-StringListParam::StringListParam(const TParamDescriptor& paramDesc,
+StringListParam::StringListParam(TParamDescriptor* paramDesc,
 		std::initializer_list<const char*> stringList, uint8_t maxStringLength)
 			: BaseParam(BaseParam::GUI_PARAMETER_LIST, paramDesc)
 {
@@ -104,30 +84,30 @@ uint8_t* StringListParam::getDisableMask()
 
 void StringListParam::increaseParam()
 {
-	if(!m_valuePtr) return;
+	if(!m_descriptor) return;
 
-	if(*m_valuePtr < m_maxValue)
+	if(*(uint8_t*)(m_descriptor->ptr) < m_maxValue)
 	{
-		*m_valuePtr += 1;
+		*(uint8_t*)(m_descriptor->ptr) += 1;
 
 		for(int i=0; i<m_affectedParamsCount; i++)
 		{
-			m_affectedParamsList[i]->setDisabled(m_disableMask[*m_valuePtr][i]);
+			m_affectedParamsList[i]->setDisabled(m_disableMask[*(uint8_t*)(m_descriptor->ptr)][i]);
 		}
 	}
 }
 
 void StringListParam::decreaseParam()
 {
-	if(!m_valuePtr) return;
+	if(!m_descriptor) return;
 
-	if(*m_valuePtr > m_minValue)
+	if(*(uint8_t*)(m_descriptor->ptr) > m_minValue)
 	{
-		*m_valuePtr -= 1;
+		*(uint8_t*)(m_descriptor->ptr) -= 1;
 
 		for(int i=0; i<m_affectedParamsCount; i++)
 		{
-			m_affectedParamsList[i]->setDisabled(m_disableMask[*m_valuePtr][i]);
+			m_affectedParamsList[i]->setDisabled(m_disableMask[*(uint8_t*)(m_descriptor->ptr)][i]);
 		}
 	}
 }
@@ -136,6 +116,6 @@ void StringListParam::printParam(uint8_t yDisplayPosition)
 {
 	if(m_disabled) return;
 
-	if(*m_valuePtr < m_stringCount)
-		DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, Font::fntSystem , Font::fnsNormal, getString(*m_valuePtr));
+	if(*(uint8_t*)(m_descriptor->ptr) < m_stringCount)
+		DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, Font::fntSystem , Font::fnsNormal, getString(*(uint8_t*)(m_descriptor->ptr)));
 }

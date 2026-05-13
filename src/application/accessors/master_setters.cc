@@ -50,6 +50,10 @@ void attenuator_source_setter(uint32_t value)
 {
 	uint8_t* value_ptr = (uint8_t*)attSourceParamDesc.ptr;
 	*value_ptr = value;
+
+	AttenuatorDesc.volume.ptr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator
+			: &sys_para[System::ATTENUATOR];
+
 	DisplayTask->potWrite();
 	console_printf("%s\r%02x\n", attSourceParamDesc.handlerStr, *value_ptr);
 
@@ -138,7 +142,7 @@ static TParamDescriptor meqHgParamDesc = {
 };
 
 static TParamDescriptor meqMfParamDesc = {
-	.ptr = &sys_para[System::MASTER_EQ_FREQ_LO],
+	.ptr = &mstEqMidFreq, //&sys_para[System::MASTER_EQ_FREQ_LO],
 	.handlerStr = "meq_mf",
 	.dspAddress = DSP_ADDRESS_EQ,
 	.dspPosition = EQ_MASTER_MID_FREQ_POS,

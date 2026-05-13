@@ -35,6 +35,7 @@ typedef struct
 	TParamDescriptor pan1;
 	TParamDescriptor vol2;
 	TParamDescriptor pan2;
+	TParamDescriptor dummy;
 }TIrDesc;
 
 extern TIrDesc IrDesc;

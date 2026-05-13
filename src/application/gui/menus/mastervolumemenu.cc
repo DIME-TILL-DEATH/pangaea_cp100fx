@@ -11,9 +11,9 @@ MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCount = 2;
 	BaseParam* params[paramCount];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, MasterVolDesc.master);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, &MasterVolDesc.master);
 	params[0]->setDisplayPosition(85);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, MasterVolDesc.phones);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, &MasterVolDesc.phones);
 	params[1]->setDisplayPosition(85);
 
 	setParams(params, paramCount);

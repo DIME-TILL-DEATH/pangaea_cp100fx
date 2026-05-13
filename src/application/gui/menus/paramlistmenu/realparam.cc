@@ -3,18 +3,7 @@
 #include "display_task.h"
 
 
-RealParam::RealParam(const char* name, void* paramValuePtr)
-	:BaseParam(BaseParam::GUI_PARAMETER_REAL, name, paramValuePtr)
-{
-	m_minDisplayValue = m_minValue;
-	m_maxDisplayValue = m_maxValue;
-
-	m_k2 = (m_minDisplayValue-m_maxDisplayValue)/(m_minValue-m_maxValue);
-	m_k1 = m_minDisplayValue-(m_minValue*m_k2);
-	calcDisplayValue();
-}
-
-RealParam::RealParam(const TParamDescriptor& paramDescriptor)
+RealParam::RealParam(TParamDescriptor* paramDescriptor)
 	:BaseParam(BaseParam::GUI_PARAMETER_REAL, paramDescriptor)
 {
 	m_minDisplayValue = m_minValue;
@@ -44,15 +33,6 @@ void RealParam::setUnits(const char* units, uint8_t strSize)
 	kgp_sdk_libc::memcpy(m_unitsName, units, strSize);
 }
 
-//void RealParam::increaseParam()
-//{
-//
-//}
-//
-//void RealParam::decreaseParam()
-//{
-//
-//}
 
 void RealParam::printParam(uint8_t yDisplayPosition)
 {
@@ -93,15 +73,17 @@ void RealParam::printParam(uint8_t yDisplayPosition)
 
 void RealParam::calcDisplayValue()
 {
+	if(!m_descriptor) return;
+
 	int32_t fullValue = 0;
 
 	if(m_byteSize>1)
 	{
-		kgp_sdk_libc::memcpy(&fullValue, m_valuePtr, m_byteSize);
+		kgp_sdk_libc::memcpy(&fullValue, m_descriptor->ptr, m_byteSize);
 	}
 	else
 	{
-		fullValue = (int8_t)(*m_valuePtr);
+		fullValue = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 	}
 
 	m_displayValue = m_k1 + fullValue*m_k2;

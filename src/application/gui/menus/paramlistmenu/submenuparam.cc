@@ -7,13 +7,14 @@
 
 SubmenuParam::SubmenuParam(gui_param_type paramType, const char* name,
 		AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), AbstractMenu* parentMenu)
-				: BaseParam(paramType, name, nullptr)
+				: BaseParam(paramType, nullptr)
 {
+	m_menuName = name;
 	m_submenuCreationFunction = submenuCreationFunction;
 	m_parentMenu = parentMenu;
 }
 
-SubmenuParam::SubmenuParam(gui_param_type paramType, TParamDescriptor paramDescriptor,
+SubmenuParam::SubmenuParam(gui_param_type paramType, TParamDescriptor* paramDescriptor,
 		AbstractMenu* (*submenuCreationFunction)(AbstractMenu* parent), AbstractMenu* parentMenu)
 				: BaseParam(paramType, paramDescriptor)
 {
@@ -28,7 +29,7 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 	switch(m_type)
 	{
 		case BaseParam::GUI_PARAMETER_PAN:
-			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_SUBMENU:
 			break;
@@ -49,6 +50,18 @@ void SubmenuParam::printParam(uint8_t yDisplayPosition)
 			break;
 		}
 		default: break;
+	}
+}
+
+const char* SubmenuParam::name()
+{
+	if(!m_descriptor) return m_menuName;
+
+	if(m_disabled) return " -- ";
+	else
+	{
+		if(!m_descriptor) return "";
+		else return m_descriptor->name;
 	}
 }
 

@@ -18,8 +18,7 @@ public:
 		Custom
 	};
 
-	CustomParam(TDisplayType displayType, const char* name, void* paramValuePtr);
-	CustomParam(TDisplayType displayType, TParamDescriptor paramDesc);
+	CustomParam(TDisplayType displayType, TParamDescriptor* paramDesc);
 	~CustomParam();
 
 	const char* name() override;

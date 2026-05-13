@@ -180,8 +180,8 @@ void ModulesMenu::key2()
 
 	params[0] = new StringOutParam("Preset level");
 	params[0]->setDisplayPosition(ParamListMenu::leftPad + 4*6);
-	params[1] = new StringListParam(PresetDesc.control, {"On ", "Off"}, 3);
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, PresetDesc.level);
+	params[1] = new StringListParam(&PresetDesc.control, {"On ", "Off"}, 3);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &PresetDesc.level);
 
 	ParamListMenu* menu = new ParamListMenu(this, MENU_PRESET_VOLUME);
 	if(menu)

@@ -14,6 +14,7 @@ typedef struct
 	TParamDescriptor exprType;
 	TParamDescriptor exprCc;
 	TParamDescriptor exprLev;
+	TParamDescriptor exprCalibrate;
 	TParamDescriptor exprCalMin;
 	TParamDescriptor exprCalMax;
 	TParamDescriptor spdif;

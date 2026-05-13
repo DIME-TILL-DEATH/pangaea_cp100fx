@@ -35,15 +35,14 @@ public:
 		IndPan
 	};
 
-	BaseParam(gui_param_type paramType, const char* name, void* paramValuePtr);
-	BaseParam(gui_param_type paramType, const TParamDescriptor& paramDescriptor);
+	BaseParam(gui_param_type paramType, TParamDescriptor* paramDescriptor);
 	virtual ~BaseParam() {};
 
 	gui_param_type type() const {return m_type;};
 	virtual const char* name();
 
-	void setValuePtr(uint8_t* valuePtr) {m_valuePtr = valuePtr;};
-	uint8_t* valuePtr() const {return m_valuePtr;};
+	void setValuePtr(uint8_t* valuePtr) {m_descriptor->ptr = valuePtr;};
+	void* valuePtr() const {return m_descriptor->ptr;};
 
 	virtual uint32_t value() const;
 	virtual void increaseParam();
@@ -55,9 +54,8 @@ public:
 
 	virtual void select(bool& encoderPressed);
 
-	void setDspAddress(dsp_module_address_t moduleAddress, uint8_t bytePosition);
-	dsp_module_address_t moduleAddress() const {return m_moduleAddress;};
-	uint8_t bytePosition() const {return m_bytePosition;};
+	dsp_module_address_t moduleAddress() const {return m_descriptor->dspAddress;};
+	uint8_t bytePosition() const {return m_descriptor->dspAddress;};
 
 	bool disabled() {return m_disabled;};
 	void setDisabled(bool disabled) {m_disabled = disabled;};
@@ -85,15 +83,12 @@ public:
 	static int16_t encSpeedDec(int16_t data, int16_t min, uint8_t stepSize = 1);
 
 protected:
-	const char* m_name;
-
 	TIndicatorType m_indicatorType{IndNone};
 
 	bool m_disabled{false};
 	bool m_inverse{false};
 
-	dsp_module_address_t m_moduleAddress;
-	uint8_t m_bytePosition{NOT_SEND_POS};
+	TParamDescriptor* m_descriptor{nullptr};
 
 	uint8_t m_xDisplayPosition{58};
 
@@ -103,12 +98,8 @@ protected:
 
 	gui_param_type m_type{GUI_PARAMETER_DUMMY};
 
-	uint8_t* m_valuePtr;
-
 	int32_t m_minValue{0};
 	int32_t m_maxValue{127};
-
-	setter_handler_t m_setterHandler{nullptr};
 
 	void encoderSpeedIncrease();
 	void encoderSpeedDecrease();

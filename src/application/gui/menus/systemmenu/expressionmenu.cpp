@@ -98,23 +98,23 @@ AbstractMenu* ExpressionMenu::create(AbstractMenu* parent)
 	const uint8_t paramNum = 4;
 	BaseParam* params[paramNum];
 
-	CustomParam* exprTypeParam = new CustomParam(CustomParam::TDisplayType::Custom, SysSettingsDesc.exprType);
+	CustomParam* exprTypeParam = new CustomParam(CustomParam::TDisplayType::Custom, &SysSettingsDesc.exprType);
 	exprTypeParam->increaseCallback = exprTypeIncreaseCallback;
 	exprTypeParam->decreaseCallback = exprTypeDecreaseCallback;
 	exprTypeParam->printCallback = exprTypePrintCallback;
 	exprTypeParam->setDisplayPosition(60);
 	params[0] = exprTypeParam;
 
-	CustomParam* calibrateMinParam = new CustomParam(CustomParam::TDisplayType::Custom, "Calibrate", nullptr);
+	CustomParam* calibrateMinParam = new CustomParam(CustomParam::TDisplayType::Custom, &SysSettingsDesc.exprCalibrate);
 	calibrateMinParam->printCallback = calibratePrintCallback;
 	params[1] = calibrateMinParam;
 
-	CustomParam* ccParam = new CustomParam(CustomParam::TDisplayType::Custom, SysSettingsDesc.exprCc);
+	CustomParam* ccParam = new CustomParam(CustomParam::TDisplayType::Custom, &SysSettingsDesc.exprCc);
 	ccParam->printCallback = ccParamPrintCallback;
 	ccParam->setDisplayPosition(84);
 	params[2] = ccParam;
 
-	StringListParam* levelParam = new StringListParam(SysSettingsDesc.exprLev, {"Off", "On "}, 4);
+	StringListParam* levelParam = new StringListParam(&SysSettingsDesc.exprLev, {"Off", "On "}, 4);
 	levelParam->setDisplayPosition(84);
 	params[3] = levelParam;
 

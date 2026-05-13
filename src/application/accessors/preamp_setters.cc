@@ -58,13 +58,23 @@ static TParamDescriptor highParamDesc = {
 	.setterHandler = preamp_high_setter
 };
 
+static TParamDescriptor dummyDesc = {
+	.ptr = &currentPreset.modulesBuf[PREAMP_0],
+	.handlerStr = "",
+	.dspAddress = DSP_ADDRESS_PREAMP,
+	.dspPosition = NOT_SEND_POS,
+	.name = "",
+	.setterHandler = nullptr
+};
+
 TPreampDesc PreampDesc = {
 	.on = onParamDesc,
 	.gain = gainParamDesc,
 	.volume = volumeParamDesc,
 	.low = lowParamDesc,
 	.mid = midParamDesc,
-	.high = highParamDesc
+	.high = highParamDesc,
+	.dummy = dummyDesc
 };
 
 void preamp_on_setter(uint32_t value)

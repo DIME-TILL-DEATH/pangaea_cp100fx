@@ -7,27 +7,10 @@
 #include "sharc_task.h"
 
 
-BaseParam::BaseParam(gui_param_type paramType, const char* name, void* paramValuePtr)
+BaseParam::BaseParam(gui_param_type paramType, TParamDescriptor* paramDescriptor)
 {
 	m_type = paramType;
-	m_name = name;
-	m_valuePtr = (uint8_t*)paramValuePtr;
-}
-
-BaseParam::BaseParam(gui_param_type paramType, const TParamDescriptor& paramDescriptor)
-{
-	m_type = paramType;
-	m_name = paramDescriptor.name;
-	m_valuePtr = (uint8_t*)paramDescriptor.ptr;
-	m_setterHandler = paramDescriptor.setterHandler;
-	m_moduleAddress = paramDescriptor.dspAddress;
-	m_bytePosition = paramDescriptor.dspPosition;
-}
-
-void BaseParam::setDspAddress(dsp_module_address_t moduleAddress, uint8_t bytePosition)
-{
-	m_moduleAddress = moduleAddress;
-	m_bytePosition = bytePosition;
+	m_descriptor = paramDescriptor;
 }
 
 void BaseParam::setDisplayPosition(uint8_t xCoord)
@@ -61,8 +44,14 @@ void BaseParam::select(bool& selected)
 
 const char* BaseParam::name()
 {
+	if(!m_descriptor) return "";
+
 	if(m_disabled) return " -- ";
-	else return m_name;
+	else
+	{
+		if(!m_descriptor) return "";
+		else return m_descriptor->name;
+	}
 }
 
 void BaseParam::setByteSize(uint8_t size)
@@ -77,11 +66,11 @@ void BaseParam::setIndicatorType(TIndicatorType indicatorType)
 
 uint32_t BaseParam::value() const
 {
-	if(!m_valuePtr) return 0;
+	if(!m_descriptor) return 0;
 	else
 	{
 		uint32_t fullValue = 0;
-		kgp_sdk_libc::memcpy(&fullValue, m_valuePtr, m_byteSize);
+		kgp_sdk_libc::memcpy(&fullValue, m_descriptor->ptr, m_byteSize);
 		return fullValue + m_offset;
 	}
 }
@@ -93,59 +82,58 @@ void BaseParam::setInverse(bool isInverse)
 
 void BaseParam::increaseParam()
 {
-	if(!m_valuePtr) return;
+	if(!m_descriptor) return;
 
 	int32_t data = 0;
-	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
-	else data = (int8_t)(*m_valuePtr);
+	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
+	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
 	if(data < m_maxValue)
 	{
 		if(m_type != GUI_PARAMETER_NUM)
 			encoderSpeedIncrease();
 		else
-			*m_valuePtr += m_stepSize;
+			*(uint8_t*)(m_descriptor->ptr) += m_stepSize;
 	}
 }
 
 void BaseParam::decreaseParam()
 {
-	if(!m_valuePtr) return;
+	if(!m_descriptor) return;
 
 	int32_t data = 0;
-	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
-	else data = (int8_t)(*m_valuePtr);
+	kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
 
 	if(data > m_minValue)
 	{
 		if(m_type != GUI_PARAMETER_NUM)
 			encoderSpeedDecrease();
 		else
-			*m_valuePtr -= m_stepSize;
+			*(uint8_t*)(m_descriptor->ptr) -= m_stepSize;
 	}
 }
 
 void BaseParam::setData()
 {
-	if(m_setterHandler)
+	if(!m_descriptor) return;
+
+	if(m_descriptor->setterHandler)
 	{
 		int32_t data = 0;
-		if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
-		else data = (int8_t)(*m_valuePtr);
-
-		m_setterHandler(data);
+		kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
+		m_descriptor->setterHandler(data);
 		return;
 	}
 
-	if(m_bytePosition == NOT_SEND_POS) return;
+	if(m_descriptor->dspPosition == NOT_SEND_POS) return;
 
 	for(uint8_t i=0; i<m_byteSize; i++)
 	{
-		if(m_bytePosition == PARAM_EQUAL_POS)
-			SharcTask->setParameter(m_moduleAddress, *(m_valuePtr+i) + m_offset, 0);
+		if(m_descriptor->dspPosition == PARAM_EQUAL_POS)
+			SharcTask->setParameter(m_descriptor->dspAddress, *((uint8_t*)m_descriptor->ptr + i) + m_offset, 0);
 		else
-			SharcTask->setParameter(m_moduleAddress,	m_bytePosition + i,
-					*(m_valuePtr + m_byteSize - 1 - i) + m_offset);
+			SharcTask->setParameter(m_descriptor->dspAddress,	m_descriptor->dspPosition + i,
+					*((uint8_t*)m_descriptor->ptr + m_byteSize - 1 - i) + m_offset);
 	}
 }
 
@@ -161,19 +149,19 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 	switch(m_type)
 	{
 		case BaseParam::GUI_PARAMETER_LEVEL:
-			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_MIX:
-			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_PAN:
-			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_VOLUME:
-			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_NUM:
-			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		default: break;
 	}
@@ -184,8 +172,8 @@ void BaseParam::encoderSpeedIncrease()
 	TIM_Cmd(TIM6, DISABLE);
 
 	int32_t data = 0;
-	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
-	else data = (int8_t)(*m_valuePtr);
+	kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
+
 
 	if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update))
 	{
@@ -217,7 +205,7 @@ void BaseParam::encoderSpeedIncrease()
 		}
 	}
 
-	kgp_sdk_libc::memcpy(m_valuePtr, &data, m_byteSize);
+	kgp_sdk_libc::memcpy(m_descriptor->ptr, &data, m_byteSize);
 
 	TIM_SetCounter(TIM6, 0);
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
@@ -226,11 +214,13 @@ void BaseParam::encoderSpeedIncrease()
 
 void BaseParam::encoderSpeedDecrease()
 {
+	if(!m_descriptor) return;
+
 	TIM_Cmd(TIM6, DISABLE);
 
 	int32_t data = 0;
-	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_valuePtr, m_byteSize);
-	else data = (int8_t)(*m_valuePtr);
+	kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
+
 
 	if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update))
 	{
@@ -262,7 +252,7 @@ void BaseParam::encoderSpeedDecrease()
 		}
 	}
 
-	kgp_sdk_libc::memcpy(m_valuePtr, &data, m_byteSize);
+	kgp_sdk_libc::memcpy(m_descriptor->ptr, &data, m_byteSize);
 
 	TIM_SetCounter(TIM6, 0);
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);

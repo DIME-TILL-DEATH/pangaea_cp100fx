@@ -1,13 +1,12 @@
 #include "stringoutparam.h"
 
-#include "../../../tasks/display_task.h"
+#include "display_task.h"
 #include "abstractmenu.h"
 
 StringOutParam::StringOutParam(const char* stringPtr)
-	:BaseParam(BaseParam::GUI_PARAMETER_STRING_OUT, stringPtr, nullptr)
+	:BaseParam(BaseParam::GUI_PARAMETER_STRING_OUT, nullptr)
 {
 	m_stringPtr = stringPtr;
-	m_name = "";
 }
 
 void StringOutParam::setRunning(bool enable, AbstractMenu* owner)

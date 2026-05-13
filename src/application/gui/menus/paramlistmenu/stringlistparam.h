@@ -6,9 +6,7 @@
 class StringListParam : public BaseParam
 {
 public:
-	StringListParam(const char* name, uint8_t* paramValuePtr,
-			std::initializer_list<const char*> stringList, uint8_t maxStringLength);
-	StringListParam(const TParamDescriptor& paramDesc,
+	StringListParam(TParamDescriptor* paramDesc,
 			std::initializer_list<const char*> stringList, uint8_t maxStringLength);
 	~StringListParam();
 

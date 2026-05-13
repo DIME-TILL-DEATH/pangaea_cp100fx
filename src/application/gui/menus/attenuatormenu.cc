@@ -14,9 +14,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCount = 2;
 	BaseParam* params[paramCount];
 
-	uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator : &sys_para[System::ATTENUATOR];
-
-	params[0] = new StringListParam(AttenuatorDesc.volume,
+	params[0] = new StringListParam(&AttenuatorDesc.volume,
 			 {" +4 dB", " +3 dB", " +2 dB", " +1 dB", "  0 dB", " -1 dB", " -2 dB", " -3 dB",
 			" -4 dB", " -5 dB", " -6 dB", " -7 dB", " -8 dB", " -9 dB", "-10 dB", "-11 dB", "-12 dB",
 			"-13 dB", "-14 dB", "-15 dB", "-16 dB", "-17 dB", "-18 dB", "-19 dB", "-20 dB", "-21 dB",
@@ -27,7 +25,7 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	params[0]->setDisplayPosition(70);
 	params[0]->setInverse(true);
 
-	params[1] = new StringListParam(AttenuatorDesc.source, {"Global", "Preset"}, 7);
+	params[1] = new StringListParam(&AttenuatorDesc.source, {"Global", "Preset"}, 7);
 	params[1]->setDisplayPosition(76);
 
 	setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
@@ -36,65 +34,6 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	setIcon(false, ICON_NONE);
 
 	DisplayTask->potWrite();
-}
-
-void AttenuatorMenu::encoderClockwise()
-{
-	if(m_encoderKnobSelected)
-	{
-		if(!m_paramsList[m_currentParamNum]->inverse()) m_paramsList[m_currentParamNum]->increaseParam();
-		else m_paramsList[m_currentParamNum]->decreaseParam();
-
-		if(m_currentParamNum == 1)
-		{
-			uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator : &sys_para[System::ATTENUATOR];
-			StringListParam* attValueParam = static_cast<StringListParam*>(m_paramsList[0]);
-			attValueParam->setValuePtr(valuePtr);
-
-			refresh();
-		}
-
-//		IOTask->potWrite();
-		m_paramsList[m_currentParamNum]->setData();
-		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
-	}
-	else
-	{
-		if(m_currentParamNum < m_paramsCount - 1) m_currentParamNum++;
-
-		refresh();
-		restartBlinking(0);
-	}
-}
-
-void AttenuatorMenu::encoderCounterClockwise()
-{
-	if(m_encoderKnobSelected)
-	{
-		if(!m_paramsList[m_currentParamNum]->inverse()) m_paramsList[m_currentParamNum]->decreaseParam();
-		else m_paramsList[m_currentParamNum]->increaseParam();
-
-		if(m_currentParamNum == 1)
-		{
-			uint8_t* valuePtr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator : &sys_para[System::ATTENUATOR];
-			StringListParam* attValueParam = static_cast<StringListParam*>(m_paramsList[0]);
-			attValueParam->setValuePtr(valuePtr);
-
-			refresh();
-		}
-
-		m_paramsList[m_currentParamNum]->setData();
-//		IOTask->potWrite();
-
-		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
-	}
-	else
-	{
-		if(m_currentParamNum > 0) m_currentParamNum--;
-
-		refresh();
-		restartBlinking(0);
-	}
 }
 
 void AttenuatorMenu::keyUp()

@@ -110,6 +110,25 @@ bool SystemMenu::editingFinished()
 	return true;
 }
 
+
+static TParamDescriptor tapPopupDesc = {
+	.ptr = &sys_para[System::TAP_SCREEN_POPUP],
+	.handlerStr = "",
+	.dspAddress = DSP_NOT_USED,
+	.dspPosition = NOT_SEND_POS,
+	.name = "TAP Popup",
+	.setterHandler = nullptr
+};
+
+static TParamDescriptor eqViewDesc = {
+	.ptr = &sys_para[System::EQ_SCREEN_MODE],
+	.handlerStr = "",
+	.dspAddress = DSP_NOT_USED,
+	.dspPosition = NOT_SEND_POS,
+	.name = "EQ view",
+	.setterHandler = nullptr
+};
+
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 {
 	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
@@ -117,15 +136,15 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	const uint8_t paramNum = 16;
 	BaseParam* params[paramNum];
 
-	params[0] = new StringListParam(SysSettingsDesc.cabMode, {"CabSim On ", "CabSim Off"}, 10);
+	params[0] = new StringListParam(&SysSettingsDesc.cabMode, {"CabSim On ", "CabSim Off"}, 10);
 	params[0]->setDisplayPosition(36);
 
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, SysSettingsDesc.midiChannel);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, &SysSettingsDesc.midiChannel);
 	params[1]->setDisplayPosition(60);
 	params[1]->setBounds(0, 15);
 	params[1]->setScaling(1, 1);
 #ifdef __MONO_MOD__
-	params[2] = new StringListParam(SysSettingsDesc.cabNum,
+	params[2] = new StringListParam(&SysSettingsDesc.cabNum,
 				{"1 L+R", "1R AP", "2 L+R", "1R A ", "1R P ", " 1 R "}, 6);
 #endif
 
@@ -135,7 +154,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 #endif
 	params[2]->setDisplayPosition(60);
 
-	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Expression", &sys_para[System::EXPR_TYPE]);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, &SysSettingsDesc.exprType);
 	customParam->decreaseCallback = expressionDescrease;
 	customParam->increaseCallback = expressionIncrease;
 	customParam->printCallback = expressionPrint;
@@ -146,45 +165,45 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 
 	params[5] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::createMidiPcMapMenu, systemMenu);
 
-	customParam = new CustomParam(CustomParam::TDisplayType::String, "Tempo", &sys_para[System::TAP_TYPE]);
+	customParam = new CustomParam(CustomParam::TDisplayType::String, &SysSettingsDesc.tempo);
 	customParam->setStrings({"Preset   ", "Global   ", "Glob+MIDI"}, 10);
 	customParam->setDisplayPosition(leftPad + 6 * 6);
 	customParam->decreaseCallback = tempoDecrease;
 	customParam->increaseCallback = tempoIncrease;
 	params[6] = customParam;
 
-	params[7] = new StringListParam("TAP Popup", &sys_para[System::TAP_SCREEN_POPUP], {"On ", "Off"}, 4);
+	params[7] = new StringListParam(&tapPopupDesc, {"On ", "Off"}, 4);
 	params[7]->setDisplayPosition(leftPad + 6 * 10);
 
-	params[8] = new StringListParam(SysSettingsDesc.spdif, {"Main Output", " Dry Input "}, 12);
+	params[8] = new StringListParam(&SysSettingsDesc.spdif, {"Main Output", " Dry Input "}, 12);
 	params[8]->setDisplayPosition(44);
 
-	customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Tuner contr", &sys_para[System::TUNER_EXTERNAL]);
+	customParam = new CustomParam(CustomParam::TDisplayType::Custom, &SysSettingsDesc.tunerCtrl);
 	customParam->decreaseCallback = tunerExtDescrease;
 	customParam->increaseCallback = tunerExtIncrease;
 	customParam->printCallback = tunerExtPrint;
 	customParam->keyDownCallback = tunerExtKeyDown;
 	params[9] = customParam;
 
-	params[10] = new StringListParam(SysSettingsDesc.timeFormat, {"Sec", "BPM"}, 3);
+	params[10] = new StringListParam(&SysSettingsDesc.timeFormat, {"Sec", "BPM"}, 3);
 	params[10]->setDisplayPosition(39);
 
-	params[11] = new StringListParam(SysSettingsDesc.swapConfig, {"Off", "On "}, 3);
+	params[11] = new StringListParam(&SysSettingsDesc.swapConfig, {"Off", "On "}, 3);
 	params[11]->setDisplayPosition(78);
 
-	customParam = new CustomParam(CustomParam::TDisplayType::Number, "Speed tun", &sys_para[System::TUNER_SPEED]);
+	customParam = new CustomParam(CustomParam::TDisplayType::Number, &SysSettingsDesc.tunerSpeed);
 	customParam->setDisplayPosition(78);
 	customParam->decreaseCallback = tunerSpeedDescrease;
 	customParam->increaseCallback = tunerSpeedIncrease;
 	params[12] = customParam;
 
-	params[13] = new StringListParam("EQ View", &sys_para[System::EQ_SCREEN_MODE], {"Graph ", "Bar  "}, 5);
+	params[13] = new StringListParam(&eqViewDesc, {"Graph ", "Bar  "}, 5);
 	params[13]->setDisplayPosition(leftPad + 6 * 12);
 
-	params[14] = new StringListParam(MasterEqDesc.on, {"Off", "On "}, 4);
+	params[14] = new StringListParam(&MasterEqDesc.on, {"Off", "On "}, 4);
 	params[14]->setDisplayPosition(leftPad + 6 * 12);
 
-	params[15] = new StringListParam(AttenuatorDesc.source, {"Global ", "Preset"}, 7);
+	params[15] = new StringListParam(&AttenuatorDesc.source, {"Global ", "Preset"}, 7);
 	params[15]->setDisplayPosition(leftPad + 6 * 12);
 
 	systemMenu->setParams(params, paramNum);
