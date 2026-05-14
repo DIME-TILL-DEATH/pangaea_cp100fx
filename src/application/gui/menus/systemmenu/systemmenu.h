@@ -24,7 +24,6 @@ private:
 
 	bool editingFinished();
 
-	static AbstractMenu* createFootswitchMenu(AbstractMenu* parent);
 	static AbstractMenu* createMidiPcMapMenu(AbstractMenu* parent);
 
 	static void expressionPrint(void* parameter);

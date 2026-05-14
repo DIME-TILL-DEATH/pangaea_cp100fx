@@ -1,103 +1,42 @@
-#include <eeprom.h>
 #include "fswtypemenu.h"
-
-#include "system.h"
-#include "tasks/display_task.h"
-#include "tasks/io_task.h"
-#include "tasks/ui_task.h"
-
 #include "fswmodemenu.h"
 
-const uint8_t FswTypeMenu::strFswMenu[][12];
+#include "footswitch.h"
+#include "syssettings_handlers.h"
 
 FswTypeMenu::FswTypeMenu(AbstractMenu* parent)
+		:ParamListMenu(parent, MENU_FSW_TYPE)
 {
-	topLevelMenu = parent;
-	m_menuType = MENU_FSW_TYPE;
-
 }
 
-void FswTypeMenu::show(TShowMode showMode)
+AbstractMenu* FswTypeMenu::create(AbstractMenu* parent)
 {
-	currentMenu = this;
+	FswTypeMenu* fswTypeMenu = new FswTypeMenu(parent);
 
-	DisplayTask->Clear();
-	for(uint8_t i = 0; i<4; i++)
-		DisplayTask->StringOut(3, i, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strFswMenu[i]);
-	DisplayTask->ParamInd(58, 3, sys_para[System::FSW_SPEED]);
+	const uint8_t paramNum = 4;
+	BaseParam* params[paramNum];
 
-	restartBlinking(0);
+	params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "FSW-DOWN", &FswTypeMenu::createFswDownMenu, fswTypeMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "FSW-CONFIRM", &FswTypeMenu::createFswConfirmMenu, fswTypeMenu);
+	params[2] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "FSW-UP", &FswTypeMenu::createFswUpMenu, fswTypeMenu);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &SysSettingsDesc.fswSpeed);
+
+	fswTypeMenu->setParams(params, paramNum);
+	fswTypeMenu->setIcon(false, ICON_NONE);
+	return fswTypeMenu;
 }
 
-void FswTypeMenu::task()
+AbstractMenu* FswTypeMenu::createFswDownMenu(AbstractMenu* parent)
 {
-	if(!m_encoderKnobSelected)
-	{
-		DisplayTask->StringOut(3, m_parNum, Font::fntSystem, FONT_BLINKING, (uint8_t*)&strFswMenu[m_parNum]);
-	}
+	return new FswModeMenu(parent, Footswitch::FswButton::DOWN);
 }
 
-void FswTypeMenu::encoderPressed()
+AbstractMenu* FswTypeMenu::createFswConfirmMenu(AbstractMenu* parent)
 {
-	if(m_parNum<3)
-	{
-		shownChildMenu = new FswModeMenu(this, m_parNum);
-		shownChildMenu->show();
-	}
-	else
-	{
-		if(!m_encoderKnobSelected)
-		{
-			m_encoderKnobSelected = 1;
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsHighlight, (uint8_t*)&strFswMenu[m_parNum]);
-		}
-		else
-		{
-			m_encoderKnobSelected = 0;
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strFswMenu[m_parNum]);
-		}
-	}
-	restartBlinking(0);
+	return new FswModeMenu(parent, Footswitch::FswButton::CONFIRM);
 }
 
-void FswTypeMenu::encoderClockwise()
+AbstractMenu* FswTypeMenu::createFswUpMenu(AbstractMenu* parent)
 {
-	if(!m_encoderKnobSelected)
-	{
-		if(m_parNum<3)
-		{
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strFswMenu[m_parNum++]);
-		}
-	}
-	else
-	{
-		if(sys_para[System::FSW_SPEED]<127)
-		{
-			sys_para[System::FSW_SPEED] = BaseParam::encSpeedInc(sys_para[System::FSW_SPEED], 127);
-			DisplayTask->ParamInd(58, 3, sys_para[System::FSW_SPEED]);
-		}
-	}
-
-	restartBlinking(0);
-}
-
-void FswTypeMenu::encoderCounterClockwise()
-{
-	if(!m_encoderKnobSelected)
-	{
-		if(m_parNum>0)
-		{
-			DisplayTask->StringOut(3, m_parNum, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strFswMenu[m_parNum--]);
-		}
-	}
-	else
-	{
-		if(sys_para[System::FSW_SPEED])
-		{
-			sys_para[System::FSW_SPEED] = BaseParam::encSpeedDec(sys_para[System::FSW_SPEED], 0);
-			DisplayTask->ParamInd(58, 3, sys_para[System::FSW_SPEED]);
-		}
-	}
-
-	restartBlinking(0);
+	return new FswModeMenu(parent, Footswitch::FswButton::UP);
 }

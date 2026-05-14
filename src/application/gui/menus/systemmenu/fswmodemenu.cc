@@ -1,20 +1,21 @@
-#include <bitmaps.h>
-#include <eeprom.h>
 #include "fswmodemenu.h"
 
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/io_task.h"
-#include "../../../tasks/ui_task.h"
-#include "fswcontrolmenu.h"
+#include "bitmaps.h"
+#include "system.h"
+#include "eeprom.h"
 #include "footswitch.h"
 
-#include "system.h"
+#include "display_task.h"
+#include "io_task.h"
+#include "ui_task.h"
+
+#include "fswcontrolmenu.h"
 
 const uint8_t FswModeMenu::strMode[];
 const uint8_t FswModeMenu::strModeType[][7];
 const uint8_t FswModeMenu::strReleaseHold[][10];
 
-FswModeMenu::FswModeMenu(AbstractMenu* parent, uint8_t fswNumber)
+FswModeMenu::FswModeMenu(AbstractMenu* parent, Footswitch::FswButton fswNumber)
 {
 	topLevelMenu = parent;
 	m_menuType = MENU_FSW_MODE;
@@ -27,14 +28,24 @@ void FswModeMenu::show(TShowMode showMode)
 	currentMenu = this;
 
 	DisplayTask->Clear();
+	refresh();
+}
 
-	DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
-	DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
-
-	if(sys_para[System::FSW1_MODE+m_fswNumber])
+void FswModeMenu::refresh()
+{
+	if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::FswMode::Single)
 	{
-		DisplayTask->StringOut(10, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[0][0]);
-		DisplayTask->StringOut(80, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[1][0]);
+		if(m_parNum > 1) m_parNum = 0;
+		DisplayTask->Clear();
+		DisplayTask->StringOut(3, 0, Font::fntSystem, (Font::TFontState)(Font::fnsHighlight * (m_parNum == 0)), &strMode[0]);
+		DisplayTask->StringOut(40, 0, Font::fntSystem, (Font::TFontState)(Font::fnsHighlight * (m_parNum == 1)), &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
+	}
+	else
+	{
+		DisplayTask->StringOut(3, 0, Font::fntSystem, (Font::TFontState)(Font::fnsHighlight * (m_parNum == 0)), &strMode[0]);
+		DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
+		DisplayTask->StringOut(10, 2, Font::fntSystem, (Font::TFontState)(Font::fnsHighlight * (m_parNum == 1)), &strReleaseHold[0][0]);
+		DisplayTask->StringOut(80, 2, Font::fntSystem, (Font::TFontState)(Font::fnsHighlight * (m_parNum == 2)), &strReleaseHold[1][0]);
 	}
 
 	restartBlinking(0);
@@ -109,15 +120,15 @@ void FswModeMenu::encoderClockwise()
 		{
 			if(m_parNum<2)
 			{
-				if(m_parNum == 0)
-				{
-					DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
-
-				}
-				else
-				{
-					DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[m_parNum - 1][0]);
-				}
+//				if(m_parNum == 0)
+//				{
+//					DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
+//
+//				}
+//				else
+//				{
+//					DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[m_parNum - 1][0]);
+//				}
 				m_parNum++;
 
 				restartBlinking(0);
@@ -129,13 +140,13 @@ void FswModeMenu::encoderClockwise()
 			{
 				if(m_parNum == 0)
 				{
-					DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
+//					DisplayTask->StringOut(3, 0, Font::fntSystem, Font::fnsNormal, &strMode[0]);
 					m_parNum++;
 				}
-				else
-				{
-					DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsHighlight, &strModeType[0][0]);
-				}
+//				else
+//				{
+//					DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsHighlight, &strModeType[0][0]);
+//				}
 				restartBlinking(0);
 			}
 		}
@@ -144,14 +155,17 @@ void FswModeMenu::encoderClockwise()
 	{
 		if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Single)
 		{
-			sys_para[System::FSW1_MODE + m_fswNumber]++;
-			DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE+m_fswNumber]][0]);
-			DisplayTask->StringOut(10, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[0][0]);
-			DisplayTask->StringOut(80, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[1][0]);
+//			sys_para[System::FSW1_MODE + m_fswNumber]++;
+			Footswitch::setMode(m_fswNumber, Footswitch::Double);
+
+//			DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE+m_fswNumber]][0]);
+//			DisplayTask->StringOut(10, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[0][0]);
+//			DisplayTask->StringOut(80, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[1][0]);
 		}
 	}
 
-	restartBlinking(0);
+//	restartBlinking(0);
+	refresh();
 }
 
 void FswModeMenu::encoderCounterClockwise()
@@ -162,9 +176,9 @@ void FswModeMenu::encoderCounterClockwise()
 		{
 			if(m_parNum > 0)
 			{
-				DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[m_parNum-1][0]);
+//				DisplayTask->StringOut(10+(m_parNum-1)*70, 2, Font::fntSystem, Font::fnsNormal, &strReleaseHold[m_parNum-1][0]);
 				m_parNum--;
-				restartBlinking(0);
+//				restartBlinking(0);
 			}
 		}
 		else
@@ -172,8 +186,8 @@ void FswModeMenu::encoderCounterClockwise()
 			if(m_parNum > 0)
 			{
 				m_parNum--;
-				DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strModeType[m_parNum]);
-				restartBlinking(0);
+//				DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)&strModeType[m_parNum]);
+//				restartBlinking(0);
 			}
 		}
 	}
@@ -181,11 +195,14 @@ void FswModeMenu::encoderCounterClockwise()
 	{
 		if(sys_para[System::FSW1_MODE + m_fswNumber] == Footswitch::Double)
 		{
-			sys_para[System::FSW1_MODE + m_fswNumber]--;
-			DisplayTask->ClearString(10, 2, Font::fntSystem, 35);
-			DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
+//			sys_para[System::FSW1_MODE + m_fswNumber]--;
+			Footswitch::setMode(m_fswNumber, Footswitch::Single);
+
+//			DisplayTask->ClearString(10, 2, Font::fntSystem, 35);
+//			DisplayTask->StringOut(40, 0, Font::fntSystem, Font::fnsNormal, &strModeType[sys_para[System::FSW1_MODE + m_fswNumber]][0]);
 		}
 	}
 
-	restartBlinking(0);
+//	restartBlinking(0);
+	refresh();
 }

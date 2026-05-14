@@ -154,7 +154,7 @@ static TParamDescriptor fswSpeedParamDesc = {
 	.handlerStr = "sys_fsw_speed",
 	.dspAddress = DSP_NOT_USED,
 	.dspPosition = NOT_SEND_POS,
-	.name = "Footswitch Speed",
+	.name = "Speed FS",
 	.setterHandler = fsw_speed_setter
 };
 

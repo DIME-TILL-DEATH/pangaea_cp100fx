@@ -161,7 +161,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	customParam->keyDownCallback = expressionKeyDown;
 	params[3] = customParam;
 
-	params[4] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Footswitch", &SystemMenu::createFootswitchMenu, systemMenu);
+	params[4] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Footswitch", &FswTypeMenu::create, systemMenu);
 	params[5] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::createMidiPcMapMenu, systemMenu);
 
 	params[6] = new StringListParam(&SysSettingsDesc.tempo, {"Preset   ", "Global   ", "Glob+MIDI"}, 10);
@@ -201,11 +201,6 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	systemMenu->setParams(params, paramNum);
 
 	return systemMenu;
-}
-
-AbstractMenu* SystemMenu::createFootswitchMenu(AbstractMenu* parent)
-{
-	return new FswTypeMenu(parent);
 }
 
 AbstractMenu* SystemMenu::createMidiPcMapMenu(AbstractMenu* parent)

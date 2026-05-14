@@ -1,7 +1,7 @@
-#include <eeprom.h>
 #include "fswcontrolmenu.h"
 
 #include "footswitch.h"
+#include "eeprom.h"
 
 #include "display_task.h"
 #include "io_task.h"

@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include "controller.h"
+#include "footswitch.h"
 #include "modules.h"
 #include "eeprom.h"
 
@@ -587,22 +588,27 @@ static void sys_settings_command_handler(TTranslator *rl, TTranslator::const_sym
 	msg_console("\n");
 }
 
+
 static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	msg_console("%s\r", args[0]);
-	if (count > 3)
+	if(count > 3)
 	{
+//		console_printf("%s\r", Footswitch::fswCommandString);
+
 		char *end;
 		uint8_t fswNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+		if(fswNum > Footswitch::FswButton::UP)
+			console_printf("%s\rINCORRECT_ARGS\n", Footswitch::fswCommandString);
+		Footswitch::FswButton fswButton = static_cast<Footswitch::FswButton>(fswNum);
+
 		std::emb_string command = args[2];
 		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
 
-		msg_console("%d\r%s\r%d", fswNum, args[2], value);
-		if(command == "mode")
-		{
-			sys_para[System::FSW1_MODE + fswNum] = value;
-			goto ending;
-		}
+//		console_printf("%d\r%s\r%d", fswNum, args[2], value);
+
+		if(command == Footswitch::fswModeStringHandler)
+			Footswitch::setMode(fswButton, static_cast<Footswitch::FswMode>(value % 2));
+
 
 		if(command == "ptype")
 		{
@@ -635,11 +641,11 @@ static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_
 				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
 
 				sys_para[System::FSW1_PRESS_PR1 + fswNum*4 + value] = presetNum;
-				msg_console("\r%d", presetNum);
+				console_printf("\r%d", presetNum);
 			}
 			else
 			{
-				msg_console("INCORRECT_ARGS");
+				console_printf("INCORRECT_ARGS");
 			}
 			goto ending;
 		}
@@ -651,26 +657,31 @@ static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_
 				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
 
 				sys_para[System::FSW1_HOLD_PR1 + fswNum*4 + value] = presetNum;
-				msg_console("\r%d", presetNum);
+				console_printf("\r%d", presetNum);
 			}
 			else
 			{
-				msg_console("INCORRECT_ARGS");
+				console_printf("INCORRECT_ARGS");
 			}
 			goto ending;
 		}
 
-		msg_console("\rundefined type");
+		UITask->refreshMenu();
+
+//		console_printf("\rundefined type");
 	}
 	else
 	{
-		msg_console("iINCORRECT_ARGS");
+		console_printf("%s\rINCORRECT_ARGS\n", Footswitch::fswCommandString);
 	}
 
 ending:
 	EEPROM_DelayedSaveSystemData();
-	msg_console("\n");
+//	console_printf("\n");
 }
+
+
+
 //------------------------------------------------------------------------------
 void ConsoleSetCmdHandlers(TTranslator *translator)
 {

@@ -8,9 +8,14 @@
 #include "controllers_task.h"
 #include "ui_task.h"
 #include "midi_task.h"
+
+#include "console_helpers.h"
 #include "preset_accessors.h"
 
 #include "tunermenu.h"
+
+const char* Footswitch::fswCommandString = "fsw";
+const char* Footswitch::fswModeStringHandler = "mode";
 
 volatile uint8_t num_key_prog;
 volatile uint8_t contr_pr[3];
@@ -242,4 +247,10 @@ void Footswitch::hold_execute(uint8_t num)
 			break;
 		}
 	}
+}
+
+void Footswitch::setMode(Footswitch::FswButton button, Footswitch::FswMode mode)
+{
+	sys_para[System::FSW1_MODE + button] = mode;
+	console_printf("%s %d %s\r%d\n", Footswitch::fswCommandString, button, Footswitch::fswModeStringHandler, mode);
 }
