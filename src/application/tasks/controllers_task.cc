@@ -65,6 +65,7 @@ void TControllersTask::Code()
 					if(currentPreset.controller[i].src == cmd.midiCmd.source)
 						Controller::SetData(currentPreset.controller[i], cmd.midiCmd.data);
 				}
+				UITask->refreshMenu();
 				break;
 			}
 
@@ -75,6 +76,7 @@ void TControllersTask::Code()
 					if(currentPreset.controller[i].src == cmd.extCmd.source)
 						Controller::SetData(currentPreset.controller[i], cmd.extCmd.data);
 				}
+				UITask->refreshMenu();
 				break;
 			}
 

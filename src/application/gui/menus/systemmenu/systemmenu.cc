@@ -149,12 +149,12 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 #endif
 
 #ifdef __STEREO_MOD__
-	params[2] = new StringListParam(SysSettingsDesc.cabNum,
+	params[2] = new StringListParam(&SysSettingsDesc.cabNum,
 				{"2 L+R","1R AP","1R A ","1R P "," 1 R "}, 6);
 #endif
 	params[2]->setDisplayPosition(60);
 
-	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, &SysSettingsDesc.exprType);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, &SysSettingsDesc.exprOn);
 	customParam->decreaseCallback = expressionDescrease;
 	customParam->increaseCallback = expressionIncrease;
 	customParam->printCallback = expressionPrint;
@@ -162,15 +162,10 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[3] = customParam;
 
 	params[4] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Footswitch", &SystemMenu::createFootswitchMenu, systemMenu);
-
 	params[5] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "MIDI PC MAP", &SystemMenu::createMidiPcMapMenu, systemMenu);
 
-	customParam = new CustomParam(CustomParam::TDisplayType::String, &SysSettingsDesc.tempo);
-	customParam->setStrings({"Preset   ", "Global   ", "Glob+MIDI"}, 10);
-	customParam->setDisplayPosition(leftPad + 6 * 6);
-	customParam->decreaseCallback = tempoDecrease;
-	customParam->increaseCallback = tempoIncrease;
-	params[6] = customParam;
+	params[6] = new StringListParam(&SysSettingsDesc.tempo, {"Preset   ", "Global   ", "Glob+MIDI"}, 10);
+	params[6]->setDisplayPosition(leftPad + 6 * 6);
 
 	params[7] = new StringListParam(&tapPopupDesc, {"On ", "Off"}, 4);
 	params[7]->setDisplayPosition(leftPad + 6 * 10);
@@ -191,11 +186,8 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[11] = new StringListParam(&SysSettingsDesc.swapConfig, {"Off", "On "}, 3);
 	params[11]->setDisplayPosition(78);
 
-	customParam = new CustomParam(CustomParam::TDisplayType::Number, &SysSettingsDesc.tunerSpeed);
-	customParam->setDisplayPosition(78);
-	customParam->decreaseCallback = tunerSpeedDescrease;
-	customParam->increaseCallback = tunerSpeedIncrease;
-	params[12] = customParam;
+	params[12] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, &SysSettingsDesc.tunerSpeed);
+	params[12]->setDisplayPosition(78);
 
 	params[13] = new StringListParam(&eqViewDesc, {"Graph ", "Bar  "}, 5);
 	params[13]->setDisplayPosition(leftPad + 6 * 12);
@@ -230,12 +222,12 @@ void SystemMenu::expressionPrint(void* parameter)
 
 void SystemMenu::expressionDescrease(void* parameter)
 {
-	SysSettingsDesc.exprOn.setterHandler(0);
+	*(uint8_t*)(SysSettingsDesc.exprOn.ptr) &= 0x7F;
 }
 
 void SystemMenu::expressionIncrease(void* parameter)
 {
-	SysSettingsDesc.exprOn.setterHandler(1);
+	*(uint8_t*)(SysSettingsDesc.exprOn.ptr) |= 0x80;
 }
 
 void SystemMenu::expressionKeyDown(void* parameter)
@@ -256,54 +248,19 @@ void SystemMenu::tunerExtPrint(void* parameter)
 
 void SystemMenu::tunerExtDescrease(void* parameter)
 {
-	SysSettingsDesc.tunerCtrl.setterHandler(0);
+	*(uint8_t*)(SysSettingsDesc.tunerCtrl.ptr) &= 0x7F;
 }
 
 void SystemMenu::tunerExtIncrease(void* parameter)
 {
-	SysSettingsDesc.tunerCtrl.setterHandler(1);
+	*(uint8_t*)(SysSettingsDesc.tunerCtrl.ptr) |= 0x80;
 }
 
 void SystemMenu::tunerExtKeyDown(void* parameter)
 {
 	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr&0x80)
+	if(*valuePtr & 0x80)
 	{
 		currentMenu->showChild(new TunerExtMenu(currentMenu));
-	}
-}
-
-void SystemMenu::tempoDecrease(void* parameter)
-{
-	sys_para[System::GLOBAL_TAP_TIME] = 0;
-	if(sys_para[System::TAP_TYPE] > 0) sys_para[System::TAP_TYPE]--;
-	SysSettingsDesc.tempo.setterHandler(sys_para[System::TAP_TYPE]);
-}
-
-void SystemMenu::tempoIncrease(void* parameter)
-{
-	sys_para[System::GLOBAL_TAP_TIME] = 0;
-	if(sys_para[System::TAP_TYPE] < 2) sys_para[System::TAP_TYPE]++;
-	SysSettingsDesc.tempo.setterHandler(sys_para[System::TAP_TYPE]);
-}
-
-void SystemMenu::tunerSpeedDescrease(void* parameter)
-{
-	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr > 0)
-	{
-		*valuePtr = BaseParam::encSpeedDec(*valuePtr, 0);
-		SysSettingsDesc.tunerSpeed.setterHandler(*valuePtr);
-	}
-}
-
-void SystemMenu::tunerSpeedIncrease(void* parameter)
-{
-	uint8_t* valuePtr = static_cast<uint8_t*>(parameter);
-	if(*valuePtr < 127)
-	{
-		*valuePtr = BaseParam::encSpeedInc(*valuePtr, 127);
-		System::tun_del_val = (127-*valuePtr)*(90.0f/127.0f)+10.0f;
-		SysSettingsDesc.tunerSpeed.setterHandler(*valuePtr);
 	}
 }

@@ -85,7 +85,7 @@ void BaseParam::increaseParam()
 	if(!m_descriptor) return;
 
 	int32_t data = 0;
-	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
+	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
 	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
 	if(data < m_maxValue)
@@ -102,7 +102,8 @@ void BaseParam::decreaseParam()
 	if(!m_descriptor) return;
 
 	int32_t data = 0;
-	kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
+	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
+	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
 	if(data > m_minValue)
 	{
@@ -172,7 +173,8 @@ void BaseParam::encoderSpeedIncrease()
 	TIM_Cmd(TIM6, DISABLE);
 
 	int32_t data = 0;
-	kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
+	if(m_byteSize > 1) kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
+	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
 
 	if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update))
@@ -219,7 +221,8 @@ void BaseParam::encoderSpeedDecrease()
 	TIM_Cmd(TIM6, DISABLE);
 
 	int32_t data = 0;
-	kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize);
+	if(m_byteSize>1) kgp_sdk_libc::memcpy(&data, m_descriptor->ptr, m_byteSize); // only for positive values
+	else data = (int8_t)(*(uint8_t*)(m_descriptor->ptr));
 
 
 	if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update))

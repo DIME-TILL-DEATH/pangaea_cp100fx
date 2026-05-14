@@ -36,12 +36,6 @@ private:
 	static void tunerExtDescrease(void* parameter);
 	static void tunerExtIncrease(void* parameter);
 	static void tunerExtKeyDown(void* parameter);
-
-	static void tempoDecrease(void* parameter);
-	static void tempoIncrease(void* parameter);
-
-	static void tunerSpeedDescrease(void* parameter);
-	static void tunerSpeedIncrease(void* parameter);
 };
 
 #endif /* SYSTEMMENU_H_ */

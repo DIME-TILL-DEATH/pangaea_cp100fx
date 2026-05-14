@@ -1,5 +1,8 @@
 #include "syssettings_handlers.h"
 
+#include "adc.h"
+#include "gpio.h"
+
 #include "system.h"
 #include "controller.h"
 #include "modules.h"
@@ -7,7 +10,6 @@
 
 #include "console_helpers.h"
 
-#include "adc.h"
 #include "display_task.h"
 #include "ui_task.h"
 #include "sharc_task.h"
@@ -44,7 +46,7 @@ static TParamDescriptor exprOnParamDesc = {
 	.handlerStr = "sys_expr_on",
 	.dspAddress = DSP_NOT_USED,
 	.dspPosition = NOT_SEND_POS,
-	.name = "Expression On",
+	.name = "Expression",
 	.setterHandler = expr_on_setter
 };
 
@@ -53,7 +55,7 @@ static TParamDescriptor exprTypeParamDesc = {
 	.handlerStr = "sys_expr_type",
 	.dspAddress = DSP_NOT_USED,
 	.dspPosition = NOT_SEND_POS,
-	.name = "Expression",
+	.name = "Type",
 	.setterHandler = expr_type_setter
 };
 
@@ -184,16 +186,6 @@ void cab_mode_setter(uint32_t value)
 	EEPROM_DelayedSaveSystemData();
 }
 
-// Cabinet number setter
-/*
-// OLD VERSION (command handler):
-static void cab_num_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
-{
-	default_param_handler(&sys_para[System::CAB_SIM_CONFIG], args, count);
-	SharcTask->setParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0);
-	EEPROM_DelayedSaveSystemData();
-}
-*/
 void cab_num_setter(uint32_t value)
 {
 	uint8_t* param_ptr = (uint8_t*)cabNumParamDesc.ptr;
@@ -213,7 +205,7 @@ void midi_ch_setter(uint32_t value)
 
 void expr_on_setter(uint32_t value)
 {
-	if(!value)
+	if(!(value & 0x80))
 	{
 		ADC_SetState(0);
 		sys_para[System::EXPR_TYPE] &= 0x7f;
@@ -235,7 +227,9 @@ void expr_type_setter(uint32_t value)
 
 	sys_para[System::EXPR_TYPE] = val | (sys_para[System::EXPR_TYPE] & 0x80);
 
-	if((sys_para[System::EXPR_TYPE] & 0x7f) > 2)
+	HW_AdcPinInit();
+
+	if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
 		SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127, 0);
 
 	console_printf("%s\r%02x\n", exprTypeParamDesc.handlerStr, sys_para[System::EXPR_TYPE]);
@@ -305,17 +299,13 @@ void tuner_speed_setter(uint32_t value)
 
 void tuner_ctrl_setter(uint32_t value)
 {
-	uint8_t val = value & 0x01;
-
-	if(!val)
+	if(!(value & 0x80))
 	{
-		if(sys_para[System::TUNER_EXTERNAL] & 0x80) 
-			sys_para[System::TUNER_EXTERNAL] &= ~0x80;
+		sys_para[System::TUNER_EXTERNAL] &= 0x7F;
 	}
 	else
 	{
-		if(!(sys_para[System::TUNER_EXTERNAL] & 0x80)) 
-			sys_para[System::TUNER_EXTERNAL] |= 0x80;
+		sys_para[System::TUNER_EXTERNAL] |= 0x80;
 	}
 
 	console_printf("%s\r%02x\n", tunerCtrlParamDesc.handlerStr, sys_para[System::TUNER_EXTERNAL]);

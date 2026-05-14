@@ -123,7 +123,6 @@ AbstractMenu* ExpressionMenu::create(AbstractMenu* parent)
 	return expressionMenu;
 }
 
-
 void ExpressionMenu::exprTypePrintCallback(void* parameter)
 {
 	static constexpr uint8_t strExprType[][12] = {"   Off     ", "Std. Volume", "Alt. Volume", "Std. CC    ", "Alt. CC    "};
@@ -133,24 +132,14 @@ void ExpressionMenu::exprTypePrintCallback(void* parameter)
 
 void ExpressionMenu::exprTypeIncreaseCallback(void* parameter)
 {
-	if((sys_para[System::EXPR_TYPE]&0x7f) < 4)
-	{
+	if((sys_para[System::EXPR_TYPE]&0x7f) < EXPR_TYPE_CC_ALT)
 		sys_para[System::EXPR_TYPE]++;
-		HW_AdcPinInit();
-		if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
-			SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
-	}
 }
 
 void ExpressionMenu::exprTypeDecreaseCallback(void* parameter)
 {
-	if((sys_para[System::EXPR_TYPE]&0x7f)>1)
-	{
+	if((sys_para[System::EXPR_TYPE]&0x7f) > EXPR_TYPE_VOL_STD)
 		sys_para[System::EXPR_TYPE]--;
-		HW_AdcPinInit();
-		if((sys_para[System::EXPR_TYPE] & 0x7f) > EXPR_TYPE_VOL_ALT)
-			SharcTask->setParameter(DSP_ADDRESS_MASTER_VOLUME_CONTROL, 127);
-	}
 }
 
 void ExpressionMenu::ccParamPrintCallback(void* parameter)
