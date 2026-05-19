@@ -1,8 +1,8 @@
-#include <eeprom.h>
 #include "midi_task.h"
 
 #include "system.h"
 #include "preset.h"
+#include "eeprom.h"
 
 #include "display_task.h"
 #include "io_task.h"
@@ -12,6 +12,8 @@
 #include "tunermenu.h"
 #include "tunerextmenu.h"
 #include "controllersmenu.h"
+
+#include "console_helpers.h"
 #include "preset_accessors.h"
 
 TMidiTask *MidiTask = nullptr;
@@ -269,4 +271,10 @@ void ISR_midi_recieve()
 	{
 		MidiTask->uartRcv(uart_buf);
 	}
+}
+
+void TMidiTask::setMidiPcMap(uint8_t pcCommand, uint8_t presetNum)
+{
+	sys_para[System::MIDI_MAP_START + pcCommand] = presetNum;
+	console_printf("midi_map %x\r%x\n", pcCommand, presetNum);
 }

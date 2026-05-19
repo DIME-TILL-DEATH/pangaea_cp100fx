@@ -11,6 +11,8 @@ public:
 	void show(TShowMode swhoMode = FirstShow) override;
 	void task() override;
 
+	void refresh() override;
+
 	void encoderPressed() override;
 	void encoderClockwise() override;
 	void encoderCounterClockwise() override;

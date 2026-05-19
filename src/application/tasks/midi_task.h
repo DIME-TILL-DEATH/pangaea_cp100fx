@@ -37,6 +37,8 @@ public:
 	void exprSend(uint8_t data);
 	void fswPressed(uint8_t data, uint8_t state);
 
+	void setMidiPcMap(uint8_t pcCommand, uint8_t presetNum);
+
 private:
 
 

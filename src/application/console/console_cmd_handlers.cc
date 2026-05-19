@@ -588,6 +588,21 @@ static void sys_settings_command_handler(TTranslator *rl, TTranslator::const_sym
 	msg_console("\n");
 }
 
+static void midi_map_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+{
+	if(count>2)
+	{
+		char *end;
+		uint8_t mapPos = kgp_sdk_libc::strtol(args[1], &end, 16);
+		uint8_t mapVal = kgp_sdk_libc::strtol(args[2], &end, 16);
+
+		MidiTask->setMidiPcMap(mapPos, mapVal);
+
+		UITask->refreshMenu();
+		EEPROM_DelayedSaveSystemData();
+	}
+}
+
 
 static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
@@ -681,6 +696,7 @@ void ConsoleSetCmdHandlers(TTranslator *translator)
 	translator->AddCommandHandler("tn", tuner_command_handler);
 
 	translator->AddCommandHandler("sys_settings", sys_settings_command_handler);
+	translator->AddCommandHandler("midi_map", midi_map_command_handler);
 	translator->AddCommandHandler("fsw", fsw_command_handler);
 
 	set_syssettings_handlers(translator);
