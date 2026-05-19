@@ -16,6 +16,12 @@
 
 const char* Footswitch::fswCommandString = "fsw";
 const char* Footswitch::fswModeStringHandler = "mode";
+const char* Footswitch::fswPressTypeStringHandler = "ptype";
+const char* Footswitch::fswHoldTypeStringHandler = "htype";
+const char* Footswitch::fswPressCcStringHandler = "cpressnum";
+const char* Footswitch::fswHoldCcStringHandler = "choldnum";
+const char* Footswitch::fswPressMapStringHandler = "ppressnum";
+const char* Footswitch::fswHoldMapStringHandler = "pholdnum";
 
 volatile uint8_t num_key_prog;
 volatile uint8_t contr_pr[3];
@@ -252,5 +258,41 @@ void Footswitch::hold_execute(uint8_t num)
 void Footswitch::setMode(Footswitch::FswButton button, Footswitch::FswMode mode)
 {
 	sys_para[System::FSW1_MODE + button] = mode;
-	console_printf("%s %d %s\r%d\n", Footswitch::fswCommandString, button, Footswitch::fswModeStringHandler, mode);
+	console_printf("%s %d %s\r%x\n", Footswitch::fswCommandString, button, Footswitch::fswModeStringHandler, mode);
+}
+
+void Footswitch::setPressType(Footswitch::FswButton button, Footswitch::FswType type)
+{
+	sys_para[System::FSW1_PRESS_TYPE + button] = type;
+	console_printf("%s %d %s\r%x\n", Footswitch::fswCommandString, button, Footswitch::fswPressTypeStringHandler, type);
+}
+
+void Footswitch::setHoldType(Footswitch::FswButton button, Footswitch::FswType type)
+{
+	sys_para[System::FSW1_HOLD_TYPE + button] = type;
+	console_printf("%s %d %s\r%x\n", Footswitch::fswCommandString, button, Footswitch::fswHoldTypeStringHandler, type);
+}
+
+void Footswitch::setPressCc(Footswitch::FswButton button, uint8_t ccValue)
+{
+	sys_para[System::FSW1_CTRL_PRESS_CC + button] = ccValue;
+	console_printf("%s %d %s\r%x\n", Footswitch::fswCommandString, button, Footswitch::fswPressCcStringHandler, ccValue);
+}
+
+void Footswitch::setHoldCc(Footswitch::FswButton button, uint8_t ccValue)
+{
+	sys_para[System::FSW1_CTRL_HOLD_CC + button] = ccValue;
+	console_printf("%s %d %s\r%x\n", Footswitch::fswCommandString, button, Footswitch::fswHoldCcStringHandler, ccValue);
+}
+
+void Footswitch::setPressMap(Footswitch::FswButton button, uint8_t mapNum, uint8_t presetNum)
+{
+	sys_para[System::FSW1_PRESS_PR1 + button*4 + mapNum] = presetNum;
+	console_printf("%s %d %s %d\r%x\n", Footswitch::fswCommandString, button, Footswitch::fswPressMapStringHandler, mapNum, presetNum);
+}
+
+void Footswitch::setHoldMap(Footswitch::FswButton button, uint8_t mapNum, uint8_t presetNum)
+{
+	sys_para[System::FSW1_HOLD_PR1 + button*4 + mapNum] = presetNum;
+	console_printf("%s %d %s %d\r%x\n", Footswitch::fswCommandString, button, Footswitch::fswHoldMapStringHandler, mapNum, presetNum);
 }

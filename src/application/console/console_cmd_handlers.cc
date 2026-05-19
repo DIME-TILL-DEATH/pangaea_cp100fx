@@ -593,91 +593,55 @@ static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_
 {
 	if(count > 3)
 	{
-//		console_printf("%s\r", Footswitch::fswCommandString);
-
 		char *end;
-		uint8_t fswNum = kgp_sdk_libc::strtol(args[1], &end, 16);
-		if(fswNum > Footswitch::FswButton::UP)
-			console_printf("%s\rINCORRECT_ARGS\n", Footswitch::fswCommandString);
+		uint8_t fswNum = kgp_sdk_libc::strtol(args[1], &end, 16) % 3;
 		Footswitch::FswButton fswButton = static_cast<Footswitch::FswButton>(fswNum);
 
 		std::emb_string command = args[2];
 		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
 
-//		console_printf("%d\r%s\r%d", fswNum, args[2], value);
-
 		if(command == Footswitch::fswModeStringHandler)
 			Footswitch::setMode(fswButton, static_cast<Footswitch::FswMode>(value % 2));
 
 
-		if(command == "ptype")
-		{
-			sys_para[System::FSW1_PRESS_TYPE + fswNum] = value;
-			goto ending;
-		}
+		if(command == Footswitch::fswPressTypeStringHandler)
+			Footswitch::setPressType(fswButton, static_cast<Footswitch::FswType>(value));
 
-		if(command == "htype")
-		{
-			sys_para[System::FSW1_HOLD_TYPE + fswNum] = value;
-			goto ending;
-		}
+		if(command == Footswitch::fswHoldTypeStringHandler)
+			Footswitch::setHoldType(fswButton, static_cast<Footswitch::FswType>(value));
 
-		if(command == "cpressnum")
-		{
-			sys_para[System::FSW1_CTRL_PRESS_CC + fswNum] = value;
-			goto ending;
-		}
+		if(command == Footswitch::fswPressCcStringHandler)
+			Footswitch::setPressCc(fswButton, value);
 
-		if(command == "choldnum")
-		{
-			sys_para[System::FSW1_CTRL_HOLD_CC + fswNum] = value;
-			goto ending;
-		}
+		if(command == Footswitch::fswHoldCcStringHandler)
+			Footswitch::setHoldCc(fswButton, value);
 
-		if(command == "ppressnum")
+		if(command == Footswitch::fswPressMapStringHandler)
 		{
 			if(count > 4)
 			{
 				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
-
-				sys_para[System::FSW1_PRESS_PR1 + fswNum*4 + value] = presetNum;
-				console_printf("\r%d", presetNum);
+				Footswitch::setPressMap(fswButton, value, presetNum);
 			}
-			else
-			{
-				console_printf("INCORRECT_ARGS");
-			}
-			goto ending;
 		}
 
-		if(command == "pholdnum")
+		if(command == Footswitch::fswHoldMapStringHandler)
 		{
 			if(count > 4)
 			{
 				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
+				Footswitch::setHoldMap(fswButton, value, presetNum);
+			}
 
-				sys_para[System::FSW1_HOLD_PR1 + fswNum*4 + value] = presetNum;
-				console_printf("\r%d", presetNum);
-			}
-			else
-			{
-				console_printf("INCORRECT_ARGS");
-			}
-			goto ending;
 		}
 
 		UITask->refreshMenu();
-
-//		console_printf("\rundefined type");
+		EEPROM_DelayedSaveSystemData();
 	}
 	else
 	{
 		console_printf("%s\rINCORRECT_ARGS\n", Footswitch::fswCommandString);
 	}
-
-ending:
-	EEPROM_DelayedSaveSystemData();
-//	console_printf("\n");
 }
 
 
@@ -701,7 +665,6 @@ void ConsoleSetCmdHandlers(TTranslator *translator)
 	translator->AddCommandHandler("remove", remove_command_handler);
 
 	translator->AddCommandHandler("copy_to", copyto_command_handler);
-
 
 	translator->AddCommandHandler("state", state_command_handler);
 	translator->AddCommandHandler("cntrls", cntrls_command_handler);
