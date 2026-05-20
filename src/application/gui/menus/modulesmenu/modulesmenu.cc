@@ -48,7 +48,7 @@ void ModulesMenu::show(TShowMode showMode)
 {
 	for(uint8_t i=0; i<modulesCount; i++)
 	{
-		modulesPrevState[i] = TModule("" , &prevEnabledState[i]);
+		modulesPrevState[i] = TModule("" , &prevEnabledState[i], nullptr);
 	}
 
 	currentMenu = this;
@@ -101,8 +101,7 @@ void ModulesMenu::encoderPressed()
 {
 	presetEdited = true;
 
-	*modules[m_numMenu].enablePtr = !((bool)*modules[m_numMenu].enablePtr);
-	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, modules[m_numMenu].dspEnablePosition, *modules[m_numMenu].enablePtr);
+	modules[m_numMenu].setterFunction(!(bool)*modules[m_numMenu].enablePtr);
 
 	*(modulesPrevState[m_numMenu].enablePtr) = *(modules[m_numMenu].enablePtr);
 
