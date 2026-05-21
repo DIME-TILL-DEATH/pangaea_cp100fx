@@ -1,7 +1,9 @@
-#include <eeprom.h>
 #include "dialog.h"
 
 #include "preset.h"
+#include "eeprom.h"
+
+#include "console_helpers.h"
 
 #include "display_task.h"
 #include "io_task.h"
@@ -113,6 +115,7 @@ void Dialog::keyUp()
 	{
 		case TDialogType::SaveChanges:
 		{
+			Preset::Change(currentPresetNumber); // update not saved data
 			topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
 			break;
 		}
@@ -140,13 +143,11 @@ void Dialog::encoderPressed()
 	switch(m_paramNum)
 	{
 		case 0:
-			Preset::Change(currentPresetNumber);
-
-
 			switch(m_dialogType)
 			{
 				case TDialogType::SaveChanges:
 				{
+					Preset::Change(currentPresetNumber);
 					topLevelMenu->returnFromChildMenu(TReturnMode::ReturnToRoot);
 					break;
 				}

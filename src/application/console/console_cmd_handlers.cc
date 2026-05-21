@@ -414,7 +414,7 @@ static void cntrls_command_handler(TTranslator *rl, TTranslator::const_symbol_ty
 
 static void pname_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	msg_console("%s\r", args[0]);
+	msg_console("%s\r", Preset::nameCommandString);
 	if(count > 1)
 	{
 		std::emb_string command = args[1];
@@ -424,6 +424,7 @@ static void pname_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 			consoleBusy = true;
 			getDataPartFromStream(rl, (char*)currentPreset.name, 15);
 			consoleBusy = false;
+			UITask->refreshMenu();
 		}
 	}
 	msg_console("%s\n", currentPreset.name);
@@ -431,7 +432,7 @@ static void pname_command_handler(TTranslator *rl, TTranslator::const_symbol_typ
 
 static void pcomment_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	msg_console("%s\r", args[0]);
+	msg_console("%s\r", Preset::commentCommandString);
 	if(count > 1)
 	{
 		std::emb_string command = args[1];
@@ -441,6 +442,7 @@ static void pcomment_command_handler(TTranslator *rl, TTranslator::const_symbol_
 			consoleBusy = true;
 			getDataPartFromStream(rl, (char*)currentPreset.comment, 15);
 			consoleBusy = false;
+			UITask->refreshMenu();
 		}
 	}
 	msg_console("%s\n", currentPreset.comment);
@@ -671,8 +673,8 @@ void ConsoleSetCmdHandlers(TTranslator *translator)
 
 	translator->AddCommandHandler("plist", plist_command_handler);
 
-	translator->AddCommandHandler("pname", pname_command_handler);
-	translator->AddCommandHandler("pcomment", pcomment_command_handler);
+	translator->AddCommandHandler(Preset::nameCommandString, pname_command_handler);
+	translator->AddCommandHandler(Preset::commentCommandString, pcomment_command_handler);
 
 	translator->AddCommandHandler(Controller::controllerCommandString, controller_command_handler);
 	translator->AddCommandHandler(Controller::pcoutCommandString, pcout_command_handler);

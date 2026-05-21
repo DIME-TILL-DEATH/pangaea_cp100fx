@@ -89,8 +89,6 @@ void preset_change_handler(uint32_t value)
 	MidiTask->pcSend(TMidiTask::TPcType::PC_INTERNAL, currentPresetNumber);
 
 	mainMenu->presetConfirm(); //update data in main menu
-
-	console_printf("pchange\r\n");
 }
 
 void pbrief_getter(uint32_t value)

@@ -238,6 +238,9 @@ typedef struct
 	uint8_t att;
 }TSelectionMask;
 
+extern const char* nameCommandString;
+extern const char* commentCommandString;
+
 extern uint16_t moog_time;
 extern uint16_t trem_time;
 

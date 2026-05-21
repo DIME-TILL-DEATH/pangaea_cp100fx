@@ -1,14 +1,8 @@
-#include <bitmaps.h>
-#include <eeprom.h>
 #include "nameeditmenu.h"
 
-#include "../../../tasks/controllers_task.h"
-#include "../../../tasks/display_task.h"
-#include "../../../tasks/filesystem_task.h"
-#include "../../../tasks/io_task.h"
-#include "../../../tasks/ui_task.h"
-#include "appdefs.h"
-#include "preset.h"
+#include "console_helpers.h"
+
+#include "display_task.h"
 
 const uint8_t NameEditMenu::ascii_low[];
 const uint8_t NameEditMenu::ascii_high[];
@@ -164,6 +158,7 @@ void NameEditMenu::encoderCounterClockwise()
 
 void NameEditMenu::keyUp()
 {
+	exit();
 	topLevelMenu->returnFromChildMenu();
 }
 
@@ -205,25 +200,36 @@ void NameEditMenu::keyDown()
 
 void NameEditMenu::key1()
 {
+	exit();
 	topLevelMenu->key1();
 }
 
 void NameEditMenu::key2()
 {
+	exit();
 	topLevelMenu->key2();
 }
 
 void NameEditMenu::key3()
 {
+	exit();
 	topLevelMenu->key3();
 }
 
 void NameEditMenu::key4()
 {
+	exit();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void NameEditMenu::key5()
 {
+	exit();
 	topLevelMenu->key5();
+}
+
+void NameEditMenu::exit()
+{
+	console_printf("%s\r%s\n", Preset::nameCommandString, currentPreset.name);
+	console_printf("%s\r%s\n", Preset::commentCommandString, currentPreset.comment);
 }

@@ -6,6 +6,8 @@
 #include "modules.h"
 #include "eeprom.h"
 
+#include "console_helpers.h"
+
 #include "io_task.h"
 #include "midi_task.h"
 #include "filesystem_task.h"
@@ -22,6 +24,9 @@ uint8_t __CCM_BSS__ tempCabBuffer[CAB_DATA_SIZE * 2];
 uint8_t __CCM_BSS__ tempDataBuffer[sizeof(Preset::TPresetHeader)]; // sizeof(TModulesData)
 
 volatile uint8_t __CCM_BSS__ currentPresetNumber;
+
+const char* Preset::nameCommandString = "pname";
+const char* Preset::commentCommandString = "pcomment";
 
 void Preset::Change(uint8_t presetNumber)
 {
@@ -66,6 +71,7 @@ void Preset::Change(uint8_t presetNumber)
 	}
 
 	EXPR_StoreLevel();
+	console_printf("pchange\r\n");
 }
 
 void Preset::SetDefaultValues(Preset::TPresetData* preset)

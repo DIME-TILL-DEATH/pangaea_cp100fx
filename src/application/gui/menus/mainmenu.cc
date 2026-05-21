@@ -182,20 +182,31 @@ void MainMenu::refresh()
 	DisplayTask->ClearString(2, 0, Font::fntSystem, 14);
 	DisplayTask->ClearString(2, 1, Font::fntSystem, 14);
 
-	DisplayTask->StringOut(2, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_selectedPresetBrief.name);
-	DisplayTask->StringOut(2, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_selectedPresetBrief.comment);
+
+
+	uint8_t* name;
+	uint8_t* comment;
 
 	bool filled;
 	if(currentPresetNumber != m_preselectedPresetNum)
 	{
+		name = (uint8_t*)m_selectedPresetBrief.name;
+		comment = (uint8_t*)m_selectedPresetBrief.comment;
+
 		filled = m_selectedPresetBrief.cab1Name[0]
 				|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
 	}
 	else
 	{
+		name = (uint8_t*)currentPreset.name;
+			comment = (uint8_t*)currentPreset.comment;
+
 		filled = currentPreset.cab1NameSize
 				|| (System::cab_type == CAB_CONFIG_STEREO ? currentPreset.cab2NameSize : 0);
 	}
+
+	DisplayTask->StringOut(2, 0, Font::fntSystem, Font::fnsNormal, name);
+	DisplayTask->StringOut(2, 1, Font::fntSystem, Font::fnsNormal, comment);
 
 	DisplayTask->PresetInd(m_preselectedPresetNum, filled);
 
