@@ -40,6 +40,8 @@ private:
 	bool m_encoderKnobSelected{false};
 	uint8_t m_parNum{0};
 
+	uint8_t currentPageNum{0};
+
 	uint8_t m_controllerNum{0};
 	uint8_t m_controllerDstVisual{0};
 

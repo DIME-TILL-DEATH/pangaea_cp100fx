@@ -446,57 +446,14 @@ static void pcomment_command_handler(TTranslator *rl, TTranslator::const_symbol_
 	msg_console("%s\n", currentPreset.comment);
 }
 
-static void controller_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
-{
-	msg_console("%s\r", args[0]);
-	if (count > 3)
-	{
-		char *end;
-		uint8_t cntrlNum = kgp_sdk_libc::strtol(args[1], &end, 16);
-		std::emb_string command = args[2];
-		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
 
-		msg_console("%d\r%s\r%d", cntrlNum, args[2], value);
-
-		if(command == "dst")
-		{
-			currentPreset.controller[cntrlNum].dst = value;
-			goto ending;
-		}
-
-		if(command == "src")
-		{
-			currentPreset.controller[cntrlNum].src = value;
-			goto ending;
-		}
-
-		if(command == "min")
-		{
-			currentPreset.controller[cntrlNum].minVal = value;
-			goto ending;
-		}
-
-		if(command == "max")
-		{
-			currentPreset.controller[cntrlNum].maxVal = value;
-			goto ending;
-		}
-	}
-	else
-	{
-		msg_console("INCORRECT_ARGS");
-	}
-
-ending:
-	msg_console("\n");
-}
-
-static void controller_pc_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+static void pcout_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	default_param_handler(&currentPreset.pcOut, args, count);
+	UITask->refreshMenu();
 }
 
-static void controller_set_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+static void pcset_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t answer;
 
@@ -515,7 +472,8 @@ static void controller_set_command_handler(TTranslator* rl, TTranslator::const_s
 			if(currentPreset.set & 0x80) answer = currentPreset.set & 0x7F;
 			else answer = currentPresetNumber;
 		}
-		msg_console("%s\r%02x\n", args[0], answer);
+		msg_console("%s\r%02x\n", Controller::pcsetCommandString, answer);
+		UITask->refreshMenu();
 	}
 }
 
@@ -603,6 +561,35 @@ static void midi_map_command_handler(TTranslator* rl, TTranslator::const_symbol_
 	}
 }
 
+static void controller_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+{
+	if (count > 3)
+	{
+		char *end;
+		uint8_t cntrlNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+		std::emb_string command = args[2];
+		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
+
+		if(command == Controller::srcCommandString)
+			Controller::setSrc(cntrlNum, value);
+
+		if(command == Controller::dstCommandString)
+			Controller::setDst(cntrlNum, value);
+
+
+		if(command == "min")
+			Controller::setMinVal(cntrlNum, value);
+
+		if(command == "max")
+			Controller::setMaxVal(cntrlNum, value);
+
+		UITask->refreshMenu();
+	}
+	else
+	{
+		msg_console("%s\rINCORRECT_ARGS\n", Controller::controllerCommandString);
+	}
+}
 
 static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
@@ -659,8 +646,6 @@ static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_
 	}
 }
 
-
-
 //------------------------------------------------------------------------------
 void ConsoleSetCmdHandlers(TTranslator *translator)
 {
@@ -689,15 +674,15 @@ void ConsoleSetCmdHandlers(TTranslator *translator)
 	translator->AddCommandHandler("pname", pname_command_handler);
 	translator->AddCommandHandler("pcomment", pcomment_command_handler);
 
-	translator->AddCommandHandler("cntrl", controller_command_handler);
-	translator->AddCommandHandler("cntrl_pc", controller_pc_command_handler);
-	translator->AddCommandHandler("cntrl_set", controller_set_command_handler);
+	translator->AddCommandHandler(Controller::controllerCommandString, controller_command_handler);
+	translator->AddCommandHandler(Controller::pcoutCommandString, pcout_command_handler);
+	translator->AddCommandHandler(Controller::pcsetCommandString, pcset_command_handler);
 
 	translator->AddCommandHandler("tn", tuner_command_handler);
 
 	translator->AddCommandHandler("sys_settings", sys_settings_command_handler);
 	translator->AddCommandHandler("midi_map", midi_map_command_handler);
-	translator->AddCommandHandler("fsw", fsw_command_handler);
+	translator->AddCommandHandler(Footswitch::fswCommandString, fsw_command_handler);
 
 	set_syssettings_handlers(translator);
 	set_master_handlers(translator);

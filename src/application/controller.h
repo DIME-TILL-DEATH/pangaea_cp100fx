@@ -56,6 +56,20 @@ typedef struct
 const uint8_t controllersCount = 32; // Массив был 512 байт, те 128 контроллеров
 
 void SetData(const TController& controller, uint8_t data);
+
+extern const char* controllerCommandString;
+extern const char* srcCommandString;
+extern const char* dstCommandString;
+extern const char* minCommandString;
+extern const char* maxCommandString;
+
+extern const char* pcoutCommandString;
+extern const char* pcsetCommandString;
+
+void setSrc(uint8_t controllerNum, uint8_t value);
+void setDst(uint8_t controllerNum, uint8_t value);
+void setMinVal(uint8_t controllerNum, uint8_t value);
+void setMaxVal(uint8_t controllerNum, uint8_t value);
 }
 
 

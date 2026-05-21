@@ -5,12 +5,21 @@
 #include "system.h"
 
 #include "preset_accessors.h"
+#include "console_helpers.h"
 
 #include "ui_task.h"
 #include "sharc_task.h"
 
 #include "tapmenu.h"
 
+const char* Controller::controllerCommandString = "cntrl";
+const char* Controller::srcCommandString = "src";
+const char* Controller::dstCommandString = "dst";
+const char* Controller::minCommandString = "min";
+const char* Controller::maxCommandString = "max";
+
+const char* Controller::pcoutCommandString = "cntrl_pc";
+const char* Controller::pcsetCommandString = "cntrl_set";
 
 void Controller::SetData(const TController& controller, uint8_t data)
 {
@@ -165,4 +174,28 @@ void Controller::SetData(const TController& controller, uint8_t data)
 		case Controller::Dst::PresetLevel: UITask->setParam(preset_volume_setter, val); break;
 		case Controller::Dst::VolCtrlOnOff: UITask->setParam(preset_volume_control_setter, (val < 64.0f) ? 0 : 1); break;
 	}
+}
+
+void Controller::setSrc(uint8_t controllerNum, uint8_t value)
+{
+	currentPreset.controller[controllerNum].src = value;
+	console_printf("%s %x %s\r%x\n", Controller::controllerCommandString, controllerNum, Controller::srcCommandString, value);
+}
+
+void Controller::setDst(uint8_t controllerNum, uint8_t value)
+{
+	currentPreset.controller[controllerNum].dst = value;
+	console_printf("%s %x %s\r%x\n", Controller::controllerCommandString, controllerNum, Controller::dstCommandString, value);
+}
+
+void Controller::setMinVal(uint8_t controllerNum, uint8_t value)
+{
+	currentPreset.controller[controllerNum].minVal = value;
+	console_printf("%s %x %s\r%x\n", Controller::controllerCommandString, controllerNum, Controller::minCommandString, value);
+}
+
+void Controller::setMaxVal(uint8_t controllerNum, uint8_t value)
+{
+	currentPreset.controller[controllerNum].maxVal = value;
+	console_printf("%s %x %s\r%x\n", Controller::controllerCommandString, controllerNum, Controller::maxCommandString, value);
 }
