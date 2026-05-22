@@ -443,8 +443,6 @@ void TFsBrowser::SelectDir(fs_object_t select_object)
     static char lfn[_MAX_LFN + 1];
     lfn[0] = 0;
 
-	fs_object_list.clear();
-
 	res = f_chdir(select_object.name.c_str());
 
 	if(res!=FR_OK)
@@ -452,6 +450,8 @@ void TFsBrowser::SelectDir(fs_object_t select_object)
 		impulseDirExist = 0;
 		return;
 	}
+
+	fs_object_list.clear();
 
 	const emb_string curr_dir_name_tmp(curr_dir_name);
 	f_getcwd(lfn, _MAX_LFN);

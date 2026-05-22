@@ -35,6 +35,7 @@ FswControlMenu::FswControlMenu(AbstractMenu* parent, Footswitch::FswButton butto
 void FswControlMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
+	DisplayTask->Clear();
 	printPage();
 }
 
