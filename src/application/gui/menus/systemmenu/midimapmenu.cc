@@ -1,12 +1,9 @@
 #include "midimapmenu.h"
 
-#include "cs.h"
-#include "allFonts.h"
-#include "display.h"
-#include "enc.h"
-#include "eepr.h"
-
 #include "system.h"
+
+#include "midi_task.h"
+#include "display_task.h"
 
 MidiMapMenu::MidiMapMenu(AbstractMenu* parent)
 {
@@ -19,42 +16,41 @@ void MidiMapMenu::show(TShowMode swhoMode)
 	currentMenu = this;
 
 	DisplayTask->Clear();
-	DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
-	DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)"->");
-	DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
+	refresh();
+}
+
+void MidiMapMenu::refresh()
+{
+	DisplayTask->ParamIndNum(3, 0, m_pcNum + 1);
+	DisplayTask->StringOut(24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"->");
+	DisplayTask->ParamIndNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
+	restartBlinking(1);
 }
 
 void MidiMapMenu::task()
 {
 	if(!m_encoderKnobSelected)
 	{
-		if(blinkFlag_fl)
-			DisplayTask->Clear_str(3, 0, Font::fntSystem, 3);
+		if(blinkFlag)
+			DisplayTask->ClearString(3, 0, Font::fntSystem, 3);
 		else
-			DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
+			DisplayTask->ParamIndNum(3, 0, m_pcNum + 1);
 	}
 	else
 	{
-		if(blinkFlag_fl)
-			DisplayTask->Clear_str(36, 0, Font::fntSystem, 3);
+		if(blinkFlag)
+			DisplayTask->ClearString(36, 0, Font::fntSystem, 3);
 		else
-			DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
+			DisplayTask->ParamIndNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
 	}
 }
 
 void MidiMapMenu::encoderPressed()
 {
-	if(m_encoderKnobSelected==0)
-	{
-		m_encoderKnobSelected = 1;
-		DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
-	}
-	else
-	{
-		DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
-		m_encoderKnobSelected = 0;
-	}
-	tim5_start(0);
+	if(m_encoderKnobSelected==0) m_encoderKnobSelected = 1;
+	else m_encoderKnobSelected = 0;
+
+	refresh();
 }
 
 void MidiMapMenu::encoderClockwise()
@@ -62,22 +58,16 @@ void MidiMapMenu::encoderClockwise()
 	if(!m_encoderKnobSelected)
 	{
 		if(m_pcNum < 127)
-		{
 			m_pcNum = BaseParam::encSpeedInc(m_pcNum, 127);
-			DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
-			DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
-		}
+
 	}
 	else
 	{
 		if(sys_para[System::MIDI_MAP_START + m_pcNum] < 98)
-		{
-			sys_para[System::MIDI_MAP_START + m_pcNum] = BaseParam::encSpeedInc(sys_para[System::MIDI_MAP_START + m_pcNum], 98);
-			DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
-		}
+			MidiTask->setMidiPcMap(m_pcNum, BaseParam::encSpeedInc(sys_para[System::MIDI_MAP_START + m_pcNum], 98));
 	}
 
-	tim5_start(1);
+	refresh();
 }
 
 void MidiMapMenu::encoderCounterClockwise()
@@ -85,20 +75,13 @@ void MidiMapMenu::encoderCounterClockwise()
 	if(!m_encoderKnobSelected)
 	{
 		if(m_pcNum > 0)
-		{
 			m_pcNum = BaseParam::encSpeedDec(m_pcNum, 0);
-			DisplayTask->ParamIndicNum(3, 0, m_pcNum + 1);
-			DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
-		}
 	}
 	else
 	{
 		if(sys_para[System::MIDI_MAP_START + m_pcNum] > 0)
-		{
-			sys_para[System::MIDI_MAP_START + m_pcNum] = BaseParam::encSpeedDec(sys_para[System::MIDI_MAP_START + m_pcNum], 0);
-			DisplayTask->ParamIndicNum(36, 0, sys_para[System::MIDI_MAP_START + m_pcNum] + 1);
-		}
+			MidiTask->setMidiPcMap(m_pcNum, BaseParam::encSpeedDec(sys_para[System::MIDI_MAP_START + m_pcNum], 0));
 	}
 
-	tim5_start(1);
+	refresh();
 }

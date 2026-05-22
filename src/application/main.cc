@@ -1,148 +1,100 @@
+
 #define __KLIBC_WRAPS_IMPL__
 
 #include "appdefs.h"
-#include "debug_led.h"
-#include "mmgr.h"
-#include "usb.h"
-#include "display.h"
-#include "storage.h"
-#include "fs.h"
-#include "cs.h"
-#include "cc.h"
-#include "sd_test.h"
-#include "enc.h"
-#include "errno.h"
-#include "spectrum.h"
-#include "midi_send.h"
+#include "sdk_port.h"
 
-#include "usb.h"
+#include <eeprom.h>
 
-extern void (*__preinit_array_start__[])(void);
-extern void (*__preinit_array_end__[])(void);
-extern void (*__init_array_start__[])(void);
-extern void (*__init_array_end__[])(void);
+#include "periphery.h"
+#include "AT45DB321.h"
+#include "lcd.h"
+#include "serial.h"
+#include "gpio.h"
+#include "hw_timers.h"
+#include "sharc.h"
+#include "codec.h"
 
-extern void (*__fini_array_start__[])(void);
-extern void (*__fini_array_end__[])(void);
+#include "bitmaps.h"
+#include "param_bitmap.h"
 
-extern "C" void _init(void);
-extern "C" void _fini(void);
-extern "C" void _premain(void);
+#include "system.h"
 
-extern "C" void __libc_init_array(void)
-{
-	size_t count;
-	size_t i;
+#include "filesystem_task.h"
+#include "display_task.h"
+#include "io_task.h"
+#include "ui_task.h"
+#include "tuner_task.h"
+#include "controllers_task.h"
+#include "sdtest_task.h"
+#include "midi_task.h"
+#include "sharc_task.h"
 
-	count = __preinit_array_end__-__preinit_array_start__;
-	for(i = 0; i<count; i++)
-		if(__preinit_array_start__[i])
-			__preinit_array_start__[i]();
 
-	_init();
-
-	count = __init_array_end__-__init_array_start__;
-	for(i = 0; i<count; i++)
-		if(__init_array_start__[i])
-			__init_array_start__[i]();
-
-}
-
-/* Run all the cleanup routines.  */
-extern "C" void __libc_fini_array(void)
-{
-	size_t count;
-	size_t i;
-
-	count = __fini_array_end__-__fini_array_start__;
-	for(i = count; i>0; i--)
-		__fini_array_start__[i-1]();
-
-	_fini();
-}
-
-volatile uint32_t sysclock;
-extern "C" unsigned long GetCpuClock(void)
-{
-	RCC_ClocksTypeDef rrc;
-	RCC_GetClocksFreq(&rrc);
-	return rrc.SYSCLK_Frequency;
-}
-
-extern "C" void _init(void)
-{
-	heap_init();
-	sysclock = GetCpuClock();
-	*(__errno()) = 0;
-}
-volatile char *task_name;
-extern "C" void vApplicationStackOverflowHook(TaskHandle_t *pxTask, char *pcTaskName)
-{
-	task_name = (volatile char*)pcTaskName;
-	//err ( "task stack overflow: %s 0x%x\n" , pcTaskName , pxTask ) ;
-	while(1)
-		NOP();
-}
-
-extern "C" void vApplicationTickHook()
-{
-	NOP();
-	(void)task_name;
-}
-
-volatile uint32_t stack;
-extern "C" void vApplicationIdleHook()
-{
-	NOP();
-}
-
-void init(void);
-
-void pin_usb_init(void)
-{
-	GPIO_InitTypeDef GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Low_Speed;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-}
+EventGroupHandle_t startEventGroup;
 
 int main(void)
 {
-	init();
-	pin_usb_init();
 	sysclock = GetCpuClock();
 
-	FSTask = new TFSTask();
-	FSTask->Create("FS", 40*configMINIMAL_STACK_SIZE, 0);
+	LCD_Init();
+	display_start(0);
+
+	AT45DB321_Init();
+	HW_Delay(0xfffff);
+
+	EEPROM_Start();
+
+	HW_GpioInit();
+	HW_ExtiInit();
+
+	HW_I2sInit();
+	HW_UartInit();
+
+	HW_TimersInit();
+
+	SHARC_SpiInit(TSharcSpiMode::SPI_SLAVE);
+	SHARC_StartupLoad();
+	SHARC_SpiInit(TSharcSpiMode::SPI_MASTER);
+
+	CODEC_Start();
+
+	display_start(1);
+	SHARC_LoadAllData();
+
+	HW_PinUsbInit();
+
+	startEventGroup = xEventGroupCreate();
+
+	FileSystemTask = new TFileSystemTask();
+	FileSystemTask->Create("FileSystem", 30*configMINIMAL_STACK_SIZE, 0);
 
 	DisplayTask = new TDisplayTask();
-	DisplayTask->Create("DISP", 60*configMINIMAL_STACK_SIZE, 0);
+	DisplayTask->Create("Display", 40*configMINIMAL_STACK_SIZE, 0);
 
-	ENCTask = new TENCTask();
-	ENCTask->Create("ENC", 20*configMINIMAL_STACK_SIZE, 0);
+	IOTask = new TIOTask();
+	IOTask->Create("InOut", 20*configMINIMAL_STACK_SIZE, 0);
 
-	CSTask = new TCSTask();
-	CSTask->Create("CS", 30*configMINIMAL_STACK_SIZE, 0);
+	UITask = new TUITask();
+	UITask->Create("UserInterface", 40*configMINIMAL_STACK_SIZE, 0);
 
-	SpectrumTask = new TSpectrumTask();
-	SpectrumTask->Create("STR", 20*configMINIMAL_STACK_SIZE, 0);
+	TunerTask = new TTunerTask();
+	TunerTask->Create("Tuner", 20*configMINIMAL_STACK_SIZE, 0);
 
+	ControllersTask = new TControllersTask();
+	ControllersTask->Create("Controllers", 10*configMINIMAL_STACK_SIZE, 0);
 
-	CCTask = new TCCTask();
-	CCTask->Create("CC", 10*configMINIMAL_STACK_SIZE, 0);
+	SDTestTask = new TSDTestTask();
+	SDTestTask->Create("SD_TEST", configMINIMAL_STACK_SIZE, 0);
 
-	SD_TESTTask = new TSD_TESTTask();
-	SD_TESTTask->Create("SD_TEST", configMINIMAL_STACK_SIZE, 0);
+	MidiTask = new TMidiTask();
+	MidiTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
 
-	MidiSendTask = new TMidiSendTask();
-	MidiSendTask->Create("MidiSend", 10*configMINIMAL_STACK_SIZE, 1);
+	SharcTask = new TSharcTask();
+	SharcTask->Create("SharcSendData", 5*configMINIMAL_STACK_SIZE, 0);
 
-//	ConsoleTask = new TConsoleTask(256);
-//	ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
+	ConsoleTask = new TConsoleTask(256);
+	ConsoleTask->Create("CONS", 20*configMINIMAL_STACK_SIZE, 0);
 
 	TScheduler::StartScheduler();
 }

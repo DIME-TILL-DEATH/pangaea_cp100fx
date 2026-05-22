@@ -1,15 +1,8 @@
 #include "nameeditmenu.h"
 
-#include "appdefs.h"
-#include "cs.h"
-#include "fs.h"
-#include "eepr.h"
-#include "allFonts.h"
-#include "display.h"
-#include "enc.h"
-#include "cc.h"
+#include "console_helpers.h"
 
-#include "preset.h"
+#include "display_task.h"
 
 const uint8_t NameEditMenu::ascii_low[];
 const uint8_t NameEditMenu::ascii_high[];
@@ -33,25 +26,16 @@ void NameEditMenu::show(TShowMode swhoMode)
 	symbol = 32;
 	encoderKnobPressed = 0;
 
-	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)currentPreset.name);
-	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)currentPreset.comment);
-	DisplayTask->SymbolOut(86, 0, Font::fntSystem, 0, 46);
-	DisplayTask->SymbolOut(86, 1, Font::fntSystem, 0, 46);
-	DisplayTask->StringOut(0, 2, Font::fntSystem, 0, (uint8_t*)ascii_low);
-	DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)ascii_low + chartStringLength);
+	DisplayTask->StringOut(2, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.name);
+	DisplayTask->StringOut(2, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.comment);
+	DisplayTask->SymbolOut(86, 0, Font::fntSystem, Font::fnsNormal, 46);
+	DisplayTask->SymbolOut(86, 1, Font::fntSystem, Font::fnsNormal, 46);
+	DisplayTask->StringOut(0, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)ascii_low);
+	DisplayTask->StringOut(0, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)ascii_low + chartStringLength);
 }
 
 void NameEditMenu::task()
 {
-	if(nameCursorPos < 14)
-	{
-		DisplayTask->SymbolOut(nameCursorPos*6+2, 0,Font::fntSystem, blinkFlag_fl*2-encoderKnobPressed, currentPreset.name[nameCursorPos]);
-	}
-	else
-	{
-		DisplayTask->SymbolOut((nameCursorPos-14)*6+2 , 1,Font::fntSystem, blinkFlag_fl*2-encoderKnobPressed, currentPreset.comment[(nameCursorPos-14)]);
-	}
-
 	if(encoderKnobPressed)
 	{
 		const uint8_t* symbolChart;
@@ -59,7 +43,20 @@ void NameEditMenu::task()
 		else symbolChart = ascii_high;
 
 		DisplayTask->SymbolOut((symbolCursorPos % chartStringLength)*6, 2 + (symbolCursorPos / chartStringLength),
-										Font::fntSystem, blinkFlag_fl, symbolChart[symbolCursorPos]);
+										Font::fntSystem, (Font::TFontState)blinkFlag, symbolChart[symbolCursorPos]);
+	}
+	else
+	{
+		if(nameCursorPos < 14)
+		{
+			DisplayTask->SymbolOut(nameCursorPos*6+2, 0,Font::fntSystem,
+					(Font::TFontState)(Font::fnsHighlight * blinkFlag), currentPreset.name[nameCursorPos]);
+		}
+		else
+		{
+			DisplayTask->SymbolOut((nameCursorPos-14)*6+2 , 1 ,Font::fntSystem,
+					(Font::TFontState)(Font::fnsHighlight * blinkFlag), currentPreset.comment[(nameCursorPos-14)]);
+		}
 	}
 }
 
@@ -68,8 +65,8 @@ void NameEditMenu::encoderPressed()
 	if(!encoderKnobPressed)
 	{
 		encoderKnobPressed = 1;
-		if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, 1, currentPreset.name[nameCursorPos]);
-		else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, Font::fntSystem, 1, currentPreset.comment[nameCursorPos-14]);
+		if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, Font::fnsUnderscore, currentPreset.name[nameCursorPos]);
+		else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, Font::fntSystem, Font::fnsUnderscore, currentPreset.comment[nameCursorPos-14]);
 	}
 	else
 	{
@@ -77,12 +74,12 @@ void NameEditMenu::encoderPressed()
 		if(nameCursorPos < 14)
 		{
 			currentPreset.name[nameCursorPos] = symbol;
-			DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, 0, currentPreset.name[nameCursorPos]);
+			DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, Font::fnsNormal, currentPreset.name[nameCursorPos]);
 		}
 		else
 		{
 			currentPreset.comment[nameCursorPos-14] = symbol;
-			DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, Font::fntSystem, 0, currentPreset.comment[nameCursorPos-14]);
+			DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, Font::fntSystem, Font::fnsNormal, currentPreset.comment[nameCursorPos-14]);
 		}
 
 		const uint8_t* symbolChart;
@@ -90,9 +87,9 @@ void NameEditMenu::encoderPressed()
 		else symbolChart = ascii_high;
 
 		DisplayTask->SymbolOut((symbolCursorPos % chartStringLength)*6, 2 + (symbolCursorPos / chartStringLength),
-										Font::fntSystem, 0, symbolChart[symbolCursorPos]);
+										Font::fntSystem, Font::fnsNormal, symbolChart[symbolCursorPos]);
 	}
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void NameEditMenu::encoderClockwise()
@@ -101,8 +98,8 @@ void NameEditMenu::encoderClockwise()
 	{
 		if(nameCursorPos < 27)
 		{
-			if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, 0, currentPreset.name[nameCursorPos++]);
-			else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, Font::fntSystem, 0, currentPreset.comment[(nameCursorPos++ -14)]);
+			if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, Font::fnsNormal, currentPreset.name[nameCursorPos++]);
+			else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, Font::fntSystem, Font::fnsNormal, currentPreset.comment[(nameCursorPos++ -14)]);
 		}
 	}
 	else
@@ -113,18 +110,18 @@ void NameEditMenu::encoderClockwise()
 
 		if(symbolCursorPos == chartStringLength*2 - 1)
 		{
-			DisplayTask->SymbolOut((symbolCursorPos-21)*6, 3, Font::fntSystem, 0, symbolChart[symbolCursorPos]);
+			DisplayTask->SymbolOut((symbolCursorPos-21)*6, 3, Font::fntSystem, Font::fnsNormal, symbolChart[symbolCursorPos]);
 			symbolCursorPos = 0;
 		}
 		else
 		{
 			DisplayTask->SymbolOut((symbolCursorPos % chartStringLength)*6, 2 + (symbolCursorPos / chartStringLength),
-													Font::fntSystem, 0, symbolChart[symbolCursorPos++]);
+													Font::fntSystem, Font::fnsNormal, symbolChart[symbolCursorPos++]);
 		}
 		symbol = symbolChart[symbolCursorPos];
 	}
 
-    tim5_start(0);
+    restartBlinking(0);
 }
 
 void NameEditMenu::encoderCounterClockwise()
@@ -133,8 +130,8 @@ void NameEditMenu::encoderCounterClockwise()
 	{
 		if(nameCursorPos > 0)
 		{
-			if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, 0, currentPreset.name[nameCursorPos--]);
-			else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1,Font::fntSystem, 0, currentPreset.comment[(nameCursorPos-- -14)]);
+			if(nameCursorPos < 14) DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, Font::fnsNormal, currentPreset.name[nameCursorPos--]);
+			else DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1,Font::fntSystem, Font::fnsNormal, currentPreset.comment[(nameCursorPos-- -14)]);
 		}
 	}
 	else
@@ -146,21 +143,22 @@ void NameEditMenu::encoderCounterClockwise()
 		if(symbolCursorPos == 0)
 		{
 			symbolCursorPos = chartStringLength*2 - 1;
-			DisplayTask->SymbolOut((symbolCursorPos-21)*6, 3, Font::fntSystem, 0, symbolChart[symbolCursorPos]);
+			DisplayTask->SymbolOut((symbolCursorPos-21)*6, 3, Font::fntSystem, Font::fnsNormal, symbolChart[symbolCursorPos]);
 		}
 		else
 		{
 			DisplayTask->SymbolOut((symbolCursorPos % chartStringLength)*6, 2 + (symbolCursorPos / chartStringLength),
-													Font::fntSystem, 0, symbolChart[symbolCursorPos--]);
+													Font::fntSystem, Font::fnsNormal, symbolChart[symbolCursorPos--]);
 		}
 		symbol = symbolChart[symbolCursorPos];
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void NameEditMenu::keyUp()
 {
+	exit();
 	topLevelMenu->returnFromChildMenu();
 }
 
@@ -171,12 +169,12 @@ void NameEditMenu::keyDown()
 		if(nameCursorPos < 14)
 		{
 			currentPreset.name[nameCursorPos] = 32;
-			DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem,1, currentPreset.name[nameCursorPos]);
+			DisplayTask->SymbolOut(nameCursorPos*6+2, 0, Font::fntSystem, Font::fnsUnderscore, currentPreset.name[nameCursorPos]);
 		}
 		else
 		{
 			currentPreset.comment[nameCursorPos-14] = 32;
-			DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, Font::fntSystem,1, currentPreset.comment[nameCursorPos-14]);
+			DisplayTask->SymbolOut((nameCursorPos-14)*6+2, 1, Font::fntSystem, Font::fnsUnderscore, currentPreset.comment[nameCursorPos-14]);
 		}
 	}
 	else
@@ -184,43 +182,54 @@ void NameEditMenu::keyDown()
 		if(keyShift)
 		{
 			keyShift = 0;
-			DisplayTask->StringOut(0, 2, Font::fntSystem, 0, (uint8_t*)ascii_low);
-			DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)ascii_low + chartStringLength);
+			DisplayTask->StringOut(0, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)ascii_low);
+			DisplayTask->StringOut(0, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)ascii_low + chartStringLength);
 			symbol = ascii_low[symbolCursorPos];
 		}
 		else
 		{
 			keyShift = 1;
-			DisplayTask->StringOut(0, 2, Font::fntSystem, 0, (uint8_t*)ascii_high);
-			DisplayTask->StringOut(0, 3, Font::fntSystem, 0, (uint8_t*)ascii_high + chartStringLength);
+			DisplayTask->StringOut(0, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)ascii_high);
+			DisplayTask->StringOut(0, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)ascii_high + chartStringLength);
 			symbol = ascii_high[symbolCursorPos];
 		}
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void NameEditMenu::key1()
 {
+	exit();
 	topLevelMenu->key1();
 }
 
 void NameEditMenu::key2()
 {
+	exit();
 	topLevelMenu->key2();
 }
 
 void NameEditMenu::key3()
 {
+	exit();
 	topLevelMenu->key3();
 }
 
 void NameEditMenu::key4()
 {
+	exit();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void NameEditMenu::key5()
 {
+	exit();
 	topLevelMenu->key5();
+}
+
+void NameEditMenu::exit()
+{
+	console_printf("%s\r%s\n", Preset::nameCommandString, currentPreset.name);
+	console_printf("%s\r%s\n", Preset::commentCommandString, currentPreset.comment);
 }

@@ -1,38 +1,36 @@
-#ifndef SRC_APPLICATION_GUI_MENUS_EXPRESSIONMENU_H_
-#define SRC_APPLICATION_GUI_MENUS_EXPRESSIONMENU_H_
+#ifndef _EXPRESSIONMENU_H_
+#define _EXPRESSIONMENU_H_
 
-#include "../abstractmenu.h"
+#include "paramlistmenu.h"
 
-class ExpressionMenu: public AbstractMenu
+class ExpressionMenu: public ParamListMenu
 {
 public:
 	ExpressionMenu(AbstractMenu* parent);
-
-	void show(TShowMode swhoMode = FirstShow) override;
-	void task() override;
 
 	void encoderPressed() override;
 	void encoderClockwise() override;
 	void encoderCounterClockwise() override;
 
+	static AbstractMenu* create(AbstractMenu* parent);
+
 private:
-	enum TExpMenuState
+	enum TCalibrationState
 	{
-		ParamChoice,
-		ParamTuning,
-		CalMin,
-		CalMax
+		CalibrationIdle,
+		CalibrationMin,
+		CalibrationMax
 	};
+	
+	static TCalibrationState m_calibrationState;
 
-	TExpMenuState m_menuState{ParamChoice};
+	static void calibratePrintCallback(void* parameter);
 
-	uint8_t m_parNum{0};
+	static void exprTypePrintCallback(void* parameter);
+	static void exprTypeIncreaseCallback(void* parameter);
+	static void exprTypeDecreaseCallback(void* parameter);
 
-	static constexpr uint8_t strOk[] = "Ok";
-	static constexpr uint8_t strSetMin[] = "Set to min";
-	static constexpr uint8_t strSetMmax[] = "Set to max";
-	static constexpr uint8_t strExprType[][12] = {"   Off     ", "Standard V ", "Alternat V ", "Standard CC", "Alternat CC"};
-
+	static void ccParamPrintCallback(void* parameter);
 };
 
-#endif /* SRC_APPLICATION_GUI_MENUS_EXPRESSIONMENU_H_ */
+#endif /* _EXPRESSIONMENU_H_ */

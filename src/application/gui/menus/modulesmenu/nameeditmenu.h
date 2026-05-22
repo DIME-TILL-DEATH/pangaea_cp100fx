@@ -37,6 +37,8 @@ private:
 	constexpr static uint8_t ascii_high[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ{}()-+_=<>?*.,/&";
 
 	static constexpr uint8_t chartStringLength = 21;
+
+	void exit();
 };
 
 #endif /* NAMEEDITMENU_H_ */

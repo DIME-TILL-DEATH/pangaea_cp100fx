@@ -4,6 +4,7 @@
 #include "appdefs.h"
 
 #include "stringoutparam.h"
+#include "io_task.h"
 
 enum gui_menu_type
 {
@@ -76,12 +77,13 @@ public:
 		ReturnToRoot
 	};
 
-//	AbstractMenu() {};
+	AbstractMenu() {};
 	virtual ~AbstractMenu() {};
 
 	virtual void show(TShowMode swhoMode = FirstShow) {};
 	virtual void refresh() {};
 	virtual void returnFromChildMenu(TReturnMode returnMode = DeleteChild);
+	virtual void returnToParent();
 	virtual void task() {};
 
 	virtual void encoderPressed() {};
@@ -97,6 +99,9 @@ public:
 	virtual void key4() {};
 	virtual void key5() {};
 
+	virtual void keyEvent(const TKeysEvents& keysEvents);
+	virtual void encoderEvent(const TEncoderEvents& encoderEvents);
+
 	gui_menu_type menuType();
 
 	void setTopLevelMenu(AbstractMenu* parent);
@@ -104,6 +109,10 @@ public:
 
 	void setRunningString(StringOutParam* strings);
 	StringOutParam* getRunningString();
+
+	static void blinkRoutine() { blinkFlag = !blinkFlag; };
+
+	void restartBlinking(uint8_t val);
 
 protected:
 	AbstractMenu* topLevelMenu = nullptr;
@@ -114,6 +123,7 @@ protected:
 	StringOutParam* m_runningString = nullptr;
 
 	static uint8_t subMenusToRoot;
+	static bool blinkFlag;
 };
 
 extern AbstractMenu* currentMenu;

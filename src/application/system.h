@@ -25,7 +25,7 @@ namespace System
 		SPDIF_OUT_TYPE,
 
 		/*num CC to express and foot*/
-		EXPR_CCN,
+		EXPR_CC_NUM,
 		FSW1_CTRL_PRESS_CC, FSW2_CTRL_PRESS_CC, FSW3_CTRL_PRESS_CC,
 
 		MIDI_PC_IND, /*service*/
@@ -33,7 +33,7 @@ namespace System
 		LAST_PRESET_NUM = 31,
 
 		/*FSW button mode*/
-		FSW1_MODE = 32, FSW2_MODE, FSW3_MODE,
+		FSW1_MODE, FSW2_MODE, FSW3_MODE,
 
 		FSW1_HOLD_TYPE, FSW2_HOLD_TYPE, FSW3_HOLD_TYPE,
 
@@ -48,7 +48,7 @@ namespace System
 		TUNER_EXTERNAL,
 		/*speed foot*/FSW_SPEED,
 		TIME_FORMAT,	// Sec, BPM
-		TAP_HIGH, /*global temp hi*/
+		GLOBAL_TAP_TIME, /*global temp hi*/
 		EXPR_STORE_LEVEL, /*save expression level*/
 		SWAP_SWITCH,
 		TUNER_SPEED,
@@ -114,18 +114,22 @@ namespace System
 		EQ_SCREEN_BARS
 	}EqScreenMode;
 
-	typedef enum
-	{
-		FX_LED_MODE_DEFAULT = 0,
-		FX_LED_MODE_CUSTOM
-	};
-
+	void setStartupValues();
+	void setMoogTime(float quarterInterval);
+	void setDelayTime(float quarterInterval);
+	void setTremoloTime(float quarterInterval);
 	void TapTempo(TapDestination tapDst);
+
+	const uint8_t minBpm = 25;
+	const uint8_t maxBpm = 240;
+
+	extern uint8_t cab_type;
+	extern uint8_t tun_del_val;
 };
 
-extern const uint16_t bpm_time[];
+extern int16_t mstEqMidFreq;
+extern uint8_t sys_para[];
 
-extern volatile uint32_t tap_global;
 extern volatile uint32_t tap_temp;
 
 #endif /* SRC_APPLICATION_SYSTEM_H_ */

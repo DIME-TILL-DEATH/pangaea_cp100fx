@@ -1,44 +1,31 @@
-#include "console_handlers.h"
+#include "console_cmd_handlers.h"
 
-#include "eepr.h"
-#include "ff.h"
+#include "translator.h"
+
+#include "system.h"
+#include "controller.h"
+#include "footswitch.h"
+#include "modules.h"
+#include "eeprom.h"
+
+#include "console_helpers.h"
+#include "hardware_handlers.h"
+#include "preset_accessors.h"
+#include "syssettings_handlers.h"
+#include "master_setters.h"
+
+#include "filesystem_task.h"
+#include "midi_task.h"
+#include "sharc_task.h"
+#include "ui_task.h"
+#include "tuner_task.h"
+
 
 #include "amt.h"
 
-#include "BF706_send.h"
-#include "init.h"
-
-#include "controllers.h"
-#include "gui_task.h"
-
-#include "system.h"
-#include "fs.h"
-
-#include "spectrum.h"
-
-#include "console_helpers.h"
-#include "resonance_filter_handlers.h"
-#include "gate_handlers.h"
-#include "compressor_handlers.h"
-#include "preamp_handlers.h"
-#include "amp_handlers.h"
-#include "ir_handlers.h"
-#include "eq_handlers.h"
-#include "phaser_handlers.h"
-#include "flanger_handlers.h"
-#include "chorus_handlers.h"
-#include "delay_handlers.h"
-#include "early_handlers.h"
-#include "reverb_handlers.h"
-#include "tremolo_handlers.h"
-
-#include "syssettings_handlers.h"
-
-#include "copyselectmenu.h"
-
 bool consoleBusy = false;
 
-uint16_t getDataPartFromStream(TReadLine *rl, char *buf, int maxSize)
+uint16_t getDataPartFromStream(TTranslator *rl, char *buf, int maxSize)
 {
 	kgp_sdk_libc::memset(buf, 0, maxSize);
 	int streamPos = 0;
@@ -56,57 +43,33 @@ uint16_t getDataPartFromStream(TReadLine *rl, char *buf, int maxSize)
 	return streamPos;
 }
 
-static void amtdev_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void amtdev_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	char hex[3] =
-	{0, 0, 0};
-	i2hex(5, hex);
-	msg_console("%s\r%s\n", args[0], hex);
+	msg_console("%s\r%02x\n", args[0], AMT_DEV_ID);
 }
 
-static void amtver_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void amtver_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r%s\n", args[0], amt_ver);
 }
 
-static void psave_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void ls_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	currentPreset.modules.rawData[147] = delay_time;
-	currentPreset.modules.rawData[148] = delay_time>>8;
-
-	EEPR_writePreset(currentPresetNumber);
-
-	// Не работает. Возвращает сохранённое по звуку
-//	DSP_SendPresetData(currentPreset.modules.rawData);
-//
-//	DSP_SendPrimaryCabData(cab1.data, currentPresetNumber+1);
-//	if(cab_type == CAB_CONFIG_STEREO) DSP_SendSecondaryCabData(cab2.data, currentPresetNumber+1);
-
-	send_cab_data(0, currentPresetNumber+1, 0);
-	if(cab_type==CAB_CONFIG_STEREO)
-		send_cab_data1(0, currentPresetNumber+1);
-
-	Preset::Change();
-
-	msg_console("%s\r\n", args[0]);
-}
-
-static void ls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
-{
-	FSTask->Suspend();
-	msg_console("%s\r", args[0]);
+	FileSystemTask->Suspend();
+	console_printf("%s\r", args[0]);
 
 	for(auto it = fileBrowser->List().begin(); it != fileBrowser->List().end(); ++it)
 	{
-		msg_console("%d:%s|", (*it).type, (*it).name.c_str());
+		console_printf("%d:%s|", (*it).type, (*it).name.c_str());
+		vTaskDelay(pdMS_TO_TICKS(1)); // protect console overflow
 	}
-	msg_console("\n");
-	FSTask->Resume();
+	console_printf("\n");
+	FileSystemTask->Resume();
 }
 
-static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void cd_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 
 	consoleBusy = true;
 	char folderName[256];
@@ -118,35 +81,30 @@ static void cd_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 	fileBrowser->SelectDir(fsObject);
 
 	msg_console("%s\r%s\n", args[0], fileBrowser->CurrDir(false).c_str());
-//	msg_console("%s\r%s\n", args[0], fileBrowser->CurrentObject()->full_dir.c_str());
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
 uint16_t bufPos;
-static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void ir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
-
-	msg_console("%s ", args[0]);
-
 	uint8_t cabNum = 0;
 
 	if(count > 1)
 	{
 		char *end;
 		cabNum = kgp_sdk_libc::strtol(args[1], &end, 16);
-		msg_console("%d", cabNum);
+//		msg_console("%d", cabNum);
 	}
 
 	if(count == 2)
 	{
 		if(cabNum==0)
 		{
-			msg_console("\r%s\n", cab1.name.string);
+			msg_console("%s %d\r%s\n", args[0], cabNum, currentPreset.cab1Name);
 		}
 		else
 		{
-			msg_console("\r%s\n", cab2.name.string);
+			msg_console("%s %d\r%s\n", args[0], cabNum, currentPreset.cab2Name);
 		}
 	}
 
@@ -157,53 +115,31 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		if(command == "set")
 		{
 			consoleBusy = true;
-			char fileName[Preset::CabNameLength];
-			kgp_sdk_libc::memset(fileName, 0, Preset::CabNameLength);
+			char fileName[CAB_NAME_STRING_SIZE - 1];
+			kgp_sdk_libc::memset(fileName, 0, CAB_NAME_STRING_SIZE - 1);
 
-			getDataPartFromStream(rl, fileName, Preset::CabNameLength);
+			getDataPartFromStream(rl, fileName, CAB_NAME_STRING_SIZE - 1);
 			consoleBusy = false;
 
 			fs_object_t fsObject;
 			fsObject.name = fileName;
-			fileBrowser->SelectFile(fsObject);
+			fileBrowser->SelectFile(fsObject); //not thread safe
+			FileSystemTask->SendCommand(TFsBrowser::bcAction);
 
-			emb_string errStr;
-			if(!fileBrowser->GetDataFromFile(presetBuffer, errStr))
-			{
-				msg_console(" error\r%s\n", errStr.c_str());
-				FSTask->Resume();
-				return;
-			}
+			TFileSystemTask::TResponse browserResponse;
+			browserResponse = FileSystemTask->GetResponseBlocking();
 
-			if(cabNum==0)
-			{
-				kgp_sdk_libc::memcpy(cab1.data, presetBuffer, 4096 * 3);
-				if(cab_type != CAB_CONFIG_STEREO) kgp_sdk_libc::memcpy(cab1.data + 4096 * 3, presetBuffer + 4096 * 3, 4096 * 3);
-
-				kgp_sdk_libc::memcpy(cab1.name.string, fileName, Preset::CabNameLength);
-				cab1.name.size = kgp_sdk_libc::strlen(fileName);
-
-				DSP_SendPrimaryCabData(cab1.data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
-			}
+			if(browserResponse.responseType == TFileSystemTask::TResponseType::rpFileSelected)
+				UITask->setParam(ir_cab_setter, cabNum);
 			else
-			{
-				kgp_sdk_libc::memcpy(cab2.data, presetBuffer, 4096 * 3);
-				kgp_sdk_libc::memcpy(cab2.name.string, fileName, Preset::CabNameLength);
-				cab2.name.size = kgp_sdk_libc::strlen(fileName);
-
-				DSP_SendSecondaryCabData(cab2.data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
-			}
-
-			msg_console(" set\r%s\n", fileName);
+				msg_console("%s error\r\n", args[0]);
 		}
 
 		if(command == "preview_start")
 		{
 			bufPos = 0;
-			kgp_sdk_libc::memset(presetBuffer, 0, 4096 * 3 * 2);
-			msg_console("%d request_part\r\n", cabNum);
+			kgp_sdk_libc::memset(tempCabBuffer, 0, CAB_DATA_SIZE * 2);
+			msg_console("%s %d request_part\r\n", args[0], cabNum);
 		}
 
 		if(command == "preview_part")
@@ -222,9 +158,9 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 				} while (streamPos < bytesToRecieve);
 				rl->RecvChar(c); // get last \n
 
-				kgp_sdk_libc::memcpy(presetBuffer + bufPos, buffer, bytesToRecieve);
+				kgp_sdk_libc::memcpy(tempCabBuffer + bufPos, buffer, bytesToRecieve);
 				bufPos += bytesToRecieve;
-				msg_console("%d request_part\r\n", cabNum);
+				msg_console("%s %d request_part\r\n", args[0], cabNum);
 			}
 			else
 			{
@@ -236,38 +172,27 @@ static void ir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t
 		{
 			if(cabNum==0)
 			{
-				DSP_SendPrimaryCabData(presetBuffer);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
+				SharcTask->sendCab1Data(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE]);
+				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			}
 			else
 			{
-				DSP_SendSecondaryCabData(presetBuffer);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
+				SharcTask->sendCab2Data(tempCabBuffer);
+				SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 			}
-			msg_console("%d preview_end\r\n", cabNum);
+			msg_console("%s %d preview_end\r\n", args[0], cabNum);
 		}
 
 		if(command == "restore")
 		{
-			if(cabNum==0)
-			{
-				DSP_SendPrimaryCabData(cab1.data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modules.rawData[IR_VOLUME1]);
-			}
-			else
-			{
-				DSP_SendSecondaryCabData(cab2.data);
-				DSP_ContrSendParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modules.rawData[IR_VOLUME2]);
-			}
-			msg_console("%d restore\r\n", cabNum);
+			UITask->setParam(ir_cab_restore, cabNum);
 		}
 	}
-	FSTask->Resume();
 }
 
-static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void mkdir_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
 
 	consoleBusy = true;
@@ -282,12 +207,12 @@ static void mkdir_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 	fsObject.name = dirName;
 	fileBrowser->CreateDir(fsObject);
 
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
-static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void remove_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
 
 	consoleBusy = true;
@@ -302,12 +227,12 @@ static void remove_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	fsObject.name = objName;
 
 	fileBrowser->RemoveObject(fsObject);
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
-static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void rename_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	FSTask->Suspend();
+	FileSystemTask->Suspend();
 	msg_console("%s\r", args[0]);
 
 	consoleBusy = true;
@@ -329,40 +254,32 @@ static void rename_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	fileBrowser->RenameObject(srcObject, dstObject);
 
 	msg_console("%s\r%s\n", srcName, dstName);
-	FSTask->Resume();
+	FileSystemTask->Resume();
 }
 
-static void copyto_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void copyto_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	char *end;
 	uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
 
 	consoleBusy = true;
-	char selectionMaskArray[sizeof(CopySelectMenu::TSelectionMask)];
-	getDataPartFromStream(rl, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
+	char selectionMaskArray[sizeof(Preset::TSelectionMask)];
+	getDataPartFromStream(rl, selectionMaskArray, sizeof(Preset::TSelectionMask));
 	consoleBusy = false;
 
 	msg_console("%s\r\n", args[0]);
 
-	for(uint8_t i=0; i < sizeof(CopySelectMenu::TSelectionMask); i++)
+	for(uint8_t i=0; i < sizeof(Preset::TSelectionMask); i++)
 	{
 		selectionMaskArray[i] -= '0';
 	}
-	CopySelectMenu::TSelectionMask selectionMask;
-	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(CopySelectMenu::TSelectionMask));
-	CopySelectMenu::copyPreset(selectionMask, presetNum);
+	Preset::TSelectionMask selectionMask;
+	kgp_sdk_libc::memcpy(&selectionMask, selectionMaskArray, sizeof(Preset::TSelectionMask));
 
-//	msg_console("%s\r\n", args[0]);
+	Preset::Copy(presetNum, selectionMask);
 }
 
-static void erase_preset_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
-{
-	Preset::Erase();
-	Preset::Change();
-	msg_console("%s\r\n", args[0]);
-}
-
-static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void upload_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s ", args[0]);
 	if(count < 2)
@@ -375,7 +292,7 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 
 	if(command == "start")
 	{
-		FSTask->Suspend();
+		FileSystemTask->Suspend();
 
 		char buffer[128];
 		getDataPartFromStream(rl, buffer, 128);
@@ -389,14 +306,14 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 			msg_console("error\rCANNOT_CREATE_FILE\n");
 		}
 
-		FSTask->Resume();
+		FileSystemTask->Resume();
 	}
 
 	if (command == "part")
 	{
 		if (count > 2)
 		{
-			FSTask->Suspend();
+			FileSystemTask->Suspend();
 
 			char buffer[512];
 			char *pEnd;
@@ -415,7 +332,7 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 				msg_console("request_part\r\n");
 			}
 
-			FSTask->Resume();
+			FileSystemTask->Resume();
 		}
 		else
 		{
@@ -424,33 +341,13 @@ static void upload_command_handler(TReadLine *rl, TReadLine::const_symbol_type_p
 	}
 }
 
-static void pchange_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void plist_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	if(count > 1)
-	{
-		char *end;
-		currentPresetNumber = kgp_sdk_libc::strtol(args[1], &end, 16);
-
-		sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-		Preset::Change();
-
-		msg_console("%s\r\n", args[0]);
-	}
-	else
-	{
-		msg_console("%s\rINCORRECT_ARGUMENT\n", args[0]);
-	}
-}
-
-static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
-{
-//	msg_console("plist");
-
 	msg_console("%s", args[0]);
 	for (int p = 0; p < 99; p++)
 	{
 		Preset::TPresetBrief presetData;
-		EEPROM_loadBriefPreset(p, &presetData);
+		EEPROM_LoadPresetBrief(p, &presetData);
 
 		char *cab1NameSrc = presetData.cab1Name + 1;
 		char *cab2NameSrc = presetData.cab2Name + 1;
@@ -486,115 +383,38 @@ static void plist_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		msg_console("\r%d|%s|%s|%s|%s|", p, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
 
 		uint8_t enabled[14];
-		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);
+		kgp_sdk_libc::memcpy(enabled, &presetData.paramData.switches, 14);
 		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
 	}
 	msg_console("\n");
 }
 
-static void pbrief_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void state_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-//	msg_console("plist");
-	if(count > 1)
-	{
-		char *end;
-		uint8_t presetNum = kgp_sdk_libc::strtol(args[1], &end, 16);
-
-		msg_console("%s", args[0]);
-
-		Preset::TPresetBrief presetData;
-		EEPROM_loadBriefPreset(presetNum, &presetData);
-
-		char *cab1NameSrc = presetData.cab1Name + 1;
-		char *cab2NameSrc = presetData.cab2Name + 1;
-		char cab1NameDst[64];
-		char cab2NameDst[64];
-
-		kgp_sdk_libc::memset(cab1NameDst, 0, 64);
-		kgp_sdk_libc::memset(cab2NameDst, 0, 64);
-
-		uint8_t pos=0;
-
-		while(*cab1NameSrc)
-		{
-			if(*cab1NameSrc != '|' && *cab1NameSrc != '\r' && *cab1NameSrc != '\n')
-			{
-				cab1NameDst[pos] = *cab1NameSrc;
-				pos++;
-			}
-			cab1NameSrc++;
-		}
-
-		pos=0;
-		while(*cab2NameSrc)
-		{
-			if(*cab2NameSrc != '|' && *cab2NameSrc != '\r' && *cab2NameSrc != '\n')
-			{
-				cab2NameDst[pos] = *cab1NameSrc;
-				pos++;
-			}
-			cab2NameSrc++;
-		}
-
-		msg_console("\r%d|%s|%s|%s|%s|", presetNum, presetData.name, presetData.comment, cab1NameDst, cab2NameDst);
-
-		uint8_t enabled[14];
-		kgp_sdk_libc::memcpy(enabled, &presetData.switches, 14);
-		for(uint8_t i=0; i<14; i++) msg_console("%d", enabled[i]);
-
-		msg_console("\n");
-	}
-}
-
-static void state_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
-{
-	currentPreset.modules.paramData.delay_time = delay_time;
+	currentPreset.paramData.delay_time = currentPreset.delayTime;
 
 	msg_console("%s\r", args[0]);
 	for(size_t i = 0; i < 512; i++)
 	{
-		char hex[3] =
-		{0, 0, 0};
-		i2hex(currentPreset.modules.rawData[i], hex);
-		msg_console("%s", hex);
+		msg_console("%02x", currentPreset.modulesBuf[i]);
 	}
 	msg_console("\n");
 }
 
-static void cntrls_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void cntrls_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s\r", args[0]);
-	for(size_t i = 0; i < controllersCount; i++)
+	for(size_t i = 0; i < Controller::controllersCount; i++)
 	{
-		char hex[3] =
-		{0, 0, 0};
-
-		i2hex(currentPreset.controller[i].src, hex);
-		msg_console("%s", hex);
-		i2hex(currentPreset.controller[i].dst, hex);
-		msg_console("%s", hex);
-		i2hex(currentPreset.controller[i].minVal, hex);
-		msg_console("%s", hex);
-		i2hex(currentPreset.controller[i].maxVal, hex);
-		msg_console("%s", hex);
+		msg_console("%02x%02x%02x%02x", currentPreset.controller[i].src, currentPreset.controller[i].dst,
+				currentPreset.controller[i].minVal, currentPreset.controller[i].maxVal);
 	}
 	msg_console("\n");
 }
 
-static void pnum_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void pname_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	msg_console("%s\r", args[0]);
-
-	char hex[3] = {0, 0, 0};
-	i2hex(currentPresetNumber, hex);
-	msg_console("%s", hex);
-
-	msg_console("\n");
-}
-
-static void pname_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
-{
-	msg_console("%s\r", args[0]);
+	msg_console("%s\r", Preset::nameCommandString);
 	if(count > 1)
 	{
 		std::emb_string command = args[1];
@@ -604,14 +424,15 @@ static void pname_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 			consoleBusy = true;
 			getDataPartFromStream(rl, (char*)currentPreset.name, 15);
 			consoleBusy = false;
+			UITask->refreshMenu();
 		}
 	}
 	msg_console("%s\n", currentPreset.name);
 }
 
-static void pcomment_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void pcomment_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	msg_console("%s\r", args[0]);
+	msg_console("%s\r", Preset::commentCommandString);
 	if(count > 1)
 	{
 		std::emb_string command = args[1];
@@ -621,70 +442,23 @@ static void pcomment_command_handler(TReadLine *rl, TReadLine::const_symbol_type
 			consoleBusy = true;
 			getDataPartFromStream(rl, (char*)currentPreset.comment, 15);
 			consoleBusy = false;
+			UITask->refreshMenu();
 		}
 	}
 	msg_console("%s\n", currentPreset.comment);
 }
 
-static void controller_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+
+static void pcout_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	msg_console("%s\r", args[0]);
-	if (count > 3)
-	{
-		char *end;
-		uint8_t cntrlNum = kgp_sdk_libc::strtol(args[1], &end, 16);
-		std::emb_string command = args[2];
-		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
-
-		msg_console("%d\r%s\r%d", cntrlNum, args[2], value);
-
-		if(command == "dst")
-		{
-			currentPreset.controller[cntrlNum].dst = value;
-			goto ending;
-		}
-
-		if(command == "src")
-		{
-			currentPreset.controller[cntrlNum].src = value;
-			goto ending;
-		}
-
-		if(command == "min")
-		{
-			currentPreset.controller[cntrlNum].minVal = value;
-			goto ending;
-		}
-
-		if(command == "max")
-		{
-			currentPreset.controller[cntrlNum].maxVal = value;
-			goto ending;
-		}
-
-
-//		msg_console("\rundefined type");
-	}
-	else
-	{
-		msg_console("INCORRECT_ARGS");
-	}
-
-ending:
-	write_sys();
-	msg_console("\n");
+	default_param_handler(&currentPreset.pcOut, args, count);
+	UITask->refreshMenu();
 }
 
-static void controller_pc_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
-{
-	default_param_handler(&currentPreset.pcOut, rl, args, count);
-}
-
-static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void pcset_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
 	uint8_t answer;
 
-	char hex[3] = {0, 0, 0};
 	if (count > 0)
 	{
 		if(count > 1)
@@ -700,13 +474,12 @@ static void controller_set_command_handler(TReadLine* rl, TReadLine::const_symbo
 			if(currentPreset.set & 0x80) answer = currentPreset.set & 0x7F;
 			else answer = currentPresetNumber;
 		}
-
-		i2hex(answer, hex);
-		msg_console("%s\r%s\n", args[0], hex);
+		msg_console("%s\r%02x\n", Controller::pcsetCommandString, answer);
+		UITask->refreshMenu();
 	}
 }
 
-static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_ptr_t *args, const size_t count)
+static void tuner_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
 	msg_console("%s ", args[0]);
 	if(count == 2)
@@ -717,7 +490,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 		if(command == "ref")
 		{
-			uint16_t refFreq = SpectrumTask->ref_freq;
+			uint16_t refFreq = TunerTask->refFreq;
 			msg_console("%d", refFreq);
 		}
 	}
@@ -730,7 +503,7 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		{
 			char *end;
 			uint16_t refFreq = kgp_sdk_libc::strtol(args[2], &end, 10);
-			SpectrumTask->ref_freq = refFreq;
+			TunerTask->refFreq = refFreq;
 			msg_console("%d", refFreq);
 		}
 
@@ -741,20 +514,11 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 
 			if(on)
 			{
-				send_codec(0xa102);
-				DSP_ContrSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
-				tun_base_old = 0.0f;
-
-				SpectrumTask->backgroundTunerEnabled = true;
+				TunerTask->Enable(TTunerTask::TUNER_CONSOLE);
 			}
 			else
 			{
-				SpectrumTask->backgroundTunerEnabled = false;
-
-				DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
-
-				GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-				send_codec(0xa103);
+				TunerTask->Disable();
 			}
 			msg_console("%d", on);
 		}
@@ -763,88 +527,183 @@ static void tuner_command_handler(TReadLine *rl, TReadLine::const_symbol_type_pt
 		{
 			char *end;
 			uint16_t count = kgp_sdk_libc::strtol(args[2], &end, 16);
-			SpectrumTask->samplesCount = count;
+			TunerTask->Enable(TTunerTask::TUNER_CONSOLE, count);
 
-			// answers in IRQ
-//			msg_console("%d", count);
 		}
 	}
 	msg_console("\n");
 }
 
-static void preset_volume_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void sys_settings_command_handler(TTranslator *rl, TTranslator::const_symbol_type_ptr_t *args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.paramData.preset_volume, rl, args, count);
-	DSP_ContrSendParameter(DSP_ADDRESS_PRESET_VOLUME, currentPreset.modules.paramData.preset_volume, 0);
+	msg_console("%s\r", args[0]);
+
+	sys_para[System::MASTER_EQ_FREQ_LO] = (mstEqMidFreq>>8) & 0xF;
+	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xF;
+
+	for(size_t i = 0; i < 512; i++)
+	{
+		msg_console("%02x" , sys_para[i]);
+	}
+	msg_console("\n");
 }
 
-static void preset_volume_control_command_handler(TReadLine* rl, TReadLine::const_symbol_type_ptr_t* args, const size_t count)
+static void midi_map_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
 {
-	default_param_handler(&currentPreset.modules.paramData.volume_control, rl, args, count);
+	if(count>2)
+	{
+		char *end;
+		uint8_t mapPos = kgp_sdk_libc::strtol(args[1], &end, 16);
+		uint8_t mapVal = kgp_sdk_libc::strtol(args[2], &end, 16);
+
+		MidiTask->setMidiPcMap(mapPos, mapVal);
+
+		UITask->refreshMenu();
+		EEPROM_DelayedSaveSystemData();
+	}
 }
+
+static void controller_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+{
+	if (count > 3)
+	{
+		char *end;
+		uint8_t cntrlNum = kgp_sdk_libc::strtol(args[1], &end, 16);
+		std::emb_string command = args[2];
+		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
+
+		if(command == Controller::srcCommandString)
+			Controller::setSrc(cntrlNum, value);
+
+		if(command == Controller::dstCommandString)
+			Controller::setDst(cntrlNum, value);
+
+
+		if(command == "min")
+			Controller::setMinVal(cntrlNum, value);
+
+		if(command == "max")
+			Controller::setMaxVal(cntrlNum, value);
+
+		UITask->refreshMenu();
+	}
+	else
+	{
+		msg_console("%s\rINCORRECT_ARGS\n", Controller::controllerCommandString);
+	}
+}
+
+static void fsw_command_handler(TTranslator* rl, TTranslator::const_symbol_type_ptr_t* args, const size_t count)
+{
+	if(count > 3)
+	{
+		char *end;
+		uint8_t fswNum = kgp_sdk_libc::strtol(args[1], &end, 16) % 3;
+		Footswitch::FswButton fswButton = static_cast<Footswitch::FswButton>(fswNum);
+
+		std::emb_string command = args[2];
+		uint8_t value = kgp_sdk_libc::strtol(args[3], &end, 16);
+
+		if(command == Footswitch::fswModeStringHandler)
+			Footswitch::setMode(fswButton, static_cast<Footswitch::FswMode>(value % 2));
+
+
+		if(command == Footswitch::fswPressTypeStringHandler)
+			Footswitch::setPressType(fswButton, static_cast<Footswitch::FswType>(value));
+
+		if(command == Footswitch::fswHoldTypeStringHandler)
+			Footswitch::setHoldType(fswButton, static_cast<Footswitch::FswType>(value));
+
+		if(command == Footswitch::fswPressCcStringHandler)
+			Footswitch::setPressCc(fswButton, value);
+
+		if(command == Footswitch::fswHoldCcStringHandler)
+			Footswitch::setHoldCc(fswButton, value);
+
+		if(command == Footswitch::fswPressMapStringHandler)
+		{
+			if(count > 4)
+			{
+				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
+				Footswitch::setPressMap(fswButton, value, presetNum);
+			}
+		}
+
+		if(command == Footswitch::fswHoldMapStringHandler)
+		{
+			if(count > 4)
+			{
+				uint8_t presetNum = kgp_sdk_libc::strtol(args[4], &end, 16);
+				Footswitch::setHoldMap(fswButton, value, presetNum);
+			}
+
+		}
+
+		UITask->refreshMenu();
+		EEPROM_DelayedSaveSystemData();
+	}
+	else
+	{
+		console_printf("%s\rINCORRECT_ARGS\n", Footswitch::fswCommandString);
+	}
+}
+
 //------------------------------------------------------------------------------
-void ConsoleSetCmdHandlers(TReadLine *rl)
+void ConsoleSetCmdHandlers(TTranslator *translator)
 {
-	SetConsoleCmdDefaultHandlers(rl);
-	/*
-	 rl->AddCommandHandler("cc", current_cabinet_command_handler);
-	 rl->AddCommandHandler("ce", cabinet_enable_command_handler);
-	 */
+	set_hardware_handlers(translator);
 
-	rl->AddCommandHandler("amtdev", amtdev_command_handler);
-	rl->AddCommandHandler("amtver", amtver_command_handler);
+	translator->AddCommandHandler("amtdev", amtdev_command_handler);
+	translator->AddCommandHandler("amtver", amtver_command_handler);
 
-	rl->AddCommandHandler("cd", cd_command_handler);
-	rl->AddCommandHandler("ls", ls_command_handler);
-	rl->AddCommandHandler("ir", ir_command_handler);
+	translator->AddCommandHandler("cd", cd_command_handler);
+	translator->AddCommandHandler("ls", ls_command_handler);
+	translator->AddCommandHandler("ir", ir_command_handler);
 
-	rl->AddCommandHandler("upload", upload_command_handler);
+	translator->AddCommandHandler("upload", upload_command_handler);
 
-	rl->AddCommandHandler("mkdir", mkdir_command_handler);
-	rl->AddCommandHandler("rename", rename_command_handler);
-	rl->AddCommandHandler("remove", remove_command_handler);
+	translator->AddCommandHandler("mkdir", mkdir_command_handler);
+	translator->AddCommandHandler("rename", rename_command_handler);
+	translator->AddCommandHandler("remove", remove_command_handler);
 
-	rl->AddCommandHandler("copy_to", copyto_command_handler);
-	rl->AddCommandHandler("erase_preset", erase_preset_command_handler);
+	translator->AddCommandHandler("copy_to", copyto_command_handler);
 
-	rl->AddCommandHandler("pchange", pchange_command_handler);
-	rl->AddCommandHandler("psave", psave_command_handler);
+	translator->AddCommandHandler("state", state_command_handler);
+	translator->AddCommandHandler("cntrls", cntrls_command_handler);
 
-	rl->AddCommandHandler("state", state_command_handler);
-	rl->AddCommandHandler("cntrls", cntrls_command_handler);
+	translator->AddCommandHandler("plist", plist_command_handler);
 
-	rl->AddCommandHandler("plist", plist_command_handler);
-	rl->AddCommandHandler("pbrief", pbrief_command_handler);
+	translator->AddCommandHandler(Preset::nameCommandString, pname_command_handler);
+	translator->AddCommandHandler(Preset::commentCommandString, pcomment_command_handler);
 
-	rl->AddCommandHandler("pnum", pnum_command_handler);
-	rl->AddCommandHandler("pname", pname_command_handler);
-	rl->AddCommandHandler("pcomment", pcomment_command_handler);
+	translator->AddCommandHandler(Controller::controllerCommandString, controller_command_handler);
+	translator->AddCommandHandler(Controller::pcoutCommandString, pcout_command_handler);
+	translator->AddCommandHandler(Controller::pcsetCommandString, pcset_command_handler);
 
-	rl->AddCommandHandler("cntrl", controller_command_handler);
-	rl->AddCommandHandler("cntrl_pc", controller_pc_command_handler);
-	rl->AddCommandHandler("cntrl_set", controller_set_command_handler);
+	translator->AddCommandHandler("tn", tuner_command_handler);
 
-	rl->AddCommandHandler("tn", tuner_command_handler);
+	translator->AddCommandHandler("sys_settings", sys_settings_command_handler);
+	translator->AddCommandHandler("midi_map", midi_map_command_handler);
+	translator->AddCommandHandler(Footswitch::fswCommandString, fsw_command_handler);
 
-	rl->AddCommandHandler("vl_pr", preset_volume_command_handler);
-	rl->AddCommandHandler("vl_pr_cntrl", preset_volume_control_command_handler);
+	set_syssettings_handlers(translator);
+	set_master_handlers(translator);
+	set_preset_handlers(translator);
 
-	set_syssettings_handlers(rl);
-
-	set_resonance_filter_handlers(rl);
-	set_gate_handlers(rl);
-	set_compressor_handlers(rl);
-	set_preamp_handlers(rl);
-	set_amp_handlers(rl);
-	set_ir_handlers(rl);
-	set_eq_handlers(rl);
-	set_phaser_handlers(rl);
-	set_flanger_handlers(rl);
-	set_chorus_handlers(rl);
-	set_delay_handlers(rl);
-	set_early_handlers(rl);
-	set_reverb_handlers(rl);
-	set_tremolo_handlers(rl);
+	set_resonance_filter_handlers(translator);
+	set_gate_handlers(translator);
+	set_compressor_handlers(translator);
+	set_preamp_handlers(translator);
+	set_amp_handlers(translator);
+	set_ir_handlers(translator);
+	set_eq_handlers(translator);
+	set_phaser_handlers(translator);
+	set_flanger_handlers(translator);
+	set_chorus_handlers(translator);
+	set_delay_handlers(translator);
+	set_early_handlers(translator);
+	set_reverb_handlers(translator);
+	set_tremolo_handlers(translator);
 }
 
 //------------------------------------------------------------------------------

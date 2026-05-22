@@ -1,12 +1,13 @@
 #include "paramlistmenu.h"
 
-#include "cs.h"
-#include "fs.h"
-#include "eepr.h"
-#include "allFonts.h"
-#include "display.h"
-#include "enc.h"
-#include "cc.h"
+#include "bitmaps.h"
+#include "eeprom.h"
+
+#include "display_task.h"
+#include "filesystem_task.h"
+#include "io_task.h"
+#include "tasks/ui_task.h"
+#include "controllers_task.h"
 
 #include "tapmenu.h"
 #include "stringoutparam.h"
@@ -46,7 +47,7 @@ void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingPara
 	m_pagesCount = ceil((float)m_paramsCount/(float)paramsOnPage);
 }
 
-void ParamListMenu::setVolumeIndicator(TDisplayTask::TVolIndicatorType volIndicatorType,
+void ParamListMenu::setVolumeIndicator(TVolIndicatorType volIndicatorType,
 		dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
 	m_volIndicatorType = volIndicatorType;
@@ -62,6 +63,8 @@ void ParamListMenu::setIcon(bool drawIcon, icon_t icon)
 
 void ParamListMenu::show(TShowMode showMode)
 {
+	blinkFlag = 1;
+
 	currentMenu = this;
 
 	DisplayTask->Clear();
@@ -69,8 +72,6 @@ void ParamListMenu::show(TShowMode showMode)
 	if(showMode == FirstShow)
 	{
 		m_currentPageNumber = -1;
-
-//		for(int a=0; a<m_paramsCount; a++) m_paramsList[a]->setDisabled(0); //cleanup
 
 		for(int i = 0; i<m_paramsCount; i++)
 		{
@@ -98,6 +99,9 @@ void ParamListMenu::show(TShowMode showMode)
 
 	printPage(true);
 	DisplayTask->SetVolIndicator(m_volIndicatorType, m_indicatorSource, m_indicatorParam_ptr);
+
+	StringOutParam* runningString = getRunningString();
+	if(runningString) runningString->resetRunning();
 }
 
 void ParamListMenu::refresh()
@@ -112,7 +116,7 @@ void ParamListMenu::task()
 	if(!m_encoderKnobSelected)
 	{
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-								blinkFlag_fl * 2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+								FONT_BLINKING, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 }
 
@@ -120,30 +124,14 @@ void ParamListMenu::encoderPressed()
 {
 	if(m_paramsList[m_currentParamNum]->disabled()) return;
 
-	// CustomParam
-	if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU_DELAY_TIME ||
-			m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_SUBMENU)
+	m_paramsList[m_currentParamNum]->select(m_encoderKnobSelected);
+	if(m_encoderKnobSelected)
 	{
-		SubmenuParam* submenuParam = static_cast<SubmenuParam*>(m_paramsList[m_currentParamNum]);
-		submenuParam->showSubmenu(this);
-	}
-	else
-	{
-		if(!m_encoderKnobSelected)
-		{
-			m_encoderKnobSelected = true;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-									2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-		}
-		else
-		{
-			m_encoderKnobSelected = false;
-			DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-									0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
-		}
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
+							Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void ParamListMenu::encoderClockwise()
@@ -158,7 +146,7 @@ void ParamListMenu::encoderClockwise()
 					|| m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_STRING_OUT)
 					&& m_currentParamNum < m_lastSelectableParam);
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -166,7 +154,7 @@ void ParamListMenu::encoderClockwise()
 		if(!m_paramsList[m_currentParamNum]->inverse()) m_paramsList[m_currentParamNum]->increaseParam();
 		else m_paramsList[m_currentParamNum]->decreaseParam();
 
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 
 		// Support CustomParam
 		if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)
@@ -188,7 +176,7 @@ void ParamListMenu::encoderCounterClockwise()
 					|| m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_STRING_OUT)
 					&& m_currentParamNum > m_firstSelectableParam);
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
@@ -197,7 +185,7 @@ void ParamListMenu::encoderCounterClockwise()
 				else m_paramsList[m_currentParamNum]->increaseParam();
 
 
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 
 		if(m_paramsList[m_currentParamNum]->type() == BaseParam::GUI_PARAMETER_LIST)
 			printPage();	// whole page to show "disabled" param changes
@@ -236,7 +224,7 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 		if(m_pagesCount == 1) drawStrelka = STRELKA_NONE;
 
 		DisplayTask->Clear();
-		DisplayTask->Icon_Strel(m_icon, drawStrelka);
+		DisplayTask->IconAndArrows(m_icon, drawStrelka);
 
 	}
 	m_currentPageNumber = newPageNumber;
@@ -248,11 +236,12 @@ void ParamListMenu::printPage(bool forceDrawIcon)
 		uint8_t displayParamNum = i + m_currentPageNumber * paramsOnPage;
 
 		bool highlight = (m_currentParamNum == displayParamNum) && (m_paramsCount > 1);
+		if(!m_encoderKnobSelected) highlight &= blinkFlag;
 
 		if(m_paramsList[displayParamNum]->type() == BaseParam::GUI_PARAMETER_DUMMY) continue;
 
 		m_paramsList[displayParamNum]->printParam(i);
-		DisplayTask->StringOut(leftPad, i, Font::fntSystem , 2 * highlight, (uint8_t*)(m_paramsList[displayParamNum]->name()));
+		DisplayTask->StringOut(leftPad, i, Font::fntSystem , (Font::TFontState)(Font::fnsHighlight * highlight), (uint8_t*)(m_paramsList[displayParamNum]->name()));
 	}
 }
 

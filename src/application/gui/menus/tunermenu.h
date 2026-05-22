@@ -13,6 +13,8 @@ public:
 
 	void show(TShowMode showMode = FirstShow) override;
 
+	void returnToParent() override;
+
 	void keyUp() override;
 
 	void key1() override;
@@ -22,7 +24,7 @@ public:
 	void key5() override;
 
 private:
-	void endTunerTask();
+	void exitTunerMenu();
 };
 
 #endif /* TUNERMENU_H_ */

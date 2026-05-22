@@ -33,6 +33,8 @@ public:
 	void presetChoose(uint8_t presetNum);
 	void presetConfirm();
 
+	uint8_t preselectedPresetNum() { return m_preselectedPresetNum; }
+
 private:
 //	ModulesMenu modulesMenu{this};
 

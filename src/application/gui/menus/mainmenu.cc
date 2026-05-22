@@ -1,20 +1,18 @@
+#include <eeprom.h>
 #include "mainmenu.h"
 
-#include "appdefs.h"
-#include "cs.h"
-#include "fs.h"
-#include "eepr.h"
-#include "allFonts.h"
-#include "display.h"
-#include "enc.h"
-#include "cc.h"
-#include "BF706_send.h"
-#include "midi_send.h"
-
 #include "system.h"
-
 #include "modules.h"
 #include "footswitch.h"
+
+#include "controllers_task.h"
+#include "display_task.h"
+#include "filesystem_task.h"
+#include "io_task.h"
+#include "midi_task.h"
+#include "ui_task.h"
+
+#include "bitmaps.h"
 
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
@@ -22,6 +20,7 @@
 #include "attenuatormenu.h"
 #include "mastervolumemenu.h"
 #include "mastereqmenu.h"
+#include "preset_accessors.h"
 #include "systemmenu.h"
 #include "tunermenu.h"
 
@@ -35,9 +34,10 @@ void MainMenu::show(TShowMode swhoMode)
 	currentMenu = this;
 	shownChildMenu = nullptr;
 
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	m_preselectedPresetNum = currentPresetNumber;
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 
 	DisplayTask->Clear();
 	refresh();
@@ -47,37 +47,41 @@ void MainMenu::task()
 {
 	if(m_preselectedPresetNum != currentPresetNumber)
 	{
-		if(blinkFlag_fl == 0)
+		if(blinkFlag == 0)
 		{
-			bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
-			DisplayTask->Prog_ind(m_preselectedPresetNum, filled);
+			bool filled = m_selectedPresetBrief.cab1Name[0]
+							|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+			DisplayTask->PresetInd(m_preselectedPresetNum, filled);
 		}
 		else
 		{
-			if(TIM_GetFlagStatus(TIM6,TIM_FLAG_Update) == 1)
-				DisplayTask->Clear_str(87 , 0 , Font::fnt33x30 , 39);
+			DisplayTask->ClearString(87 , 0 , Font::fnt33x30 , 39);
 		}
+		DisplayTask->FswInd(0, m_selectedPresetBrief.paramData.foot_ind_press[0], m_selectedPresetBrief.paramData.foot_ind_hold[0]);
+		DisplayTask->FswInd(1, m_selectedPresetBrief.paramData.foot_ind_press[1], m_selectedPresetBrief.paramData.foot_ind_hold[1]);
+		DisplayTask->FswInd(2, m_selectedPresetBrief.paramData.foot_ind_press[2], m_selectedPresetBrief.paramData.foot_ind_hold[2]);
 	}
-
-	if((sys_para[System::FSW1_PRESS_TYPE] == 1) || ((sys_para[System::FSW1_HOLD_TYPE] == 1) && sys_para[System::FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0, contr_kn[0]);
-	if((sys_para[System::FSW2_PRESS_TYPE] == 1) || ((sys_para[System::FSW2_HOLD_TYPE] == 1) && sys_para[System::FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1, contr_kn[1]);
-	if((sys_para[System::FSW3_PRESS_TYPE] == 1) || ((sys_para[System::FSW3_HOLD_TYPE] == 1) && sys_para[System::FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2, contr_kn[2]);
-
 }
 
 void MainMenu::encoderPressed()
 {
-	presetConfirm();
+	preset_change_handler(m_preselectedPresetNum);
+	refresh();
+	restartBlinking(1);
 }
 
 void MainMenu::encoderClockwise()
 {
 	presetUp();
+	refresh();
+	restartBlinking(1);
 }
 
 void MainMenu::encoderCounterClockwise()
 {
 	presetDown();
+	refresh();
+	restartBlinking(1);
 }
 
 void MainMenu::keyUp()
@@ -95,20 +99,17 @@ void MainMenu::keyUp()
 		shownChildMenu->show();
 	}
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::keyDown()
 {
 	if(m_preselectedPresetNum != currentPresetNumber) return;
 
-//	shownChildMenu = &modulesMenu;
-//	modulesMenu.show();
-
 	shownChildMenu = new ModulesMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key1()
@@ -117,10 +118,15 @@ void MainMenu::key1()
 
 	if(shownChildMenu) delete shownChildMenu;
 
+#ifdef __MONO_MOD__
 	shownChildMenu = new AttenuatorMenu(this);
 	shownChildMenu->show();
+#endif
 
-	tim5_start(0);
+#ifdef __STEREO_MOD__
+
+#endif
+	restartBlinking(0);
 }
 
 void MainMenu::key2()
@@ -132,7 +138,7 @@ void MainMenu::key2()
 	shownChildMenu = new MasterVolumeMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key3()
@@ -144,7 +150,7 @@ void MainMenu::key3()
 	shownChildMenu = new MasterEqMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key4()
@@ -156,7 +162,7 @@ void MainMenu::key4()
 	shownChildMenu = SystemMenu::create(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::key5()
@@ -168,27 +174,45 @@ void MainMenu::key5()
 	shownChildMenu = new TunerMenu(this);
 	shownChildMenu->show();
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void MainMenu::refresh()
 {
-	EEPROM_loadBriefPreset(m_preselectedPresetNum, &m_selectedPresetBrief);
+	DisplayTask->ClearString(2, 0, Font::fntSystem, 14);
+	DisplayTask->ClearString(2, 1, Font::fntSystem, 14);
 
-	DisplayTask->Clear_str(2, 0, Font::fntSystem, 14);
-	DisplayTask->Clear_str(2, 1, Font::fntSystem, 14);
 
-	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.name);
-	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.comment);
 
-	bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
+	uint8_t* name;
+	uint8_t* comment;
 
-	DisplayTask->Prog_ind(m_preselectedPresetNum, filled);
+	bool filled;
+	if(currentPresetNumber != m_preselectedPresetNum)
+	{
+		name = (uint8_t*)m_selectedPresetBrief.name;
+		comment = (uint8_t*)m_selectedPresetBrief.comment;
 
-	if((sys_para[System::FSW1_PRESS_TYPE] == 1) || ((sys_para[System::FSW1_HOLD_TYPE] == 1) && sys_para[System::FSW1_MODE] == Footswitch::Double)) DisplayTask->IndFoot(0, contr_kn[0]);
-	if((sys_para[System::FSW2_PRESS_TYPE] == 1) || ((sys_para[System::FSW2_HOLD_TYPE] == 1) && sys_para[System::FSW2_MODE] == Footswitch::Double)) DisplayTask->IndFoot(1, contr_kn[1]);
-	if((sys_para[System::FSW3_PRESS_TYPE] == 1) || ((sys_para[System::FSW3_HOLD_TYPE] == 1) && sys_para[System::FSW3_MODE] == Footswitch::Double)) DisplayTask->IndFoot(2, contr_kn[2]);
+		filled = m_selectedPresetBrief.cab1Name[0]
+				|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+	}
+	else
+	{
+		name = (uint8_t*)currentPreset.name;
+			comment = (uint8_t*)currentPreset.comment;
 
+		filled = currentPreset.cab1NameSize
+				|| (System::cab_type == CAB_CONFIG_STEREO ? currentPreset.cab2NameSize : 0);
+	}
+
+	DisplayTask->StringOut(2, 0, Font::fntSystem, Font::fnsNormal, name);
+	DisplayTask->StringOut(2, 1, Font::fntSystem, Font::fnsNormal, comment);
+
+	DisplayTask->PresetInd(m_preselectedPresetNum, filled);
+
+	DisplayTask->FswInd(0, currentPreset.paramData.foot_ind_press[0], currentPreset.paramData.foot_ind_hold[0]);
+	DisplayTask->FswInd(1, currentPreset.paramData.foot_ind_press[1], currentPreset.paramData.foot_ind_hold[1]);
+	DisplayTask->FswInd(2, currentPreset.paramData.foot_ind_press[2], currentPreset.paramData.foot_ind_hold[2]);
 }
 
 void MainMenu::presetUp()
@@ -196,12 +220,7 @@ void MainMenu::presetUp()
 	if(m_preselectedPresetNum == 98) m_preselectedPresetNum = 0;
 	else m_preselectedPresetNum++;
 
-	refresh();
-
-	tim5_start(0);
-	TIM_SetCounter(TIM6, 0x8000);
-	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
-	TIM_Cmd(TIM6, ENABLE);
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 }
 
 void MainMenu::presetDown()
@@ -209,29 +228,17 @@ void MainMenu::presetDown()
 	if(m_preselectedPresetNum == 0) m_preselectedPresetNum = 98;
 	else m_preselectedPresetNum -= 1;
 
-	refresh();
-
-	tim5_start(0);
-	TIM_SetCounter(TIM6,0xa000);
-	TIM_ClearFlag(TIM6,TIM_FLAG_Update);
-	TIM_Cmd(TIM6,ENABLE);
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 }
 
 void MainMenu::presetChoose(uint8_t presetNum)
 {
 	m_preselectedPresetNum = presetNum;
-	refresh();
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 }
 
 void MainMenu::presetConfirm()
 {
-	currentPresetNumber = m_preselectedPresetNum;
-
-	refresh();
-
-	sys_para[System::LAST_PRESET_NUM] = currentPresetNumber;
-	Preset::Change();
-
-	show();
-	tim5_start(1);
+	m_preselectedPresetNum = currentPresetNumber;
+	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);
 }

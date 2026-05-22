@@ -1,13 +1,11 @@
+#include <tuner_task.h>
 #include "tunermenu.h"
 
-#include "appdefs.h"
-#include "cs.h"
-#include "eepr.h"
-#include "gui/elements/allFonts.h"
-#include "display.h"
-#include "enc.h"
-#include "spectrum.h"
-#include "BF706_send.h"
+#include "codec.h"
+#include "led.h"
+
+#include "display_task.h"
+#include "sharc_task.h"
 
 TunerMenu::TunerMenu(AbstractMenu *parent)
 {
@@ -18,29 +16,64 @@ TunerMenu::TunerMenu(AbstractMenu *parent)
 void TunerMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
-	send_codec(0xa102);
-	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 0, 0);
-	tun_base_old = 0.0f;
+
+	TunerTask->Enable(TTunerTask::TUNER_GUI);
 
 	DisplayTask->TunerInit();
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_IN);
+	DisplayTask->TunerRefFreq(TunerTask->refFreq);
 }
 
 void TunerMenu::encoderClockwise()
 {
-	if(SpectrumTask->ref_freq<450.0f)
-		SpectrumTask->ref_freq += 1.0f;
+	if(TunerTask->refFreq<450.0f)
+	{
+		TunerTask->refFreq += 1.0f;
+		DisplayTask->TunerRefFreq(TunerTask->refFreq);
+	}
 }
 
 void TunerMenu::encoderCounterClockwise()
 {
-	if(SpectrumTask->ref_freq>430.0f)
-		SpectrumTask->ref_freq -= 1.0f;
+	if(TunerTask->refFreq>430.0f)
+	{
+		DisplayTask->TunerRefFreq(TunerTask->refFreq);
+		TunerTask->refFreq -= 1.0f;
+	}
 }
 
 void TunerMenu::keyUp()
 {
-	endTunerTask();
+	returnToParent();
+}
+
+void TunerMenu::key1()
+{
+	returnToParent();
+}
+
+void TunerMenu::key2()
+{
+	returnToParent();
+}
+
+void TunerMenu::key3()
+{
+	returnToParent();
+}
+
+void TunerMenu::key4()
+{
+	returnToParent();
+}
+
+void TunerMenu::key5()
+{
+	returnToParent();
+}
+
+void TunerMenu::returnToParent()
+{
+	exitTunerMenu();
 	if(topLevelMenu)
 	{
 		currentMenu = topLevelMenu;
@@ -48,43 +81,9 @@ void TunerMenu::keyUp()
 	}
 }
 
-void TunerMenu::key1()
+void TunerMenu::exitTunerMenu()
 {
-	endTunerTask();
-	topLevelMenu->returnFromChildMenu();
-}
-
-void TunerMenu::key2()
-{
-	endTunerTask();
-	topLevelMenu->returnFromChildMenu();
-}
-
-void TunerMenu::key3()
-{
-	endTunerTask();
-	topLevelMenu->returnFromChildMenu();
-}
-
-void TunerMenu::key4()
-{
-	endTunerTask();
-	topLevelMenu->returnFromChildMenu();
-}
-
-void TunerMenu::key5()
-{
-	endTunerTask();
-	tim5_start(0);
-	topLevelMenu->returnFromChildMenu();
-}
-
-void TunerMenu::endTunerTask()
-{
-	DSP_GuiSendParameter(DSP_ADDRESS_TUN_PROC, 1, 0);
-	DisplayTask->TunerDeinit();
-//	DisplayTask->Clear();
-	CSTask->Give();
-	GPIO_ResetBits(GPIOB, GPIO_Pin_11);
-	send_codec(0xa103);
+	TunerTask->Disable();
+	LED_SetState(TLedType::LED_TAP_GREEN, TLedState::DISABLED);
+	DisplayTask->Clear();
 }

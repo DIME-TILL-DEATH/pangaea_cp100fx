@@ -1,8 +1,6 @@
 include $(SRC_DIR)/rules.mk
 
 LIB_FLAGS=	-I$(READLINE_SRC_DIR) \
-			-I$(CONSOLE_SRC_DIR) \
-			-I$(CONSOLE_HANDLERS_SRC_DIR) \
 			-I$(RTCOUNTER_SRC_DIR) \
 			-I$(FREERTOS_KERNEL_SRC_DIR)/include \
 			-I$(FREERTOS_PORTABLE_SRC_DIR) \
@@ -18,8 +16,16 @@ LIB_FLAGS=	-I$(READLINE_SRC_DIR) \
 			-I$(SRC_DIR)/libstorage \
 			-I$(SRC_DIR)/libusb/device \
 			-I$(SRC_DIR)/libusb/otg \
+			-I$(SRC_DIR)/application/console\
+			-I$(SRC_DIR)/application/dsp\
+			-I$(SRC_DIR)/application/accessors\
+			-I$(SRC_DIR)/application/tasks\
+			-I$(SRC_DIR)/application/periphery\
+			-I$(SRC_DIR)/application/hardware\
 			-I$(SRC_DIR)/application/gui\
-			-I$(SRC_DIR)/application/gui/elements\
+			-I$(SRC_DIR)/application/gui/bitmaps\
+			-I$(SRC_DIR)/application/gui/dialogs\
+			-I$(SRC_DIR)/application/gui/fonts\
 			-I$(SRC_DIR)/application/gui/menus\
 			-I$(SRC_DIR)/application/gui/menus/paramlistmenu\
 			-I$(SRC_DIR)/application/gui/menus/modulesmenu\

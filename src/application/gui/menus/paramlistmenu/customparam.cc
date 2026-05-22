@@ -1,13 +1,12 @@
-#include "../paramlistmenu/customparam.h"
+#include <eeprom.h>
+#include "customparam.h"
 
-#include "BF706_send.h"
-#include "enc.h"
-#include "eepr.h"
+#include "display_task.h"
+#include "io_task.h"
 
-#include "display.h"
 
-CustomParam::CustomParam(TDisplayType displayType, const char* name, void* paramValuePtr)
-	:BaseParam(BaseParam::GUI_PARAMETER_CUSTOM, name, paramValuePtr)
+CustomParam::CustomParam(TDisplayType displayType, TParamDescriptor* paramDesc)
+	: BaseParam(BaseParam::GUI_PARAMETER_CUSTOM, paramDesc)
 {
 	m_displayType = displayType;
 }
@@ -47,25 +46,25 @@ void CustomParam::setStrings(std::initializer_list<const char*> stringList, uint
 
 void CustomParam::increaseParam()
 {
-	if(increaseCallback) increaseCallback(m_valuePtr);
+	if(increaseCallback && m_descriptor) increaseCallback(m_descriptor->ptr);
 	else BaseParam::increaseParam();
 }
 
 void CustomParam::decreaseParam()
 {
-	if(decreaseCallback) decreaseCallback(m_valuePtr);
+	if(decreaseCallback && m_descriptor) decreaseCallback(m_descriptor->ptr);
 	else BaseParam::decreaseParam();
 }
 
 const char* CustomParam::name()
 {
-	if(nameCallback) return nameCallback(m_valuePtr);
+	if(nameCallback && m_descriptor) return nameCallback(m_descriptor->ptr);
 	else return BaseParam::name();
 }
 
 uint32_t CustomParam::value() const
 {
-	if(valueCallback) return valueCallback(m_valuePtr);
+	if(valueCallback && m_descriptor) return valueCallback(m_descriptor->ptr);
 	else return 0;
 }
 
@@ -77,45 +76,45 @@ void CustomParam::printParam(uint8_t yDisplayPosition)
 	{
 		case TDisplayType::Number:
 		{
-			DisplayTask->ParamIndicNum(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		}
 
 		case TDisplayType::String:
 		{
-			if(*m_valuePtr < m_stringCount)
-				DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, Font::fntSystem , 0, (uint8_t*)m_strings[*m_valuePtr]);
+			if(*(uint8_t*)(m_descriptor->ptr) < m_stringCount)
+				DisplayTask->StringOut(m_xDisplayPosition, yDisplayPosition, Font::fntSystem , Font::fnsNormal, (uint8_t*)m_strings[*(uint8_t*)(m_descriptor->ptr)]);
 			break;
 		}
 
 		case TDisplayType::Level:
 		{
-			DisplayTask->ParamIndic(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamInd(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		}
 
 		case TDisplayType::Mix:
 		{
-			DisplayTask->ParamIndicMix(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		}
 
 		case TDisplayType::Pan:
 		{
-			DisplayTask->ParamIndicPan(m_xDisplayPosition, yDisplayPosition, *m_valuePtr + m_offset);
+			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		}
 
 		case TDisplayType::Custom:
 		{
-			if(printCallback) printCallback(m_valuePtr);
+			if(printCallback && m_descriptor) printCallback(m_descriptor->ptr);
 			break;
 		}
 	}
 }
 
-void CustomParam::setToDsp()
+void CustomParam::setData()
 {
-	if(setToDspCallback) return setToDspCallback(m_valuePtr);
-	else return BaseParam::setToDsp();
+	if(setToDspCallback && m_descriptor) setToDspCallback(m_descriptor->ptr);
+	else BaseParam::setData();
 }

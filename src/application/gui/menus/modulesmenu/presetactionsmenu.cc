@@ -1,16 +1,17 @@
+#include <eeprom.h>
 #include "presetactionsmenu.h"
 
+#include "system.h"
 
-#include "fs.h"
-#include "eepr.h"
-#include "display.h"
-#include "eepr.h"
-#include "cc.h"
+#include "controllers_task.h"
+#include "display_task.h"
+#include "filesystem_task.h"
+#include "sharc_task.h"
+#include "ui_task.h"
 
 #include "modulesmenu.h"
 #include "copyselectmenu.h"
-
-extern uint8_t cab_type;
+#include "preset_accessors.h"
 
 PresetActionsMenu::PresetActionsMenu(AbstractMenu *parent, TActionType actionType)
 {
@@ -36,20 +37,20 @@ void PresetActionsMenu::show(TShowMode showMode)
 
 void PresetActionsMenu::task()
 {
-	if(blinkFlag_fl==0)
+	if(blinkFlag==0)
 	{
-		bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab1Name[0];
-		DisplayTask->Prog_ind(targetPresetNum, filled);
+		bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
+		DisplayTask->PresetInd(targetPresetNum, filled);
 	}
 	else if(TIM_GetFlagStatus(TIM6, TIM_FLAG_Update)==1)
 	{
-		DisplayTask->Clear_str(87, 0, Font::fnt33x30, 39);
+		DisplayTask->ClearString(87, 0, Font::fnt33x30, 39);
 	}
 }
 
 void PresetActionsMenu::encoderPressed()
 {
-	tim5_start(0);
+	restartBlinking(0);
 
 	if(m_actionType==TActionType::Copy)
 	{
@@ -105,45 +106,35 @@ void PresetActionsMenu::keyDown()
 
 void PresetActionsMenu::updatePresetData()
 {
-	EEPROM_LoadPresetToBuffer(targetPresetNum, presetBuffer);
+	EEPROM_LoadPresetBrief(targetPresetNum, &m_selectedPresetBrief);
 
-	EEPROM_loadBriefPreset(targetPresetNum, &m_selectedPresetBrief);
+	DisplayTask->ClearString(2, 0, Font::fntSystem, 14);
+	DisplayTask->ClearString(2, 1, Font::fntSystem, 14);
 
-	DisplayTask->Clear_str(2, 0, Font::fntSystem, 14);
-	DisplayTask->Clear_str(2, 1, Font::fntSystem, 14);
-
-	DisplayTask->StringOut(2, 0, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.name);
-	DisplayTask->StringOut(2, 1, Font::fntSystem, 0, (uint8_t*)m_selectedPresetBrief.comment);
+	DisplayTask->StringOut(2, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_selectedPresetBrief.name);
+	DisplayTask->StringOut(2, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)m_selectedPresetBrief.comment);
 
 	if(m_actionType==TActionType::Copy)
-		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Copy to ->");
+		DisplayTask->StringOut(10, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Copy to ->");
 	else
-		DisplayTask->StringOut(10, 3, Font::fntSystem, 0, (uint8_t*)"Save to ->");
+		DisplayTask->StringOut(10, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Save to ->");
 
 	bool filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
-	DisplayTask->Prog_ind(targetPresetNum, filled);
+	DisplayTask->PresetInd(targetPresetNum, filled);
 
 	TIM_SetCounter(TIM6, 0x8000);
 	TIM_ClearFlag(TIM6, TIM_FLAG_Update);
 	TIM_Cmd(TIM6, ENABLE);
 
-	tim5_start(0);
+	restartBlinking(0);
 }
 
 void PresetActionsMenu::savePreset()
 {
 	DisplayTask->Clear();
-	DisplayTask->StringOut(38, 2, Font::fnt12x13, 0, (uint8_t*)" Save");
+	DisplayTask->StringOut(38, 2, Font::fnt12x13, Font::fnsNormal, (uint8_t*)" Save");
 
-	currentPreset.modules.rawData[147] = delay_time;
-	currentPreset.modules.rawData[148] = delay_time>>8;
-	EEPR_writePreset(targetPresetNum);
-
-	send_cab_data(0, targetPresetNum+1, 0);
-	if(cab_type==CAB_CONFIG_STEREO)
-		send_cab_data1(0, targetPresetNum+1);
-
-//	targetPresetNum = currentPresetNumber;
 	currentPresetNumber = targetPresetNum;
-	Preset::Change();
+	psave_handler();
+	Preset::Change(currentPresetNumber);
 }

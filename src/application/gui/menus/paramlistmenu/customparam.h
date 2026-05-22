@@ -1,7 +1,7 @@
 #ifndef CUSTOMPARAM_H_
 #define CUSTOMPARAM_H_
 
-#include "../paramlistmenu/baseparam.h"
+#include "baseparam.h"
 
 class CustomParam: public BaseParam
 {
@@ -18,7 +18,7 @@ public:
 		Custom
 	};
 
-	CustomParam(TDisplayType displayType, const char* name, void* paramValuePtr);
+	CustomParam(TDisplayType displayType, TParamDescriptor* paramDesc);
 	~CustomParam();
 
 	const char* name() override;
@@ -26,7 +26,7 @@ public:
 	void increaseParam() override;
 	void decreaseParam() override;
 	void printParam(uint8_t yDisplayPosition) override;
-	void setToDsp() override;
+	void setData() override;
 
 	void setStrings(std::initializer_list<const char*> stringList, uint8_t maxStringLength);
 

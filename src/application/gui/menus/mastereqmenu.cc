@@ -1,20 +1,17 @@
 #include "mastereqmenu.h"
 
 #include "modules.h"
-
-#include "appdefs.h"
-#include "eepr.h"
-#include "allFonts.h"
-#include "display.h"
-#include "enc.h"
-#include "BF706_send.h"
-
 #include "system.h"
+#include "eeprom.h"
+
+#include "master_setters.h"
+
+#include "display_task.h"
+#include "io_task.h"
+#include "sharc_task.h"
 
 #include "realparam.h"
 #include "customparam.h"
-
-extern uint8_t k_master_eq;
 
 MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	: ParamListMenu(parentMenu, MENU_MASTER_EQ)
@@ -23,8 +20,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	BaseParam* params[paramNum];
 
 	RealParam* realParam;
-	realParam = new RealParam("Low", &sys_para[System::MASTER_EQ_LOW]);
-	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_LOW_GAIN_POS);
+	realParam = new RealParam(&MasterEqDesc.low);
 	realParam->setScaling(1, 24);
 	realParam->setBounds(-24, +24);
 	realParam->setDisplayBounds(-12, 12);
@@ -33,8 +29,7 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	realParam->setDisplayPosition(30);
 	params[0] = realParam;
 
-	realParam = new RealParam("Mid", &sys_para[System::MASTER_EQ_MID]);
-	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_MID_GAIN_POS);
+	realParam = new RealParam(&MasterEqDesc.mid);
 	realParam->setScaling(1, 24);
 	realParam->setBounds(-24, +24);
 	realParam->setDisplayBounds(-12, 12);
@@ -43,15 +38,14 @@ MasterEqMenu::MasterEqMenu(AbstractMenu* parentMenu)
 	realParam->setDisplayPosition(30);
 	params[1] = realParam;
 
-	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, "Mid Freq", &mstEqMidFreq);
+	CustomParam* customParam = new CustomParam(CustomParam::TDisplayType::Custom, &MasterEqDesc.midFreq);
 	customParam->setBounds(20, 4000);
 	customParam->setByteSize(2);
 	customParam->printCallback = printMidFreqCallback;
 	customParam->setToDspCallback = setMidFreqCallback;
 	params[2] = customParam;
 
-	realParam = new RealParam("High", &sys_para[System::MASTER_EQ_HIGH]);
-	realParam->setDspAddress(DSP_ADDRESS_EQ, EQ_MASTER_HIGH_GAIN_POS);
+	realParam = new RealParam(&MasterEqDesc.high);
 	realParam->setScaling(1, 24);
 	realParam->setBounds(-24, +24);
 	realParam->setDisplayBounds(-12, 12);
@@ -75,8 +69,8 @@ void MasterEqMenu::show(TShowMode showMode)
 	DisplayTask->Clear();
 	if(!sys_para[System::MASTER_EQ_ON])
 	{
-		DisplayTask->StringOut(12, 1, Font::fntSystem, 0, (uint8_t*)"Master EQ Bypass");
-		DisplayTask->StringOut(1, 3, Font::fntSystem, 0, (uint8_t*)"EQ on/off press EDIT");
+		DisplayTask->StringOut(12, 1, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Master EQ Bypass");
+		DisplayTask->StringOut(1, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"EQ on/off press EDIT");
 	}
 	else
 	{
@@ -90,7 +84,7 @@ void MasterEqMenu::task()
 
 	if(!m_encoderKnobSelected)
 	{
-		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem, blinkFlag_fl * 2, m_paramsList[m_currentParamNum]->name());
+		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem, FONT_BLINKING, m_paramsList[m_currentParamNum]->name());
 	}
 }
 
@@ -102,16 +96,16 @@ void MasterEqMenu::encoderPressed()
 	{
 		m_encoderKnobSelected = true;
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-								2, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+				Font::fnsHighlight, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 	else
 	{
 		m_encoderKnobSelected = false;
 		DisplayTask->StringOut(leftPad, m_currentParamNum % paramsOnPage, Font::fntSystem,
-								0, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
+				Font::fnsNormal, (uint8_t*)(m_paramsList[m_currentParamNum]->name()));
 	}
 
-	tim5_start(1);
+	restartBlinking(1);
 }
 
 void MasterEqMenu::encoderClockwise()
@@ -129,13 +123,13 @@ void MasterEqMenu::encoderClockwise()
 			m_currentParamNum++; // Порядок важен!
 
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
 	{
 		m_paramsList[m_currentParamNum]->increaseParam();
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
 }
@@ -151,20 +145,20 @@ void MasterEqMenu::encoderCounterClockwise()
 			m_currentParamNum--; // Порядок важен!
 
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
 	{
 		m_paramsList[m_currentParamNum]->decreaseParam();
-		m_paramsList[m_currentParamNum]->setToDsp();
+		m_paramsList[m_currentParamNum]->setData();
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
 }
 
 void MasterEqMenu::keyUp()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->returnFromChildMenu();
 }
 
@@ -172,48 +166,48 @@ void MasterEqMenu::keyDown()
 {
 	if(sys_para[System::MASTER_EQ_ON])
 	{
-		sys_para[System::MASTER_EQ_ON] = 0;
+		MasterEqDesc.on.setterHandler(0);
 		m_encoderKnobSelected = false;
 		show();
 	}
 	else
 	{
-		sys_para[System::MASTER_EQ_ON] = 1;
+		MasterEqDesc.on.setterHandler(1);
 		show();
 	}
 
-	write_sys();
+	EEPROM_SaveSystemData();
 
-	DSP_GuiSendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
+	SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
 }
 
 void MasterEqMenu::key1()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key1();
 }
 
 void MasterEqMenu::key2()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key2();
 }
 
 void MasterEqMenu::key3()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void MasterEqMenu::key4()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key4();
 }
 
 void MasterEqMenu::key5()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key5();
 }
 
@@ -226,15 +220,16 @@ void MasterEqMenu::printMidFreqCallback(void* parameter)
 
 	ksprintf(string, "%d %s", value, "Hz");
 
-	DisplayTask->Clear_str(60, 2, Font::fntSystem, 8);
-	DisplayTask->StringOut(60, 2, Font::fntSystem , 0, (uint8_t*)string);
+	DisplayTask->ClearString(60, 2, Font::fntSystem, 8);
+	DisplayTask->StringOut(60, 2, Font::fntSystem , Font::fnsNormal, (uint8_t*)string);
 }
 
 void MasterEqMenu::setMidFreqCallback(void* parameter)
 {
-	sys_para[System::MASTER_EQ_FREQ_LO] = mstEqMidFreq >> 8;
-	sys_para[System::MASTER_EQ_FREQ_HI] = mstEqMidFreq & 0xFF;
+	MasterEqDesc.midFreq.setterHandler(mstEqMidFreq);
+}
 
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
-	DSP_GuiSendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
+void MasterEqMenu::refresh()
+{
+	show();
 }

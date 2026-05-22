@@ -23,6 +23,8 @@ public:
 	void key3() override;
 	void key4() override;
 	void key5() override;
+
+	void refresh() override;
 private:
 	static void printMidFreqCallback(void* parameter);
 	static void setMidFreqCallback(void* parameter);

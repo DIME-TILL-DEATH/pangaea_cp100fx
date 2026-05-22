@@ -1,13 +1,12 @@
 #ifndef REALPARAM_H_
 #define REALPARAM_H_
 
-#include "../paramlistmenu/baseparam.h"
+#include "baseparam.h"
 
 class RealParam: public BaseParam
 {
 public:
-	RealParam(const char* name, void* paramValuePtr);
-
+	RealParam(TParamDescriptor* paramDescriptor);
 
 	void printParam(uint8_t yPos);
 

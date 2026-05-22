@@ -1,7 +1,7 @@
-#ifndef SRC_APPLICATION_GUI_MENUS_MIDIMAPMENU_H_
-#define SRC_APPLICATION_GUI_MENUS_MIDIMAPMENU_H_
+#ifndef _MIDIMAPMENU_H_
+#define _MIDIMAPMENU_H_
 
-#include "../abstractmenu.h"
+#include "abstractmenu.h"
 
 class MidiMapMenu: public AbstractMenu
 {
@@ -10,6 +10,8 @@ public:
 
 	void show(TShowMode swhoMode = FirstShow) override;
 	void task() override;
+
+	void refresh() override;
 
 	void encoderPressed() override;
 	void encoderClockwise() override;

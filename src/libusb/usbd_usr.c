@@ -117,7 +117,7 @@ USBD_Usr_cb_TypeDef USR_cb =
 * @retval None
 */
 
-void USBD_USR_Init(void)
+__attribute__((used)) void USBD_USR_Init(void)
 {
   /*msg(" USB OTG FS MSC Device");
   msg("> USB device library started.\n");

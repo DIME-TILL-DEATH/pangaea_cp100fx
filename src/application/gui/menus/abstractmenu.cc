@@ -1,14 +1,13 @@
+#include <eeprom.h>
 #include "abstractmenu.h"
-
-#include "eepr.h"
-
-#include "display.h"
-#include "gui_task.h"
 
 #include "preset.h"
 
+#include "bitmaps.h"
 
+#include "display_task.h"
 
+bool AbstractMenu::blinkFlag = false;
 uint8_t AbstractMenu::subMenusToRoot = 1;
 
 gui_menu_type AbstractMenu::menuType()
@@ -17,6 +16,24 @@ gui_menu_type AbstractMenu::menuType()
 }
 
 void AbstractMenu::keyUp()
+{
+	returnToParent();
+}
+
+void AbstractMenu::setTopLevelMenu(AbstractMenu* parent)
+{
+	topLevelMenu = parent;
+}
+
+void AbstractMenu::showChild(AbstractMenu* child)
+{
+	shownChildMenu = child;
+	child->setTopLevelMenu(this);
+	currentMenu = this;
+	child->show();
+}
+
+void AbstractMenu::returnToParent()
 {
 	if(topLevelMenu)
 	{
@@ -28,7 +45,7 @@ void AbstractMenu::keyUp()
 void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 {
 	currentMenu = this;
-	DisplayTask->SetVolIndicator(TDisplayTask::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	switch(returnMode)
 	{
@@ -76,17 +93,67 @@ void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 	}
 }
 
-void AbstractMenu::setTopLevelMenu(AbstractMenu* parent)
+void AbstractMenu::keyEvent(const TKeysEvents& keysEvents)
 {
-	topLevelMenu = parent;
-}
+//	if(keysEvents.hold) return;
 
-void AbstractMenu::showChild(AbstractMenu* child)
+	if(keysEvents.keyUp)
+	{
+		keyUp();
+		return;
+	}
+
+	if(keysEvents.keyDown)
+	{
+		keyDown();
+		return;
+	}
+
+	if(keysEvents.key1)
+	{
+		key1();
+		return;
+	}
+
+	if(keysEvents.key2)
+	{
+		key2();
+		return;
+	}
+
+	if(keysEvents.key3)
+	{
+		key3();
+		return;
+	}
+
+	if(keysEvents.key4)
+	{
+		key4();
+		return;
+	}
+
+	if(keysEvents.key5)
+	{
+		key5();
+		return;
+	}
+};
+
+void AbstractMenu::encoderEvent(const TEncoderEvents& encoderEvents)
 {
-	shownChildMenu = child;
-	currentMenu = this;
-	child->show();
-}
+	if(encoderEvents.pressed)
+		encoderPressed();
+
+	if(encoderEvents.updated)
+	{
+		if(encoderEvents.state == ENC_COUNTERCLOCKWISE_STEP)
+			encoderCounterClockwise();
+
+		if(encoderEvents.state == ENC_CLOCKWISE_STEP)
+			encoderClockwise();
+	}
+};
 
 void AbstractMenu::setRunningString(StringOutParam* runningString)
 {
@@ -96,4 +163,11 @@ void AbstractMenu::setRunningString(StringOutParam* runningString)
 StringOutParam* AbstractMenu::getRunningString()
 {
 	return m_runningString;
+}
+
+void AbstractMenu::restartBlinking(uint8_t val)
+{
+	TIM_ClearITPendingBit(TIM4, TIM_IT_Update);
+	TIM_SetCounter(TIM4, 0xffff);
+	blinkFlag = val;
 }

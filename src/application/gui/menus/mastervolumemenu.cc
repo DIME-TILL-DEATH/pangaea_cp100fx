@@ -1,9 +1,9 @@
 #include "mastervolumemenu.h"
 
-#include "eepr.h"
-#include "gui_task.h"
-
 #include "system.h"
+#include "eeprom.h"
+
+#include "master_setters.h"
 
 MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 	: ParamListMenu(parentMenu, MENU_MASTER_VOLUME)
@@ -11,10 +11,9 @@ MasterVolumeMenu::MasterVolumeMenu(AbstractMenu* parentMenu)
 	const uint8_t paramCount = 2;
 	BaseParam* params[paramCount];
 
-	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Master Volume", &sys_para[System::MASTER_VOLUME]);
-	params[0]->setDspAddress(DSP_ADDRESS_MASTER, PARAM_EQUAL_POS);
+	params[0] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, &MasterVolDesc.master);
 	params[0]->setDisplayPosition(85);
-	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, "Phones Volume", &sys_para[System::PHONES_VOLUME]);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_NUM, &MasterVolDesc.phones);
 	params[1]->setDisplayPosition(85);
 
 	setParams(params, paramCount);
@@ -29,15 +28,15 @@ void MasterVolumeMenu::encoderClockwise()
 		{
 			m_currentParamNum++;
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
 	{
 		m_paramsList[m_currentParamNum]->increaseParam();
 
-		m_paramsList[m_currentParamNum]->setToDsp();
-		DisplayTask->Pot_Write();
+		m_paramsList[m_currentParamNum]->setData();
+		DisplayTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 	}
@@ -51,15 +50,15 @@ void MasterVolumeMenu::encoderCounterClockwise()
 		{
 			m_currentParamNum--;
 			printPage();
-			tim5_start(0);
+			restartBlinking(0);
 		}
 	}
 	else
 	{
 		m_paramsList[m_currentParamNum]->decreaseParam();
 
-		m_paramsList[m_currentParamNum]->setToDsp();
-		DisplayTask->Pot_Write();
+		m_paramsList[m_currentParamNum]->setData();
+		DisplayTask->potWrite();
 
 		m_paramsList[m_currentParamNum]->printParam(m_currentParamNum % paramsOnPage);
 
@@ -69,36 +68,36 @@ void MasterVolumeMenu::encoderCounterClockwise()
 
 void MasterVolumeMenu::keyUp()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void MasterVolumeMenu::key1()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key1();
 }
 
 void MasterVolumeMenu::key2()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->returnFromChildMenu();
 }
 
 void MasterVolumeMenu::key3()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key3();
 }
 
 void MasterVolumeMenu::key4()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key4();
 }
 
 void MasterVolumeMenu::key5()
 {
-	write_sys();
+	EEPROM_SaveSystemData();
 	topLevelMenu->key5();
 }

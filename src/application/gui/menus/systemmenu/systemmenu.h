@@ -8,7 +8,6 @@ class SystemMenu: public ParamListMenu
 public:
 	SystemMenu(AbstractMenu* parent, gui_menu_type menuType);
 
-	void encoderPressed() override;
 	void keyUp() override;
 	void keyDown() override;
 
@@ -25,7 +24,6 @@ private:
 
 	bool editingFinished();
 
-	static AbstractMenu* createFootswitchMenu(AbstractMenu* parent);
 	static AbstractMenu* createMidiPcMapMenu(AbstractMenu* parent);
 
 	static void expressionPrint(void* parameter);
@@ -37,12 +35,6 @@ private:
 	static void tunerExtDescrease(void* parameter);
 	static void tunerExtIncrease(void* parameter);
 	static void tunerExtKeyDown(void* parameter);
-
-	static void tempoDecrease(void* parameter);
-	static void tempoIncrease(void* parameter);
-
-	static void tunerSpeedDescrease(void* parameter);
-	static void tunerSpeedIncrease(void* parameter);
 };
 
 #endif /* SYSTEMMENU_H_ */

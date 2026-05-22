@@ -26,7 +26,6 @@ typedef struct
 
 typedef vector<fs_object_t> fs_object_list_t;
 typedef void (*outstr_func_t)(const emb_string &string);
-extern volatile uint8_t flash_buf[1536];
 
 class TFsBrowser
 {
@@ -34,20 +33,18 @@ public:
 
 	typedef enum
 	{
-		bcCurrent,
-		bcUp,
-		bcDown,
-		bcAction,
-		bcPwd,
 		bcFsMount,
 		bcFsUmount,
+		bcCurrent,
+		bcPrev,
+		bcNext,
+		bcAction,
 		bcLoadImp,
 		bcStartup,
-		bcBack
 	} browse_command_t;
 
 	TFsBrowser();
-	~TFsBrowser();
+	~TFsBrowser() {};
 
 	void Browse(browse_command_t browse_command, fs_object_t &object);
 
@@ -60,15 +57,11 @@ public:
 		return curr_fs_object;
 	}
 
-	void Print(outstr_func_t func);
-	inline bool SD_Initilized() const {return sd_initialized;}
 
-
-	void LoadCab(fs_object_t &object);
+	void ActionSelect(fs_object_t &object);
+	bool LoadImpulse(fs_object_t &object);
 
 	static uint8_t impulseDirExist;
-
-//protected:
 
 	void PrevObject(fs_object_t &object);
 	void NextObject(fs_object_t &object);
@@ -100,7 +93,6 @@ private:
 	emb_string curr_dir_level;
 	emb_string global_path;
 
-	bool sd_initialized;
 	FATFS fs;
 	FRESULT fs_res;
 

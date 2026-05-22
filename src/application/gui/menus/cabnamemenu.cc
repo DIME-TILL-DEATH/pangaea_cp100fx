@@ -1,9 +1,9 @@
 #include "cabnamemenu.h"
 
-#include "allFonts.h"
-#include "display.h"
+#include "display_task.h"
 
 #include "preset.h"
+#include "system.h"
 
 CabNameMenu::CabNameMenu(AbstractMenu* parent)
 	:AbstractMenu()
@@ -14,7 +14,7 @@ CabNameMenu::CabNameMenu(AbstractMenu* parent)
 
 void CabNameMenu::task()
 {
-	if(blinkFlag_fl)
+	if(blinkFlag)
 	{
 		if(m_delay)
 		{
@@ -23,29 +23,29 @@ void CabNameMenu::task()
 		else
 		{
 			m_delay = 1;
-			if((m_currentShowCab) && cab_type)
+			if((m_currentShowCab) && System::cab_type)
 			{
-				if(cab2.name.size)
+				if(currentPreset.cab2NameSize)
 				{
 					DisplayTask->Clear();
-					DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)"2 - ");
-					DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)cab2.name.string);
+					DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"2 - ");
+					DisplayTask->StringOut(24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab2Name);
 					m_currentShowCab = 0;
 				}
 			}
 			else
 			{
-				if(cab1.name.size)
+				if(currentPreset.cab1NameSize)
 				{
-					DisplayTask->Clear();
-					if(cab_type==2)
+					if(System::cab_type == CAB_CONFIG_STEREO)
 					{
-						DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)"1 - ");
-						DisplayTask->StringOut(24, 0, Font::fntSystem, 0, (uint8_t*)cab1.name.string);
+						DisplayTask->Clear();
+						DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"1 - ");
+						DisplayTask->StringOut(24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
 					}
 					else
 					{
-						DisplayTask->StringOut(0, 0, Font::fntSystem, 0, (uint8_t*)cab1.name.string);
+						DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
 					}
 					m_currentShowCab = 1;
 				}
@@ -66,31 +66,46 @@ void CabNameMenu::keyUp()
 
 void CabNameMenu::show(TShowMode showMode)
 {
-	if(!cab1.name.size && !cab2.name.size) return;
+	if(!currentPreset.cab1NameSize && !currentPreset.cab2NameSize) return;
 
-	if(currentPreset.modules.paramData.switches.cab)
+	if(currentPreset.paramData.switches.cab)
 	{
 		currentMenu = this;
 		DisplayTask->Clear();
 
-		if(cab1.name.size)
+		if(currentPreset.cab1NameSize)
 		{
-			if(cab_type == 2)
+			if(System::cab_type == CAB_CONFIG_STEREO)
 			{
-				DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)"1 - ");
-				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab1.name.string);
+				DisplayTask->StringOut(0,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)"1 - ");
+				DisplayTask->StringOut(24,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)currentPreset.cab1Name);
 			}
-			else DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)cab1.name.string);
+			else DisplayTask->StringOut(0,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)currentPreset.cab1Name);
 		}
 		else
 		{
-			if(cab_type == 2)
+			if(System::cab_type == CAB_CONFIG_STEREO)
 			{
-				DisplayTask->StringOut(0,0,Font::fntSystem,0,(uint8_t*)"2 - ");
-				DisplayTask->StringOut(24,0,Font::fntSystem,0,(uint8_t*)cab2.name.string);
+				DisplayTask->StringOut(0,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)"2 - ");
+				DisplayTask->StringOut(24,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)currentPreset.cab2Name);
 			}
 		}
-		tim5_start(0);
+		restartBlinking(0);
 		m_delay = 1;
+	}
+}
+
+void CabNameMenu::refresh()
+{
+	DisplayTask->Clear();
+
+	if(System::cab_type == CAB_CONFIG_STEREO)
+	{
+		DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"1 - ");
+		DisplayTask->StringOut(24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
+	}
+	else
+	{
+		DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
 	}
 }

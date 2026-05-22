@@ -1,98 +1,133 @@
 #include "fs_browser.h"
 
-#include "fs.h"
-#include "cs.h"
-
-#include "BF706_send.h"
-#include "eepr.h"
-#include "init.h"
 #include "storage.h"
-#include "AT45DB321.h"
-#include "allFonts.h"
+#include "system.h"
+#include "eeprom.h"
 
+#include "filesystem_task.h"
+#include "ui_task.h"
 
-void out_file_strings(const char *file_name)
-{
-	// открытие файла на томе №0 , путь data/data.txt
-	FIL f;
-	FRESULT fs_res = f_open(&f, file_name, FA_READ);
-	////rmsg( "f_open %s:  %s", file_name , f_err2str(fs_res));
-
-	char *res;
-	if(fs_res==FR_OK)
-	{
-		// чтение строк файла до тех пор пока они не кончатся
-		char buf[512];
-		do
-		{
-			// чтение строки из текстового файла
-			res = f_gets(buf, 512, &f);
-
-			// выход из цикла если файл кончился
-			if(!res)
-				break;
-
-			size_t l = kgp_sdk_libc::strlen(res);
-
-			if(res[l-1]=='\n'||res[l-1]=='\r')
-				res[l-1] = 0;
-
-			// вывод на дисплей строки
-
-			////rmsg("\t\"%s%c\n",buf,'\"');
-
-		} while(1);
-
-		// закрытие файла
-		fs_res = f_close(&f);
-		////rmsg( "f_close %s:  %s", file_name , f_err2str(fs_res));
-	}
-}
 //------------------------------------------------------------------------
 
 uint8_t TFsBrowser::impulseDirExist = 0;
 
 TFsBrowser::TFsBrowser()
 {
-	// инициализация флешки и ее контроллера
-	//AT45DB321_Init();
-	sd_initialized = true;
-}
+	fs_object_list.reserve(maxDisaplyObjects);
+};
 
-TFsBrowser::~TFsBrowser()
+void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& object)
 {
-}
-
-emb_string TFsBrowser::CurrDir(bool collapsedPath) const
-{
-	if(collapsedPath)
-		return curr_dir_level+curr_dir_name;
-	else
+	emb_string tmp;
+	switch(browse_command)
 	{
-	#if _USE_LFN
-		FILINFO fno;
-		char *fn; /* This function is assuming non-Unicode cfg. */
+		case bcFsMount:
+		{
+			tmp = "0:IMPULSE";
+			FsMount(tmp);
+			break;
+		}
 
-	    static char lfn[_MAX_LFN + 1];
-	    lfn[0] = 0 ;
-	    fno.lfname = lfn;
-	    fno.lfsize = sizeof lfn;
+		case bcFsUmount:
+		{
+			FsUmount();
+			break;
+		}
 
-		f_getcwd(lfn, _MAX_LFN);
-		return lfn;
-	#else
-		return 0;
-	#endif
+		case bcCurrent:
+		{
+			object = *curr_fs_object;
+			break;
+		}
+
+		case bcPrev:
+		{
+			PrevObject(object);
+			ActionSelect(object);
+			break;
+		}
+
+		case bcNext:
+		{
+			NextObject(object);
+			ActionSelect(object);
+			break;
+		}
+
+		case bcLoadImp:
+		{
+			ActionSelect(object);
+			break;
+		}
+
+		case bcAction:
+		{
+			TFileSystemTask::TResponse response;
+
+			if(curr_fs_object->type == fotDir)
+			{
+				// up to /IMPULSE imposible... oops...
+				if((curr_fs_object->dir=="0:IMPULSE") && (curr_fs_object->name==".."))
+				{
+					object.name = "..";
+					object.type = fotDir;
+				}
+				else
+				{
+					SelectDir(*curr_fs_object);
+					object = *curr_fs_object;
+				}
+
+				TFileSystemTask::TResponse response;
+				response.responseType = TFileSystemTask::rpDirSelected;
+				FileSystemTask->SendResponse(response);
+				break;
+			}
+
+			if(curr_fs_object->type==fotFile)
+			{
+				if(LoadImpulse(object))
+				{
+					emb_string tmp = global_path;
+					tmp.resize(_MAX_LFN);
+					kgp_sdk_libc::memcpy(currentPreset.currentImpulsePath, tmp.c_str(), _MAX_LFN);
+
+					tmp = FileSystemTask->Object().name;
+					tmp.resize(_MAX_LFN);
+					kgp_sdk_libc::memcpy(currentPreset.currentImpulseName, tmp.c_str(), _MAX_LFN);
+
+					response.responseType = TFileSystemTask::rpFileSelected;
+					response.file.buffer = &tempCabBuffer[0];
+
+					kgp_sdk_libc::memset(response.file.name, 0 , CAB_NAME_STRING_SIZE);
+					kgp_sdk_libc::memcpy(response.file.name, object.name.c_str(), CAB_NAME_STRING_SIZE - 1);
+					response.file.name[CAB_NAME_STRING_SIZE - 1 - 1] = 0;
+				}
+				else
+				{
+					response.responseType = TFileSystemTask::rpFileInvalid;
+				}
+				FileSystemTask->SendResponse(response);
+				break;
+			}
+			break;
+		}
+
+		case bcStartup:
+		{
+			*curr_fs_object = object;
+			SelectDir(*curr_fs_object);
+			object = *curr_fs_object;
+			break;
+		}
+
+		default:
+			//rmsg( "TFsBrowser::Browse UNKNOWN COMMAND \n" ) ;
+		break;
 	}
 }
 
-void TFsBrowser::PrevObject(fs_object_t &object)
-{
-	if(curr_fs_object!=fs_object_list.begin())
-		curr_fs_object--;
 
-	object = *curr_fs_object;
-}
 //---------------------------------------------------------------
 FRESULT TFsBrowser::FsMount(const emb_string &init_dir)
 {
@@ -132,12 +167,60 @@ void TFsBrowser::NextObject(fs_object_t &object)
 
 	object = *curr_fs_object;
 }
-//---------------------------------------------------------------
-void out_str(const emb_string &string)
+
+void TFsBrowser::PrevObject(fs_object_t &object)
 {
-	////rmsg( "%s\n", string.c_str()) ;
+	if(curr_fs_object!=fs_object_list.begin())
+		curr_fs_object--;
+
+	object = *curr_fs_object;
 }
+
+void TFsBrowser::SelectFile(const fs_object_t &fs_object)
+{
+	emb_string fileName = fs_object.name;
+	curr_fs_object = std::find_if(fs_object_list.begin(), fs_object_list.end(),
+			[&fileName](const fs_object_t& obj)
+				{return fileName == obj.name;});
+}
+
 //----------------------------------------------------------------
+void TFsBrowser::ActionSelect(fs_object_t &object)
+{
+	TFileSystemTask::TResponse response;
+
+	if(object.type == fotFile)
+	{
+		if(LoadImpulse(object))
+		{
+			response.responseType = TFileSystemTask::rpFileLoaded;
+			response.file.buffer = &tempCabBuffer[0];
+
+			kgp_sdk_libc::memset(response.file.name, 0 , CAB_NAME_STRING_SIZE);
+			kgp_sdk_libc::memcpy(response.file.name, object.name.c_str(), CAB_NAME_STRING_SIZE - 1);
+			response.file.name[CAB_NAME_STRING_SIZE - 1 - 1] = 0;
+		}
+		else
+		{
+			response.responseType = TFileSystemTask::rpFileInvalid;
+		}
+	}
+	else
+	{
+		response.responseType = TFileSystemTask::rpDirSelected;
+	}
+	FileSystemTask->SendResponse(response);
+}
+
+bool TFsBrowser::LoadImpulse(fs_object_t &object)
+{
+	object = *curr_fs_object;
+
+	emb_string err;
+	return GetDataFromFile(tempCabBuffer, err);
+}
+
+//---------------------------------------------------------------
 bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 {
 	FIL f;
@@ -179,7 +262,7 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 	fs_res = f_lseek(&f, 24);
 	uint32_t sample_rate;
 	fs_res = f_read(&f, (void*)&sample_rate, 4, &br);
-	if(sample_rate!=48000)
+	if(sample_rate != 48000)
 	{
 		err_msg = "unsupported format  (no 48000 sample rate sets)";
 		//rmsg(err_msg.c_str());
@@ -191,31 +274,31 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 	uint32_t file_size;
 	fs_res = f_read(&f, (void*)&file_size, 4, &br);
 
-	if(cab_type != CAB_CONFIG_STEREO)
+	if(System::cab_type != CAB_CONFIG_STEREO)
 	{
-		if(file_size > 8192 * 3)
-			file_size = 8192 * 3;
+		if(file_size > CAB_DATA_SIZE * 2)
+			file_size = CAB_DATA_SIZE * 2;
 	}
 	else
 	{
-		if(file_size > 4096 * 3)
-			file_size = 4096 * 3;
+		if(file_size > CAB_DATA_SIZE )
+			file_size = CAB_DATA_SIZE;
 	}
 
 	// read cabinet data
-	kgp_sdk_libc::memset(buff, 0, 8192 * 3);
+	kgp_sdk_libc::memset(buff, 0, CAB_DATA_SIZE * 2);
 	fs_res = f_lseek(&f, 44);
 	while(1)
 	{
 		if(file_size > 512)
 		{
-			f_read(&f, (void*)buff, 512, &br);
+			f_read(&f, buff, 512, &br);
 			buff += 512;
 			file_size -= 512;
 		}
 		else
 		{
-			f_read(&f, (void*)buff, file_size, &br);
+			f_read(&f, buff, file_size, &br);
 			break;
 		}
 	}
@@ -225,181 +308,8 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 
 	return true;
 }
-//----------------------------------------------------------------
-void TFsBrowser::LoadCab(fs_object_t &object)
-{
-	TCSTask::TResponse response;
 
-	if(object.type == fotFile)
-	{
-		object = *curr_fs_object;
-		response.file.type = object.type;
-
-		emb_string err;
-		if(GetDataFromFile(presetBuffer, err))
-		{
-			response.responseType = TCSTask::rpFileLoaded;
-			response.file.buffer = &presetBuffer[0];
-
-			char nameBuffer[64];
-			uint8_t name_point = 0;
-
-			while(object.name[name_point] && (name_point<62))
-				nameBuffer[name_point] = object.name[name_point++]; //name_buf_temp[name_point+1] = object.name[name_point++];
-
-			nameBuffer[++name_point] = 0;
-			nameBuffer[0] = name_point;
-
-			kgp_sdk_libc::memcpy(response.file.name, nameBuffer, 64);
-
-			extern bool cab_data_ready;
-			cab_data_ready = true;
-		}
-		else
-		{
-			response.responseType = TCSTask::rpFileInvalid;
-		}
-	}
-	else
-	{
-		response.responseType = TCSTask::rpDirSelected;
-	}
-	CSTask->SendResponse(response);
-
-}
-void TFsBrowser::Browse(const browse_command_t browse_command, fs_object_t& object)
-{
-	emb_string tmp;
-	switch(browse_command)
-	{
-		case bcBack:
-			if(curr_fs_object->type==fotFile)
-			{
-				while(curr_fs_object->name!="..")
-					PrevObject(object);
-				FSTask->SendCommand(TFsBrowser::bcAction);
-			}
-		break;
-		case bcCurrent:
-			object = *curr_fs_object;
-		break;
-		case bcUp:
-			PrevObject(object);
-			LoadCab(object);
-		break;
-		case bcDown:
-			NextObject(object);
-			LoadCab(object);
-		break;
-		case bcLoadImp:
-			LoadCab(object);
-		break;
-		case bcAction:
-			if(curr_fs_object->type == fotDir)
-			{
-				// up to /IMPULSE imposible... oops...
-				if((curr_fs_object->dir=="0:IMPULSE") && (curr_fs_object->name==".."))
-				{
-					object.name = "..";
-					object.type = fotDir;
-				}
-				else
-				{
-					SelectDir(*curr_fs_object);
-					object = *curr_fs_object;
-				}
-
-				TCSTask::TResponse response;
-				response.responseType = TCSTask::rpDirSelected;
-				CSTask->SendResponse(response);
-			}
-
-			if(curr_fs_object->type==fotFile)
-			{
-				emb_string tmp = global_path;
-				tmp.resize(_MAX_LFN);
-				kgp_sdk_libc::memcpy(Preset::impulsePath, tmp.c_str(), _MAX_LFN);
-
-				tmp = FSTask->Object().name;
-				tmp.resize(_MAX_LFN);
-				kgp_sdk_libc::memcpy(Preset::impulsePath+256, tmp.c_str(), _MAX_LFN);
-
-				TCSTask::TResponse response;
-				response.responseType = TCSTask::rpFileSelected;
-				CSTask->SendResponse(response);
-			}
-		break;
-
-		case bcStartup:
-			*curr_fs_object = object;
-			SelectDir(*curr_fs_object);
-			object = *curr_fs_object;
-		break;
-		case bcPwd:
-			char pwd[_MAX_LFN+1];
-			f_getcwd(pwd, _MAX_LFN);
-			object.name = pwd;
-			object.type = fotDir;
-		break;
-		case bcFsMount:
-			tmp = "0:IMPULSE";
-			FsMount(tmp);
-		break;
-		case bcFsUmount:
-			FsUmount();
-		break;
-		default:
-			//rmsg( "TFsBrowser::Browse UNKNOWN COMMAND \n" ) ;
-		break;
-	}
-}
 //---------------------------------------------------------------
-void TFsBrowser::Print(outstr_func_t func)
-{
-
-}
-//---------------------------------------------------------------
-
-char *file_name;
-size_t slash_count;
-void TFsBrowser::CollapseAbsPath(char *abs_path, emb_string &name, emb_string &level)
-{
-	/*
-	 file_name = NULL ;
-	 slash_count = 0 ;
-	 for (size_t i = 0 ; i < strlen(abs_path) ; i++ )
-	 {
-	 if (abs_path[i] == '/')
-	 {
-	 slash_count++ ;
-	 file_name = abs_path + i + 1 ;
-	 }
-
-	 }
-	 level.assign( slash_count, '*') ;
-	 name = file_name ;
-	 */
-
-	level = abs_path;
-	size_t pos = level.find_last_of('/');
-	name = level.substr(pos+1);
-	slash_count = 0;
-	for(auto &symbol : level)
-		if(symbol=='/')
-			slash_count++;
-	level.assign(slash_count, '/');
-}
-//---------------------------------------------------------------
-void TFsBrowser::SelectFile(const fs_object_t &fs_object)
-{
-	emb_string fileName = fs_object.name;
-	curr_fs_object = std::find_if(fs_object_list.begin(), fs_object_list.end(),
-			[&fileName](const fs_object_t& obj)
-				{return fileName == obj.name;});
-
-//	*curr_fs_object = fs_object;
-//	out_file_strings(parent.name.c_str());
-}
 
 bool TFsBrowser::CreateFile(const fs_object_t &object)
 {
@@ -530,27 +440,18 @@ void TFsBrowser::CreateDir(fs_object_t create_object)
 void TFsBrowser::SelectDir(fs_object_t select_object)
 {
 	FRESULT res;
-	FILINFO fno;
-	DIR dir;
-	char *fn; /* This function is assuming non-Unicode cfg. */
-#if _USE_LFN
     static char lfn[_MAX_LFN + 1];
-    lfn[0] = 0 ;
-    fno.lfname = lfn;
-    fno.lfsize = sizeof lfn;
-#endif
-
-	//if ((curr_fs_object->dir == "0:IMPULSE") && (curr_fs_object->name == ".."))
-	fs_object_list.clear();
+    lfn[0] = 0;
 
 	res = f_chdir(select_object.name.c_str());
 
 	if(res!=FR_OK)
 	{
 		impulseDirExist = 0;
-		//rmsg("walk_dir: FatFS error %s,  path=%s\n",f_err2str(res), select_object.name.c_str());
 		return;
 	}
+
+	fs_object_list.clear();
 
 	const emb_string curr_dir_name_tmp(curr_dir_name);
 	f_getcwd(lfn, _MAX_LFN);
@@ -624,10 +525,12 @@ void TFsBrowser::UpdateDirList()
 			//if (object.name==".." && curr_dir_name=="IMPULSE") continue ; // пропуск элемента .. в директори IMPULSE
 			object.type = fno.fattrib & AM_DIR ? fotDir : fotFile;
 
+			if(fs_object_list.size() < fs_object_list.capacity())
+				fs_object_list.push_back(object);
+			else
+				break;
 
-			fs_object_list.push_back(object);
-
-			if(fs_object_list.size() > maxDisaplyObjects) break;
+//			if(fs_object_list.size() > maxDisaplyObjects) break;
 		}
 
 		sort(fs_object_list.begin(), fs_object_list.end(), sort_fs_object());
@@ -635,4 +538,41 @@ void TFsBrowser::UpdateDirList()
 		//установка текущим объектом первого элемента директории в которую зашли
 		curr_fs_object = fs_object_list.begin();
 	}
+}
+
+emb_string TFsBrowser::CurrDir(bool collapsedPath) const
+{
+	if(collapsedPath)
+		return curr_dir_level+curr_dir_name;
+	else
+	{
+	#if _USE_LFN
+		FILINFO fno;
+		char *fn; /* This function is assuming non-Unicode cfg. */
+
+	    static char lfn[_MAX_LFN + 1];
+	    lfn[0] = 0 ;
+	    fno.lfname = lfn;
+	    fno.lfsize = sizeof lfn;
+
+		f_getcwd(lfn, _MAX_LFN);
+		return lfn;
+	#else
+		return 0;
+	#endif
+	}
+}
+
+
+
+void TFsBrowser::CollapseAbsPath(char *abs_path, emb_string &name, emb_string &level)
+{
+	level = abs_path;
+	size_t pos = level.find_last_of('/');
+	name = level.substr(pos+1);
+	size_t slash_count = 0;
+	for(auto &symbol : level)
+		if(symbol=='/')
+			slash_count++;
+	level.assign(slash_count, '/');
 }

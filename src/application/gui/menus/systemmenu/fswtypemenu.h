@@ -1,25 +1,19 @@
-#ifndef SRC_APPLICATION_GUI_MENUS_SYSTEMMENU_FSWTYPEMENU_H_
-#define SRC_APPLICATION_GUI_MENUS_SYSTEMMENU_FSWTYPEMENU_H_
+#ifndef _FSWTYPEMENU_H_
+#define _FSWTYPEMENU_H_
 
-#include "abstractmenu.h"
+#include "paramlistmenu.h"
 
-class FswTypeMenu: public AbstractMenu
+class FswTypeMenu: public ParamListMenu
 {
 public:
 	FswTypeMenu(AbstractMenu* parent);
 
-	void show(TShowMode swhoMode = FirstShow) override;
-	void task() override;
-
-	void encoderPressed() override;
-	void encoderClockwise() override;
-	void encoderCounterClockwise() override;
+	static AbstractMenu* create(AbstractMenu* parent);
 
 private:
-	bool m_encoderKnobSelected{false};
-	uint8_t m_parNum{0};
-
-	static constexpr uint8_t strFswMenu[][12] = {"FSW-DOWN", "FSW-CONFIRM", "FSW-UP", "Speed FS"};
+	static AbstractMenu* createFswDownMenu(AbstractMenu* parent);
+	static AbstractMenu* createFswConfirmMenu(AbstractMenu* parent);
+	static AbstractMenu* createFswUpMenu(AbstractMenu* parent);
 };
 
-#endif /* SRC_APPLICATION_GUI_MENUS_SYSTEMMENU_FSWTYPEMENU_H_ */
+#endif /*  */

@@ -1,15 +1,21 @@
 #include "system.h"
 
-#include "eepr.h"
-
-#include "display.h"
-#include "gui_task.h"
-
+#include "sharc.h"
+#include "eeprom.h"
 #include "preset.h"
 
-float tapCoeffs[6] = {1.0f,1.5f,2.0f,3.0f,4.0f,0.5f};
+#include "display_task.h"
+#include "sharc_task.h"
 
-uint32_t del_time = 48000;
+#include "console_helpers.h"
+
+volatile uint32_t  tap_temp;
+uint8_t  System::cab_type = 0;
+uint8_t  System::tun_del_val;
+int16_t  mstEqMidFreq;
+uint8_t __CCM_BSS__ sys_para[512];
+
+float tapCoeffs[6] = {1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 0.5f};
 
 const uint16_t bpm_time[] =
 		{2727, 2609, 2500, 2400, 2308, 2222, 2143, 2069, 2000, 1935, 1875, 1818, 1765, 1714, 1667, 1622, 1579, 1538, 1500, 1463,
@@ -24,40 +30,166 @@ const uint16_t bpm_time[] =
 		280, 279, 278, 276, 275, 274, 273, 271, 270, 269, 268, 267, 265, 264, 263, 262, 261, 260, 259, 258, 256, 255,
 		254, 253, 252, 251, 250};
 
-volatile uint32_t tap_temp;
-volatile uint32_t tap_global;
+void System::setStartupValues()
+{
+	DSP_SendParameter(DSP_ADDRESS_CAB_DRY_MUTE, sys_para[System::CAB_SIM_DISABLED], 0);
+	DSP_SendParameter(DSP_ADDRESS_SPDIF, sys_para[System::SPDIF_OUT_TYPE], 0);
+	DSP_SendParameter(DSP_ADDRESS_CAB_CONFIG, sys_para[System::CAB_SIM_CONFIG], 0); // left cab bypass
+
+	DSP_SendParameter(DSP_ADDRESS_MASTER, sys_para[System::MASTER_VOLUME], 0);
+
+	if(!sys_para[System::MASTER_EQ_FREQ_LO] && !sys_para[System::MASTER_EQ_FREQ_HI])
+	{
+		mstEqMidFreq = 1000;
+	}
+	else
+	{
+		mstEqMidFreq = sys_para[System::MASTER_EQ_FREQ_LO] << 8;
+		mstEqMidFreq |= sys_para[System::MASTER_EQ_FREQ_HI];
+	}
+
+	DSP_SendParameter(DSP_ADDRESS_EQ, EQ_MASTER_LOW_GAIN_POS, sys_para[System::MASTER_EQ_LOW] + 24);
+	DSP_SendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_GAIN_POS, sys_para[System::MASTER_EQ_MID] + 24);
+	DSP_SendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_LO]);
+	DSP_SendParameter(DSP_ADDRESS_EQ, EQ_MASTER_MID_FREQ_POS, sys_para[System::MASTER_EQ_FREQ_HI]);
+	DSP_SendParameter(DSP_ADDRESS_EQ, EQ_MASTER_HIGH_GAIN_POS, sys_para[System::MASTER_EQ_HIGH] + 24);
+	DSP_SendParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_MASTER_EQ, sys_para[System::MASTER_EQ_ON]);
+
+	DSP_SendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[System::TAP_TYPE], sys_para[System::GLOBAL_TAP_TIME]);
+	if(sys_para[TAP_TYPE] != System::TAP_TYPE_PRESET) // global temp On
+	{
+		System::setMoogTime(sys_para[GLOBAL_TAP_TIME] * 8);
+		System::setDelayTime(sys_para[GLOBAL_TAP_TIME] * 8);
+		System::setTremoloTime(sys_para[GLOBAL_TAP_TIME] * 8);
+	}
+
+	tun_del_val = (127 - sys_para[System::TUNER_SPEED]) * (90.0f / 127.0f) + 10.0f;
+	
+	// ИСПРАВЛЕНО: Валидация currentPresetNumber из EEPROM
+	// Было: currentPresetNumber = sys_para[System::LAST_PRESET_NUM];
+	// Проблема: EEPROM может содержать некорректное значение > 98!
+	uint8_t loaded_preset = sys_para[System::LAST_PRESET_NUM];
+	if(loaded_preset >= 99) {
+		loaded_preset = 0;  // Значение по умолчанию при ошибке
+	}
+	currentPresetNumber = loaded_preset;
+}
+
+void System::setMoogTime(float quarterInterval)
+{
+	Preset::moog_time = round(quarterInterval);
+
+	if(currentPreset.paramData.resonance_filter.f_mod == 0)
+	{
+		if(Preset::moog_time < 2731)
+		{
+			if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+			{
+				SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time >> 8);
+				SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, Preset::moog_time );
+			}
+			else
+			{
+				if(Preset::moog_time < 2728 && Preset::moog_time > 249)
+				{
+					uint8_t temp = 0;
+					while(Preset::moog_time < bpm_time[temp++]);
+					Preset::moog_time = bpm_time[temp];
+
+					SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, Preset::moog_time>> 8);
+					SharcTask->setParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, Preset::moog_time);
+				}
+			}
+		}
+	}
+}
+
+void System::setDelayTime(float quarterInterval)
+{
+	currentPreset.delayTime = round((float)(quarterInterval/tapCoeffs[currentPreset.modulesBuf[DELAY_TAP]]));
+	if(currentPreset.delayTime < 2731)
+	{
+		if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
+		{
+			SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+			SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
+		}
+		else
+		{
+			if(currentPreset.delayTime < 2728 && currentPreset.delayTime > 249)
+			{
+				uint8_t temp = 0;
+
+				while(currentPreset.delayTime < bpm_time[temp++]);
+				currentPreset.delayTime = bpm_time[temp];
+
+				SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, currentPreset.delayTime >> 8);
+				SharcTask->setParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, currentPreset.delayTime);
+			}
+		}
+	}
+
+	currentPreset.paramData.delay_time_lo = currentPreset.delayTime >> 8;
+	currentPreset.paramData.delay_time_hi = currentPreset.delayTime & 0xFF;
+}
+
+void System::setTremoloTime(float quarterInterval)
+{
+	Preset::trem_time = round((float)(quarterInterval/tapCoeffs[currentPreset.modulesBuf[TREMOLO_TAP]]));
+
+	if(Preset::trem_time < 2731)
+	{
+		if(!sys_para[TIME_FORMAT])
+		{
+			SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, Preset::trem_time >> 8);
+			SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, Preset::trem_time);
+		}
+		else
+		{
+			if(Preset::trem_time < 2728 && Preset::trem_time > 249)
+			{
+				uint8_t temp = 0;
+				while(Preset::trem_time < bpm_time[temp++]);
+				Preset::trem_time = bpm_time[temp];
+
+				SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, Preset::trem_time >> 8);
+				SharcTask->setParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, Preset::trem_time);
+			}
+		}
+	}
+}
 
 void System::TapTempo(TapDestination tapDst)
 {
 	if(tapDst == TapDestination::TAP_OFF) return;
 
-	if(tap_temp <= 131070)
+	if(tap_temp <= 2730 * 48) // 48kHz dma
 	{
-		tap_global = tap_temp >> 4;
+		float tap_global = tap_temp / 48;
+
+		if(tap_global > 250)
+		{
+			// ИСПРАВЛЕНО: Защита от выхода за границы массива bpm_time
+			// Было: while(tap_global < bpm_time[temp++]); - может переполнить массив!
+			uint8_t temp = 0;
+			const uint8_t bpm_count = sizeof(bpm_time) / sizeof(bpm_time[0]);
+			while(temp < bpm_count - 1 && tap_global < bpm_time[temp]) {
+				temp++;
+			}
+			currentPreset.paramData.bpm = 60000 / bpm_time[temp];
+		}
 
 		if(sys_para[TAP_TYPE] != System::TAP_TYPE_PRESET) // global temp On
 		{
-			sys_para[TAP_HIGH] = (tap_global/3)>>8;
+			sys_para[GLOBAL_TAP_TIME] = round(tap_global/8);
 
-			DSP_GuiSendParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[TAP_HIGH]);
+			SharcTask->setParameter(DSP_ADDRESS_GLOBAL_TEMPO, sys_para[TAP_TYPE], sys_para[GLOBAL_TAP_TIME]);
 
-			moog_time = tap_global/3.0f;
-			DSP_GuiSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
-			DSP_GuiSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time);
+			System::setMoogTime(tap_global);
+			System::setDelayTime(tap_global);
+			System::setTremoloTime(tap_global);
 
-			delay_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[DELAY_TAP]];
-			if(delay_time<2731)
-			{
-				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
-				DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time);
-			}
-
-			trem_time = tap_global/3.0f/tap_time_coefs[currentPreset.modules.rawData[TREMOLO_TAP]];
-			if(trem_time<2731)
-			{
-				DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
-				DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
-			}
+			EEPROM_DelayedSaveSystemData();
 		}
 		else
 		{
@@ -65,72 +197,26 @@ void System::TapTempo(TapDestination tapDst)
 			{
 				case TAP_RFILTER:
 				{
-					if(currentPreset.modules.rawData[RFILTER_LFO_TYPE])
-					{
-						moog_time = tap_global / 48.0f;
-						DSP_GuiSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_LO_POS, moog_time >> 8);
-						DSP_GuiSendParameter(DSP_ADDRESS_RESONANCE_FILTER, RFILTER_TIME_HI_POS, moog_time );
-					}
+					System::setMoogTime(tap_global);
 					break;
 				}
 
 				case TAP_DELAY:
 				{
-					delay_time = tap_global / 3.0f / tapCoeffs[currentPreset.modules.rawData[DELAY_TAP]];
-					if(delay_time < 2731)
-					{
-						uint8_t temp = 0;
-						if(sys_para[TIME_FORMAT] == TIME_FORMAT_SEC)
-						{
-							DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
-							DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time);
-						}
-						else
-						{
-							if(delay_time < 2728 && delay_time > 249)
-							{
-								while(delay_time < bpm_time[temp++]);
-								delay_time = bpm_time[temp];
-								currentPreset.modules.rawData[BPM_DELAY] = 60000 / delay_time;
-
-								DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_LO_POS, delay_time >> 8);
-								DSP_GuiSendParameter(DSP_ADDRESS_DELAY, DELAY_TIME_HI_POS, delay_time);
-							}
-						}
-					}
+					System::setDelayTime(tap_global);
 					break;
 				}
 
 				case TAP_TREMOLO:
 				{
-					trem_time = tap_global / 3.0f / tapCoeffs[currentPreset.modules.rawData[TREMOLO_TAP]];
-
-					if(trem_time < 2731)
-					{
-						if(!sys_para[TIME_FORMAT])
-						{
-							DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
-							DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
-						}
-						else
-						{
-							if(trem_time < 2728 && trem_time > 249)
-							{
-								uint8_t temp = 0;
-								while(trem_time < bpm_time[temp++]);
-								trem_time = bpm_time[temp];
-
-								DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_LO_POS, trem_time >> 8);
-								DSP_GuiSendParameter(DSP_ADDRESS_TREMOLO, TREMOLO_TIME_HI_POS, trem_time);
-							}
-						}
-					}
+					System::setTremoloTime(tap_global);
 					break;
 				}
-
 				default: break;
 			}
 		}
 	}
 	tap_temp = 0;
+
+	console_printf("%s\r%04x\n", DelayDesc.time.handlerStr, currentPreset.delayTime);
 }
