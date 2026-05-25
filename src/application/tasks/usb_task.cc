@@ -1,5 +1,7 @@
 #include "usb_task.h"
 
+#include "gpio.h"
+
 #include "display_task.h"
 #include "ui_task.h"
 #include "console_task.h"
@@ -165,24 +167,25 @@ void TUsbTask::Code()
 
 		USBD_OTG_ISR_Handler((USB_OTG_CORE_HANDLE*)USB_OTG_dev);
 
-		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status==USB_OTG_CONFIGURED && configured==false)
+		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status == USB_OTG_CONFIGURED && configured==false)
 		{
 			configured = true;
 		}
 
-		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status!=USB_OTG_CONFIGURED && configured==true)
+		if(((USB_OTG_CORE_HANDLE*)USB_OTG_dev)->dev.device_status != USB_OTG_CONFIGURED && configured==true)
 		{
 			if(m_mode == mMSC)
 			{
-			   NVIC_SystemReset();
-			   configured = false;
+				NVIC_SystemReset();
+				configured = false;
 			}
 			else
 			{
+				HW_PinUsbDrop();
+				Delay(100);
 				usbMenu->stopUsb();
 			}
 		}
-
 	}
 }
 //------------------------------------------------------------------------------
