@@ -46,7 +46,7 @@ public:
 		dcFswInd,
 		dcPresetInd,
 		dcTunerInit,
-		dcTunerRefFreq,
+//		dcTunerRefFreq,
 		dcTunerDraw,
 		dcIconAndArrows,
 		dcArrow,
@@ -142,7 +142,7 @@ public:
 
 	typedef struct
 	{
-		float refFreq;
+//		float refFreq;
 		uint8_t arrowPos;
 		const char* noteName;
 	}TTunerParam;
@@ -203,7 +203,7 @@ public:
 	void IconAndArrows(icon_t num, strelka_t strel);
 
 	void TunerInit();
-	void TunerRefFreq(float refFreq);
+//	void TunerRefFreq(float refFreq);
 	void TunerDraw(uint8_t arrowPos, const char* noteName);
 
 	void Arrow(uint8_t x, uint8_t y, uint32_t dir);

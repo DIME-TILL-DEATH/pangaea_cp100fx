@@ -277,7 +277,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			  UITask->Delay(1000);
 			  currentPreset.paramData.switches.cab = 0;
 
-			  parent->refresh();
+			  parent->show();
 		  }
 		}
 		else
@@ -289,7 +289,7 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 
 			currentPreset.paramData.switches.cab = 0;
 
-			parent->refresh();
+			parent->show();
 		}
 	}
 }

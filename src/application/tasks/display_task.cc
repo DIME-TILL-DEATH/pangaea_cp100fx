@@ -102,15 +102,15 @@ void TDisplayTask::Code()
 				switch(cmd.StringOutParams.font.name)
 				{
 					case Font::fnt12x13:
-						t12x13_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y,
-								cmd.StringOutParams.string , cmd.StringOutParams.font.state);
+						t12x13_line(cmd.StringOutParams.pos.x, cmd.StringOutParams.pos.y,
+								cmd.StringOutParams.string, cmd.StringOutParams.font.state);
 					break;
 					case Font::fnt33x30:
 
 					break;
 					case Font::fntSystem:
-						Arsys_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y ,
-								cmd.StringOutParams.string,cmd.StringOutParams.font.state);
+						Arsys_line(cmd.StringOutParams.pos.x, cmd.StringOutParams.pos.y ,
+								cmd.StringOutParams.string, cmd.StringOutParams.font.state);
 					break;
 					default: break;
 				}
@@ -213,9 +213,9 @@ void TDisplayTask::Code()
 				tuner_note(cmd.TunerParam.noteName);
 			break;
 
-			case dcTunerRefFreq:
-				tuner_ref_freq((uint16_t)cmd.TunerParam.refFreq);
-			break;
+//			case dcTunerRefFreq:
+//				tuner_ref_freq((uint16_t)cmd.TunerParam.refFreq);
+//			break;
 
 			case dcFswInd:
 				fsw_ind(cmd.FswIndParam.num, cmd.FswIndParam.pressState, cmd.FswIndParam.holdState);
@@ -447,13 +447,13 @@ void TDisplayTask::TunerInit(void)
 	Command(&cmd);
 }
 
-void TDisplayTask::TunerRefFreq(float refFreq)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcTunerRefFreq;
-	cmd.TunerParam.refFreq = refFreq;
-	Command(&cmd);
-}
+//void TDisplayTask::TunerRefFreq(float refFreq)
+//{
+//	TDisplayCmd cmd;
+//	cmd.cmd=dcTunerRefFreq;
+//	cmd.TunerParam.refFreq = refFreq;
+//	Command(&cmd);
+//}
 
 void TDisplayTask::TunerDraw(uint8_t arrowPos, const char* noteName)
 {

@@ -1,11 +1,13 @@
-#include <tuner_task.h>
 #include "tunermenu.h"
 
 #include "codec.h"
 #include "led.h"
+#include "system.h"
+#include "eeprom.h"
 
 #include "display_task.h"
 #include "sharc_task.h"
+#include "tuner_task.h"
 
 TunerMenu::TunerMenu(AbstractMenu *parent)
 {
@@ -20,25 +22,59 @@ void TunerMenu::show(TShowMode showMode)
 	TunerTask->Enable(TTunerTask::TUNER_GUI);
 
 	DisplayTask->TunerInit();
-	DisplayTask->TunerRefFreq(TunerTask->refFreq);
+	refresh();
+}
+
+void TunerMenu::refresh()
+{
+	DisplayTask->StringOut(8, 0, Font::fntSystem, (Font::TFontState)(Font::fnsHighlight * (m_parNum == 0)), (uint8_t*)"R");
+	DisplayTask->ParamIndNum(15, 0, TunerTask->refFreq);
+	DisplayTask->StringOut(35, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Hz");
+
+	DisplayTask->StringOut(92, 0, Font::fntSystem, (Font::TFontState)(Font::fnsHighlight * (m_parNum == 1)), (uint8_t*)"S");
+	DisplayTask->ParamIndNum(100, 0, sys_para[System::TUNER_SPEED]);
 }
 
 void TunerMenu::encoderClockwise()
 {
-	if(TunerTask->refFreq<450.0f)
+	if(m_parNum == 0)
 	{
-		TunerTask->refFreq += 1.0f;
-		DisplayTask->TunerRefFreq(TunerTask->refFreq);
+		if(TunerTask->refFreq < 450.0f) TunerTask->refFreq += 1.0f;
 	}
+	else
+	{
+		if(sys_para[System::TUNER_SPEED] < 127)
+		{
+			sys_para[System::TUNER_SPEED] = BaseParam::encSpeedInc(sys_para[System::TUNER_SPEED], 127, 1);
+			EEPROM_DelayedSaveSystemData();
+		}
+	}
+	refresh();
 }
 
 void TunerMenu::encoderCounterClockwise()
 {
-	if(TunerTask->refFreq>430.0f)
+	if(m_parNum == 0)
 	{
-		DisplayTask->TunerRefFreq(TunerTask->refFreq);
-		TunerTask->refFreq -= 1.0f;
+		if(TunerTask->refFreq>430.0f) TunerTask->refFreq -= 1.0f;
 	}
+	else
+	{
+		if(sys_para[System::TUNER_SPEED] > 0)
+		{
+			sys_para[System::TUNER_SPEED] = BaseParam::encSpeedDec(sys_para[System::TUNER_SPEED], 0, 1);
+			EEPROM_DelayedSaveSystemData();
+		}
+	}
+	refresh();
+}
+
+void TunerMenu::encoderPressed()
+{
+	if(m_parNum == 0) m_parNum = 1;
+	else m_parNum = 0;
+
+	refresh();
 }
 
 void TunerMenu::keyUp()

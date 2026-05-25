@@ -4,6 +4,7 @@
 #include "serial.h"
 #include "led.h"
 
+#include "preset.h"
 #include "serial.h"
 #include "footswitch.h"
 #include "system.h"
@@ -57,13 +58,27 @@ void TIOTask::Code()
 		{
 			case IO_LED_TASK:
 			{
+				if(!mainMenu) break;
+
 				uint8_t isLedOn = 0;
 				uint16_t enabledMask = 0;
+				uint8_t* arrModulesEnabled;
 				enabledMask = (1 << ENABLE_AMP) | (1 << ENABLE_PREAMP) | (1 << ENABLE_CAB);
+
+				if(mainMenu->preselectedPresetNum() != currentPresetNumber)
+				{
+					arrModulesEnabled = (uint8_t*)&(mainMenu->selectedPresetBrief()->paramData.switches);
+				}
+				else
+				{
+					arrModulesEnabled = (uint8_t*)&currentPreset.paramData.switches;
+				}
+
+
 				for(uint8_t i = 0; i < 14; i++)
 				{
 					if(!((enabledMask >> i) & 0x1))
-						isLedOn += currentPreset.modulesBuf[i];
+						isLedOn += arrModulesEnabled[i];//currentPreset.modulesBuf[i];
 				}
 
 				if(isLedOn)
