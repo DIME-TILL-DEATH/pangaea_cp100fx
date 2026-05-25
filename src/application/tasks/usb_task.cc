@@ -148,13 +148,14 @@ TUsbTask::TUsbTask(TMode val) :
 
 TUsbTask::~TUsbTask()
 {
+
 	USBD_DeInit(USB_OTG_dev);
 
 	if(USB_OTG_dev) delete USB_OTG_dev;
 	USB_OTG_dev = nullptr;
 
 	vTaskDelete(0);
-	ConsoleTask->Suspend();
+//	ConsoleTask->Suspend(); // broke second connect without reading on first connect
 }
 
 
