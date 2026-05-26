@@ -37,6 +37,7 @@ void CabNameMenu::task()
 			{
 				if(currentPreset.cab1NameSize)
 				{
+#ifdef __MONO_MOD__
 					if(System::cab_type == CAB_CONFIG_STEREO)
 					{
 						DisplayTask->Clear();
@@ -47,6 +48,14 @@ void CabNameMenu::task()
 					{
 						DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
 					}
+
+#endif
+
+#ifdef __STEREO_MOD__
+					DisplayTask->Clear();
+					DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"1 - ");
+					DisplayTask->StringOut(24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
+#endif
 					m_currentShowCab = 1;
 				}
 			}
@@ -73,6 +82,7 @@ void CabNameMenu::show(TShowMode showMode)
 		currentMenu = this;
 		DisplayTask->Clear();
 
+#ifdef __MONO_MOD__
 		if(currentPreset.cab1NameSize)
 		{
 			if(System::cab_type == CAB_CONFIG_STEREO)
@@ -90,6 +100,20 @@ void CabNameMenu::show(TShowMode showMode)
 				DisplayTask->StringOut(24,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)currentPreset.cab2Name);
 			}
 		}
+#endif
+
+#ifdef __STEREO_MOD__
+		if(currentPreset.cab1NameSize)
+		{
+			DisplayTask->StringOut(0,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)"1 - ");
+			DisplayTask->StringOut(24,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)currentPreset.cab1Name);
+		}
+		else
+		{
+			DisplayTask->StringOut(0,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)"2 - ");
+			DisplayTask->StringOut(24,0,Font::fntSystem, Font::fnsNormal,(uint8_t*)currentPreset.cab2Name);
+		}
+#endif
 		restartBlinking(0);
 		m_delay = 1;
 	}
@@ -99,6 +123,7 @@ void CabNameMenu::refresh()
 {
 	DisplayTask->Clear();
 
+#ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"1 - ");
@@ -108,4 +133,10 @@ void CabNameMenu::refresh()
 	{
 		DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
 	}
+#endif
+
+#ifdef __STEREO_MOD__
+	DisplayTask->StringOut(0, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"1 - ");
+	DisplayTask->StringOut(24, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)currentPreset.cab1Name);
+#endif
 }

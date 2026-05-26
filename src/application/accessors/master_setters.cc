@@ -11,6 +11,7 @@
 #include "io_task.h"
 #include "display_task.h"
 
+#ifdef __MONO_MOD_
 static TParamDescriptor attVolParamDesc = {
 	.ptr = &sys_para[System::ATTENUATOR],
 	.handlerStr = "vl_at",
@@ -34,6 +35,7 @@ TAttenuatorDesc AttenuatorDesc = {
 	.source = attSourceParamDesc
 };
 
+
 void attenuator_vol_setter(uint32_t value)
 {
 	uint8_t* value_ptr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator
@@ -45,6 +47,7 @@ void attenuator_vol_setter(uint32_t value)
 
 	EEPROM_DelayedSaveSystemData();
 }
+
 
 void attenuator_source_setter(uint32_t value)
 {
@@ -59,6 +62,7 @@ void attenuator_source_setter(uint32_t value)
 
 	EEPROM_DelayedSaveSystemData();
 }
+#endif
 
 //=======================================Master volume=============================================================
 static TParamDescriptor masterVolParamDesc = {
@@ -216,8 +220,10 @@ void meq_mid_freq_setter(uint32_t value)
 
 void set_master_handlers(TTranslator *translator)
 {
+#ifdef __MONO_MOD_
 	translator->AddAccessorHandler("vl_at", attenuator_vol_setter);
 	translator->AddAccessorHandler("vl_at_mode", attenuator_source_setter);
+#endif
 
 	translator->AddAccessorHandler("vl_ms", master_volume_setter);
 	translator->AddAccessorHandler("vl_ph", phones_volume_setter);

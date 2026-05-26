@@ -132,8 +132,13 @@ static TParamDescriptor eqViewDesc = {
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 {
 	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
-
+#ifdef __MONO_MOD
 	const uint8_t paramNum = 16;
+#endif
+
+#ifdef __STEREO_MOD__
+	const uint8_t paramNum = 15;
+#endif
 	BaseParam* params[paramNum];
 
 	params[0] = new StringListParam(&SysSettingsDesc.cabMode, {"CabSim On ", "CabSim Off"}, 10);
@@ -195,8 +200,10 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[14] = new StringListParam(&MasterEqDesc.on, {"Off", "On "}, 4);
 	params[14]->setDisplayPosition(leftPad + 6 * 12);
 
+#ifdef __MONO_MOD
 	params[15] = new StringListParam(&AttenuatorDesc.source, {"Global ", "Preset"}, 7);
 	params[15]->setDisplayPosition(leftPad + 6 * 12);
+#endif
 
 	systemMenu->setParams(params, paramNum);
 

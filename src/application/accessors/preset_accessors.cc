@@ -66,9 +66,16 @@ void psave_handler(uint32_t value)
 	EEPROM_SavePreset(currentPresetNumber, &currentPreset);
 
 	// need to do it in the same thread
+#ifdef __MONO_MOD_
 	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, &currentPreset.paramData, currentPresetNumber+1);
 	if(System::cab_type==CAB_CONFIG_STEREO)
 		DSP_SendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
+#endif
+
+#ifdef __STEREO_MOD__
+	DSP_SendPrimaryData(currentPreset.cab1Data, nullptr, &currentPreset.paramData, currentPresetNumber+1);
+	DSP_SendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
+#endif
 
 	console_printf("psave\r\n");
 }

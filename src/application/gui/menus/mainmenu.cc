@@ -49,8 +49,15 @@ void MainMenu::task()
 	{
 		if(blinkFlag == 0)
 		{
-			bool filled = m_selectedPresetBrief.cab1Name[0]
+			bool filled;
+#ifdef __MONO_MOD__
+			filled = m_selectedPresetBrief.cab1Name[0]
 							|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+#endif
+
+#ifdef __STEREO_MOD__
+			filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
+#endif
 			DisplayTask->PresetInd(m_preselectedPresetNum, filled);
 		}
 		else
@@ -193,16 +200,28 @@ void MainMenu::refresh()
 		name = (uint8_t*)m_selectedPresetBrief.name;
 		comment = (uint8_t*)m_selectedPresetBrief.comment;
 
+#ifdef __MONO_MOD__
 		filled = m_selectedPresetBrief.cab1Name[0]
-				|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+						|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+#endif
+
+#ifdef __STEREO_MOD__
+		filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
+#endif
 	}
 	else
 	{
 		name = (uint8_t*)currentPreset.name;
-			comment = (uint8_t*)currentPreset.comment;
+		comment = (uint8_t*)currentPreset.comment;
 
-		filled = currentPreset.cab1NameSize
-				|| (System::cab_type == CAB_CONFIG_STEREO ? currentPreset.cab2NameSize : 0);
+#ifdef __MONO_MOD__
+		filled = m_selectedPresetBrief.cab1Name[0]
+							|| (System::cab_type == CAB_CONFIG_STEREO ? m_selectedPresetBrief.cab2Name[0] : 0);
+#endif
+
+#ifdef __STEREO_MOD__
+		filled = m_selectedPresetBrief.cab1Name[0] || m_selectedPresetBrief.cab2Name[0];
+#endif
 	}
 
 	DisplayTask->StringOut(2, 0, Font::fntSystem, Font::fnsNormal, name);

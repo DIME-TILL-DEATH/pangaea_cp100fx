@@ -143,6 +143,7 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 
 AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 {
+#ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
@@ -150,15 +151,9 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 		const uint8_t paramNum = 2;
 		BaseParam* params[paramNum];
 
-#ifdef __MONO_MOD__
+
 		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 1", &GuiModules::createCab1Menu, paramsMenu);
 		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 2", &GuiModules::createCab2Menu, paramsMenu);
-#endif
-
-#ifdef __STEREO_MOD__
-		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, paramsMenu);
-		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, paramsMenu);
-#endif
 
 		paramsMenu->setParams(params, paramNum);
 		paramsMenu->setIcon(false, ICON_NONE);
@@ -169,6 +164,22 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 	{
 		return GuiModules::createCab1Menu(parentMenu);
 	}
+#endif
+
+#ifdef __STEREO_MOD__
+	ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
+
+	const uint8_t paramNum = 2;
+	BaseParam* params[paramNum];
+
+	params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, paramsMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, paramsMenu);
+
+	paramsMenu->setParams(params, paramNum);
+	paramsMenu->setIcon(false, ICON_NONE);
+
+	return paramsMenu;
+#endif
 }
 
 AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)

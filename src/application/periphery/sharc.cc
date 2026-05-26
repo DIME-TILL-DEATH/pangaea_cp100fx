@@ -60,7 +60,7 @@ void SHARC_StartupLoad()
 	extern uint8_t _binary_Pangaea_CP100FX_stereo_ldr_end;
 
 	binaryStart = &_binary_Pangaea_CP100FX_stereo_ldr_start;
-	binarySize = (size_t)(&_binary_Pangaea_CP100FX_1_ldr_end-&_binary_Pangaea_CP100FX_1_ldr_start);
+	binarySize = (size_t)(&_binary_Pangaea_CP100FX_stereo_ldr_end-&_binary_Pangaea_CP100FX_stereo_ldr_start);
 #endif
 
 #ifdef __MONO_MOD__

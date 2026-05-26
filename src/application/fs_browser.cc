@@ -274,6 +274,7 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 	uint32_t file_size;
 	fs_res = f_read(&f, (void*)&file_size, 4, &br);
 
+#ifdef __MONO_MOD__
 	if(System::cab_type != CAB_CONFIG_STEREO)
 	{
 		if(file_size > CAB_DATA_SIZE * 2)
@@ -284,6 +285,12 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 		if(file_size > CAB_DATA_SIZE )
 			file_size = CAB_DATA_SIZE;
 	}
+#endif
+
+#ifdef STEREO_MOD
+	if(file_size > CAB_DATA_SIZE )
+		file_size = CAB_DATA_SIZE;
+#endif
 
 	// read cabinet data
 	kgp_sdk_libc::memset(buff, 0, CAB_DATA_SIZE * 2);

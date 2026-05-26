@@ -1,5 +1,6 @@
 #include "attenuatormenu.h"
 
+#ifdef __MONO_MOD__
 #include "system.h"
 #include "bitmaps.h"
 #include "eeprom.h"
@@ -80,3 +81,5 @@ void AttenuatorMenu::exitMenu()
 	EEPROM_SaveSystemData();
 	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 }
+
+#endif
