@@ -249,7 +249,7 @@ extern "C" void DMA1_Stream2_IRQHandler()	//I2S
 	int32_t ccr = cr;
 	ccr = ccr >> 8;
 
-	DisplayTask->VolIndRoutine(ccl);
+	DisplayTask->VolIndRoutine(ccl, ccr);
 	if(TunerTask->IsrRoutine(ccl)) return;
 
 	dac_data[dma_ht_fl].left.sample = ror16(cr);

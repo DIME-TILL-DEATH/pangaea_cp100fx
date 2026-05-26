@@ -427,22 +427,35 @@ void progress_bar(uint8_t col, uint8_t pag, uint32_t val)
 	GPIO_SetBits(GPIOB, CS);
 }
 
-void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indValue, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr)
+void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indLValue, uint32_t indRValue, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr)
 {
 	uint8_t volIndPosition = 32;
 
 	if(volIndPar_ptr) volIndPosition = (*volIndPar_ptr >> 1) + 1;
 	else volIndPosition = 0;
 
-	uint8_t outLevel;
+	uint8_t outLLevel, outRLevel;
 
-	if(indValue < 8388000)
-		outLevel = /*vsqrt*/(indValue) * ((float)(indLength - 1) / (8384000.0f));
+	if(indLValue < 8388000)
+		outLLevel = /*vsqrt*/(indLValue) * ((float)(indLength - 1) / (8384000.0f));
 	else
-		outLevel = indLength - 1;
+		outLLevel = indLength - 1;
 
-	LCD_SetColumnAddress(xPos);
-	LCD_SetPageAddress(3);
+	if(volIndicatorType == TVolIndicatorType::VOL_INDICATOR_STEREO_IN)
+	{
+		if(indRValue < 8388000)
+			outRLevel = /*vsqrt*/(indRValue) * ((float)(indLength - 1) / (8384000.0f));
+		else
+			outRLevel = indLength - 1;
+
+		LCD_SetColumnAddress(xPos);
+		LCD_SetPageAddress(2);
+	}
+	else
+	{
+		LCD_SetColumnAddress(xPos);
+		LCD_SetPageAddress(3);
+	}
 
 	for(uint8_t i = 0; i < indLength; i++)
 	{
@@ -459,7 +472,25 @@ void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indValue, TVolIndic
 			}
 			else
 			{
-				if(i < outLevel) LCD_WriteData(0x3c);
+				if(i < outLLevel) LCD_WriteData(0x3c);
+				else LCD_WriteData(0x0);
+			}
+		}
+	}
+
+	if(volIndicatorType == TVolIndicatorType::VOL_INDICATOR_STEREO_IN)
+	{
+		LCD_SetColumnAddress(xPos);
+		LCD_SetPageAddress(3);
+		for(uint8_t i = 0; i < indLength; i++)
+		{
+			if((i == indLength - 1) || (i == 0))
+			{
+				LCD_WriteData(0x7e, 1); //3c
+			}
+			else
+			{
+				if(i < outRLevel) LCD_WriteData(0x3c);
 				else LCD_WriteData(0x0);
 			}
 		}

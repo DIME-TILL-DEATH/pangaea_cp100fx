@@ -22,12 +22,13 @@ typedef enum
 	VOL_INDICATOR_OFF = 0,
 	VOL_INDICATOR_IN,
 	VOL_INDICATOR_OUT,
-	VOL_INDICATOR_VOLUME
+	VOL_INDICATOR_VOLUME,
+	VOL_INDICATOR_STEREO_IN,
+
 }TVolIndicatorType;
 
 void display_start(uint8_t num);
 void progress_bar(uint8_t col, uint8_t pag, uint32_t val);
-void vol_ind(uint8_t xPos, uint8_t indLength);
 void clear_string(uint8_t col, uint8_t pag, uint8_t font, uint8_t count);
 void preset_ind(uint32_t val, bool filled = true);
 void checkbox(uint8_t x, uint8_t y, uint8_t val);
@@ -37,6 +38,7 @@ void tap_ind(uint8_t cur);
 void fsw_ind(uint8_t num, uint8_t pressState, uint8_t holdState);
 void arrow_print(uint8_t col, uint8_t pag, uint8_t dir);
 void delay_time_ind(uint8_t col, uint8_t pag, uint32_t d);
-void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indValue, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr);
+void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indLValue, uint32_t indRValue,
+					TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr);
 
 #endif

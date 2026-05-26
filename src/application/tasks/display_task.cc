@@ -24,11 +24,15 @@ void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indic
 	m_indRefreshCounter = 500;
 }
 
-void TDisplayTask::VolIndRoutine(int32_t indValue)
+void TDisplayTask::VolIndRoutine(int32_t indLValue, int32_t indRValue)
 {
-	uint32_t absInVal = abs(indValue);
-	if(absInVal > m_indPeakValue)
-	m_indPeakValue = absInVal;
+	uint32_t absInLVal = abs(indLValue);
+	if(absInLVal > m_indLPeakValue)
+	m_indLPeakValue = absInLVal;
+
+	uint32_t absInRVal = abs(indRValue);
+	if(absInRVal > m_indRPeakValue)
+	m_indRPeakValue = absInRVal;
 
 	if(m_indRefreshCounter < 4000)
 	{
@@ -43,14 +47,17 @@ void TDisplayTask::VolIndRoutine(int32_t indValue)
 		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Input"); break;
 		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Output"); break;
 		case VOL_INDICATOR_VOLUME: break;
+		case VOL_INDICATOR_STEREO_IN: break;
 	}
 
 	TDisplayCmd cmd;
 	cmd.cmd=dcVolInd;
-	cmd.ParamIndParam.data = m_indPeakValue;
+	cmd.IndParam.leftData = m_indLPeakValue;
+	cmd.IndParam.rightData = m_indRPeakValue;
 	Command(&cmd);
 
-	m_indPeakValue = 0;
+	m_indLPeakValue = 0;
+	m_indRPeakValue = 0;
 }
 
 void TDisplayTask::Code()
@@ -118,10 +125,10 @@ void TDisplayTask::Code()
 
 			case dcVolInd:
 				TPos pos;
-				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) pos = {64, 64};
+				if(m_volIndicatorType == VOL_INDICATOR_VOLUME  || m_volIndicatorType == VOL_INDICATOR_STEREO_IN) pos = {64, 64};
 				else pos = {58, 50};
 
-				vol_indicator(pos.x, pos.y, cmd.ParamIndParam.data, m_volIndicatorType, m_volIndPar_ptr);
+				vol_indicator(pos.x, pos.y, cmd.IndParam.leftData, cmd.IndParam.rightData, m_volIndicatorType, m_volIndPar_ptr);
             break;
 
 			case dcPresetInd:

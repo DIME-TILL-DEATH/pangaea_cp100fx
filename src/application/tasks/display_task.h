@@ -14,7 +14,7 @@ public:
 	TDisplayTask();
 
 	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
-	void VolIndRoutine(int32_t indValue);
+	void VolIndRoutine(int32_t indLValue, int32_t indRValue);
 
 	typedef struct
 	{
@@ -149,6 +149,13 @@ public:
 
 	typedef struct
 	{
+		TPos pos;
+		uint32_t leftData;
+		uint32_t rightData;
+	}TIndParam;
+
+	typedef struct
+	{
 		TCommand cmd;
 		union
 		{
@@ -166,6 +173,7 @@ public:
 			TArrowParam ArrowParam;
 			TIconAndArrowParam IconAndArrowParam;
 			TTunerParam TunerParam;
+			TIndParam IndParam;
 		};
 	}TDisplayCmd;
 
@@ -220,7 +228,8 @@ private:
 	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
 	uint8_t* m_volIndPar_ptr{nullptr};
 	uint16_t m_indRefreshCounter;
-	uint32_t m_indPeakValue{0};
+	uint32_t m_indLPeakValue{0};
+	uint32_t m_indRPeakValue{0};
 
 	void Code() override;
 	TQueue::TQueueSendResult Command(TDisplayCmd *cmd)

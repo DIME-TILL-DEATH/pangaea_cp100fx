@@ -18,6 +18,7 @@
 #include "paramlistmenu.h"
 #include "cabnamemenu.h"
 #include "attenuatormenu.h"
+#include "stereoinputmenu.h"
 #include "mastervolumemenu.h"
 #include "mastereqmenu.h"
 #include "preset_accessors.h"
@@ -131,7 +132,8 @@ void MainMenu::key1()
 #endif
 
 #ifdef __STEREO_MOD__
-
+	shownChildMenu = new StereoInputMenu(this);
+	shownChildMenu->show();
 #endif
 	restartBlinking(0);
 }

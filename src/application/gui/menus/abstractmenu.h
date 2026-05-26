@@ -37,6 +37,7 @@ enum gui_menu_type
 	MENU_COPY_SELECTION,
 	MENU_EQ_GRAPH,
 	MENU_RESTART,
+	MENU_STEREO_INPUT,
 
 	// Menus with icons
 	MENU_DELAY = 128,
