@@ -39,7 +39,7 @@ static TParamDescriptor lfoParamDesc = {
 	.handlerStr = "rf_lt",
 	.dspAddress = DSP_ADDRESS_RESONANCE_FILTER,
 	.dspPosition = RFILTER_LFO_TYPE_POS,
-	.name = "F mod",
+	.name = "LFO typ",
 	.setterHandler = rf_lfo_type_setter
 };
 

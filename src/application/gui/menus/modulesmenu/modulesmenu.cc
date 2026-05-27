@@ -101,11 +101,12 @@ void ModulesMenu::encoderPressed()
 {
 	presetEdited = true;
 
-	modules[m_numMenu].setterFunction(!(bool)*modules[m_numMenu].enablePtr);
+
 
 	*(modulesPrevState[m_numMenu].enablePtr) = *(modules[m_numMenu].enablePtr);
 
 	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction(this);
+	else modules[m_numMenu].setterFunction(!(bool)*modules[m_numMenu].enablePtr);
 
 	restartBlinking(1);
 }
@@ -267,7 +268,13 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 		{
 		  if(TFsBrowser::impulseDirExist)
 		  {
+#ifdef __MONO_MOD__
 			  parent->showChild(new CabBrowserMenu(parent, 0));
+#endif
+
+#ifdef __STEREO_MOD__
+			  parent->showChild(new CabBrowserMenu(parent, 2));	// Load to both cabs
+#endif
 		  }
 		  else
 		  {
@@ -275,7 +282,6 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			  DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, "There is no directory");
 			  DisplayTask->StringOut(42, 3, Font::fntSystem, Font::fnsNormal, "IMPULSE");
 			  UITask->Delay(1000);
-			  currentPreset.paramData.switches.cab = 0;
 
 			  parent->show();
 		  }
@@ -287,9 +293,11 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			else DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, "MicroSD is loading..");
 			UITask->Delay(1000);
 
-			currentPreset.paramData.switches.cab = 0;
-
 			parent->show();
 		}
+	}
+	else
+	{
+		ir_on_setter(!(bool)currentPreset.paramData.switches.cab);
 	}
 }

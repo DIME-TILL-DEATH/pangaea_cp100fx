@@ -287,7 +287,7 @@ bool TFsBrowser::GetDataFromFile(uint8_t *buff, emb_string &err_msg)
 	}
 #endif
 
-#ifdef STEREO_MOD
+#ifdef __STEREO_MOD__
 	if(file_size > CAB_DATA_SIZE )
 		file_size = CAB_DATA_SIZE;
 #endif

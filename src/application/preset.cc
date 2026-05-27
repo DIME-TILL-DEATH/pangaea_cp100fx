@@ -114,10 +114,16 @@ void Preset::SetDefaultValues(Preset::TPresetHeader* preset)
 	kgp_sdk_libc::memcpy(preset->name, "Preset", 6);
 	kgp_sdk_libc::memcpy(preset->comment, "Comment", 7);
 
+#ifdef __MONO_MOD__
 	preset->paramData.cab1.volume = 82;
 	preset->paramData.cab1.pan = 63;
-
 	preset->paramData.cab2.pan = 63;
+#endif
+
+#ifdef __STEREO_MOD__
+	preset->paramData.cab1.volume = 82;
+	preset->paramData.cab2.volume = 82;
+#endif
 
 	for(uint8_t i=0; i<5; i++)
 		preset->paramData.eq_gain[i] = 15;

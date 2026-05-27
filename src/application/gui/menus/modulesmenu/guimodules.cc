@@ -172,8 +172,8 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 	const uint8_t paramNum = 2;
 	BaseParam* params[paramNum];
 
-	params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, paramsMenu);
-	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, paramsMenu);
+	params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab1Menu, paramsMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab2Menu, paramsMenu);
 
 	paramsMenu->setParams(params, paramNum);
 	paramsMenu->setIcon(false, ICON_NONE);
@@ -200,7 +200,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 #endif
 
 #ifdef __STEREO_MOD__
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, &IrDesc.pan1);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, &IrDesc.dummy);
 #endif
 
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, &IrDesc.vol1);
@@ -237,7 +237,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 #endif
 
 #ifdef __STEREO_MOD__
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, &IrDesc.pan2);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, &IrDesc.dummy);
 #endif
 
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, &IrDesc.vol2);
@@ -490,7 +490,7 @@ AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.damping);
 	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.lpf);
 	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.hpf);
-	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.damping);
+	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.detune);
 	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.diffusion);
 	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.predelay);
 	params[10] = new StringListParam(&ReverbDesc.tail, {"On ", "Off"}, 3);

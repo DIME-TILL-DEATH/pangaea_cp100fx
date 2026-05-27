@@ -160,8 +160,25 @@ void ir_cab_restore(uint32_t value)
 			SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CAB, currentPreset.paramData.switches.cab);
 		}
 	}
+	else if(cabNum == 1)
+	{
+		SharcTask->sendCab2Data(currentPreset.cab2Data);
+		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+	}
 	else
 	{
+#ifdef __MONO_MOD__
+		SharcTask->sendCab1Data(currentPreset.cab1Data, currentPreset.cabAuxData);
+#endif
+#ifdef __STEREO_MOD__
+		SharcTask->sendCab1Data(currentPreset.cab1Data, nullptr);
+#endif
+		if(currentPreset.cab1NameSize == 0)
+		{
+			currentPreset.paramData.switches.cab = 0;
+			SharcTask->setParameter(DSP_ADDRESS_MODULES_ENABLE, ENABLE_CAB, currentPreset.paramData.switches.cab);
+		}
+		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 		SharcTask->sendCab2Data(currentPreset.cab2Data);
 		SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
 	}
