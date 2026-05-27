@@ -1,5 +1,6 @@
 #include "footswitch.h"
 
+#include "led.h"
 #include "system.h"
 #include "preset.h"
 #include "footswitch.h"
@@ -101,11 +102,13 @@ void Footswitch::press_execute(uint8_t num)
 				{
 					currentPreset.paramData.foot_ind_press[num] = 1;
 					ControllersTask->extCommand(num + 2, 127);
+					LED_SetState((TLedType)(TLedType::LED_FSW_DOWN_RED + num), TLedState::ENABLED);
 				}
 				else
 				{
 					currentPreset.paramData.foot_ind_press[num] = 0;
 					ControllersTask->extCommand(num + 2, 0);
+					LED_SetState((TLedType)(TLedType::LED_FSW_DOWN_RED + num), TLedState::DISABLED);
 				}
 
 				if(sys_para[System::FSW1_CTRL_PRESS_CC + num])
@@ -209,14 +212,15 @@ void Footswitch::hold_execute(uint8_t num)
 			{
 				if(!currentPreset.paramData.foot_ind_hold[num])
 				{
-
 					currentPreset.paramData.foot_ind_hold[num] = 1;
 					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 127);
+					LED_SetState((TLedType)(TLedType::LED_FSW_DOWN_GREEN + num), TLedState::ENABLED);
 				}
 				else
 				{
 					currentPreset.paramData.foot_ind_hold[num] = 0;
 					ControllersTask->extCommand(sys_para[System::FSW1_CTRL_HOLD_CC + num] + 4, 0);
+					LED_SetState((TLedType)(TLedType::LED_FSW_DOWN_GREEN + num), TLedState::DISABLED);
 				}
 
 				if(sys_para[System::FSW1_CTRL_HOLD_CC + num])

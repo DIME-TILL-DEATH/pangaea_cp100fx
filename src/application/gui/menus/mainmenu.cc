@@ -35,7 +35,7 @@ void MainMenu::show(TShowMode swhoMode)
 	currentMenu = this;
 	shownChildMenu = nullptr;
 
-	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetIndicator(TIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	m_preselectedPresetNum = currentPresetNumber;
 	EEPROM_LoadPresetBrief(m_preselectedPresetNum, &m_selectedPresetBrief);

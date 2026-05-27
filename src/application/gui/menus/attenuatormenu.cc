@@ -29,12 +29,12 @@ AttenuatorMenu::AttenuatorMenu(AbstractMenu* parentMenu)
 	params[1] = new StringListParam(&AttenuatorDesc.source, {"Global", "Preset"}, 7);
 	params[1]->setDisplayPosition(76);
 
-	setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
+	setIndicator(TIndicatorType::VOL_INDICATOR_IN, DSP_INDICATOR_IN);
 
 	setParams(params, paramCount);
 	setIcon(false, ICON_NONE);
 
-	DisplayTask->potWrite();
+	DisplayTask->PotWrite();
 }
 
 void AttenuatorMenu::keyUp()
@@ -79,7 +79,7 @@ void AttenuatorMenu::exitMenu()
 		EEPROM_SavePreset(currentPresetNumber, &currentPreset);
 
 	EEPROM_SaveSystemData();
-	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetIndicator(TIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 }
 
 #endif

@@ -5,9 +5,17 @@
 
 typedef enum{
 	LED_TAP_GREEN = 1,
-	LED_TAP_RED, // unavaliable. Controlling by SHARC
-	LED_FX_GREEN,
-	LED_FX_RED
+//	LED_TAP_RED, // unavaliable. Controlling by SHARC
+	LED_FX_GREEN, // unavaliable. Controlling by SHARC
+	LED_FX_RED,
+
+	LED_FSW_DOWN_RED,
+	LED_FSW_CONFIRM_RED,
+	LED_FSW_UP_RED,
+
+	LED_FSW_DOWN_GREEN,
+	LED_FSW_CONFIRM_GREEN,
+	LED_FSW_UP_GREEN,
 }TLedType;
 
 typedef enum{

@@ -17,7 +17,7 @@ void StereoInputMenu::show(TShowMode showMode)
 	DisplayTask->StringOut(30, 0, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Input Level");
 	DisplayTask->StringOut(15, 2, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Right");
 	DisplayTask->StringOut(15, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Left");
-	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_STEREO_IN, DSP_INDICATOR_IN);
+	DisplayTask->SetIndicator(TIndicatorType::VOL_INDICATOR_STEREO_IN, DSP_INDICATOR_IN);
 }
 
 void StereoInputMenu::keyUp()

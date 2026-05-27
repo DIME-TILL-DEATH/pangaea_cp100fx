@@ -100,7 +100,7 @@ AbstractMenu* GuiModules::createPreampMenu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_PREAMP);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_PREAMP);
 	}
 
 	return menu;
@@ -135,7 +135,7 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_AMP);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_AMP);
 	}
 
 	return menu;
@@ -209,7 +209,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1, &currentPreset.modulesBuf[IR_VOLUME1]);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1, &currentPreset.modulesBuf[IR_VOLUME1]);
 		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
@@ -247,7 +247,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2, &currentPreset.modulesBuf[IR_VOLUME2]);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2, &currentPreset.modulesBuf[IR_VOLUME2]);
 		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
@@ -291,7 +291,11 @@ AbstractMenu* GuiModules::createPhaserMenu(AbstractMenu* parentMenu)
 	params[7] = new StringListParam(&PhaserDesc.position, {"Post", "Pre "}, 4);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_PHASER);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setIndicator(TIndicatorType::LED_INDICATOR, DSP_INDICATOR_PHASER);
+	}
 
 	return menu;
 }
@@ -311,7 +315,11 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	params[7] = new StringListParam(&FlangerDesc.position, {"Post", "Pre "}, 4);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_FLANGER);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+		{
+			menu->setParams(params, paramNum);
+			menu->setIndicator(TIndicatorType::LED_INDICATOR, DSP_INDICATOR_FLANGER);
+		}
 
 	return menu;
 }
@@ -343,7 +351,11 @@ AbstractMenu* GuiModules::createChorusMenu(AbstractMenu* parentMenu)
 	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ChorusDesc.hpf);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CHORUS);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setIndicator(TIndicatorType::LED_INDICATOR, DSP_INDICATOR_CHORUS);
+	}
 
 	typeSelect->setAffectedParamsList(params, paramNum);
 
@@ -520,6 +532,7 @@ AbstractMenu* GuiModules::createTremoloMenu(AbstractMenu* parentMenu)
 	{
 		menu->setParams(params, paramNum);
 		menu->setTapDestination(System::TapDestination::TAP_TREMOLO);
+		menu->setIndicator(TIndicatorType::LED_INDICATOR, DSP_INDICATOR_TREMOLO);
 	}
 	return menu;
 }

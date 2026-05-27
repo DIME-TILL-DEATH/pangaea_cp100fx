@@ -11,14 +11,14 @@ TDisplayTask* DisplayTask = nullptr;
 
 TDisplayTask::TDisplayTask () :TTask()
 {
-	m_volIndPar_ptr = nullptr;
+	m_indPar_ptr = nullptr;
 	m_indRefreshCounter = 0;
 }
 
-void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
+void TDisplayTask::SetIndicator(TIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
-	m_volIndicatorType = volIndicatorType;
-	m_volIndPar_ptr = indicatorParPtr;
+	m_indicatorType = indicatorType;
+	m_indPar_ptr = indicatorParPtr;
 
 	SharcTask->setParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
 
@@ -42,13 +42,14 @@ void TDisplayTask::VolIndRoutine(int32_t indLValue, int32_t indRValue)
 	}
 	m_indRefreshCounter = 0;
 
-	switch(m_volIndicatorType)
+	switch(m_indicatorType)
 	{
 		case VOL_INDICATOR_OFF: return;
 		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Input"); break;
 		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Output"); break;
 		case VOL_INDICATOR_VOLUME: break;
 		case VOL_INDICATOR_STEREO_IN: break;
+		case LED_INDICATOR: return;
 	}
 
 	TDisplayCmd cmd;
@@ -127,10 +128,10 @@ void TDisplayTask::Code()
 
 			case dcVolInd:
 				TPos pos;
-				if(m_volIndicatorType == VOL_INDICATOR_VOLUME  || m_volIndicatorType == VOL_INDICATOR_STEREO_IN) pos = {64, 64};
+				if(m_indicatorType == VOL_INDICATOR_VOLUME  || m_indicatorType == VOL_INDICATOR_STEREO_IN) pos = {64, 64};
 				else pos = {58, 50};
 
-				vol_indicator(pos.x, pos.y, cmd.IndParam.leftData, cmd.IndParam.rightData, m_volIndicatorType, m_volIndPar_ptr);
+				vol_indicator(pos.x, pos.y, cmd.IndParam.leftData, cmd.IndParam.rightData, m_indicatorType, m_indPar_ptr);
             break;
 
 			case dcPresetInd:

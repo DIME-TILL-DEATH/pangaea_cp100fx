@@ -55,7 +55,7 @@ void ModulesMenu::show(TShowMode showMode)
 
 	if(showMode == TShowMode::FirstShow) presetEdited = false;
 
-	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetIndicator(TIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	DisplayTask->Clear();
 	refresh();
 
@@ -190,7 +190,7 @@ void ModulesMenu::key2()
 	{
 		menu->setParams(params, paramCount);
 		menu->setIcon(false, ICON_NONE);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
 	}
 #endif
 

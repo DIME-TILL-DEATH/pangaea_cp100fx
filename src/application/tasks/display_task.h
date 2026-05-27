@@ -13,7 +13,7 @@ class TDisplayTask: public TTask
 public:
 	TDisplayTask();
 
-	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
+	void SetIndicator(TIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 	void VolIndRoutine(int32_t indLValue, int32_t indRValue);
 
 	typedef struct
@@ -231,8 +231,8 @@ public:
 private:
 	TQueue *queue;
 
-	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
-	uint8_t* m_volIndPar_ptr{nullptr};
+	TIndicatorType m_indicatorType{VOL_INDICATOR_OFF};
+	uint8_t* m_indPar_ptr{nullptr};
 	uint16_t m_indRefreshCounter;
 	uint32_t m_indLPeakValue{0};
 	uint32_t m_indRPeakValue{0};

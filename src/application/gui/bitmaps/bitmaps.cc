@@ -427,7 +427,7 @@ void progress_bar(uint8_t col, uint8_t pag, uint32_t val)
 	GPIO_SetBits(GPIOB, CS);
 }
 
-void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indLValue, uint32_t indRValue, TVolIndicatorType volIndicatorType, uint8_t* volIndPar_ptr)
+void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indLValue, uint32_t indRValue, TIndicatorType indicatorType, uint8_t* volIndPar_ptr)
 {
 	uint8_t volIndPosition = 32;
 
@@ -441,7 +441,7 @@ void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indLValue, uint32_t
 	else
 		outLLevel = indLength - 1;
 
-	if(volIndicatorType == TVolIndicatorType::VOL_INDICATOR_STEREO_IN)
+	if(indicatorType == TIndicatorType::VOL_INDICATOR_STEREO_IN)
 	{
 		if(indRValue < 8388000)
 			outRLevel = /*vsqrt*/(indRValue) * ((float)(indLength - 1) / (8384000.0f));
@@ -459,7 +459,7 @@ void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indLValue, uint32_t
 
 	for(uint8_t i = 0; i < indLength; i++)
 	{
-		if(volIndicatorType == TVolIndicatorType::VOL_INDICATOR_VOLUME && i >= volIndPosition - 2 && i <= volIndPosition)
+		if(indicatorType == TIndicatorType::VOL_INDICATOR_VOLUME && i >= volIndPosition - 2 && i <= volIndPosition)
 		{
 			if(i == volIndPosition - 1) LCD_WriteData(0x42);
 			else LCD_WriteData(0x3c);
@@ -478,7 +478,7 @@ void vol_indicator(uint8_t xPos, uint8_t indLength, uint32_t indLValue, uint32_t
 		}
 	}
 
-	if(volIndicatorType == TVolIndicatorType::VOL_INDICATOR_STEREO_IN)
+	if(indicatorType == TIndicatorType::VOL_INDICATOR_STEREO_IN)
 	{
 		LCD_SetColumnAddress(xPos);
 		LCD_SetPageAddress(3);

@@ -39,6 +39,136 @@ void LED_SetState(TLedType ledType, TLedState ledState)
 			}
 			break;
 		}
+
+#ifdef __STEREO_MOD__
+		case LED_FSW_DOWN_RED:
+		{
+			if(ledState == TLedState::ENABLED)
+			{
+				if(!(serialLedData[0] & 0b00000100))
+				{
+					serialLedData[0] |= 0b00000100;
+					DisplayTask->LedWrite();
+				}
+			}
+			else
+			{
+				if(serialLedData[0] & 0b00000100)
+				{
+					serialLedData[0] &= ~0b00000100;
+					DisplayTask->LedWrite();
+				}
+			}
+			break;
+		}
+
+		case LED_FSW_CONFIRM_RED:
+		{
+			if(ledState == TLedState::ENABLED)
+			{
+				if(!(serialLedData[0] & 0b00001000))
+				{
+					serialLedData[0] |= 0b00001000;
+					DisplayTask->LedWrite();
+				}
+			}
+			else
+			{
+				if(serialLedData[0] & 0b00001000)
+				{
+					serialLedData[0] &= ~0b00001000;
+					DisplayTask->LedWrite();
+				}
+			}
+			break;
+		}
+
+		case LED_FSW_UP_RED:
+		{
+			if(ledState == TLedState::ENABLED)
+			{
+				if(!(serialLedData[1] & 0b01000000))
+				{
+					serialLedData[1] |= 0b01000000;
+					DisplayTask->LedWrite();
+				}
+			}
+			else
+			{
+				if(serialLedData[1] & 0b01000000)
+				{
+					serialLedData[1] &= ~0b01000000;
+					DisplayTask->LedWrite();
+				}
+			}
+			break;
+		}
+
+		case LED_FSW_DOWN_GREEN:
+		{
+			if(ledState == TLedState::ENABLED)
+			{
+				if(!(serialLedData[0] & 0b00000010))
+				{
+					serialLedData[0] |= 0b00000010;
+					DisplayTask->LedWrite();
+				}
+			}
+			else
+			{
+				if(serialLedData[0] & 0b00000010)
+				{
+					serialLedData[0] &= ~0b00000010;
+					DisplayTask->LedWrite();
+				}
+			}
+			break;
+		}
+
+		case LED_FSW_CONFIRM_GREEN:
+		{
+			if(ledState == TLedState::ENABLED)
+			{
+				if(!(serialLedData[0] & 0b00010000))
+				{
+					serialLedData[0] |= 0b00010000;
+					DisplayTask->LedWrite();
+				}
+			}
+			else
+			{
+				if(serialLedData[0] & 0b00010000)
+				{
+					serialLedData[0] &= ~0b00010000;
+					DisplayTask->LedWrite();
+				}
+			}
+			break;
+		}
+
+		case LED_FSW_UP_GREEN:
+		{
+			if(ledState == TLedState::ENABLED)
+			{
+				if(!(serialLedData[1] & 0b10000000))
+				{
+					serialLedData[1] |= 0b10000000;
+					DisplayTask->LedWrite();
+				}
+			}
+			else
+			{
+				if(serialLedData[1] & 0b10000000)
+				{
+					serialLedData[1] &= ~0b10000000;
+					DisplayTask->LedWrite();
+				}
+			}
+			break;
+		}
+#endif
+
+		default: break;
 	}
 }
 
