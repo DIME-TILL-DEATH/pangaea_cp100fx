@@ -16,5 +16,6 @@ typedef enum{
 }TLedState;
 
 void LED_SetState(TLedType ledType, TLedState ledState);
+void HW_WriteLed();
 
 #endif /* LED_H_ */

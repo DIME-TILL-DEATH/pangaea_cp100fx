@@ -121,3 +121,5 @@ void HW_WritePot()
 	GPIO_SetBits(GPIOC, GPIO_Pin_6);
 	HW_PortBConf(1);
 }
+
+

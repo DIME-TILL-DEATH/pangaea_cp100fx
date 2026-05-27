@@ -42,7 +42,7 @@ void attenuator_vol_setter(uint32_t value)
 															: &sys_para[System::ATTENUATOR];
 
 	*value_ptr = value;
-	DisplayTask->potWrite();
+	DisplayTask->PotWrite();
 	console_printf("%s\r%02x\n", attVolParamDesc.handlerStr, *value_ptr);
 
 	EEPROM_DelayedSaveSystemData();
@@ -57,7 +57,7 @@ void attenuator_source_setter(uint32_t value)
 	AttenuatorDesc.volume.ptr = sys_para[System::ATTENUATOR_MODE] ? &currentPreset.paramData.attenuator
 			: &sys_para[System::ATTENUATOR];
 
-	DisplayTask->potWrite();
+	DisplayTask->PotWrite();
 	console_printf("%s\r%02x\n", attSourceParamDesc.handlerStr, *value_ptr);
 
 	EEPROM_DelayedSaveSystemData();
@@ -102,7 +102,7 @@ void phones_volume_setter(uint32_t value)
 {
 	uint8_t* value_ptr = (uint8_t*)phonesVolParamDesc.ptr;
 	*value_ptr = value;
-	DisplayTask->potWrite();
+	DisplayTask->PotWrite();
 	console_printf("%s\r%02x\n", phonesVolParamDesc.handlerStr, *value_ptr);
 
 	EEPROM_DelayedSaveSystemData();

@@ -47,7 +47,7 @@ void Preset::Change(uint8_t presetNumber)
 	}
 
 	if(sys_para[System::ATTENUATOR_MODE])
-		DisplayTask->potWrite();
+		DisplayTask->PotWrite();
 
 	EEPROM_SaveSystemData(); // save current preset number
 //-----------------------------------------------------------

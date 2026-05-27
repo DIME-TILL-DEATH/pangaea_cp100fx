@@ -2,6 +2,7 @@
 
 #include "serial.h"
 #include "pot.h"
+#include "led.h"
 #include "sharc_task.h"
 
 #include "icons_bitmap.h"
@@ -73,6 +74,7 @@ void TDisplayTask::Code()
 	xEventGroupSync(startEventGroup, EVENT_BIT_DSTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
 	HW_WritePot(); // same pins with display
+	HW_WriteLed();
 
 	while(1)
 	{
@@ -220,10 +222,6 @@ void TDisplayTask::Code()
 				tuner_note(cmd.TunerParam.noteName);
 			break;
 
-//			case dcTunerRefFreq:
-//				tuner_ref_freq((uint16_t)cmd.TunerParam.refFreq);
-//			break;
-
 			case dcFswInd:
 				fsw_ind(cmd.FswIndParam.num, cmd.FswIndParam.pressState, cmd.FswIndParam.holdState);
 			break;
@@ -236,10 +234,13 @@ void TDisplayTask::Code()
 				HW_WritePot();
 			break;
 
+			case ioWriteLed:
+				HW_WriteLed();
+			break;
+
 			default:
 			break;
 			}
-//		IOTask->Resume();
 	    }
 	}
 
@@ -453,14 +454,6 @@ void TDisplayTask::TunerInit(void)
 	cmd.cmd=dcTunerInit;
 	Command(&cmd);
 }
-
-//void TDisplayTask::TunerRefFreq(float refFreq)
-//{
-//	TDisplayCmd cmd;
-//	cmd.cmd=dcTunerRefFreq;
-//	cmd.TunerParam.refFreq = refFreq;
-//	Command(&cmd);
-//}
 
 void TDisplayTask::TunerDraw(uint8_t arrowPos, const char* noteName)
 {

@@ -51,7 +51,8 @@ public:
 		dcIconAndArrows,
 		dcArrow,
 		dcCount,
-		ioWritePot
+		ioWritePot,
+		ioWriteLed
 	}TCommand;
 
 	typedef struct
@@ -211,15 +212,20 @@ public:
 	void IconAndArrows(icon_t num, strelka_t strel);
 
 	void TunerInit();
-//	void TunerRefFreq(float refFreq);
 	void TunerDraw(uint8_t arrowPos, const char* noteName);
 
 	void Arrow(uint8_t x, uint8_t y, uint32_t dir);
 
-	// pot using same pins with display. Concurecy acces from different thread
-	void potWrite(){
+	// pot and setereo LED using same pins with display. Concurecy acces from different thread
+	void PotWrite(){
 		TDisplayCmd cmd;
 		cmd.cmd = ioWritePot;
+		Command(&cmd);
+	};
+
+	void LedWrite(){
+		TDisplayCmd cmd;
+		cmd.cmd = ioWriteLed;
 		Command(&cmd);
 	};
 private:
