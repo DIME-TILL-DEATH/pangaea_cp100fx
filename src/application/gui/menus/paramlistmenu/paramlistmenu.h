@@ -67,7 +67,7 @@ protected:
 
 	uint8_t m_pagesCount;
 
-	icon_t m_icon;
+	icon_t m_icon{ICON_NONE};
 
 	bool m_encoderKnobSelected;
 

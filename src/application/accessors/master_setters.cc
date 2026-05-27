@@ -11,7 +11,7 @@
 #include "io_task.h"
 #include "display_task.h"
 
-#ifdef __MONO_MOD_
+#ifdef __MONO_MOD__
 static TParamDescriptor attVolParamDesc = {
 	.ptr = &sys_para[System::ATTENUATOR],
 	.handlerStr = "vl_at",
@@ -220,7 +220,7 @@ void meq_mid_freq_setter(uint32_t value)
 
 void set_master_handlers(TTranslator *translator)
 {
-#ifdef __MONO_MOD_
+#ifdef __MONO_MOD__
 	translator->AddAccessorHandler("vl_at", attenuator_vol_setter);
 	translator->AddAccessorHandler("vl_at_mode", attenuator_source_setter);
 #endif

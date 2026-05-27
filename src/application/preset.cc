@@ -378,8 +378,8 @@ void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selecti
 #ifdef __STEREO_MOD__
     copyPreset->paramData.in_left_en = currentPreset.paramData.in_left_en;
 	copyPreset->paramData.in_right_en = currentPreset.paramData.in_right_en;
-	copyPreset->paramData.left_pan = currentPreset.paramData.left_pan;
-	copyPreset->paramData.right_pan = currentPreset.paramData.right_pan;
+	copyPreset->paramData.in_left_pan = currentPreset.paramData.in_left_pan;
+	copyPreset->paramData.in_right_pan = currentPreset.paramData.in_right_pan;
 #endif
 
 	copyPreset->pcOut = currentPreset.pcOut;

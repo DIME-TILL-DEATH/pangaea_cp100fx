@@ -62,7 +62,8 @@ const uint8_t strelk[] =
 
 icon_t iconFormMenuType(gui_menu_type menuType)
 {
-	return (icon_t)(menuType - MENU_DELAY);
+	if(menuType < MENU_DELAY) return icon_t::ICON_NONE;
+	else return (icon_t)(menuType - MENU_DELAY);
 }
 
 void icon_print(icon_t num, strelka_t strel)
@@ -73,12 +74,15 @@ void icon_print(icon_t num, strelka_t strel)
 	uint8_t nullBuf[12];
 	kgp_sdk_libc::memset(nullBuf, 0, 12);
 
-	for(int i = 0; i < 2; i++)
+	if(num != ICON_NONE)
 	{
-		LCD_SetPageAddress(i + 1);
-		LCD_SetColumnAddress(col);
-		LCD_WriteData(&icon_bit[addr], 17);
-		addr += 17;
+		for(int i = 0; i < 2; i++)
+		{
+			LCD_SetPageAddress(i + 1);
+			LCD_SetColumnAddress(col);
+			LCD_WriteData(&icon_bit[addr], 17);
+			addr += 17;
+		}
 	}
 	col += 3;
 

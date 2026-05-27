@@ -28,7 +28,7 @@ typedef struct
 extern TMasterVolDesc MasterVolDesc;
 extern TMasterEqDesc MasterEqDesc;
 
-#ifdef __MONO_MOD_
+#ifdef __MONO_MOD__
 extern TAttenuatorDesc AttenuatorDesc;
 
 void attenuator_vol_setter(uint32_t value);

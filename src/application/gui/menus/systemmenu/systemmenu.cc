@@ -132,7 +132,7 @@ static TParamDescriptor eqViewDesc = {
 AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 {
 	SystemMenu* systemMenu = new SystemMenu(parent, MENU_SYSTEM);
-#ifdef __MONO_MOD
+#ifdef __MONO_MOD__
 	const uint8_t paramNum = 16;
 #endif
 
@@ -200,7 +200,7 @@ AbstractMenu* SystemMenu::create(AbstractMenu* parent)
 	params[14] = new StringListParam(&MasterEqDesc.on, {"Off", "On "}, 4);
 	params[14]->setDisplayPosition(leftPad + 6 * 12);
 
-#ifdef __MONO_MOD
+#ifdef __MONO_MOD__
 	params[15] = new StringListParam(&AttenuatorDesc.source, {"Global ", "Preset"}, 7);
 	params[15]->setDisplayPosition(leftPad + 6 * 12);
 #endif

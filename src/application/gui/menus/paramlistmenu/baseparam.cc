@@ -156,7 +156,8 @@ void BaseParam::printParam(uint8_t yDisplayPosition)
 			DisplayTask->ParamIndMix(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_PAN:
-			DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
+			if(m_inverse) DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, m_maxValue - *(uint8_t*)(m_descriptor->ptr) + m_offset);
+			else DisplayTask->ParamIndPan(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);
 			break;
 		case BaseParam::GUI_PARAMETER_VOLUME:
 			DisplayTask->ParamIndNum(m_xDisplayPosition, yDisplayPosition, *(uint8_t*)(m_descriptor->ptr) + m_offset);

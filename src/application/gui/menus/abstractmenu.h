@@ -38,6 +38,7 @@ enum gui_menu_type
 	MENU_EQ_GRAPH,
 	MENU_RESTART,
 	MENU_STEREO_INPUT,
+	MENU_STEREO_PRESET_VOLUME,
 
 	// Menus with icons
 	MENU_DELAY = 128,
