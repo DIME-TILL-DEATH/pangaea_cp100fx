@@ -208,9 +208,10 @@ void ISR_buttons_read()
 			if((key_reg >> FSW_UP_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_UP;
 
 
-			if(holdedFsw != fswEvents.fsw)
+
+			if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
 			{
-				if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
+				if(fswEvents.fsw != holdedFsw)
 				{
 					if(UITask) UITask->fswSinglePressed(fswEvents);
 
@@ -218,15 +219,16 @@ void ISR_buttons_read()
 					TIM_SetCounter(TIM3, sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
 					TIM_Cmd(TIM3, ENABLE);
 				}
-				else	// press out
+			}
+			else	// press out
+			{
+				if(TIM3->CR1 & TIM_CR1_CEN)
 				{
-					if(TIM3->CR1 & TIM_CR1_CEN)
-					{
-						fswEvents.fsw = holdedFsw;
-						if(UITask) UITask->fswDualPressed(fswEvents);
+					TFswEvents prevFswEvents;
+					prevFswEvents.fsw = holdedFsw;
+					if(UITask) UITask->fswDualPressed(prevFswEvents);
 
-						TIM_Cmd(TIM3, DISABLE);
-					}
+					TIM_Cmd(TIM3, DISABLE);
 				}
 			}
 
