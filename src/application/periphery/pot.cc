@@ -103,17 +103,17 @@ void HW_WritePot()
 #ifdef __STEREO_MOD__
 	pot_send_data(sys_para[System::PHONES_VOLUME] << 1, 0);
 	GPIO_SetBits(GPIOC,GPIO_Pin_6);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
 	pot_send_data(sys_para[System::MASTER_VOLUME] << 1, 1);
 	GPIO_SetBits(GPIOC,GPIO_Pin_6);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
 	pot_send_data(sys_para[System::PHONES_VOLUME] << 1, 2);
 	GPIO_SetBits(GPIOC,GPIO_Pin_6);
-	HW_delay(6);
+	HW_Delay(6);
 
 	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
 	pot_send_data(sys_para[System::MASTER_VOLUME] << 1, 3);
@@ -121,3 +121,5 @@ void HW_WritePot()
 	GPIO_SetBits(GPIOC, GPIO_Pin_6);
 	HW_PortBConf(1);
 }
+
+

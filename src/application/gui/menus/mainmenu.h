@@ -35,6 +35,8 @@ public:
 
 	uint8_t preselectedPresetNum() { return m_preselectedPresetNum; }
 
+	const Preset::TPresetBrief* selectedPresetBrief() { return &m_selectedPresetBrief; }
+
 private:
 //	ModulesMenu modulesMenu{this};
 

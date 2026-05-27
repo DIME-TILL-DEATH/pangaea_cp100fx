@@ -6,9 +6,13 @@
 void console_printf(const char *format, ...)
 {
 	if(TTaskUtilities::GetCurrentTaskHandle() != ConsoleTask->GetHandle())
-		ConsoleTask->PrintF(&format);
+	{
+		if(TTaskUtilities::GetTaskState() != eTaskState::eSuspended) ConsoleTask->PrintF(&format);
+	}
 	else
+	{
 		ConsoleTask->UnsafePrintF(&format);
+	}
 }
 
 void default_param_handler(uint8_t *param_ptr, TTranslator::const_symbol_type_ptr_t *args, const size_t count)

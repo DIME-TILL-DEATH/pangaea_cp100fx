@@ -45,7 +45,7 @@ void AbstractMenu::returnToParent()
 void AbstractMenu::returnFromChildMenu(TReturnMode returnMode)
 {
 	currentMenu = this;
-	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetIndicator(TIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	switch(returnMode)
 	{

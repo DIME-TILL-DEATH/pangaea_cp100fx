@@ -24,7 +24,7 @@ public:
 	~ParamListMenu() override;
 
 	void setParams(BaseParam** settlingParamList, uint8_t setlingParamCount);
-	void setVolumeIndicator(TVolIndicatorType indicatorType,
+	void setIndicator(TIndicatorType indicatorType,
 			dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
 
 	virtual void show(TShowMode showMode = FirstShow) override;
@@ -67,11 +67,11 @@ protected:
 
 	uint8_t m_pagesCount;
 
-	icon_t m_icon;
+	icon_t m_icon{ICON_NONE};
 
 	bool m_encoderKnobSelected;
 
-	TVolIndicatorType m_volIndicatorType{TVolIndicatorType::VOL_INDICATOR_OFF};
+	TIndicatorType m_indicatorType{TIndicatorType::VOL_INDICATOR_OFF};
 	dsp_indicator_source_t m_indicatorSource;
 	uint8_t* m_indicatorParam_ptr;
 

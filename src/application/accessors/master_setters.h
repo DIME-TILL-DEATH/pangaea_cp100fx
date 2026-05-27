@@ -25,12 +25,16 @@ typedef struct
 	TParamDescriptor high;
 }TMasterEqDesc;
 
-extern TAttenuatorDesc AttenuatorDesc;
 extern TMasterVolDesc MasterVolDesc;
 extern TMasterEqDesc MasterEqDesc;
 
+#ifdef __MONO_MOD__
+extern TAttenuatorDesc AttenuatorDesc;
+
 void attenuator_vol_setter(uint32_t value);
 void attenuator_source_setter(uint32_t value);
+#endif
+
 void master_volume_setter(uint32_t value);
 void phones_volume_setter(uint32_t value);
 void meq_on_setter(uint32_t value);

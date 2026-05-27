@@ -47,10 +47,10 @@ void ParamListMenu::setParams(BaseParam** settlingParamList, uint8_t setlingPara
 	m_pagesCount = ceil((float)m_paramsCount/(float)paramsOnPage);
 }
 
-void ParamListMenu::setVolumeIndicator(TVolIndicatorType volIndicatorType,
+void ParamListMenu::setIndicator(TIndicatorType volIndicatorType,
 		dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
-	m_volIndicatorType = volIndicatorType;
+	m_indicatorType = volIndicatorType;
 	m_indicatorSource = indicatorSource;
 	m_indicatorParam_ptr = indicatorParPtr;
 }
@@ -98,7 +98,7 @@ void ParamListMenu::show(TShowMode showMode)
 	}
 
 	printPage(true);
-	DisplayTask->SetVolIndicator(m_volIndicatorType, m_indicatorSource, m_indicatorParam_ptr);
+	DisplayTask->SetIndicator(m_indicatorType, m_indicatorSource, m_indicatorParam_ptr);
 
 	StringOutParam* runningString = getRunningString();
 	if(runningString) runningString->resetRunning();

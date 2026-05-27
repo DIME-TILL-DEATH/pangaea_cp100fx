@@ -24,7 +24,7 @@ void CabBrowserMenu::show(TShowMode showMode)
 {
 	currentMenu = this;
 
-	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetIndicator(TIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 
 	if(TSDTestTask::sdInitState == 1)
 	{
@@ -121,6 +121,33 @@ void CabBrowserMenu::processBrowserResponse()
 
 			if(m_cabNumber == 0) SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
 			else SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+
+			switch(m_cabNumber)
+			{
+				case 0:
+				{
+					SharcTask->sendCab1Data(&browserResponse.file.buffer[0], &browserResponse.file.buffer[CAB_DATA_SIZE]);
+					SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+					break;
+				}
+				case 1:
+				{
+					SharcTask->sendCab2Data(browserResponse.file.buffer);
+					SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+					break;
+				}
+				case 2:
+				{
+					SharcTask->sendCab1Data(&browserResponse.file.buffer[0], &browserResponse.file.buffer[CAB_DATA_SIZE]);
+					SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME1_POS, currentPreset.modulesBuf[IR_VOLUME1]);
+					SharcTask->sendCab2Data(browserResponse.file.buffer);
+					SharcTask->setParameter(DSP_ADDRESS_CAB, IR_VOLUME2_POS, currentPreset.modulesBuf[IR_VOLUME2]);
+					break;
+				}
+				default: break;
+			}
+
+			ir_on_setter(1);
 
 			break;
 		}

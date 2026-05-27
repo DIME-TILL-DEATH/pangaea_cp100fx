@@ -1,6 +1,7 @@
 #ifndef _ATTENUATORMENU_H_
 #define _ATTENUATORMENU_H_
 
+#ifdef __MONO_MOD__
 #include "abstractmenu.h"
 #include "paramlistmenu.h"
 
@@ -20,5 +21,7 @@ public:
 private:
 	void exitMenu();
 };
+#endif
+
 #endif /* _ATTENUATORMENU_H_ */
 

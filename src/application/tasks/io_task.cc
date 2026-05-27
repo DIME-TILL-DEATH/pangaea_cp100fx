@@ -4,6 +4,7 @@
 #include "serial.h"
 #include "led.h"
 
+#include "preset.h"
 #include "serial.h"
 #include "footswitch.h"
 #include "system.h"
@@ -57,13 +58,27 @@ void TIOTask::Code()
 		{
 			case IO_LED_TASK:
 			{
+				if(!mainMenu) break;
+
 				uint8_t isLedOn = 0;
 				uint16_t enabledMask = 0;
+				uint8_t* arrModulesEnabled;
 				enabledMask = (1 << ENABLE_AMP) | (1 << ENABLE_PREAMP) | (1 << ENABLE_CAB);
+
+				if(mainMenu->preselectedPresetNum() != currentPresetNumber)
+				{
+					arrModulesEnabled = (uint8_t*)&(mainMenu->selectedPresetBrief()->paramData.switches);
+				}
+				else
+				{
+					arrModulesEnabled = (uint8_t*)&currentPreset.paramData.switches;
+				}
+
+
 				for(uint8_t i = 0; i < 14; i++)
 				{
 					if(!((enabledMask >> i) & 0x1))
-						isLedOn += currentPreset.modulesBuf[i];
+						isLedOn += arrModulesEnabled[i];//currentPreset.modulesBuf[i];
 				}
 
 				if(isLedOn)
@@ -193,9 +208,10 @@ void ISR_buttons_read()
 			if((key_reg >> FSW_UP_POS) & 0x1) fswEvents.fsw = TFSWNum::FSW_UP;
 
 
-			if(holdedFsw != fswEvents.fsw)
+
+			if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
 			{
-				if(fswEvents.fsw != TFSWNum::FSW_NONE)	// press in
+				if(fswEvents.fsw != holdedFsw)
 				{
 					if(UITask) UITask->fswSinglePressed(fswEvents);
 
@@ -203,15 +219,16 @@ void ISR_buttons_read()
 					TIM_SetCounter(TIM3, sys_para[System::FSW_SPEED] * (8000.0f / 127.0f) + 55000);
 					TIM_Cmd(TIM3, ENABLE);
 				}
-				else	// press out
+			}
+			else	// press out
+			{
+				if(TIM3->CR1 & TIM_CR1_CEN)
 				{
-					if(TIM3->CR1 & TIM_CR1_CEN)
-					{
-						fswEvents.fsw = holdedFsw;
-						if(UITask) UITask->fswDualPressed(fswEvents);
+					TFswEvents prevFswEvents;
+					prevFswEvents.fsw = holdedFsw;
+					if(UITask) UITask->fswDualPressed(prevFswEvents);
 
-						TIM_Cmd(TIM3, DISABLE);
-					}
+					TIM_Cmd(TIM3, DISABLE);
 				}
 			}
 

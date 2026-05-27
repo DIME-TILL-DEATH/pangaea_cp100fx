@@ -78,7 +78,6 @@ extern TConsoleTask *ConsoleTask;
 
 void ConsoleSetCmdHandlers(TTranslator *rl);
 
-// handlers execute in UITask
 #define msg_console(...) rl->UnsafePrintF( __VA_ARGS__ )
 
 #endif /*__USB_CONSOLE_H__*/

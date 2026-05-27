@@ -3,8 +3,6 @@
 
 #include "translator.h"
 
-
-
 typedef struct
 {
 	TParamDescriptor cabMode;

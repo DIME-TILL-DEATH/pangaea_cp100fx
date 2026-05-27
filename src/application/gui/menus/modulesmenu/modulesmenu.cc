@@ -55,7 +55,7 @@ void ModulesMenu::show(TShowMode showMode)
 
 	if(showMode == TShowMode::FirstShow) presetEdited = false;
 
-	DisplayTask->SetVolIndicator(TVolIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
+	DisplayTask->SetIndicator(TIndicatorType::VOL_INDICATOR_OFF, DSP_INDICATOR_OUT);
 	DisplayTask->Clear();
 	refresh();
 
@@ -101,11 +101,12 @@ void ModulesMenu::encoderPressed()
 {
 	presetEdited = true;
 
-	modules[m_numMenu].setterFunction(!(bool)*modules[m_numMenu].enablePtr);
+
 
 	*(modulesPrevState[m_numMenu].enablePtr) = *(modules[m_numMenu].enablePtr);
 
 	if(modules[m_numMenu].enableFunction) modules[m_numMenu].enableFunction(this);
+	else modules[m_numMenu].setterFunction(!(bool)*modules[m_numMenu].enablePtr);
 
 	restartBlinking(1);
 }
@@ -174,6 +175,7 @@ void ModulesMenu::key2()
 
 	if(shownChildMenu) delete shownChildMenu;
 
+#ifdef __MONO_MOD__
 	const uint8_t paramCount = 3;
 	BaseParam* params[paramCount];
 
@@ -182,13 +184,35 @@ void ModulesMenu::key2()
 	params[1] = new StringListParam(&PresetDesc.control, {"On ", "Off"}, 3);
 	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &PresetDesc.level);
 
+
 	ParamListMenu* menu = new ParamListMenu(this, MENU_PRESET_VOLUME);
 	if(menu)
 	{
 		menu->setParams(params, paramCount);
 		menu->setIcon(false, ICON_NONE);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_OUT);
 	}
+#endif
+
+#ifdef __STEREO_MOD__
+	const uint8_t paramCount = 6;
+	BaseParam* params[paramCount];
+
+	params[0] = new StringListParam(&PresetDesc.inlOn, {"On ", "Off"}, 3);
+	params[1] = new BaseParam(BaseParam::GUI_PARAMETER_PAN,  &PresetDesc.inlPan);
+	params[2] = new StringListParam(&PresetDesc.inrOn, {"On ", "Off"}, 3);
+	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_PAN,  &PresetDesc.inrPan);
+	params[3]->setInverse(true);
+	params[4] = new StringListParam(&PresetDesc.control, {"On ", "Off"}, 3);
+	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &PresetDesc.level);
+
+
+	ParamListMenu* menu = new ParamListMenu(this, MENU_STEREO_PRESET_VOLUME);
+	if(menu)
+	{
+		menu->setParams(params, paramCount);
+	}
+#endif
 
 	presetEdited = true;
 	shownChildMenu = menu;
@@ -267,7 +291,13 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 		{
 		  if(TFsBrowser::impulseDirExist)
 		  {
+#ifdef __MONO_MOD__
 			  parent->showChild(new CabBrowserMenu(parent, 0));
+#endif
+
+#ifdef __STEREO_MOD__
+			  parent->showChild(new CabBrowserMenu(parent, 2));	// Load to both cabs
+#endif
 		  }
 		  else
 		  {
@@ -275,9 +305,8 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			  DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, "There is no directory");
 			  DisplayTask->StringOut(42, 3, Font::fntSystem, Font::fnsNormal, "IMPULSE");
 			  UITask->Delay(1000);
-			  currentPreset.paramData.switches.cab = 0;
 
-			  parent->refresh();
+			  parent->show();
 		  }
 		}
 		else
@@ -287,9 +316,11 @@ void ModulesMenu::enableCab(AbstractMenu* parent)
 			else DisplayTask->StringOut(0, 1, Font::fntSystem, Font::fnsNormal, "MicroSD is loading..");
 			UITask->Delay(1000);
 
-			currentPreset.paramData.switches.cab = 0;
-
-			parent->refresh();
+			parent->show();
 		}
+	}
+	else
+	{
+		ir_on_setter(!(bool)currentPreset.paramData.switches.cab);
 	}
 }

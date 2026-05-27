@@ -33,9 +33,54 @@ static TParamDescriptor vcontrolParamDesc = {
 	.setterHandler = preset_volume_control_setter
 };
 
+#ifdef __STEREO_MOD__
+static TParamDescriptor inlOnParamDesc = {
+	.ptr = &currentPreset.paramData.in_left_en,
+	.handlerStr = "inl_on",
+	.dspAddress = DSP_ADDRESS_INPUT_CONFIG,
+	.dspPosition = IN_LEFT_EN_POS,
+	.name = "L input",
+	.setterHandler = preset_inl_on_control_setter
+};
+
+static TParamDescriptor inrOnParamDesc = {
+	.ptr = &currentPreset.paramData.in_right_en,
+	.handlerStr = "inr_on",
+	.dspAddress = DSP_ADDRESS_INPUT_CONFIG,
+	.dspPosition = IN_RIGHT_EN_POS,
+	.name = "R input",
+	.setterHandler = preset_inr_on_control_setter
+};
+
+static TParamDescriptor inlPanParamDesc = {
+	.ptr = &currentPreset.paramData.in_left_pan,
+	.handlerStr = "inl_pan",
+	.dspAddress = DSP_ADDRESS_INPUT_CONFIG,
+	.dspPosition = IN_LEFT_PAN_POS,
+	.name = "L pan",
+	.setterHandler = preset_inl_pan_control_setter
+};
+
+static TParamDescriptor inrPanParamDesc = {
+	.ptr = &currentPreset.paramData.in_right_pan,
+	.handlerStr = "inr_pan",
+	.dspAddress = DSP_ADDRESS_INPUT_CONFIG,
+	.dspPosition = IN_RIGHT_PAN_POS,
+	.name = "R pan",
+	.setterHandler = preset_inr_pan_control_setter
+};
+#endif
+
 TPresetDesc PresetDesc = {
 	.level = vlevelParamDesc,
-	.control = vcontrolParamDesc
+	.control = vcontrolParamDesc,
+
+#ifdef __STEREO_MOD__
+	.inlOn = inlOnParamDesc,
+	.inrOn = inrOnParamDesc,
+	.inlPan = inlPanParamDesc,
+	.inrPan = inrPanParamDesc
+#endif
 };
 
 void preset_volume_setter(uint32_t value)
@@ -53,6 +98,28 @@ void preset_volume_control_setter(uint32_t value)
 	console_printf("%s\r%02x\n", vcontrolParamDesc.handlerStr, *param_ptr);
 }
 
+#ifdef __STEREO_MOD__
+void preset_inl_on_control_setter(uint32_t value)
+{
+	default_param_setter(inlOnParamDesc, value);
+}
+
+void preset_inr_on_control_setter(uint32_t value)
+{
+	default_param_setter(inrOnParamDesc, value);
+}
+
+void preset_inl_pan_control_setter(uint32_t value)
+{
+	default_param_setter(inlPanParamDesc, value);
+}
+
+void preset_inr_pan_control_setter(uint32_t value)
+{
+	default_param_setter(inrPanParamDesc, value);
+}
+#endif
+
 void pnum_getter(uint32_t value)
 {
 	console_printf("pnum\r%02x\n", currentPresetNumber);
@@ -66,9 +133,16 @@ void psave_handler(uint32_t value)
 	EEPROM_SavePreset(currentPresetNumber, &currentPreset);
 
 	// need to do it in the same thread
+#ifdef __MONO_MOD__
 	DSP_SendPrimaryData(currentPreset.cab1Data, currentPreset.cabAuxData, &currentPreset.paramData, currentPresetNumber+1);
 	if(System::cab_type==CAB_CONFIG_STEREO)
 		DSP_SendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
+#endif
+
+#ifdef __STEREO_MOD__
+	DSP_SendPrimaryData(currentPreset.cab1Data, nullptr, &currentPreset.paramData, currentPresetNumber+1);
+	DSP_SendCab2Data(currentPreset.cab2Data, currentPresetNumber+1);
+#endif
 
 	console_printf("psave\r\n");
 }

@@ -67,8 +67,8 @@ void tuner_arrow(uint8_t arrow_pos)
 	}
 }
 
-void tuner_ref_freq(uint16_t ref_freq)
-{
-	param_ind_num(10, 0, ref_freq);
-	Arsys_line(30, 0, (uint8_t*)"Hz", 0);
-}
+//void tuner_ref_freq(uint16_t ref_freq)
+//{
+//	param_ind_num(10, 0, ref_freq);
+//	Arsys_line(30, 0, (uint8_t*)"Hz", 0);
+//}

@@ -13,8 +13,8 @@ class TDisplayTask: public TTask
 public:
 	TDisplayTask();
 
-	void SetVolIndicator(TVolIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
-	void VolIndRoutine(int32_t indValue);
+	void SetIndicator(TIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr = nullptr);
+	void VolIndRoutine(int32_t indLValue, int32_t indRValue);
 
 	typedef struct
 	{
@@ -46,12 +46,13 @@ public:
 		dcFswInd,
 		dcPresetInd,
 		dcTunerInit,
-		dcTunerRefFreq,
+//		dcTunerRefFreq,
 		dcTunerDraw,
 		dcIconAndArrows,
 		dcArrow,
 		dcCount,
-		ioWritePot
+		ioWritePot,
+		ioWriteLed
 	}TCommand;
 
 	typedef struct
@@ -142,10 +143,17 @@ public:
 
 	typedef struct
 	{
-		float refFreq;
+//		float refFreq;
 		uint8_t arrowPos;
 		const char* noteName;
 	}TTunerParam;
+
+	typedef struct
+	{
+		TPos pos;
+		uint32_t leftData;
+		uint32_t rightData;
+	}TIndParam;
 
 	typedef struct
 	{
@@ -166,6 +174,7 @@ public:
 			TArrowParam ArrowParam;
 			TIconAndArrowParam IconAndArrowParam;
 			TTunerParam TunerParam;
+			TIndParam IndParam;
 		};
 	}TDisplayCmd;
 
@@ -203,24 +212,30 @@ public:
 	void IconAndArrows(icon_t num, strelka_t strel);
 
 	void TunerInit();
-	void TunerRefFreq(float refFreq);
 	void TunerDraw(uint8_t arrowPos, const char* noteName);
 
 	void Arrow(uint8_t x, uint8_t y, uint32_t dir);
 
-	// pot using same pins with display. Concurecy acces from different thread
-	void potWrite(){
+	// pot and setereo LED using same pins with display. Concurecy acces from different thread
+	void PotWrite(){
 		TDisplayCmd cmd;
 		cmd.cmd = ioWritePot;
+		Command(&cmd);
+	};
+
+	void LedWrite(){
+		TDisplayCmd cmd;
+		cmd.cmd = ioWriteLed;
 		Command(&cmd);
 	};
 private:
 	TQueue *queue;
 
-	TVolIndicatorType m_volIndicatorType{VOL_INDICATOR_OFF};
-	uint8_t* m_volIndPar_ptr{nullptr};
+	TIndicatorType m_indicatorType{VOL_INDICATOR_OFF};
+	uint8_t* m_indPar_ptr{nullptr};
 	uint16_t m_indRefreshCounter;
-	uint32_t m_indPeakValue{0};
+	uint32_t m_indLPeakValue{0};
+	uint32_t m_indRPeakValue{0};
 
 	void Code() override;
 	TQueue::TQueueSendResult Command(TDisplayCmd *cmd)

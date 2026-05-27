@@ -100,7 +100,7 @@ AbstractMenu* GuiModules::createPreampMenu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_PREAMP);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_PREAMP);
 	}
 
 	return menu;
@@ -135,7 +135,7 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_AMP);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_OUT, DSP_INDICATOR_AMP);
 	}
 
 	return menu;
@@ -143,6 +143,7 @@ AbstractMenu* GuiModules::createAmpMenu(AbstractMenu* parentMenu)
 
 AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 {
+#ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
@@ -150,15 +151,9 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 		const uint8_t paramNum = 2;
 		BaseParam* params[paramNum];
 
-#ifdef __MONO_MOD__
+
 		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 1", &GuiModules::createCab1Menu, paramsMenu);
 		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet 2", &GuiModules::createCab2Menu, paramsMenu);
-#endif
-
-#ifdef __STEREO_MOD__
-		params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab1Menu, paramsMenu);
-		params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab2Menu, paramsMenu);
-#endif
 
 		paramsMenu->setParams(params, paramNum);
 		paramsMenu->setIcon(false, ICON_NONE);
@@ -169,6 +164,22 @@ AbstractMenu* GuiModules::createIrMenu(AbstractMenu* parentMenu)
 	{
 		return GuiModules::createCab1Menu(parentMenu);
 	}
+#endif
+
+#ifdef __STEREO_MOD__
+	ParamListMenu* paramsMenu = new ParamListMenu(parentMenu, MENU_CABTYPE);
+
+	const uint8_t paramNum = 2;
+	BaseParam* params[paramNum];
+
+	params[0] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet right", &GuiModules::createCab1Menu, paramsMenu);
+	params[1] = new SubmenuParam(BaseParam::GUI_PARAMETER_SUBMENU, "Cabinet left", &GuiModules::createCab2Menu, paramsMenu);
+
+	paramsMenu->setParams(params, paramNum);
+	paramsMenu->setIcon(false, ICON_NONE);
+
+	return paramsMenu;
+#endif
 }
 
 AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
@@ -189,7 +200,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 #endif
 
 #ifdef __STEREO_MOD__
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, &IrDesc.pan1);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, &IrDesc.dummy);
 #endif
 
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, &IrDesc.vol1);
@@ -198,7 +209,7 @@ AbstractMenu* GuiModules::createCab1Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1, &currentPreset.modulesBuf[IR_VOLUME1]);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB1, &currentPreset.modulesBuf[IR_VOLUME1]);
 		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
@@ -226,7 +237,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 #endif
 
 #ifdef __STEREO_MOD__
-	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_PAN, &IrDesc.pan2);
+	params[2] = new BaseParam(BaseParam::GUI_PARAMETER_DUMMY, &IrDesc.dummy);
 #endif
 
 	params[3] = new BaseParam(BaseParam::GUI_PARAMETER_VOLUME, &IrDesc.vol2);
@@ -236,7 +247,7 @@ AbstractMenu* GuiModules::createCab2Menu(AbstractMenu* parentMenu)
 	if(menu)
 	{
 		menu->setParams(params, paramNum);
-		menu->setVolumeIndicator(TVolIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2, &currentPreset.modulesBuf[IR_VOLUME2]);
+		menu->setIndicator(TIndicatorType::VOL_INDICATOR_VOLUME, DSP_INDICATOR_CAB2, &currentPreset.modulesBuf[IR_VOLUME2]);
 		menu->setIcon(false, ICON_NONE);
 
 		StringOutParam* runningString = static_cast<StringOutParam*>(params[0]);
@@ -280,7 +291,11 @@ AbstractMenu* GuiModules::createPhaserMenu(AbstractMenu* parentMenu)
 	params[7] = new StringListParam(&PhaserDesc.position, {"Post", "Pre "}, 4);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_PHASER);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setIndicator(TIndicatorType::LED_INDICATOR, DSP_INDICATOR_PHASER);
+	}
 
 	return menu;
 }
@@ -300,7 +315,11 @@ AbstractMenu* GuiModules::createFlangerMenu(AbstractMenu* parentMenu)
 	params[7] = new StringListParam(&FlangerDesc.position, {"Post", "Pre "}, 4);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_FLANGER);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+		{
+			menu->setParams(params, paramNum);
+			menu->setIndicator(TIndicatorType::LED_INDICATOR, DSP_INDICATOR_FLANGER);
+		}
 
 	return menu;
 }
@@ -332,7 +351,11 @@ AbstractMenu* GuiModules::createChorusMenu(AbstractMenu* parentMenu)
 	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ChorusDesc.hpf);
 
 	ParamListMenu* menu = new ParamListMenu(parentMenu, MENU_CHORUS);
-	if(menu) menu->setParams(params, paramNum);
+	if(menu)
+	{
+		menu->setParams(params, paramNum);
+		menu->setIndicator(TIndicatorType::LED_INDICATOR, DSP_INDICATOR_CHORUS);
+	}
 
 	typeSelect->setAffectedParamsList(params, paramNum);
 
@@ -479,7 +502,7 @@ AbstractMenu* GuiModules::createReverbMenu(AbstractMenu* parentMenu)
 	params[4] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.damping);
 	params[5] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.lpf);
 	params[6] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.hpf);
-	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.damping);
+	params[7] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.detune);
 	params[8] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.diffusion);
 	params[9] = new BaseParam(BaseParam::GUI_PARAMETER_LEVEL, &ReverbDesc.predelay);
 	params[10] = new StringListParam(&ReverbDesc.tail, {"On ", "Off"}, 3);
@@ -509,6 +532,7 @@ AbstractMenu* GuiModules::createTremoloMenu(AbstractMenu* parentMenu)
 	{
 		menu->setParams(params, paramNum);
 		menu->setTapDestination(System::TapDestination::TAP_TREMOLO);
+		menu->setIndicator(TIndicatorType::LED_INDICATOR, DSP_INDICATOR_TREMOLO);
 	}
 	return menu;
 }

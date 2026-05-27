@@ -12,8 +12,11 @@ public:
 	void encoderCounterClockwise() override;
 
 	void show(TShowMode showMode = FirstShow) override;
+	void refresh() override;
 
 	void returnToParent() override;
+
+	void encoderPressed() override;
 
 	void keyUp() override;
 
@@ -24,6 +27,8 @@ public:
 	void key5() override;
 
 private:
+	uint8_t m_parNum{0};
+
 	void exitTunerMenu();
 };
 

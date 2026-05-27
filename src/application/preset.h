@@ -122,8 +122,8 @@ typedef struct
 #ifdef __STEREO_MOD__
     uint8_t in_left_en;
 	uint8_t in_right_en;
-	uint8_t left_pan;
-	uint8_t right_pan;
+	uint8_t in_left_pan;
+	uint8_t in_right_pan;
 #endif
 
     uint8_t delay_tail;

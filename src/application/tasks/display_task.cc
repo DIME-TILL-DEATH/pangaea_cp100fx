@@ -2,6 +2,7 @@
 
 #include "serial.h"
 #include "pot.h"
+#include "led.h"
 #include "sharc_task.h"
 
 #include "icons_bitmap.h"
@@ -10,25 +11,29 @@ TDisplayTask* DisplayTask = nullptr;
 
 TDisplayTask::TDisplayTask () :TTask()
 {
-	m_volIndPar_ptr = nullptr;
+	m_indPar_ptr = nullptr;
 	m_indRefreshCounter = 0;
 }
 
-void TDisplayTask::SetVolIndicator(TVolIndicatorType volIndicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
+void TDisplayTask::SetIndicator(TIndicatorType indicatorType, dsp_indicator_source_t indicatorSource, uint8_t* indicatorParPtr)
 {
-	m_volIndicatorType = volIndicatorType;
-	m_volIndPar_ptr = indicatorParPtr;
+	m_indicatorType = indicatorType;
+	m_indPar_ptr = indicatorParPtr;
 
 	SharcTask->setParameter(DSP_ADDRESS_IND_SRC, indicatorSource, 0);
 
 	m_indRefreshCounter = 500;
 }
 
-void TDisplayTask::VolIndRoutine(int32_t indValue)
+void TDisplayTask::VolIndRoutine(int32_t indLValue, int32_t indRValue)
 {
-	uint32_t absInVal = abs(indValue);
-	if(absInVal > m_indPeakValue)
-	m_indPeakValue = absInVal;
+	uint32_t absInLVal = abs(indLValue);
+	if(absInLVal > m_indLPeakValue)
+	m_indLPeakValue = absInLVal;
+
+	uint32_t absInRVal = abs(indRValue);
+	if(absInRVal > m_indRPeakValue)
+	m_indRPeakValue = absInRVal;
 
 	if(m_indRefreshCounter < 4000)
 	{
@@ -37,20 +42,24 @@ void TDisplayTask::VolIndRoutine(int32_t indValue)
 	}
 	m_indRefreshCounter = 0;
 
-	switch(m_volIndicatorType)
+	switch(m_indicatorType)
 	{
 		case VOL_INDICATOR_OFF: return;
 		case VOL_INDICATOR_IN: DisplayTask->StringOut(3, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Input"); break;
 		case VOL_INDICATOR_OUT: DisplayTask->StringOut(3, 3, Font::fntSystem, Font::fnsNormal, (uint8_t*)"Output"); break;
 		case VOL_INDICATOR_VOLUME: break;
+		case VOL_INDICATOR_STEREO_IN: break;
+		case LED_INDICATOR: return;
 	}
 
 	TDisplayCmd cmd;
 	cmd.cmd=dcVolInd;
-	cmd.ParamIndParam.data = m_indPeakValue;
+	cmd.IndParam.leftData = m_indLPeakValue;
+	cmd.IndParam.rightData = m_indRPeakValue;
 	Command(&cmd);
 
-	m_indPeakValue = 0;
+	m_indLPeakValue = 0;
+	m_indRPeakValue = 0;
 }
 
 void TDisplayTask::Code()
@@ -66,6 +75,7 @@ void TDisplayTask::Code()
 	xEventGroupSync(startEventGroup, EVENT_BIT_DSTASK_STARTED, EVENT_ALL_TASK_STARTED, portMAX_DELAY);
 
 	HW_WritePot(); // same pins with display
+	HW_WriteLed();
 
 	while(1)
 	{
@@ -102,15 +112,15 @@ void TDisplayTask::Code()
 				switch(cmd.StringOutParams.font.name)
 				{
 					case Font::fnt12x13:
-						t12x13_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y,
-								cmd.StringOutParams.string , cmd.StringOutParams.font.state);
+						t12x13_line(cmd.StringOutParams.pos.x, cmd.StringOutParams.pos.y,
+								cmd.StringOutParams.string, cmd.StringOutParams.font.state);
 					break;
 					case Font::fnt33x30:
 
 					break;
 					case Font::fntSystem:
-						Arsys_line(cmd.StringOutParams.pos.x , cmd.StringOutParams.pos.y ,
-								cmd.StringOutParams.string,cmd.StringOutParams.font.state);
+						Arsys_line(cmd.StringOutParams.pos.x, cmd.StringOutParams.pos.y ,
+								cmd.StringOutParams.string, cmd.StringOutParams.font.state);
 					break;
 					default: break;
 				}
@@ -118,10 +128,10 @@ void TDisplayTask::Code()
 
 			case dcVolInd:
 				TPos pos;
-				if(m_volIndicatorType == VOL_INDICATOR_VOLUME) pos = {64, 64};
+				if(m_indicatorType == VOL_INDICATOR_VOLUME  || m_indicatorType == VOL_INDICATOR_STEREO_IN) pos = {64, 64};
 				else pos = {58, 50};
 
-				vol_indicator(pos.x, pos.y, cmd.ParamIndParam.data, m_volIndicatorType, m_volIndPar_ptr);
+				vol_indicator(pos.x, pos.y, cmd.IndParam.leftData, cmd.IndParam.rightData, m_indicatorType, m_indPar_ptr);
             break;
 
 			case dcPresetInd:
@@ -213,10 +223,6 @@ void TDisplayTask::Code()
 				tuner_note(cmd.TunerParam.noteName);
 			break;
 
-			case dcTunerRefFreq:
-				tuner_ref_freq((uint16_t)cmd.TunerParam.refFreq);
-			break;
-
 			case dcFswInd:
 				fsw_ind(cmd.FswIndParam.num, cmd.FswIndParam.pressState, cmd.FswIndParam.holdState);
 			break;
@@ -229,10 +235,13 @@ void TDisplayTask::Code()
 				HW_WritePot();
 			break;
 
+			case ioWriteLed:
+				HW_WriteLed();
+			break;
+
 			default:
 			break;
 			}
-//		IOTask->Resume();
 	    }
 	}
 
@@ -444,14 +453,6 @@ void TDisplayTask::TunerInit(void)
 {
 	TDisplayCmd cmd;
 	cmd.cmd=dcTunerInit;
-	Command(&cmd);
-}
-
-void TDisplayTask::TunerRefFreq(float refFreq)
-{
-	TDisplayCmd cmd;
-	cmd.cmd=dcTunerRefFreq;
-	cmd.TunerParam.refFreq = refFreq;
 	Command(&cmd);
 }
 

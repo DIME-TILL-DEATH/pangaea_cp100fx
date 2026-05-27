@@ -47,7 +47,7 @@ void Preset::Change(uint8_t presetNumber)
 	}
 
 	if(sys_para[System::ATTENUATOR_MODE])
-		DisplayTask->potWrite();
+		DisplayTask->PotWrite();
 
 	EEPROM_SaveSystemData(); // save current preset number
 //-----------------------------------------------------------
@@ -90,12 +90,20 @@ void Preset::SetDefaultValues(Preset::TPresetData* preset)
 	preset->cab1Data[1] = 0xff;
 	preset->cab1Data[2] = 0x7f;
 
+#ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO)
 	{
 		preset->cab2Data[0] = 0xff;
 		preset->cab2Data[1] = 0xff;
 		preset->cab2Data[2] = 0x7f;
 	}
+#endif
+
+#ifdef __STEREO_MOD__
+	preset->cab2Data[0] = 0xff;
+	preset->cab2Data[1] = 0xff;
+	preset->cab2Data[2] = 0x7f;
+#endif
 
 	preset->delayTime = 500;
 	preset->paramData.bpm = 120;
@@ -106,10 +114,16 @@ void Preset::SetDefaultValues(Preset::TPresetHeader* preset)
 	kgp_sdk_libc::memcpy(preset->name, "Preset", 6);
 	kgp_sdk_libc::memcpy(preset->comment, "Comment", 7);
 
+#ifdef __MONO_MOD__
 	preset->paramData.cab1.volume = 82;
 	preset->paramData.cab1.pan = 63;
-
 	preset->paramData.cab2.pan = 63;
+#endif
+
+#ifdef __STEREO_MOD__
+	preset->paramData.cab1.volume = 82;
+	preset->paramData.cab2.volume = 82;
+#endif
 
 	for(uint8_t i=0; i<5; i++)
 		preset->paramData.eq_gain[i] = 15;
@@ -248,12 +262,20 @@ void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selecti
 			tempCabBuffer[1] = 0xff;
 			tempCabBuffer[2] = 0xff;
 
+#ifdef __MONO_MOD__
 			if(System::cab_type == CAB_CONFIG_STEREO)
 			{
 				tempCabBuffer[CAB_DATA_SIZE + 0] = 0x7f;
 				tempCabBuffer[CAB_DATA_SIZE + 1] = 0xff;
 				tempCabBuffer[CAB_DATA_SIZE + 2] = 0xff;
 			}
+#endif
+
+#ifdef __STEREO_MOD__
+			tempCabBuffer[CAB_DATA_SIZE + 0] = 0x7f;
+			tempCabBuffer[CAB_DATA_SIZE + 1] = 0xff;
+			tempCabBuffer[CAB_DATA_SIZE + 2] = 0xff;
+#endif
 			kgp_sdk_libc::memset(cab1Name, 0, CAB_NAME_STRING_SIZE);
 			kgp_sdk_libc::memset(cab2Name, 0, CAB_NAME_STRING_SIZE);
 		}
@@ -337,8 +359,10 @@ void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selecti
 	if(selectionMask.pv)
 		copyPreset->paramData.preset_volume = currentPreset.paramData.preset_volume;
 
+#ifdef __MONO_MOD__
 	if(selectionMask.att)
 		copyPreset->paramData.attenuator = currentPreset.paramData.attenuator;
+#endif
 
 	if(selectionMask.controllers)
 	{
@@ -352,10 +376,10 @@ void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selecti
 	}
 
 #ifdef __STEREO_MOD__
-    copyPreset->in_left_en = currentPreset.in_left_en;
-	copyPreset->in_right_en = currentPreset.in_right_en;
-	copyPreset->left_pan = currentPreset.left_pan;
-	copyPreset->right_pan = currentPreset.right_pan;
+    copyPreset->paramData.in_left_en = currentPreset.paramData.in_left_en;
+	copyPreset->paramData.in_right_en = currentPreset.paramData.in_right_en;
+	copyPreset->paramData.in_left_pan = currentPreset.paramData.in_left_pan;
+	copyPreset->paramData.in_right_pan = currentPreset.paramData.in_right_pan;
 #endif
 
 	copyPreset->pcOut = currentPreset.pcOut;
@@ -364,8 +388,15 @@ void Preset::Copy(uint8_t targetPresetNum, const Preset::TSelectionMask& selecti
 	EEPROM_SavePresetHeader(targetPresetNum, (Preset::TPresetHeader*)tempDataBuffer);
 
 	SharcTask->sendPrimaryData(&tempCabBuffer[0], &tempCabBuffer[CAB_DATA_SIZE], &copyPreset->paramData, targetPresetNum+1);
+
+#ifdef __MONO_MOD__
 	if(System::cab_type==CAB_CONFIG_STEREO)
-			SharcTask->sendCab2Data(&tempCabBuffer[CAB_DATA_SIZE], currentPresetNumber+1);
+		SharcTask->sendCab2Data(&tempCabBuffer[CAB_DATA_SIZE], currentPresetNumber+1);
+#endif
+
+#ifdef __STEREO_MOD__
+	SharcTask->sendCab2Data(&tempCabBuffer[CAB_DATA_SIZE], currentPresetNumber+1);
+#endif
 }
 
 void Preset::Erase()
@@ -374,6 +405,13 @@ void Preset::Erase()
 	Preset::SetDefaultValues(&currentPreset);
 
 	SharcTask->eraseCab1(currentPresetNumber+1);
+
+#ifdef __MONO_MOD__
 	if(System::cab_type == CAB_CONFIG_STEREO)
 		SharcTask->eraseCab2(currentPresetNumber+1);
+#endif
+
+#ifdef __STEREO_MOD__
+	SharcTask->eraseCab2(currentPresetNumber+1);
+#endif
 }
